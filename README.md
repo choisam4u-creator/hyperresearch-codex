@@ -190,7 +190,7 @@ MIT © 2026 samchoi. Korean README: [README.ko.md](README.ko.md).
 
 ## Token-first maintenance
 
-The Phase 8–13 implementation adds an experimental `--preset economy`, `--max-calls`, a no-call `--plan-json`, frozen-source `--replay FILE --case ID`, evidence and usage ledgers, and a short `review.md`. Standard remains the default. Input reservations are estimates, not a guaranteed billing cap. Real quality and token savings have not been measured for these changes. See [phase scope and remaining work](docs/TOKEN-FIRST-PHASES.md) and [offline evaluation](docs/EVALUATION.md).
+The Phase 8–13 implementation adds an experimental `--preset economy`, `--max-calls`, a no-call `--plan-json`, frozen-source `--replay FILE --case ID`, evidence and usage ledgers, and a short `review.md`. Standard remains the default. Input reservations are estimates, not a guaranteed billing cap. A two-case fixed-input routing pilot used 6.3% more total tokens with the routed policy; general quality and savings are not established. See the [pilot results](docs/PILOT-20260914.md). See [phase scope and remaining work](docs/TOKEN-FIRST-PHASES.md) and [offline evaluation](docs/EVALUATION.md).
 
 Resume preserves the initial configuration; use `resume --budget N --max-calls N` for explicit budget changes. Further model calls stop if the code or prompt files changed since the run started.
 
