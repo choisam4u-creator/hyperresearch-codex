@@ -20,7 +20,7 @@ Honest table, checked 2026-09-13. Numbers for this tool are measured (see *Cost*
 
 | | **hyperresearch-codex** (this) | [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) | [insane-research-codex](https://github.com/fivetaku/gptaku-plugins-codex) | ChatGPT Deep Research |
 |---|---|---|---|---|
-| Runs on | Codex CLI (subscription or API) + Python 3.11 | Claude Code only | Codex plugin marketplace (`codex plugin marketplace add …`) | ChatGPT app |
+| Runs on | Codex CLI (subscription or API) + Python 3.11 | Claude Code; a Codex install path is in review upstream ([PR #63](https://github.com/jordan-gibbs/hyperresearch/pull/63), accepted in principle 2026-09-11) | Codex plugin marketplace (`codex plugin marketplace add …`) | ChatGPT app |
 | Who drives the steps | Python. The model only judges, inside read-only `codex exec` calls with a JSON schema | Claude Code skill and sub-agents | Codex skill with helper scripts; can fan out research agents | the service |
 | What you get | 1–3.5k-word sourced brief, provenance table, cite-check line; notes stay on disk in an FTS5 vault with a read-only MCP server | 10k-word survey (example report: 11,209 words, 97 sources) | citation-heavy report with a claim ledger, A–E source grades and `RESEARCH/` state | chat answer with citations |
 | Verification you can inspect | unknown-citation gate, critic-quote gate, patch ≤30 % / polish ≤15 %, judgment markers, cite-check sample, lint | multi-step critique | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | none |

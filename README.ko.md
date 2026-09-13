@@ -18,7 +18,7 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 
 | | **hyperresearch-codex** (이 도구) | [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) | [insane-research-codex](https://github.com/fivetaku/gptaku-plugins-codex) | ChatGPT Deep Research |
 |---|---|---|---|---|
-| 돌아가는 곳 | Codex CLI(구독·API) + Python 3.11 | Claude Code 전용 | Codex 플러그인 마켓(`codex plugin marketplace add …`) | ChatGPT 앱 |
+| 돌아가는 곳 | Codex CLI(구독·API) + Python 3.11 | Claude Code. 원본에도 Codex 설치 경로가 검토 중([PR #63](https://github.com/jordan-gibbs/hyperresearch/pull/63), 2026-09-11 원칙 수락) | Codex 플러그인 마켓(`codex plugin marketplace add …`) | ChatGPT 앱 |
 | 단계를 누가 밟나 | 파이썬. 모델은 읽기 전용 `codex exec` + JSON 스키마 안에서 판단만 | Claude Code 스킬·서브에이전트 | Codex 스킬 + 보조 스크립트, 조사 에이전트 병렬 가능 | 서비스 |
 | 결과물 | 1천~3.5천 단어 출처 브리프 + 출처 상세표 + 인용 검사 줄. 노트는 디스크의 FTS5 창고에 남고 읽기 전용 MCP 로 재사용 | 1만 단어급 서베이(예시 보고서 11,209단어·출처 97개) | 주장 장부·출처 등급 A–E·`RESEARCH/` 상태가 붙은 인용 중심 보고서 | 인용 달린 채팅 답 |
 | 눈으로 확인 가능한 검증 | 없는 출처 인용 차단, 비평 인용문 존재 확인, 수정 ≤30%·다듬기 ≤15%, (판단) 표시, 인용 표본 검사, 린트 | 다단계 비평 | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | 없음 |
