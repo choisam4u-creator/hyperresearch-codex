@@ -1,0 +1,36 @@
+{
+  "subjects": [
+    {"subject_id":"atlas","subject":"Atlas","date":"2026-01-08","value":"18","unit":"ms","condition":"a warm cache"},
+    {"subject_id":"beacon","subject":"Beacon","date":"2026-01-19","value":"42","unit":"MB","condition":"a cold cache"},
+    {"subject_id":"cedar","subject":"Cedar","date":"2026-02-03","value":"7","unit":"days","condition":"an approved hostname"},
+    {"subject_id":"delta","subject":"Delta","date":"2026-02-17","value":"96","unit":"requests","condition":"the audit window"},
+    {"subject_id":"ember","subject":"Ember","date":"2026-03-01","value":"2.5","unit":"hours","condition":"non-overlapping cycles"},
+    {"subject_id":"fable","subject":"Fable","date":"2026-03-12","value":"640","unit":"tokens","condition":"a registered claim"},
+    {"subject_id":"grove","subject":"Grove","date":"2026-04-04","value":"11","unit":"percent","condition":"the sampled set"},
+    {"subject_id":"harbor","subject":"Harbor","date":"2026-04-21","value":"3","unit":"sources","condition":"a public note"},
+    {"subject_id":"iris","subject":"Iris","date":"2026-05-06","value":"1.2","unit":"GB","condition":"decimal units"},
+    {"subject_id":"juniper","subject":"Juniper","date":"2026-05-28","value":"75","unit":"checks","condition":"a read-only run"}
+  ],
+  "templates": [
+    {"template_id":"normal-negation","group":"normal","semantic_tag":"negation","source":"{subject} does not publish results outside {condition}.","claim":"{subject} does not publish results outside {condition}."},
+    {"template_id":"normal-table-header","group":"normal","semantic_tag":"table_header","source":"Table header: {unit} per {condition}; {subject}: {value}.","claim":"For {subject}, {value} is measured as {unit} per {condition}."},
+    {"template_id":"normal-date","group":"normal","semantic_tag":"date","source":"On {date}, {subject} recorded {value} {unit}.","claim":"{subject} recorded {value} {unit} on {date}."},
+    {"template_id":"normal-unit","group":"normal","semantic_tag":"unit","source":"{subject} uses {unit} under {condition}.","claim":"The {subject} unit is {unit} under {condition}."},
+    {"template_id":"normal-condition","group":"normal","semantic_tag":"condition","source":"{subject} applies only with {condition}.","claim":"{subject} applies only with {condition}."},
+    {"template_id":"normal-scope","group":"normal","semantic_tag":"scope","source":"{subject} report covers {condition}, not production use.","claim":"{subject} report covers {condition}, not production use."},
+    {"template_id":"normal-attribution","group":"normal","semantic_tag":"attribution","source":"The registry, not the vendor, recorded {subject} at {value} {unit}.","claim":"The registry recorded {subject} at {value} {unit}."},
+    {"template_id":"normal-comparison","group":"normal","semantic_tag":"comparison","source":"{subject} is faster only with {condition}; no universal ranking is given.","claim":"{subject} is faster only with {condition}."},
+    {"template_id":"normal-unknown","group":"normal","semantic_tag":"insufficient","source":"{subject} log records {value} {unit} but no cause.","claim":"{subject} records {value} {unit}; the cause is not established."},
+    {"template_id":"normal-quote-context","group":"normal","semantic_tag":"quote_context","source":"In a warning section, {subject} says 'review required' for {condition}.","claim":"{subject} marks {condition} as review required."},
+    {"template_id":"error-negation-flip","group":"error","semantic_tag":"negation_flip","source":"{subject} does not publish results outside {condition}.","claim":"{subject} publishes results outside {condition}."},
+    {"template_id":"error-header-loss","group":"error","semantic_tag":"header_loss","source":"Table header: {unit} per {condition}; {subject}: {value}.","claim":"{subject} has {value} total {unit}."},
+    {"template_id":"error-date-shift","group":"error","semantic_tag":"date_shift","source":"On {date}, {subject} recorded {value} {unit}.","claim":"{subject} recorded {value} {unit} before {date}."},
+    {"template_id":"error-unit-swap","group":"error","semantic_tag":"unit_swap","source":"{subject} uses {unit} under {condition}.","claim":"{subject} uses milliseconds under {condition}."},
+    {"template_id":"error-condition-drop","group":"error","semantic_tag":"condition_drop","source":"{subject} applies only with {condition}.","claim":"{subject} applies in every environment."},
+    {"template_id":"error-scope-expand","group":"error","semantic_tag":"scope_expand","source":"{subject} report covers {condition}, not production use.","claim":"{subject} report proves production use."},
+    {"template_id":"error-attribution-swap","group":"error","semantic_tag":"attribution_swap","source":"The registry, not the vendor, recorded {subject} at {value} {unit}.","claim":"The vendor recorded {subject} at {value} {unit}."},
+    {"template_id":"error-universal-rank","group":"error","semantic_tag":"universal_rank","source":"{subject} is faster only with {condition}; no universal ranking is given.","claim":"{subject} is universally fastest."},
+    {"template_id":"error-cause-invent","group":"error","semantic_tag":"cause_invent","source":"{subject} log records {value} {unit} but no cause.","claim":"{subject} was caused by {condition}."},
+    {"template_id":"error-quote-context","group":"error","semantic_tag":"quote_context","source":"In a warning section, {subject} says 'review required' for {condition}.","claim":"{subject} approved {condition}."}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "benchmark_version": "phase8-synthetic-v1",
+  "cases": [
+    {"id":"fact-ko-01","items":[{"item_id":"sandbox","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"release-date","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"fact-en-01","items":[{"item_id":"beta","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"availability","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"fact-ko-02","items":[{"item_id":"checksum","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"retention","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"fact-en-02","items":[{"item_id":"checks","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"satisfaction","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"compare-ko-01","items":[{"item_id":"a-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"b-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"compare-en-01","items":[{"item_id":"north-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"south-limit","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"compare-ko-02","items":[{"item_id":"cedar-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"maple-limit","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"compare-en-02","items":[{"item_id":"fast-scope","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"full-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"date-ko-01","items":[{"item_id":"may-budget","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"aug-budget","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"date-en-01","items":[{"item_id":"v30","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"v31","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"date-ko-02","items":[{"item_id":"baseline-state","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"later-state","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"date-en-02","items":[{"item_id":"baseline-date","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"approval-date","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"number-ko-01","items":[{"item_id":"file-unit","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"rate-unit","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"number-en-01","items":[{"item_id":"p95","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"median","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"number-ko-02","items":[{"item_id":"a-denominator","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"b-denominator","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"number-en-02","items":[{"item_id":"cycle-duration","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"overlap","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"conflict-ko-01","items":[{"item_id":"vendor","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"independent","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"conflict-en-01","items":[{"item_id":"study-a","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"study-b","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"conflict-ko-02","items":[{"item_id":"alpha","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"beta","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"conflict-en-02","items":[{"item_id":"red","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"blue","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"insufficient-ko-01","items":[{"item_id":"anonymous-claim","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"error-rate","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"insufficient-en-01","items":[{"item_id":"screenshot-score","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"benchmark-result","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"insufficient-ko-02","items":[{"item_id":"best-class","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"mock-checks","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"insufficient-en-02","items":[{"item_id":"hostile-post","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"registry-limit","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "templates": [
+    {"template_id":"normal-negation","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-table-header","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-date","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-unit","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-condition","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-scope","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-attribution","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-comparison","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-unknown","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"normal-quote-context","expected_verdict":"supported","fault_type":"none"},
+    {"template_id":"error-negation-flip","expected_verdict":"contradicted","fault_type":"negation_flip"},
+    {"template_id":"error-header-loss","expected_verdict":"contradicted","fault_type":"table_header_loss"},
+    {"template_id":"error-date-shift","expected_verdict":"contradicted","fault_type":"date_shift"},
+    {"template_id":"error-unit-swap","expected_verdict":"contradicted","fault_type":"unit_swap"},
+    {"template_id":"error-condition-drop","expected_verdict":"contradicted","fault_type":"condition_drop"},
+    {"template_id":"error-scope-expand","expected_verdict":"contradicted","fault_type":"scope_expand"},
+    {"template_id":"error-attribution-swap","expected_verdict":"contradicted","fault_type":"attribution_swap"},
+    {"template_id":"error-universal-rank","expected_verdict":"contradicted","fault_type":"universal_rank"},
+    {"template_id":"error-cause-invent","expected_verdict":"contradicted","fault_type":"cause_invention"},
+    {"template_id":"error-quote-context","expected_verdict":"contradicted","fault_type":"quote_context"}
+  ]
+}

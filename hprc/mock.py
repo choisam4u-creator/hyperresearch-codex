@@ -68,7 +68,7 @@ def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
     if step == "polish":
         report = inputs["report.md"]
         return {"hunks": [{"find": "모의 한계: ", "replace": "한계: ", "finding_ids": []}] if "모의 한계: " in report else [], "skipped": []}
-    if step == "citecheck":
+    if step in ("citecheck", "citecheck_changed"):
         samples = json.loads(inputs["samples.json"])
         return {"checks": [{"sentence": s["sentence"], "cites": s["cites"], "supported": True, "reason": "모의 검사"} for s in samples]}
     raise ValueError(f"mock: 모르는 단계 {step}")

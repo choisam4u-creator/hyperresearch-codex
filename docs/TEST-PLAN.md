@@ -83,3 +83,12 @@ Light 2회(v0.1, v0.3), Full 3회(v0.2 ×2, v0.3 ×1). mock 테스트 18개.
 ### 2026-09-14 Phase 2–7 최종 로컬 검증
 
 전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 구현 커밋 `346a82d`의 [원격 CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13 및 Windows 3.12 설치·회귀·wheel smoke를 확인했다. Windows는 166개 중 POSIX 셸 fixture 4개를 제외한 162개 통과이며 UTF-8 모드를 사용한다. 최초 Windows 설치 테스트의 HOME 격리 오류를 Path.home 대역으로 수정했다. 실제 Windows Codex 모델 호출은 검증 범위 밖이다.
+
+
+## 2026-09-14 Phase 8–13 로컬 구현 검증
+
+- macOS Python 3.14.7: `python3 -m unittest discover -s tests -q` **230개 통과**. SQLite 연결 ResourceWarning은 관찰됐으며 테스트 실패는 없다.
+- `compileall`, `git diff --check` 통과. 임시 환경에서 wheel 빌드·재설치 후 저장소 밖 `tests/wheel_smoke.py` 통과: 실제 모델 0회, 재개 추가 호출 0회. 새 모듈과 언어별 프롬프트 14개 포함, 비공개 폴더 제외 확인.
+- Astra는 변경 코드와 대상 테스트를 검수했고, 오래된 인용 context, 재개 구성 해시, 통제 비교 조건 누락, 수치 오경고/긴 표 문맥 손실 지적의 수정 재검사 **61개 통과**를 확인했다. 전체 저장소의 모든 파일을 검수했다는 뜻은 아니다.
+- 24개 질문과 정상/오류 각 100개 자료는 평가 기반이다. 실제 모델을 통한 품질·토큰 실측은 하지 않았다. 기계 검사만의 변형 자료 점검은 정상 오경고 0/100, 오류 경고 0/100으로 의미 오류 탐지 성능을 입증하지 못한다. 모델과 결합한 최종 검증 성능과 혼동하지 않는다.
+- 실제 토큰 절감률, 의미 지지·질문 충족·오류 탐지 목표는 미측정이다. [페이즈별 범위](TOKEN-FIRST-PHASES.md)를 따른다.

@@ -3,6 +3,7 @@ Light: 검색 → 가져오기 → 분석 → 초안 → 비평 3 → 부분 수
 Full : 검색 → 가져오기 → 분석 → 깊이 지점 → 지점 조사(병렬) → 초안 3개(병렬) → 종합 → 비평 4(병렬) → 부분 수정 → 인용 검사 → 다듬기 → 린트.
 v0.3 토큰 다이어트: 단계마다 필요한 출처만(분석가가 인용한 출처), 비평·수정에는 발췌본, 종합에는 초안·요약만.
 예산 상한(budget.max_input_tokens)을 넘으면 다음 단계 전에 멈춘다. 진행 상황은 stderr 로 바로 보인다."""
+import hashlib
 import json
 import os
 import re
@@ -30,6 +31,10 @@ from .mock import mock_backend
 from .vault import note_body, read_front, sync, write_note
 from .verification import verify_report
 from .untrusted import wrap_source
+from .gap_plan import plan_gaps
+from .evidence import build_evidence_ledger, validate_evidence_ledger
+from .brief import render_brief
+from .token_policy import estimate_next_input, fingerprint, plan_run, usage_summary
 
 PROMPTS = Path(__file__).parent / "prompts"
 ANGLES = ["실무자 관점(어떻게 쓰나)", "반대 근거 우선(무엇이 틀릴 수 있나)", "맥락과 시간순(왜 지금 이렇게 됐나)"]
@@ -114,9 +119,16 @@ def estimate_cost(usage: list[dict], budget: dict) -> dict:
             "known_calls": len(known), "unknown_calls": unknown_calls}
 
 
+def runtime_hashes(lang):
+    return {"prompt_hash": fingerprint({p.name: p.read_text(encoding="utf-8") for p in (PROMPTS / lang).glob("*.md")}),
+            "code_hash": fingerprint({p.name: p.read_text(encoding="utf-8") for p in Path(__file__).parent.glob("*.py")})}
+
+
 class Run:
     def __init__(self, root: Path, prompt: str, tier: str, run_id: str | None, quiet: bool = False, budget: int | None = None,
-                 lang: str | None = None, preset: str | None = None):
+                 lang: str | None = None, preset: str | None = None, max_calls: int | None = None):
+        if max_calls is not None and max_calls <= 0:
+            raise Blocked("호출 상한은 양수여야 합니다")
         if budget is not None and budget <= 0:
             raise Blocked("예산 상한은 0보다 큰 정수여야 한다")
         self.root, self.quiet = root, quiet
@@ -133,16 +145,33 @@ class Run:
         # 언어·프리셋은 첫 실행 때 manifest 에 고정된다(resume 시 동일)
         self.lang = self.m.data.setdefault("lang", lang or load(root)["lang"])
         self.preset = self.m.data.setdefault("preset", preset or load(root)["preset"])
-        self.cfg = load(root, preset=self.preset, lang=self.lang)
+        loaded = load(root, preset=self.preset, lang=self.lang)
+        self.cfg = json.loads(json.dumps(self.m.data.setdefault("config_snapshot", loaded)))
+        self.m.data.setdefault("as_of", time.strftime("%Y-%m-%d", time.gmtime()))
+        self.m.data.setdefault("runtime", {"config_hash": fingerprint(self.cfg), "models": self.cfg["models"], **runtime_hashes(self.lang)})
+        overrides = self.m.data.setdefault("budget_overrides", {})
+        if budget:
+            overrides["max_input_tokens"] = budget
+        if max_calls is not None:
+            overrides["max_model_calls"] = max_calls
+        self.cfg["budget"].update(overrides)
         self.m.save()
         if budget:
             self.cfg["budget"]["max_input_tokens"] = budget
         elif not self.cfg["budget"].get("max_input_tokens"):
             self.cfg["budget"]["max_input_tokens"] = self.cfg["budget"].get("default_by_tier", {}).get(self.tier)
+        if max_calls is not None:
+            if max_calls <= 0:
+                raise Blocked("호출 상한은 양수여야 합니다")
+            self.cfg["budget"]["max_model_calls"] = max_calls
+        self.m.data["effective_config_snapshot"] = json.loads(json.dumps(self.cfg))
+        self.m.data["runtime"]["config_hash"] = fingerprint(self.cfg)
+        self.m.save()
         self.T, self.G = self.cfg[self.tier], self.cfg["gates"]
         self.L, self.U = LANG.get(self.lang, LANG["ko"]), UI.get(self.lang, UI["ko"])
         self.sources, self.known, self.relevant = [], set(), set()
         self._usage_lock = Lock()
+        self._reservations = {}
 
     # ---- 진행 표시·상태 파일 ----
     def log(self, msg: str) -> None:
@@ -182,6 +211,26 @@ class Run:
                 self.state(step, "budget_stop")
                 raise Blocked(f"예산 상한 도달: 입력 {used:,} ≥ {limit:,}. `hpr resume {self.run_id} --budget <더 큰 값>` 으로 이어 갈 수 있다")
 
+    def _reserve_call(self, key, name, prompt, inputs, role):
+        with self._usage_lock:
+            summary = usage_summary(self.m.data["usage"])
+            budget = self.cfg["budget"]
+            maximum = budget.get("max_model_calls")
+            if maximum is not None and summary["calls"] + len(self._reservations) >= maximum:
+                self.state(name, "budget_stop")
+                raise Blocked(f"모델 호출 상한 {maximum}회 도달(실패·재시도 포함)")
+            if budget.get("stop_on_unknown") and summary["unknown_calls"]:
+                self.state(name, "budget_stop")
+                raise Blocked("미측정 호출이 있어 다음 호출 예산을 확정할 수 없습니다. 사용량 기록을 확인하세요")
+            estimate = estimate_next_input(prompt, inputs, self.m.data["usage"], role)
+            reserved = sum(self._reservations.values())
+            limit = budget.get("max_input_tokens")
+            if budget.get("reserve_input") and limit and summary["input_tokens"] + reserved + estimate["input_reservation"] > limit:
+                self.state(name, "budget_stop")
+                raise Blocked(f"다음 호출 예상 입력 {estimate['input_reservation']:,}과 진행 중 예약 {reserved:,}이 남은 예산을 초과합니다")
+            self._reservations[key] = estimate["input_reservation"]
+            return estimate
+
     def _next_attempt(self, name: str) -> int:
         attempts = {u.get("attempt") for u in self.m.data.get("usage", []) if u.get("step") == name and isinstance(u.get("attempt"), int)}
         for log in self.logs.glob(f"{name}.attempt-*.stderr.log"):
@@ -210,6 +259,9 @@ class Run:
             "model": usage.get("model"),
             "effort": usage.get("effort"),
             "web_search": usage.get("web_search"),
+            "role": usage.get("role"), "routing_reason": usage.get("routing_reason"), "input_bytes": usage.get("input_bytes", 0),
+            "reservation": usage.get("reservation"),
+            "runtime": usage.get("runtime"),
             "seconds": usage.get("seconds", 0),
             "usage": used if usage_known else {},
             "items": usage.get("items", {}),
@@ -222,6 +274,7 @@ class Run:
         ledger_record = dict(record)
         ledger_record.update({"run_id": self.run_id, "tier": self.tier, "lang": self.lang, "preset": self.preset})
         with self._usage_lock:
+            self._reservations.pop(f"{name}:{attempt}", None)
             self.m.usage(record)
             ledger.append(self.root, ledger_record)
         u = used if usage_known else {}
@@ -230,16 +283,38 @@ class Run:
         self.log(f"  ← {name} {status} {usage.get('seconds', 0)}s · {measured}")
         return record, ledger_record
 
+    def role_for_call(self, name, role):
+        selected = dict(self.cfg["models"][role])
+        reason = "configured_role"
+        routing = self.cfg["routing"]
+        if routing["enabled"] and name == "patcher" and (self.dir / "findings.json").exists():
+            findings = json.loads((self.dir / "findings.json").read_text(encoding="utf-8")).get("findings", [])
+            prior = self.m.data.setdefault("routing_events", [])
+            saved = next((e for e in prior if e["step"] == name), None)
+            if saved:
+                return saved["selected"], saved["reason"]
+            if any(f.get("severity") == "high" for f in findings) and sum(e["reason"] == "high_finding" for e in prior) < min(1, routing["max_escalations"]):
+                selected = {"model": routing["escalation_model"], "effort": routing["escalation_effort"]}
+                reason = "high_finding"
+            prior.append({"step": name, "selected": selected, "reason": reason, "extra_calls": 0})
+            self.m.save()
+        return selected, reason
+
     # ---- 모델 호출(재시도 1회) ----
     def call(self, name: str, prompt: str, schema: dict, inputs: dict, role: str, web_search: bool = False) -> dict:
+        current_runtime = runtime_hashes(self.lang)
+        if any(self.m.data["runtime"].get(key) != value for key, value in current_runtime.items()):
+            raise Blocked("실행 이후 코드 또는 프롬프트가 변경되었습니다. 같은 버전을 복원하거나 새 실행 ID로 시작하세요.")
+        current_runtime["config_hash"] = fingerprint(self.cfg)
         next_attempt, last = self._next_attempt(name), None
         size = sum(len(v) for v in inputs.values())
         self.log(f"  → {name} (입력 {size:,}자, 파일 {len(inputs)}개)")
         retry = 0
-        model_info = self.cfg["models"][role]
+        model_info, routing_reason = self.role_for_call(name, role)
 
         def failure_meta(error) -> dict:
             return {
+                "runtime": current_runtime, "role": role, "routing_reason": routing_reason, "input_bytes": estimate["input_bytes"], "reservation": estimate,
                 "usage": getattr(error, "usage", {}) or {},
                 "usage_known": getattr(error, "usage_known", None),
                 "at": time.time(),
@@ -250,15 +325,18 @@ class Run:
                 "web_search": web_search if getattr(error, "web_search", None) is None else error.web_search,
             }
 
-        while retry <= 1:
+        max_retries = 0 if name == "citecheck_changed" else max(0, min(1, self.cfg["budget"].get("max_retries", 1)))
+        while retry <= max_retries:
             self.check_budget(name)
             attempt = next_attempt + retry
+            key = f"{name}:{attempt}"
+            estimate = self._reserve_call(key, name, prompt, inputs, role)
             try:
-                result, usage = run_step(name, prompt, schema, inputs, self.cfg["models"][role], self.cfg["codex"], self.logs,
+                result, usage = run_step(name, prompt, schema, inputs, model_info, self.cfg["codex"], self.logs,
                                          mock=mock_backend, web_search=web_search,
                                          heartbeat=lambda msg: self.log(f"    … {name} {msg}"),
                                          attempt=attempt)
-                usage["attempt"] = attempt
+                usage.update(runtime=current_runtime, attempt=attempt, role=role, routing_reason=routing_reason, input_bytes=estimate["input_bytes"], reservation=estimate)
                 self._record_attempt(name, size, usage, attempt, "ok")
                 return result
             except UsageLimit as error:
@@ -277,16 +355,19 @@ class Run:
             except (CodexError, ValueError) as error:
                 last = error
                 self._record_attempt(name, size, failure_meta(error), attempt, "error")
-                if retry >= 1:
+                if retry >= max_retries:
                     break
                 prompt += f"\n\n[재시도 안내] 이전 답이 거부됨: {type(error).__name__}: {str(error)[:200]}. 스키마를 정확히 지켜 다시 답하라."
                 self.log(f"  ! {name} 실패({type(error).__name__}), 재시도")
                 retry += 1
+            finally:
+                with self._usage_lock:
+                    self._reservations.pop(key, None)
         self.state(name, "failed")
-        raise Blocked(f"{name}: 2회 실패 → {last}. 로그 {self.logs}/*.attempt-*.stderr.log 확인 뒤 `hpr resume {self.run_id}`")
+        raise Blocked(f"{name}: {max_retries + 1}회 실패 → {last}. 로그 {self.logs}/*.attempt-*.stderr.log 확인 뒤 `hpr resume {self.run_id}`")
 
     def parallel(self, jobs: list[tuple]) -> list:
-        with ThreadPoolExecutor(max_workers=max(1, self.T.get("parallel", 2))) as pool:
+        with ThreadPoolExecutor(max_workers=max(1, min(2, self.T.get("parallel", 2)))) as pool:
             return list(pool.map(lambda job: job[1](), jobs))
 
     # ---- 입력 구성(토큰 다이어트) ----
@@ -347,6 +428,31 @@ class Run:
         self.known = {s["id"] for s in self.sources}
         rel = self.dir / "relevant.json"
         self.relevant = set(json.loads(rel.read_text(encoding="utf-8"))["ids"]) if rel.exists() else set(self.known)
+
+    def step_replay(self, case):
+        from .evaluation import case_input_hash
+        from .replay import pages_for_case
+        if case["prompt"] != self.prompt or case["lang"] != self.lang:
+            raise Blocked("고정 입력 질문·언어가 실행 설정과 다릅니다")
+        digest = case_input_hash(case)
+        if self.m.data.get("frozen_input_hash", digest) != digest:
+            raise Blocked("재개할 고정 입력의 해시가 바뀌었습니다")
+        if len(case["sources"]) > self.T["max_sources"]:
+            raise Blocked("고정 출처 수가 tier 상한을 초과합니다. 입력을 잘라 비교할 수 없습니다")
+        self.m.data.update(no_search=True, frozen_input_hash=digest, as_of=case["baseline_time"])
+        self.m.save()
+        atomic_write(self.dir / "frozen_input.json", json.dumps(case, ensure_ascii=False, indent=2))
+        if self.begin("search"):
+            atomic_write(self.dir / "candidates.json", json.dumps({"stats": {"frozen": len(case["sources"])}, "candidates": []}))
+            self.end("search", "ok", "고정 입력: 외부 검색 없음")
+        if self.begin("fetch"):
+            minimum = self.G["min_note_chars"]
+            try:
+                self.G["min_note_chars"] = 0  # 짧은 합성 원문도 변경 없이 재생한다.
+                self._save_source_pages(pages_for_case(case), [], len(case["sources"]))
+            finally:
+                self.G["min_note_chars"] = minimum
+            self.end("fetch", "ok", "고정 원문 저장: 외부 다운로드 없음")
 
     # ---- 단계 ----
     def step_search(self, urls_file, no_search, scholar):
@@ -470,8 +576,9 @@ class Run:
         if checkpoint.exists():
             state = json.loads(checkpoint.read_text(encoding="utf-8"))
         else:
-            gaps = json.loads((self.dir / "claims.json").read_text(encoding="utf-8"))["gaps"]
-            state = {"gaps": list(dict.fromkeys(gaps))[:max(0, min(2, int(cfg["max_gaps"])))],
+            claims = json.loads((self.dir / "claims.json").read_text(encoding="utf-8"))
+            selection = plan_gaps(self.prompt, claims, int(cfg["max_gaps"]))
+            state = {"selection": selection, "gaps": [row["gap"] for row in selection["selected"]],
                      "base_count": len(self.sources), "searched": [], "candidates": [], "errors": [], "fetched": False}
         def save():
             atomic_write(checkpoint, json.dumps(state, ensure_ascii=False, indent=2))
@@ -481,7 +588,14 @@ class Run:
             if gap in state["searched"]:
                 continue
             self.check_budget("gap_fetch")
-            rows = searchmod.duckduckgo((self.prompt[:100] + " " + gap[:200]), source_limit, self.cfg["fetch"]["user_agent"])
+            from .reuse import reusable_sources
+            cached = reusable_sources(self.root, gap, self.cfg["reuse"]["max_age_days"], source_limit) if self.cfg["reuse"]["enabled"] else []
+            existing = {searchmod.canonical_key(s["url"]) for s in self.sources}
+            cached = [row for row in cached if searchmod.canonical_key(row["url"]) not in existing]
+            rows = cached
+            if len(cached) < source_limit:
+                rows += searchmod.duckduckgo((self.prompt[:100] + " " + gap[:170] + " evidence limitations"), source_limit - len(cached), self.cfg["fetch"]["user_agent"])
+            state.setdefault("search_events", []).append({"gap": gap, "vault_candidates": len(cached), "results": len(rows)})
             state["candidates"] += [r for r in rows if "error" not in r]
             state["errors"] += [r for r in rows if "error" in r]
             state["searched"].append(gap)
@@ -491,7 +605,15 @@ class Run:
             prior = {searchmod.canonical_key(s["url"]) for s in self.sources[:state["base_count"]]}
             candidates = [r for r in searchmod.prioritize(state["candidates"], []) if searchmod.canonical_key(r["url"]) not in prior][:source_limit]
             if "pages" not in state:
-                state["pages"] = fetch_all(candidates, self.cfg["fetch"]) if candidates else []
+                from .reuse import cached_page
+                reusable, pending = [], []
+                for candidate in candidates:
+                    page = cached_page(self.root, candidate, self.cfg["reuse"]["max_age_days"]) if candidate.get("via") == "vault" else None
+                    if page:
+                        reusable.append(page)
+                    else:
+                        pending.append({"url": candidate["url"], "via": "vault_refresh"} if candidate.get("via") == "vault" else candidate)
+                state["pages"] = reusable + (fetch_all(pending, self.cfg["fetch"]) if pending else [])
                 save()
             self._save_source_pages(state["pages"], self.sources, state["base_count"] + source_limit)
             self.load_sources()
@@ -515,6 +637,8 @@ class Run:
             atomic_write(self.dir / "relevant.json", json.dumps({"ids": ids}))
             self.relevant = set(ids) if ids else set(self.known)
         state["remaining_gaps"] = state.get("analysis", {}).get("gaps", state["gaps"])
+        state["stop_reason"] = "no_new_sources" if not state.get("added") else "bounded_pass_completed"
+        state["analysis_calls"] = sum(u.get("step") == "analyst_gap" for u in self.m.data["usage"])
         save()
         self.end("gap_fetch", "ok", f"추가 출처 {state.get('added', 0)}개; 남은 gap {len(state['remaining_gaps'])}개")
 
@@ -664,6 +788,29 @@ class Run:
                                       **self.excerpts(ids, "\n".join(f["problem"] + " " + f.get("suggested_fix", "") for f in findings))})
         self.end("patch", "ok", note)
 
+    def evidence_sources(self):
+        sources = {}
+        for source in self.sources:
+            path = Path(source["path"])
+            front = read_front(path)
+            body = note_body(path)
+            prefix = "\n# " + str(front.get("title") or front.get("url") or "") + "\n\n"
+            if body.startswith(prefix):
+                body = body[len(prefix):]
+                if body.endswith("\n"):
+                    body = body[:-1]
+            sources[source["id"]] = {"text": body, "metadata": {**front, "cluster": source.get("cluster"), "id": source.get("note_id", front.get("id")), "fetched_at": source.get("fetched_at", front.get("fetched_at"))}}
+        return sources
+
+    def verification_context(self):
+        return fingerprint({"sources": self.source_hashes(), "model": self.cfg["models"]["citecheck"],
+                            "prompt": _prompt("citecheck", self.lang), "schema": schemas.CITECHECK,
+                            "config": self.cfg["verification"], "as_of": self.m.data["as_of"],
+                            "backend": os.environ.get("HPR_BACKEND", "codex")})
+
+    def source_hashes(self):
+        return {s["id"]: hashlib.sha256(note_body(Path(s["path"])).encode("utf-8")).hexdigest() for s in self.sources}
+
     def step_citecheck(self):
         if not self.begin("citecheck"):
             return
@@ -686,7 +833,7 @@ class Run:
                 inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], query))
             raw_checks = self.call("citecheck", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
         checks = enrich_checks(raw_checks["checks"], sampling)
-        atomic_write(self.dir / "citecheck.json", json.dumps({"checks": checks, "sampling": sampling}, ensure_ascii=False, indent=2))
+        atomic_write(self.dir / "citecheck.json", json.dumps({"checks": checks, "sampling": sampling, "report_sha256": hashlib.sha256(report.encode("utf-8")).hexdigest(), "source_hashes": self.source_hashes(), "verification_context": self.verification_context()}, ensure_ascii=False, indent=2))
         bad = [c for c in checks if not c["supported"]]
         self.end("citecheck", "ok", f"표본 {sampling['selected_count']}개 중 판정 {sampling['checked_count']}개, 미지지 {len(bad)}개")
 
@@ -697,13 +844,51 @@ class Run:
             return
         self.end("polish", "ok", self._apply_hunk_step("polish", "polish", "report.md", "report.md", "polish", self.G["polish_max_ratio"], {}))
 
+    def step_recheck(self):
+        """다듬기로 바뀐 인용 문장만 최대 한 호출로 재검사한다. 기본 OFF."""
+        if self.tier != "full" or not self.cfg["verification"]["recheck_changed"]:
+            return
+        if not self.begin("recheck"):
+            return
+        report = (self.dir / "report.md").read_text(encoding="utf-8")
+        original = json.loads((self.dir / "citecheck.json").read_text(encoding="utf-8"))
+        current = select_samples(report, 1_000_000, self.L["judgment"])
+        key = lambda c: (c["sentence"], frozenset(c["cites"]))
+        keys = {key(c) for c in current["samples"]}
+        reusable = original.get("source_hashes") == self.source_hashes() and original.get("verification_context") == self.verification_context()
+        previous = original.get("checks", []) if reusable else []
+        retained = [c for c in previous if key(c) in keys]
+        old = {key(c) for c in retained}
+        changed = [c for c in current["samples"] if key(c) not in old]
+        selected = sorted(changed, key=lambda c: (not bool(re.search(r'[0-9"“]', c["sentence"])), c["line"]))[:self.T["cite_sample"]]
+        meta = {"samples": selected, "selected_count": len(selected), "scope": "changed_or_unchecked_only"}
+        checks = []
+        if selected:
+            inputs = {"samples.json": json.dumps(selected, ensure_ascii=False)}
+            for sid in {sid for c in selected for sid in c["cites"]} & self.known:
+                inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], "\n".join(c["sentence"] for c in selected if sid in c["cites"])))
+            response = self.call("citecheck_changed", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
+            checks = enrich_checks(response["checks"], meta)
+        merged = retained + checks
+        lines = {key(c): c["line"] for c in current["samples"]}
+        merged = [{**c, "line": lines[key(c)]} for c in merged]
+        metadata = {**current, "selected_count": len(retained) + len(selected), "checked_count": len(merged),
+                    "unmatched_count": meta.get("unmatched_count", 0), "samples": retained + selected,
+                    "line_reference": "citecheck_final_report.md", "scope": "sample_and_bounded_recheck"}
+        atomic_write(self.dir / "citecheck_final_report.md", report)
+        atomic_write(self.dir / "citecheck_final.json", json.dumps({"checks": merged, "sampling": metadata,
+                     "report_sha256": hashlib.sha256(report.encode("utf-8")).hexdigest(), "source_hashes": self.source_hashes(),
+                     "verification_context": self.verification_context(), "unchecked_count": len(current["samples"]) - len(merged)}, ensure_ascii=False, indent=2))
+        self.end("recheck", "ok", f"기존 판정 재사용 {len(retained)}, 추가 판정 {len(checks)}")
+
     def step_final(self) -> Path:
         out = self.dir / "final_report.md"
         if not self.begin("final"):
             return out
         report = (self.dir / "report.md").read_text(encoding="utf-8")
         problems = report_lint(report, self.prompt, self.known, self.lang)
-        citecheck = json.loads((self.dir / "citecheck.json").read_text(encoding="utf-8"))
+        final_check = (self.dir / "citecheck_final.json").exists()
+        citecheck = json.loads((self.dir / ("citecheck_final.json" if final_check else "citecheck.json")).read_text(encoding="utf-8"))
         checks = citecheck.get("checks", [])
         sampling = citecheck.get("sampling")
         bad = [c for c in checks if not c["supported"]]
@@ -711,11 +896,40 @@ class Run:
         findings = json.loads((self.dir / "findings.json").read_text(encoding="utf-8"))["findings"]
         cost = estimate_cost(self.m.data["usage"], self.cfg["budget"])
         resolution_path = self.dir / "patcher_resolution.json"
-        resolved = json.loads(resolution_path.read_text(encoding="utf-8")).get("applied_finding_ids", []) if resolution_path.exists() else []
-        snapshot_path = self.dir / "citecheck_report.md"
+        resolved = []  # 부분 수정 적용만으로 의미적 지적을 해결 처리하지 않는다.
+        snapshot_path = self.dir / ("citecheck_final_report.md" if final_check else "citecheck_report.md")
         quality = verify_report(report, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, checks, sampling,
                                 snapshot_path.read_text(encoding="utf-8") if snapshot_path.exists() else None,
                                 findings, [f["id"] for f in findings if f["id"] not in resolved])
+        evidence_sources = self.evidence_sources()
+        record = None
+        compatible_check = (snapshot_path.exists() and citecheck.get("source_hashes") == self.source_hashes()
+                            and citecheck.get("verification_context") == self.verification_context()
+                            and citecheck.get("report_sha256") == hashlib.sha256(snapshot_path.read_bytes()).hexdigest())
+        if not compatible_check:
+            quality["issues"].append({"kind": "stale_citation_context", "severity": "high", "line": None,
+                                      "message": "인용 판정의 출처·프롬프트·설정 또는 스냅샷이 현재 검증 맥락과 다릅니다."})
+            quality["status"] = "review_required"
+        if compatible_check:
+            record = {"report": snapshot_path.read_text(encoding="utf-8"), "report_sha256": citecheck.get("report_sha256"), "checks": checks}
+        evidence = build_evidence_ledger(report, evidence_sources, citation_record=record)
+        evidence_errors = validate_evidence_ledger(evidence, evidence_sources, report)
+        atomic_write(self.dir / "evidence_ledger.json", json.dumps(evidence, ensure_ascii=False, indent=2))
+        self.m.artifact("evidence_ledger", self.dir / "evidence_ledger.json")
+        candidates = [c for c in evidence["claims"] if c["classification"] != "judgment"]
+        missing = [c for c in candidates if c["traceability_status"] != "traceable"]
+        quality["scope"]["claim_inventory"] = {"candidates": len(candidates), "without_complete_links": len(missing),
+                                                "unchecked": sum(c["verification"]["status"] == "unchecked" for c in candidates),
+                                                "semantic_extraction_complete": False}
+        if evidence_errors:
+            quality["issues"].append({"kind": "evidence_integrity", "severity": "high", "line": None, "message": "근거 원장의 해시·위치 검증 실패"})
+            quality["status"] = "review_required"
+        if self.cfg["verification"]["require_traceability"] and missing:
+            quality["issues"].append({"kind": "missing_evidence_links", "severity": "medium", "line": None, "message": f"근거 연결이 부족한 검토 후보 {len(missing)}개"})
+            quality["status"] = "review_required"
+        if citecheck.get("unchecked_count", 0):
+            quality["issues"].append({"kind": "unchecked_final_claims", "severity": "medium", "line": None, "message": "추가 검사 상한으로 판정하지 못한 인용 문장이 남아 있습니다."})
+            quality["status"] = "review_required"
         if problems:
             quality["issues"] += [{"kind": "report_lint", "severity": "high", "line": None, "message": p} for p in problems]
             quality["status"] = "review_required"
@@ -748,6 +962,14 @@ class Run:
             quality_summary += "\n" + ("남은 근거 부족: " if self.lang == "ko" else "Remaining evidence gaps: ") + "; ".join(quality["remaining_gaps"]) + "\n"
         final = "\n".join(header) + report + "\n" + quality_summary + "\n" + citation_summary + "\n".join(prov) + "\n"
         atomic_write(out, final)
+        summary = usage_summary(self.m.data["usage"])
+        summary["quality_status"] = quality["status"]
+        summary["qualified_report"] = quality["status"] == "passed"
+        summary["qualification_scope"] = "automatic_checks_only_not_factual_accuracy"
+        atomic_write(self.dir / "usage_summary.json", json.dumps(summary, ensure_ascii=False, indent=2))
+        atomic_write(self.dir / "review.md", render_brief(report, quality, summary, self.lang))
+        self.m.artifact("review", self.dir / "review.md")
+        self.m.artifact("usage_summary", self.dir / "usage_summary.json")
         self.m.artifact("final_report", out)
         self.end("final", "warn" if quality["status"] != "passed" else "ok", quality["status"])
         return out
@@ -755,7 +977,8 @@ class Run:
 
 def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = None, run_id: str | None = None,
         no_search: bool = False, scholar: bool = False, quiet: bool = False, budget: int | None = None,
-        lang: str | None = None, preset: str | None = None) -> Path:
+        lang: str | None = None, preset: str | None = None, max_calls: int | None = None,
+        replay_file: str | None = None, case_id: str | None = None) -> Path:
     if tier not in STEPS:
         raise Blocked(f"모르는 tier: {tier}")
     if budget is not None and budget <= 0:
@@ -766,10 +989,27 @@ def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = No
     except ValueError as error:
         raise Blocked(str(error)) from error
     with _run_lock(run_dir):
-        r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset)
+        r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset, max_calls)
+        atomic_write(r.dir / "execution_plan.json", json.dumps(plan_run(r.cfg, r.tier, no_search or r.m.data.get("no_search", False)), ensure_ascii=False, indent=2))
         r.log(f"run {r.run_id} · {r.tier} · {r.lang} · {r.preset} · 예산 {r.cfg['budget']['max_input_tokens']:,} · {r.prompt[:60]}")
-        r.step_search(urls_file, no_search, scholar)
-        r.step_fetch()
+        replay_case = None
+        if replay_file:
+            from .replay import load_case
+            try:
+                replay_case = load_case(Path(replay_file), case_id)
+            except (ValueError, OSError) as error:
+                raise Blocked(str(error)) from error
+        elif (r.dir / "frozen_input.json").exists():
+            replay_case = json.loads((r.dir / "frozen_input.json").read_text(encoding="utf-8"))
+        if replay_case:
+            if urls_file or scholar:
+                raise Blocked("고정 입력 재생에 URL·학술 검색을 섞을 수 없습니다")
+            r.step_replay(replay_case)
+            no_search = True
+            atomic_write(r.dir / "execution_plan.json", json.dumps(plan_run(r.cfg, r.tier, True, replay=True), ensure_ascii=False, indent=2))
+        else:
+            r.step_search(urls_file, no_search, scholar)
+            r.step_fetch()
         r.load_sources()
         r.step_analyst()
         r.step_gap_fetch(no_search)
@@ -780,6 +1020,7 @@ def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = No
         r.step_patch()
         r.step_citecheck()
         r.step_polish()
+        r.step_recheck()
         out = r.step_final()
         r.log("완료 → " + str(out))
         r.log(out.read_text(encoding="utf-8").splitlines()[1].strip("<!- >"))

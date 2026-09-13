@@ -180,13 +180,17 @@ def main() -> int:
     r = sub.add_parser("run"); r.add_argument("prompt"); r.add_argument("--tier", default="light", choices=["light", "full"])
     r.add_argument("--urls"); r.add_argument("--no-search", action="store_true"); r.add_argument("--scholar", action="store_true"); r.add_argument("--run-id")
     r.add_argument("--budget", type=_positive_int, help="누적 입력 토큰 상한. 넘으면 다음 단계 전에 멈춤"); r.add_argument("--quiet", action="store_true")
+    r.add_argument("--replay", help="정답이 분리된 고정 입력 JSON 파일")
+    r.add_argument("--case", dest="case_id", help="고정 입력의 case ID")
+    r.add_argument("--plan-json", action="store_true", help="호출하지 않고 실행 계획을 JSON으로 출력")
     r.add_argument("--dry-run", action="store_true", help="실행하지 않고 단계·예상 호출 수·예상 비용만 출력")
     r.add_argument("--lang", choices=["ko", "en"], help="프롬프트·보고서 언어 (기본 config lang=ko)")
-    r.add_argument("--preset", choices=["standard", "lean"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
+    r.add_argument("--preset", choices=["standard", "lean", "economy"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
     u = sub.add_parser("usage"); u.add_argument("--days", type=int, default=30); u.add_argument("--json", action="store_true")
     u.add_argument("--backfill", action="store_true", help="장부 이전 실행들의 manifest 를 장부에 채움")
     s = sub.add_parser("resume"); s.add_argument("run_id"); s.add_argument("--budget", type=_positive_int); s.add_argument("--quiet", action="store_true")
     for parser in (r, s):
+        parser.add_argument("--max-calls", type=_positive_int, help="실패·재시도를 포함한 실행 전체 모델 호출 상한")
         parser.add_argument("--at", help="이 시각까지 기다렸다가 시작. 'HH:MM'(오늘/내일) 또는 'YYYY-MM-DD HH:MM'. 사용량 리셋 뒤 자동 재개용")
     ins = sub.add_parser("install-skill"); ins.add_argument("--yes", action="store_true", help="~/.codex/skills 에 실제로 복사")
     q = sub.add_parser("search"); q.add_argument("query"); q.add_argument("--limit", type=int, default=10)
@@ -194,6 +198,8 @@ def main() -> int:
     for name in ("sync", "doctor", "mcp", "mcp-config", "skill"):
         sub.add_parser(name)
     a = p.parse_args()
+    if a.cmd == "run" and bool(a.replay) != bool(a.case_id):
+        p.error("--replay와 --case는 함께 지정해야 합니다")
     validated_run_dir = None
     try:
         if a.cmd == "run":
@@ -247,7 +253,7 @@ def main() -> int:
         src = _skill_source()
         print(f'# Codex 스킬 설치 (사용자가 직접):\nmkdir -p ~/.codex/skills/hyperresearch-codex && cp "{src}" ~/.codex/skills/hyperresearch-codex/SKILL.md')
         return 0
-    if a.cmd in ("run", "resume") and getattr(a, "at", None):
+    if a.cmd in ("run", "resume") and getattr(a, "at", None) and not (getattr(a, "dry_run", False) or getattr(a, "plan_json", False)):
         import time as _t
         from datetime import datetime, timedelta
         now = datetime.now()
@@ -261,31 +267,34 @@ def main() -> int:
         print(f"{target:%Y-%m-%d %H:%M} 까지 {wait/60:.0f}분 대기 후 시작 (Ctrl+C 로 취소)", file=sys.stderr, flush=True)
         while wait > 0:
             _t.sleep(min(wait, 60)); wait -= 60
-    if a.cmd == "run" and a.dry_run:
+    if a.cmd == "run" and (a.dry_run or a.plan_json):
         from hprc.config import load
-        cfg = load(ROOT, preset=a.preset, lang=a.lang); T = cfg[a.tier]
-        if a.tier == "light":
-            calls = 1 + 1 + 1 + len(T["critics"]) + 1 + 1                       # 정찰·분석·초안·비평·수정·인용검사
+        from hprc.token_policy import plan_run
+        cfg = load(ROOT, preset=a.preset, lang=a.lang)
+        if a.budget:
+            cfg["budget"]["max_input_tokens"] = a.budget
+        if a.max_calls:
+            cfg["budget"]["max_model_calls"] = a.max_calls
+        plan = plan_run(cfg, a.tier, a.no_search, replay=bool(a.replay))
+        if a.plan_json:
+            print(json.dumps(plan, ensure_ascii=False, indent=2))
         else:
-            calls = 1 + 1 + 1 + T["loci_max"] + T["drafts"] + 1 + len(T["critics"]) + 1 + 1 + 1  # + 지점·조사·종합·다듬기
-        if a.no_search: calls -= 1
-        est_in = {"light": 600_000, "full": 2_600_000}[a.tier]  # v0.3 실측 기준 대략값(정찰 포함)
-        if cfg["preset"] == "lean":
-            est_in = int(est_in * 0.6)
-        print(f"tier {a.tier}: 단계 {pipeline.STEPS[a.tier]}\n예상 모델 호출 {calls}회, 출처 최대 {T['max_sources']}개\n"
-              f"예상 입력 토큰(대략) {est_in:,} → 요금 상한 ≈${est_in/1e6*cfg['budget']['price_input_per_m']:.0f} (캐시 할인 미반영, 구독이면 사용량 한도 기준)\n"
-              f"모델 {cfg['default_model']} · 언어 {cfg['lang']} · 프리셋 {cfg['preset']} · 예산 상한 {a.budget or cfg['budget']['max_input_tokens'] or cfg['budget']['default_by_tier'][a.tier]:,}")
+            print(f"프리셋 {plan['preset']} · 예상 단계 호출 최대 {plan['planned_calls_max']} · 재시도 포함 호출 상한 {plan['attempts_max']}\n"
+                  f"과거 참고 입력 범위 {plan['input_estimate_range'][0]:,}–{plan['input_estimate_range'][1]:,} (현재 모델의 보장값 아님)\n"
+                  f"입력 중단 기준 {plan['input_stop_threshold']:,} · 예약 검사 {plan['reservation_enabled']} · 미측정 중단 {plan['stop_on_unknown']}\n"
+                  f"진행 중 호출은 예상치를 초과할 수 있으며 구독 잔량을 나타내지 않습니다.\n"
+                  + "\n".join(f"{role}: {value['model']} / {value['effort']}" for role, value in plan['models'].items()))
         return 0
     try:
         if a.cmd == "run":
             out = pipeline.run(ROOT, a.prompt, a.tier, urls_file=a.urls, run_id=a.run_id, no_search=a.no_search, scholar=a.scholar,
-                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset)
+                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset, max_calls=a.max_calls, replay_file=a.replay, case_id=a.case_id)
         else:
             mpath = validated_run_dir / "manifest.json"
             if not mpath.exists():
                 print(f"BLOCKED: 실행 기록 없음: {a.run_id} (`hpr status` 로 목록 확인)", file=sys.stderr); return 2
             m = json.loads(mpath.read_text(encoding="utf-8"))
-            out = pipeline.run(ROOT, m["prompt"], m.get("tier", "light"), run_id=a.run_id, quiet=a.quiet, budget=a.budget)
+            out = pipeline.run(ROOT, m["prompt"], m.get("tier", "light"), run_id=a.run_id, quiet=a.quiet, budget=a.budget, max_calls=a.max_calls)
     except pipeline.Blocked as error:
         print("BLOCKED:", error, file=sys.stderr); return 2
     print("최종 보고서:", out)

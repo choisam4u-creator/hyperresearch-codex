@@ -13,6 +13,16 @@ DEFAULTS = {
                  "full": {"max_sources": 12, "loci_max": 2, "drafts": 2, "critics": ["dialectic", "depth", "instruction"], "cite_sample": 6, "target_words": 1600},
                  "models": {"synth": {"effort": "medium"}, "critic": {"effort": "low"}, "writer": {"effort": "medium"}},
                  "note_max_chars": 8000, "draft_note_chars": 5000, "excerpt_chars": 1800, "scout_max_searches": 4},
+        "economy": {"light": {"max_sources": 8, "critics": ["dialectic", "instruction"], "cite_sample": 5, "target_words": 700},
+                    "full": {"max_sources": 12, "loci_max": 2, "drafts": 2, "critics": ["dialectic", "depth", "instruction"], "cite_sample": 6, "target_words": 1600},
+                    "models": {"scout": {"model": "gpt-5.6-luna"}, "analyst": {"model": "gpt-5.6-terra"},
+                               "loci": {"model": "gpt-5.6-sol"}, "investigator": {"model": "gpt-5.6-sol"},
+                               "writer": {"model": "gpt-5.6-sol"}, "synth": {"model": "gpt-5.6-sol", "effort": "medium"},
+                               "critic": {"model": "gpt-5.6-terra"}, "patcher": {"model": "gpt-5.6-terra"},
+                               "citecheck": {"model": "gpt-6-astra"}, "polish": {"model": "gpt-5.6-luna"}},
+                    "routing": {"enabled": True},
+                    "budget": {"reserve_input": True, "stop_on_unknown": True, "max_retries": 0, "max_model_calls": 24},
+                    "note_max_chars": 8000, "draft_note_chars": 5000, "excerpt_chars": 1800, "scout_max_searches": 4},
         "standard": {}},
     # 역할별 모델과 추론 강도. model 이 None 이면 default_model.
     "models": {
@@ -33,6 +43,8 @@ DEFAULTS = {
         "query_variants": True,
         "searxng_endpoint": None,                     # 기본 비활성. DuckDuckGo 무결과일 때만 명시 endpoint를 보조로 쓴다
     },
+    "routing": {"enabled": False, "escalation_model": "gpt-6-astra", "escalation_effort": "high", "max_escalations": 1},
+    "verification": {"recheck_changed": False, "require_traceability": False},
     "reuse": {"enabled": False, "max_age_days": 30, "limit": 3},
     "gap_fetch": {"enabled": False, "max_gaps": 2, "max_sources": 3},
     "light": {"search_results": 12, "max_sources": 10, "critics": ["dialectic", "depth", "instruction"],
@@ -49,7 +61,7 @@ DEFAULTS = {
     "excerpt_chars": 2500,        # 비평·수정에 넣는 출처 발췌 상한
     "cite_note_chars": 6000,      # 인용 검사에 넣는 인용된 노트 상한
     "scout_max_searches": 6,      # 정찰 웹 검색 횟수 상한(프롬프트로 지시)
-    "budget": {"max_input_tokens": None,            # 명시하면 tier 기본값보다 우선
+    "budget": {"max_model_calls": 64, "max_retries": 1, "reserve_input": False, "stop_on_unknown": False, "max_input_tokens": None,            # 명시하면 tier 기본값보다 우선
                "default_by_tier": {"light": 1_200_000, "full": 3_500_000},   # 실행별 기본 상한(넘으면 멈춤, resume 가능)
                "price_input_per_m": 10.0, "price_output_per_m": 50.0, "price_cached_per_m": None},
     "domain_skew_warn": 0.6,      # 한 도메인이 출처의 60% 넘으면 경고
@@ -77,6 +89,12 @@ def load(root: Path, preset: str | None = None, lang: str | None = None) -> dict
         _merge(cfg, json.loads(path.read_text(encoding="utf-8")))
     cfg["preset"] = preset or cfg["preset"]
     _merge(cfg, cfg["presets"].get(cfg["preset"], {}))
+    # economy도 사용자가 명시한 역할/예산 정책을 덮어쓰지 않는다.
+    if path.is_file():
+        user = json.loads(path.read_text(encoding="utf-8"))
+        for key in ("models", "budget", "verification", "routing"):
+            if key in user:
+                _merge(cfg, {key: user[key]})
     cfg["lang"] = lang or cfg["lang"]
     for role in cfg["models"].values():
         role["model"] = role.get("model") or cfg["default_model"]

@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Phase 8–13 로컬 기반: 정답 분리 고정 입력 replay·엄격한 구성 비교·품질 통과 보고서당 전체 토큰 평가, 문장/출처/발췌 해시 원장, 날짜·단위·표 문맥 보존, 선택적 변경 인용 재검사, vault 우선 gap 순위, 호출 예약·총 시도 상한·실험 economy 역할 배정, 호출 없는 review.md를 추가했다. [완료 범위와 남은 작업](docs/TOKEN-FIRST-PHASES.md)을 구분하며 실제 품질·절감률과 원본 우위는 미측정이다.
+- 재개 호출의 코드·프롬프트 변경을 차단하고 유효 예산 설정 및 호출별 구성 해시를 남긴다. 오래된 인용 판정은 최종 통과 근거로 인정하지 않는다.
 - Phase 2–7 최종 로컬 회귀 166개와 격리 wheel mock 실행·재개를 통과했다. Astra 검수 지적을 수정하고 관련 회귀를 추가했다.
 - Phase 2–7 구현 범위를 문서화했다: 안전한 source wrapping과 정확한 private-host allowlist, `quality.json`과 검토 필요 시 CLI exit 3, 기본 OFF인 Full gap 보충(최대 2 gaps/3 sources)과 immutable vault reuse, 오프라인 evaluator, wheel package resource 기반 `install-skill`을 포함한다. 실제 모델 benchmark·외부 설치 피드백·릴리스는 아직 보류다.
 - Windows 3.12 CI와 wheel smoke 단계를 추가했다. 구현 커밋 `346a82d`의 [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13과 Windows 3.12가 모두 통과했다. Windows는 POSIX fixture 4개를 제외한 회귀·설치·mock 실행/재개·wheel 범위이며 실제 Codex 리서치는 미검증이다.
