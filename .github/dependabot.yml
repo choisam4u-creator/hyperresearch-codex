@@ -1,0 +1,12 @@
+# 의존성(httpx·pypdf)과 GitHub Actions 버전 업데이트를 매주 PR 로 제안받는다. 보안 알림은 저장소 설정(Security)에서 따로 켠다.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
