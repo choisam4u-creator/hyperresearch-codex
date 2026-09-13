@@ -905,7 +905,7 @@ class Run:
         record = None
         compatible_check = (snapshot_path.exists() and citecheck.get("source_hashes") == self.source_hashes()
                             and citecheck.get("verification_context") == self.verification_context()
-                            and citecheck.get("report_sha256") == hashlib.sha256(snapshot_path.read_bytes()).hexdigest())
+                            and citecheck.get("report_sha256") == hashlib.sha256(snapshot_path.read_text(encoding="utf-8").encode("utf-8")).hexdigest())
         if not compatible_check:
             quality["issues"].append({"kind": "stale_citation_context", "severity": "high", "line": None,
                                       "message": "인용 판정의 출처·프롬프트·설정 또는 스냅샷이 현재 검증 맥락과 다릅니다."})

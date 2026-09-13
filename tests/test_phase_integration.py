@@ -148,3 +148,14 @@ class PhaseIntegrationTests(unittest.TestCase):
         quality = json.loads((self.run.dir / 'quality.json').read_text())
         self.assertEqual('review_required', quality['status'])
         self.assertIn('stale_citation_context', [i['kind'] for i in quality['issues']])
+
+    def test_snapshot_line_endings_preserve_citation_identity(self):
+        self.initial_check('The documented behavior is supported. [S1]\n')
+        snapshot = self.run.dir / 'citecheck_report.md'
+        snapshot.write_bytes(snapshot.read_text().replace('\n', '\r\n').encode())
+        (self.run.dir / 'findings.json').write_text('{"findings": []}')
+        (self.run.dir / 'sources.json').write_text('{"warnings": []}')
+        with mock.patch.object(pipeline, 'report_lint', return_value=[]):
+            self.run.step_final()
+        quality = json.loads((self.run.dir / 'quality.json').read_text())
+        self.assertNotIn('stale_citation_context', [i['kind'] for i in quality['issues']])
