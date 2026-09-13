@@ -2,7 +2,13 @@
 
 ## Unreleased
 - `doctor`에 검증된 Codex CLI 버전과의 불일치 경고, 버전·로그인 조회의 3초 제한, 실행 오류 진단을 추가했다. 버전 차이는 경고이며 조회 실패·로그인 미확인은 종료코드 1로 표시한다.
-- 진단 회귀 테스트 12개 추가: 전체 mock 40개 통과. 실제 리서치 모델 호환성 검증은 포함하지 않는다.
+- 실패·재시도의 측정 가능한 사용량을 보존하고 미측정 호출을 비용 추정에서 구분한다. 시도별 로그를 덮어쓰지 않으며 구형 장부 backfill의 중복 방지를 검증한다.
+- 양수 예산 입력과 호출·재시도 직전 검사를 추가했다. 진행 중·병렬 호출의 초과 가능성은 남는다. 동일 실행 잠금과 비평별 체크포인트로 중복 실행·완료된 비평 재호출을 줄인다. Windows 실행은 잠금 미지원으로 차단한다.
+- HTML 본문 추출·인코딩·부분 다운로드·수집 오류 처리를 보완하고 게시일과 수정일 근거를 분리했다.
+- 문서 전체의 표·목록까지 인용 표본을 분산하고, 다듬기 전 스냅샷 기준으로 미지지·미반환·표본 밖 범위를 표시한다. 다국어 합성 회귀 자료를 추가했다.
+- 검색 오류 종류를 보존하고 명시적 SearXNG 주소가 있는 경우에만 빈 후보의 보조 검색을 제공한다. 기본 OFF이며 `--no-search`는 학술 검색도 막는다.
+- CI에서 전체 테스트를 탐색하고 wheel 프롬프트 포함·비공개 폴더 제외·격리 설치를 검사하도록 준비했다. 실제 리서치 모델 호환성은 mock 검증에 포함하지 않는다.
+- 최종 로컬 회귀 96개 통과. macOS 임시 환경에서 최종 wheel 설치·저장소 밖 mock Light 완주·추가 호출 없는 재개를 확인했다. 원격 CI·Windows 결과와 구분한다.
 
 ## 0.3.1 - 2026-09-13
 - Cite-check reads each cited note selected by the sentences that cite *that* source, not by all sample sentences at once (a Korean-vs-English mismatch left a 93-char note and produced false "unsupported" verdicts in the variance run). Verified with one more real run of the same question: unsupported 4/5 → 1/5, the English Google notes now reach the checker at 4–6k chars.

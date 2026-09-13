@@ -29,10 +29,10 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 
 ## 필요한 것
 
-- Codex CLI 로그인 상태(`codex login`). Codex CLI 0.153.4 와 `gpt-6-astra` 로 실측. 다른 버전은 프롬프트 손질이 필요할 수 있다.
-- `hpr doctor`에서는 `codex --version`와 `codex login status`를 timeout 제한으로 검사해 `0.153.4`와 버전 불일치 시 경고를 띄우고, 버전/로그인 진단 실패는 실패 사유를 명확히 표시합니다.
+- Codex CLI 로그인 상태(`codex login`). 비용·실측은 Codex CLI 0.153.4와 `gpt-6-astra`로 수행했다. 다른 버전은 프롬프트 손질이 필요할 수 있다.
+- `hpr doctor`는 `codex --version`과 `codex login status`를 timeout 제한으로 검사한다. 실측 기준 0.153.4와 다르면 비차단 경고를 띄우고, 버전·로그인 조회 실패는 실패 사유를 명확히 표시한다.
 - Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
-- macOS 에서 실측. Linux 는 CI 로만, Windows 는 미확인.
+- macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows는 미검증이다.
 
 ## 사용
 
@@ -50,6 +50,8 @@ python3 hpr.py search "키워드"                        # 창고 검색
 python3 hpr.py mcp-config                            # Codex 에 창고 MCP 서버 등록용 TOML 출력(등록은 사용자)
 python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스킬 복사
 ```
+
+`hpr install-skill` 보조 기능은 현재 소스 체크아웃의 `skill/` 폴더를 찾으므로 체크아웃에서 사용한다. wheel smoke 검사는 패키지된 `hprc` 실행부만 확인하며 이 보조 기능이 wheel에 포함됐다고 보장하지 않는다.
 
 결과: `research/runs/<run_id>/final_report.md`. 첫 주석 줄에 출처 수(독립 묶음)·지적 수·인용 미지지 수·린트·호출 수·토큰이 있고, 끝에 "출처 상세(자동 생성)" 표(제목·도메인·게시일·조회일·독립 묶음·경로·1차 여부)가 붙는다.
 
@@ -87,10 +89,15 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 - `--lang ko|en`: 프롬프트 세트(`hprc/prompts/<lang>/`)와 보고서 언어·절 이름·"(판단)"/"(judgment)" 표시·린트가 함께 바뀐다. 실행마다 고정되고 resume 때 유지.
 - `--preset lean`: 구독 계정용. 비평 2종·초안 2개(Full)·출처 수와 노트 상한 축소·일부 추론 강도 하향. 기본은 standard.
-- 실행별 기본 입력 토큰 상한: light 120만, full 350만. 넘으면 **다음 단계 전에** 멈추고 `hpr resume <id> --budget <더 큰 값>`으로 이어 간다.
-- 모든 모델 호출은 `research/usage-ledger.jsonl`에 기록된다. `hpr usage [--days N] [--json] [--backfill]`로 날짜별·실행별 합계를 본다. 구독 사용량 창을 관리하는 기준이다.
+- 실행별 기본 입력 토큰 기준: light 120만, full 350만. 각 단계·호출·재시도 직전에 검사하고 `hpr resume <id> --budget <더 큰 값>`으로 이어 간다. `--budget N`은 양수여야 한다. 진행 중인 호출·병렬 호출로 초과할 수 있고 미측정 사용량도 있어 정확한 비용 상한을 보장하지 않는다.
+- 모델 호출 시도는 실패 시 측정된 사용량까지 `research/usage-ledger.jsonl`에 기록된다. 측정되지 않은 호출은 별도로 표시하며 이 경우 비용 추정은 불완전하다. `hpr usage [--days N] [--json] [--backfill]`은 로컬 기록의 합계이며 계정의 남은 구독 사용량은 아니다.
+- 같은 실행 ID의 중복 실행은 잠금으로 차단하고 중단 전에 완료된 비평 결과는 재사용한다. 실행에는 POSIX 파일 잠금이 필요하다. Windows는 help/doctor만 열 수 있고 run/resume은 차단하며, 지원 검증은 아직 하지 않았다.
 
 ## 토큰 다이어트 (v0.3)
+
+인용 검사는 문서 앞·중간·끝에 분산된 표본을 고르며 목록·표도 포함한다. `final_report.md`에 미지지 문장과 판정이 돌아오지 않은 표본을 표시하며, 표본 밖의 사실성을 보장하지 않는다. 행 번호는 다듬기 전 저장한 `citecheck_report.md` 기준이다. 실행이 완료돼도 품질 경고가 남을 수 있다.
+
+보조 검색은 기본 OFF다. 사용하려는 SearXNG 서버를 선택한 뒤 `research/config.json`의 `search.searxng_endpoint`에 주소를 설정하면 DuckDuckGo와 앞선 경로에 유효 후보가 없을 때만 사용한다. 서버는 자동 지정하지 않는다. 실패 종류는 `candidates.json`에 남긴다. `--no-search`는 `--scholar` 검색도 막지만, 제공한 URL의 본문 수집에는 네트워크가 필요하다.
 
 | 단계 | 받는 입력 |
 |---|---|
@@ -131,7 +138,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 | 검사 | 결과 |
 |---|---|
-| mock 백엔드 + 로컬 HTTP 고정 페이지: Light 8단계, Full 11단계(깊이·초안 3·종합·폭 비평·다듬기), resume 무호출, 게시일 우선순위, 독립성 묶기, 우선순위·중복 제거, 토큰 파싱·명령 조립, MCP 핸드셰이크·경로 거부 | `tests/test_pipeline_mock.py` 28개 통과(실패 경로 7개 포함: 네트워크 차단·잘못된 URL·사용량 한도·로그인 만료·codex 없음·시간 초과) |
+| mock 백엔드 + 로컬 HTTP 고정 페이지: Light 8단계, Full 11단계(깊이·초안 3·종합·폭 비평·다듬기), resume 무호출, 게시일 우선순위, 독립성 묶기, 우선순위·중복 제거, 토큰 파싱·명령 조립, MCP 핸드셰이크·경로 거부 | `tests/`의 unittest discover 전체 통과 여부로 검증한다(실패 경로 포함: 네트워크 차단·잘못된 URL·사용량 한도·로그인 만료·codex 없음·시간 초과). 테스트 수는 고정하지 않으며 실행 결과를 기준으로 한다. |
 | 실제 `codex exec` 최소 호출(읽기전용·스키마) | PASS 12.4s |
 | 실제 `codex exec --json --ignore-user-config` 토큰 비교 | 18,781 vs 119,520 |
 | 실제 `codex --search exec` 정찰 | 공식 문서 3건(developers.openai.com/codex/noninteractive 등) |
@@ -142,7 +149,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 ## 개선 예정
 
-`ROADMAP.md` 참고. 남은 것: 0.3.1 인용 검사 수정의 실제 실행 확인, Windows 확인, PyPI 배포.
+`ROADMAP.md` 참고. 남은 것: Windows 확인, PyPI 배포.
 
 ## 한계
 
@@ -164,7 +171,8 @@ hprc/fetch.py           httpx·html.parser·게시일·정본 URL (+pypdf 선택
 hprc/cluster.py         출처 독립성(정본 URL·8단어 조각 Jaccard)
 hprc/vault.py           노트·FTS5
 hprc/mcp_server.py      창고 MCP(stdio)
-hprc/prompts/*.md       14개 프롬프트 (모델을 바꾸면 여기만 손본다)
+hprc/prompts/ko/*.md    한국어 프롬프트 14개
+hprc/prompts/en/*.md    영어 프롬프트 14개 (모델을 바꾸면 해당 세트만 손본다)
 hprc/schemas.py         단계별 JSON 스키마
 hprc/mock.py            테스트용 가짜 모델
 skill/hyperresearch-codex/SKILL.md   Codex 스킬 후보

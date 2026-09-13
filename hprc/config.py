@@ -31,6 +31,7 @@ DEFAULTS = {
         "providers": ["codex_scout", "duckduckgo"],   # 순서대로. codex_scout 는 codex --search 로 공식 문서를 먼저 찾는다
         "preferred_domains": [],                      # 예: ["developers.openai.com", "github.com/openai"]
         "query_variants": True,
+        "searxng_endpoint": None,                     # 기본 비활성. DuckDuckGo 무결과일 때만 명시 endpoint를 보조로 쓴다
     },
     "light": {"search_results": 12, "max_sources": 10, "critics": ["dialectic", "depth", "instruction"],
               "cite_sample": 6, "target_words": 900, "parallel": 2},

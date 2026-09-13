@@ -1,9 +1,10 @@
 """Codex 호출 없이(HPR_BACKEND=mock) 로컬 HTTP 고정 페이지로 Light/Full 파이프라인·게이트·부품을 검증한다."""
 import http.server
 import contextlib
-import io
 import json
 import os
+import io
+import time
 import shutil
 import subprocess
 import sys
@@ -15,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from hprc import cli, cluster, codex_runner, fetch, gates, pipeline, search, vault  # noqa: E402
+from hprc import cli, cluster, codex_runner, fetch, gates, ledger, pipeline, search, vault  # noqa: E402
 
 PAGE = """<html><head><title>{title}</title><meta property="article:published_time" content="{date}T09:00:00+09:00">
 <link rel="canonical" href="{canon}"><script type="application/ld+json">{{"@type":"Article","datePublished":"2020-01-01"}}</script></head>
@@ -370,97 +371,128 @@ class DoctorMockRunTests(unittest.TestCase):
         self.assertIn("로그인: codex login status 실행 오류", out.getvalue())
 
 
-class DoctorTests(unittest.TestCase):
-    def _mock_subprocess(self, responses):
-        calls = []
+class RunStepFailureTests(unittest.TestCase):
+    def _fake_codex_script(self, d: Path) -> Path:
+        script = d / "codex"
+        script.write_text("""#!/bin/sh
+mode=\"${FAKE_CODEX_MODE:-ok}\"
+out=\"\"
+prev=\"\"
+for a in \"$@\"; do
+  if [ \"$prev\" = \"-o\" ]; then
+    out=\"$a\"
+  fi
+  prev=\"$a\"
+done
+if [ \"$mode\" = \"fail\" ]; then
+  echo '{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":2,"output_tokens":3}}'
+  echo 'mock failure' >&2
+  exit 1
+fi
+echo '{"type":"turn.completed","usage":{"input_tokens":20,"cached_input_tokens":4,"output_tokens":6}}'
+printf '%s' '{"ok":true}' > \"$out\"
+exit 0
+""")
+        script.chmod(0o755)
+        return script
 
-        def _run(cmd, *args, **kwargs):
-            calls.append(cmd)
-            self.assertTrue(len(calls) <= len(responses), f"예상보다 많은 subprocess 호출: {cmd}")
-            out = responses[len(calls) - 1]
-            if "timeout" in out:
-                raise subprocess.TimeoutExpired(cmd, out["timeout"])
-            return subprocess.CompletedProcess(cmd, out.get("returncode", 0), out.get("stdout", ""), out.get("stderr", ""))
+    def test_run_step_preserves_usage_on_error_from_fake_cli(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self._fake_codex_script(root)
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex", "PATH": f"{root}:{os.environ.get('PATH', '')}", "FAKE_CODEX_MODE": "fail"}):
+                with self.assertRaises(codex_runner.CodexError) as ctx:
+                    codex_runner.run_step("step", "질문", {}, {"question.txt": "x"},
+                                          {"model": "gpt"}, {"timeout": 5}, root / "logs", attempt=2)
+            self.assertEqual(10, ctx.exception.usage["input_tokens"])
+            self.assertTrue(ctx.exception.usage_known)
 
-        return _run, calls
-
-    def _run_doctor(self, responses):
-        from hprc import cli
-        old_root = cli.ROOT
-        fake_run, calls = self._mock_subprocess(responses)
-        try:
-            cli.ROOT = Path(self.tmp) if hasattr(self, "tmp") else Path.cwd()
-            with (
-                mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"),
-                mock.patch("subprocess.run", side_effect=fake_run),
-                contextlib.redirect_stdout(buf := io.StringIO())
-            ):
-                result = cli.doctor()
-        finally:
-            cli.ROOT = old_root
-        return result, buf.getvalue(), calls
-
-    def test_doctor_reported_ok_when_tested_version_matches(self):
-        out, text, calls = self._run_doctor([
-            {"returncode": 0, "stdout": "codex 0.153.4\n"},
-            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
-        ])
-        self.assertEqual(0, out)
-        self.assertIn("테스트 기준 버전 0.153.4과 일치", text)
-        self.assertIn("로그인됨 - Logged in as user@example.com", text)
-        self.assertEqual(2, len(calls))
-
-    def test_doctor_warns_when_version_differs(self):
-        out, text, calls = self._run_doctor([
-            {"returncode": 0, "stdout": "codex 0.154.0-alpha.6.2\n"},
-            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
-        ])
-        self.assertEqual(0, out)
-        self.assertIn("경고: 테스트 기준 버전(0.153.4)과 다름", text)
-        self.assertEqual(2, len(calls))
-
-    def test_doctor_fails_when_version_output_empty(self):
-        out, text, calls = self._run_doctor([
-            {"returncode": 0, "stdout": ""},
-            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
-        ])
-        self.assertEqual(1, out)
-        self.assertIn("버전 문자열", text)
-        self.assertEqual(2, len(calls))
-
-    def test_doctor_fails_when_version_command_times_out(self):
-        out, text, calls = self._run_doctor([
-            {"timeout": 3},
-            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
-        ])
-        self.assertEqual(1, out)
-        self.assertIn("codex --version 호출 타임아웃", text)
-        self.assertEqual(2, len(calls))
-
-    def test_doctor_fails_when_version_command_fails(self):
-        out, text, calls = self._run_doctor([
-            {"returncode": 2, "stderr": "permission denied"},
-            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
-        ])
-        self.assertEqual(1, out)
-        self.assertIn("codex --version 종료코드", text)
-        self.assertEqual(2, len(calls))
-
-    def test_doctor_fails_when_login_not_confirmed(self):
-        out, text, calls = self._run_doctor([
-            {"returncode": 0, "stdout": "0.153.4"},
-            {"returncode": 0, "stdout": "You are not logged in. Run `codex login`"}
-        ])
-        self.assertEqual(1, out)
-        self.assertIn("로그인 필요", text)
-        self.assertEqual(2, len(calls))
+    def test_run_step_attempt_logs_are_preserved(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            log_dir = root / "logs"
+            self._fake_codex_script(root)
+            schema = {}
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex", "PATH": f"{root}:{os.environ.get('PATH', '')}", "FAKE_CODEX_MODE": "fail"}):
+                with self.assertRaises(codex_runner.CodexError):
+                    codex_runner.run_step("step", "질문", schema, {"question.txt": "x"},
+                                          {"model": "gpt"}, {"timeout": 5}, log_dir, attempt=1)
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex", "PATH": f"{root}:{os.environ.get('PATH', '')}", "FAKE_CODEX_MODE": "ok"}):
+                codex_runner.run_step("step", "질문", schema, {"question.txt": "x"},
+                                      {"model": "gpt"}, {"timeout": 5}, log_dir, attempt=2)
+            first = list(log_dir.glob("step.attempt-1.*.events.jsonl"))
+            second = list(log_dir.glob("step.attempt-2.*.events.jsonl"))
+            self.assertEqual(1, len(first))
+            self.assertEqual(1, len(second))
+            self.assertNotEqual(first[0], second[0])
 
 
+class PipelineAttemptTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp(prefix="hpr-pipeline-attempt"))
 
-if __name__ == "__main__":
-    unittest.main()
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_call_records_one_usage_row_per_attempt(self):
+        run = pipeline.Run(self.tmp, "질문", "light", "a1", quiet=True)
+
+        def fake_run_step(name, prompt, schema, inputs, role_cfg, codex_cfg, log_dir, mock=None, web_search=False, heartbeat=None, attempt=1):
+            if attempt == 1:
+                raise codex_runner.CodexError("실패", usage={"input_tokens": 100, "cached_input_tokens": 10, "output_tokens": 3}, usage_known=True)
+            return {"ok": True}, {"usage": {"input_tokens": 200, "cached_input_tokens": 20, "output_tokens": 4}, "backend": "codex", "seconds": 0.0, "usage_known": True}
+
+        with mock.patch("hprc.pipeline.run_step", fake_run_step):
+            out = run.call("writer", "질문", {"type": "object"}, {"question.txt": "x"}, "writer")
+
+        self.assertEqual({"ok": True}, out)
+        m = json.loads((run.dir / "manifest.json").read_text())
+        writer_rows = [u for u in m["usage"] if u["step"] == "writer"]
+        self.assertEqual([1, 2], [r["attempt"] for r in writer_rows])
+        self.assertEqual(["error", "ok"], [r["status"] for r in writer_rows])
+        rows = ledger.rows(self.tmp)
+        self.assertEqual(2, len([r for r in rows if r.get("run_id") == "a1" and r.get("step") == "writer"]))
 
 
+class LedgerTests(unittest.TestCase):
+    def test_backfill_idempotent_with_record_id_and_attempt_path(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            now = time.time()
+            run_dir = root / "research" / "runs" / "fb1"
+            run_dir.mkdir(parents=True)
+            manifest = {
+                "run_id": "fb1",
+                "prompt": "질문",
+                "tier": "light",
+                "lang": "ko",
+                "preset": "standard",
+                "created_at": 1,
+                "steps": [{"name": "analyst", "status": "ok", "started_at": 1, "finished_at": 2}],
+                "artifacts": {},
+                "usage": [
+                    {
+                        "step": "analyst",
+                        "at": now,
+                        "attempt": 1,
+                        "status": "ok",
+                        "backend": "codex",
+                        "usage": {"input_tokens": 10, "cached_input_tokens": 1, "output_tokens": 2},
+                        "usage_known": True,
+                        "record_id": f"fb1:analyst:1:{now}"
+                    }
+                ]
+            }
+            run_dir.joinpath("manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            first = ledger.backfill(root)
+            second = ledger.backfill(root)
+            self.assertEqual(1, first)
+            self.assertEqual(0, second)
+            rows = ledger.rows(root)
+            self.assertEqual(1, len(rows))
+            summary = ledger.summarize(root, days=30, include_mock=True)
+            self.assertEqual(0, summary["total"]["unknown_calls"])
+            self.assertEqual(1, summary["total"]["known_calls"])
 FAKE_CODEX = """#!/bin/sh
 # 테스트용 가짜 codex: FAKE_CODEX_MODE 파일의 한 단어로 동작을 고른다. -o 뒤 경로에 마지막 답을 쓴다.
 mode=$(cat "$FAKE_CODEX_MODE")
@@ -599,3 +631,93 @@ class FailurePathTests(Base):
             for k, v in saved.items():
                 if v is None: os.environ.pop(k, None)
                 else: os.environ[k] = v
+
+
+class DoctorTests(unittest.TestCase):
+    def _mock_subprocess(self, responses):
+        calls = []
+
+        def _run(cmd, *args, **kwargs):
+            calls.append(cmd)
+            self.assertTrue(len(calls) <= len(responses), f"예상보다 많은 subprocess 호출: {cmd}")
+            out = responses[len(calls) - 1]
+            if "timeout" in out:
+                raise subprocess.TimeoutExpired(cmd, out["timeout"])
+            return subprocess.CompletedProcess(cmd, out.get("returncode", 0), out.get("stdout", ""), out.get("stderr", ""))
+
+        return _run, calls
+
+    def _run_doctor(self, responses):
+        from hprc import cli
+        old_root = cli.ROOT
+        fake_run, calls = self._mock_subprocess(responses)
+        try:
+            cli.ROOT = Path(self.tmp) if hasattr(self, "tmp") else Path.cwd()
+            with (
+                mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"),
+                mock.patch("subprocess.run", side_effect=fake_run),
+                contextlib.redirect_stdout(buf := io.StringIO())
+            ):
+                result = cli.doctor()
+        finally:
+            cli.ROOT = old_root
+        return result, buf.getvalue(), calls
+
+    def test_doctor_reported_ok_when_tested_version_matches(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "codex 0.153.4\n"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(0, out)
+        self.assertIn("테스트 기준 버전 0.153.4과 일치", text)
+        self.assertIn("로그인됨 - Logged in as user@example.com", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_warns_when_version_differs(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "codex 0.154.0-alpha.6.2\n"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(0, out)
+        self.assertIn("경고: 테스트 기준 버전(0.153.4)과 다름", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_output_empty(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": ""},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("버전 문자열", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_command_times_out(self):
+        out, text, calls = self._run_doctor([
+            {"timeout": 3},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("codex --version 호출 타임아웃", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_command_fails(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 2, "stderr": "permission denied"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("codex --version 종료코드", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_login_not_confirmed(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "0.153.4"},
+            {"returncode": 0, "stdout": "You are not logged in. Run `codex login`"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("로그인 필요", text)
+        self.assertEqual(2, len(calls))
+
+
+if __name__ == "__main__":
+    unittest.main()

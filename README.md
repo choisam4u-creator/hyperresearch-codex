@@ -6,7 +6,7 @@ A Codex-only research pipeline that turns one prompt into a **sourced, adversari
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.
 
-**Status:** beta 0.3.1. 10 real runs on `gpt-6-astra` (4 full, 6 light), 40 mock tests including failure paths. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
+**Status:** beta 0.3.1. 10 real runs on `gpt-6-astra` (4 full, 6 light), plus a mock test suite covering failure paths. The test count may change as the suite evolves; run the command below for the current count. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
 
 ## Three rules
 
@@ -31,10 +31,10 @@ Honest table, checked 2026-09-13. Numbers for this tool are measured (see *Cost*
 
 ## Requirements
 
-- Codex CLI, logged in (`codex login`). Tested with Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
-- `hpr doctor` now verifies `codex --version` and `codex login status` with timeout; version mismatch to 0.153.4 is a warning, but version/query/login failures are shown clearly.
+- Codex CLI, logged in (`codex login`). The published cost measurements used Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
+- `hpr doctor` verifies `codex --version` and `codex login status` with a timeout. A mismatch from the measured 0.153.4 is a non-blocking warning; version/query/login failures are shown clearly.
 - Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
-- Tested on macOS; Linux runs only through CI so far; Windows untested.
+- macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows is untested.
 
 ## 60-second start
 
@@ -51,14 +51,21 @@ open research/runs/*/final_report.md
 
 `hpr` uses `HPR_HOME` (or the nearest folder containing `research/`) as its workspace, so you can keep one vault per project. Inside the repo `python3 hpr.py …` does the same thing.
 
+The optional `hpr install-skill` helper currently expects the source checkout's `skill/` directory; use it from a checkout. The wheel smoke check covers the packaged `hprc` runtime and does not claim that this helper is included in the wheel.
+
 ## Language, presets and budgets
 
 - `--lang ko|en` picks the prompt set (`hprc/prompts/<lang>/`) and the report language, section names, `(judgment)` / `(판단)` markers and lint rules. Fixed per run; `resume` keeps it.
 - `--preset lean` is for subscription accounts: 2 critics, 2 drafts (full), fewer sources, smaller note caps, lower reasoning effort where it matters least. `standard` is the default.
-- Every run has a default input-token cap (`budget.default_by_tier`: light 1.2 M, full 3.5 M). Hitting it stops **before** the next step; `hpr resume <id> --budget <bigger>` continues. `--budget N` overrides.
-- Every model call is appended to `research/usage-ledger.jsonl`. `hpr usage [--days N] [--json] [--backfill]` shows totals per day and per run — this is how you watch a subscription's usage window.
+- Every run has a default input-token threshold (`budget.default_by_tier`: light 1.2 M, full 3.5 M). It is checked before each step, call and retry; `hpr resume <id> --budget <bigger>` continues. `--budget N` must be positive. In-flight or parallel calls can exceed it, and unreported usage is unknown, so this is not a hard spending cap.
+- Model attempts are recorded in `research/usage-ledger.jsonl`, including measured usage from failures. Unreported usage is shown separately; the cost estimate is incomplete when any attempt is unmeasured. `hpr usage [--days N] [--json] [--backfill]` shows local totals, not your account's remaining subscription allowance.
+- A run lock rejects concurrent execution of the same run ID. Completed critic results are reused after interruption. Execution currently requires POSIX file locking; Windows run/resume is blocked, while help/doctor remains available. Windows support is unverified.
 
 ## What you see while it runs
+
+Citation checks sample cited statements across the document, including lists and tables. `final_report.md` shows unsupported statements and unreturned judgments; it does not verify the rest of the report. Line references point to `citecheck_report.md`, saved before polishing. A completed run can finish with a quality warning.
+
+Optional search fallback is off by default. Set `search.searxng_endpoint` in `research/config.json` to a SearXNG server you choose to use; it is tried only after DuckDuckGo produces no usable candidate and no earlier candidate is usable. No server is configured automatically. Search failure types are saved in `candidates.json`; `--no-search` also suppresses `--scholar` searches. Fetching supplied URLs still requires network access.
 
 ![live progress of a real Light lean run, compressed to 24 s](docs/assets/run-light-lean.svg)
 
@@ -157,7 +164,7 @@ Unedited reports from real runs (only the header comment was added). Source titl
 
 ## Tests
 
-`HPR_BACKEND=mock python3 -m unittest tests/test_pipeline_mock.py` runs the whole light and full pipelines against local fixture pages without spending Codex usage (40 tests, including failure paths: network down, bad URLs, usage limit, login expired, missing codex, timeout).
+`HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py' -v` runs the test suite against local fixtures without spending Codex usage, including failure paths such as network down, bad URLs, usage limit, login expiry, missing codex, and timeout. The suite size is intentionally not fixed in this README.
 
 ## Credits
 

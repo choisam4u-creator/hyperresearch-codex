@@ -60,6 +60,16 @@ def find_root() -> Path:
 ROOT = find_root()
 
 
+def _positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("양의 정수여야 합니다") from error
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("0보다 커야 합니다")
+    return parsed
+
+
 def doctor() -> int:
     ok = True
     codex = shutil.which("codex")
@@ -123,13 +133,13 @@ def status(run_id: str | None) -> None:
     ids = [run_id] if run_id else (sorted(p.name for p in runs.iterdir() if (p / "manifest.json").exists()) if runs.is_dir() else [])
     for rid in ids:
         m = json.loads((runs / rid / "manifest.json").read_text())
-        tin = sum((u.get("usage") or {}).get("input_tokens", 0) for u in m["usage"])
-        tout = sum((u.get("usage") or {}).get("output_tokens", 0) for u in m["usage"])
         secs = sum(u.get("seconds", 0) for u in m["usage"])
         from hprc.config import load
         from hprc.pipeline import estimate_cost
         cost = estimate_cost(m["usage"], load(ROOT)["budget"])
-        print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | 호출 {len(m['usage'])} · {secs:.0f}s · in {tin:,} (캐시 {cost['cached']:,}) / out {tout:,} · ≈${cost['usd_upper']}")
+        unknown = (f" · 미측정 {cost['unknown_calls']}회 · 요금 상한 미확정 (측정분 ≈${cost['usd_upper']})"
+                   if cost["unknown_calls"] else f" · 요금 상한 ≈${cost['usd_upper']}")
+        print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")
         print("   " + ", ".join(f"{s['name']}:{s['status']}" for s in m["steps"]))
 
 
@@ -138,13 +148,13 @@ def main() -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run"); r.add_argument("prompt"); r.add_argument("--tier", default="light", choices=["light", "full"])
     r.add_argument("--urls"); r.add_argument("--no-search", action="store_true"); r.add_argument("--scholar", action="store_true"); r.add_argument("--run-id")
-    r.add_argument("--budget", type=int, help="누적 입력 토큰 상한. 넘으면 다음 단계 전에 멈춤"); r.add_argument("--quiet", action="store_true")
+    r.add_argument("--budget", type=_positive_int, help="누적 입력 토큰 상한. 넘으면 다음 단계 전에 멈춤"); r.add_argument("--quiet", action="store_true")
     r.add_argument("--dry-run", action="store_true", help="실행하지 않고 단계·예상 호출 수·예상 비용만 출력")
     r.add_argument("--lang", choices=["ko", "en"], help="프롬프트·보고서 언어 (기본 config lang=ko)")
     r.add_argument("--preset", choices=["standard", "lean"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
     u = sub.add_parser("usage"); u.add_argument("--days", type=int, default=30); u.add_argument("--json", action="store_true")
     u.add_argument("--backfill", action="store_true", help="장부 이전 실행들의 manifest 를 장부에 채움")
-    s = sub.add_parser("resume"); s.add_argument("run_id"); s.add_argument("--budget", type=int); s.add_argument("--quiet", action="store_true")
+    s = sub.add_parser("resume"); s.add_argument("run_id"); s.add_argument("--budget", type=_positive_int); s.add_argument("--quiet", action="store_true")
     for parser in (r, s):
         parser.add_argument("--at", help="이 시각까지 기다렸다가 시작. 'HH:MM'(오늘/내일) 또는 'YYYY-MM-DD HH:MM'. 사용량 리셋 뒤 자동 재개용")
     ins = sub.add_parser("install-skill"); ins.add_argument("--yes", action="store_true", help="~/.codex/skills 에 실제로 복사")
@@ -171,7 +181,8 @@ def main() -> int:
         if a.json:
             print(json.dumps(summary, ensure_ascii=False, indent=2)); return 0
         t = summary["total"]
-        print(f"최근 {a.days}일 실제 호출 {t['calls']}회 · 입력 {t['in']:,} (캐시 {t['cached']:,}) · 출력 {t['out']:,} · 모델 시간 {t['seconds']/60:.1f}분")
+        unknown = t.get("unknown_calls", 0)
+        print(f"최근 {a.days}일 실제 호출 {t['calls']}회 · 입력 {t['in']:,} (캐시 {t['cached']:,}, 미측정 {unknown}회) · 출력 {t['out']:,} · 모델 시간 {t['seconds']/60:.1f}분")
         print("--- 날짜별"); [print(f"  {d}: {v['calls']}회 · in {v['in']:,} · out {v['out']:,}") for d, v in summary["by_day"].items()]
         print("--- 실행별"); [print(f"  {r}: {v['tier']}/{v['lang']} · {v['calls']}회 · in {v['in']:,} · out {v['out']:,} · {v['seconds']/60:.1f}분") for r, v in summary["by_run"].items()]
         print("장부:", ledger.path(ROOT)); return 0

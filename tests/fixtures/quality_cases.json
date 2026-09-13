@@ -1,0 +1,81 @@
+{
+  "cases": [
+    {
+      "id": "ko_mixed_table_list_internal_and_judgment",
+      "tags": ["korean", "mixed-language", "table", "list", "judgment", "internal-citation"],
+      "lang": "ko",
+      "judgment_marker": "(판단)",
+      "limit": 10,
+      "known": ["S1", "S2", "S3", "S4"],
+      "report": "# 질문: 혼합 문서의 근거는?\n## 답\n한국어 핵심 사실입니다. [_digest.md; S1; interim/L1.md]\n- English evidence remains independently testable. [S2]\n| 항목 | 근거 |\n| --- | --- |\n| 혼합 | 표 안의 수치도 주장으로 검사한다. [S3][S1] |\n이 선택을 권한다. (판단) [S4]\n내부 메모만 가리킨다. [_independence.md; C2]\n## 근거\n위 세 형식은 서로 다른 문맥을 제공한다. [S4]\n## 한계\n표본 검사는 전체 사실성을 보장하지 않는다. [S2]\n## 출처\n- S1부터 S4까지의 합성 출처\n",
+      "expected": {
+        "clean_fixed": 2,
+        "eligible_count": 5,
+        "excluded_judgment_count": 1,
+        "selected_lines": [3, 4, 7, 11, 13],
+        "selected_cites": [["S1"], ["S2"], ["S3", "S1"], ["S4"], ["S2"]],
+        "lint_absent": ["unknown_cites", "no_citations"],
+        "contains_after_clean": ["한국어 핵심 사실입니다. [S1]", "내부 메모만 가리킨다. (출처 없음)"],
+        "absent_after_clean": ["_digest.md", "interim/L1.md", "_independence.md", "C2"]
+      }
+    },
+    {
+      "id": "en_truncated_and_partial_support",
+      "tags": ["english", "mixed-language", "table", "list", "truncated-evidence", "partial-support", "judgment"],
+      "lang": "en",
+      "judgment_marker": "(judgment)",
+      "limit": 10,
+      "known": ["S7", "S8", "S9", "S10"],
+      "report": "# Question: What does the evidence establish?\n## Answer\n- The cached path reduced the measured latency. [S7][S8]\n| result | evidence |\n| --- | --- |\n| clipped | The excerpt ends before the qualifying clause. [S9] |\nAdopt this option. (judgment) [S7]\n## Evidence\n혼합 언어 자료는 성공 횟수만 보고했다. [S10]\n## Counter-evidence and limits\nThe source supports some runs, not every run. [S10][S8]\n## Sources\n- Synthetic sources S7-S10\n",
+      "returned_checks": [
+        {
+          "sentence": "- The cached path reduced the measured latency. [S7][S8]",
+          "cites": ["S8", "S7"],
+          "supported": true,
+          "reason": "Both sources report the measurement."
+        },
+        {
+          "sentence": "| clipped | The excerpt ends before the qualifying clause. [S9] |",
+          "cites": ["S9"],
+          "supported": false,
+          "reason": "Truncated evidence omits the qualifying clause."
+        },
+        {
+          "sentence": "혼합 언어 자료는 성공 횟수만 보고했다. [S10]",
+          "cites": ["S10"],
+          "supported": true,
+          "reason": "The count is present."
+        },
+        {
+          "sentence": "The source supports some runs, not every run. [S10][S8]",
+          "cites": ["S10", "S8"],
+          "verdict": "unsupported",
+          "reason": "Partial support: S10 covers some runs while S8 does not establish the universal limit."
+        }
+      ],
+      "expected": {
+        "clean_fixed": 0,
+        "eligible_count": 4,
+        "excluded_judgment_count": 1,
+        "selected_lines": [3, 6, 9, 11],
+        "unsupported_count": 2,
+        "summary_contains": ["Truncated evidence", "Partial support", "Sentences outside this sample were not checked"]
+      }
+    },
+    {
+      "id": "unknown_source_must_fail_gate",
+      "tags": ["korean", "source-gate"],
+      "lang": "ko",
+      "judgment_marker": "(판단)",
+      "limit": 10,
+      "known": ["S1"],
+      "report": "# 질문: 출처 식별자는 유효한가?\n## 답\n확인된 주장이다. [S1]\n알 수 없는 출처를 붙인 주장이다. [S404]\n## 근거\n근거 절이다. [S1]\n## 한계\n검증 범위가 제한된다. [S1]\n## 출처\n- S1 합성 출처\n",
+      "expected": {
+        "eligible_count": 4,
+        "excluded_judgment_count": 0,
+        "selected_cites_include": "S404",
+        "lint_contains": "unknown_cites:S404"
+      }
+    }
+  ]
+}

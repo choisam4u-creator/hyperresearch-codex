@@ -16,4 +16,40 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: pip install -e .
       - run: hpr --help
-      - run: HPR_BACKEND=mock python -m unittest tests/test_pipeline_mock.py -v
+      - run: HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py' -v
+      - name: Build wheel
+        run: |
+          python -m pip wheel --no-deps . --wheel-dir "$RUNNER_TEMP/hpr-wheel"
+          WHEEL_DIR="$RUNNER_TEMP/hpr-wheel" python - <<'PY'
+          import os, pathlib, zipfile
+          wheels = list(pathlib.Path(os.environ["WHEEL_DIR"]).glob("*.whl"))
+          assert len(wheels) == 1, wheels
+          expected = {
+              "analyst.md", "citecheck.md", "critic_depth.md", "critic_dialectic.md",
+              "critic_instruction.md", "critic_width.md", "draft.md", "investigator.md",
+              "loci.md", "patcher.md", "polish.md", "scout.md", "synth.md", "writer.md",
+          }
+          with zipfile.ZipFile(wheels[0]) as zf:
+              names = zf.namelist()
+              assert any(n.startswith("hprc/") for n in names)
+              assert not any(n.startswith(("tests/", "research/", "docs/internal/")) for n in names)
+              for lang in ("ko", "en"):
+                  actual = {pathlib.PurePosixPath(n).name for n in names if n.startswith(f"hprc/prompts/{lang}/")}
+                  assert actual == expected, (lang, actual)
+          print(wheels[0])
+          PY
+      - name: Smoke test wheel outside checkout
+        run: |
+          smoke="$RUNNER_TEMP/hpr-smoke-venv"
+          python -m venv "$smoke"
+          "$smoke/bin/python" -m pip install "$RUNNER_TEMP/hpr-wheel"/*.whl
+          (cd "$RUNNER_TEMP" && "$smoke/bin/hpr" --help)
+          (cd "$RUNNER_TEMP" && "$smoke/bin/python" - <<'PY'
+          import importlib.resources
+          for lang in ("ko", "en"):
+              root = importlib.resources.files("hprc").joinpath("prompts", lang)
+              assert len(list(root.iterdir())) == 14
+              assert all(p.is_file() and p.read_text(encoding="utf-8") for p in root.iterdir())
+          PY
+          )
+          (cd "$RUNNER_TEMP" && "$smoke/bin/python" "$GITHUB_WORKSPACE/tests/wheel_smoke.py")

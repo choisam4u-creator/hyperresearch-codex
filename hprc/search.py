@@ -19,22 +19,95 @@ def _decode_ddg(href: str) -> str:
 
 
 def duckduckgo(query: str, limit: int, user_agent: str, timeout: int = 20) -> list[dict]:
+    if limit <= 0:
+        return []
     url = "https://html.duckduckgo.com/html/?" + urllib.parse.urlencode({"q": query})
     try:
         response = httpx.get(url, headers={"User-Agent": user_agent}, timeout=timeout, follow_redirects=True)
-        response.raise_for_status()
+        if response.status_code < 200 or response.status_code >= 300:
+            return _search_error("duckduckgo", query, f"http_{response.status_code}", "http", response.status_code)
+    except httpx.TimeoutException:
+        return _search_error("duckduckgo", query, "timeout", "timeout")
     except httpx.HTTPError as error:
-        return [{"error": f"search_failed:{type(error).__name__}"}]
+        return _search_error("duckduckgo", query, type(error).__name__, "transport")
     rows, seen = [], set()
     for href, title in _RESULT.findall(response.text):
-        link = _decode_ddg(html.unescape(href))
+        try:
+            link = _decode_ddg(html.unescape(href))
+        except ValueError:
+            continue
         if not link.startswith("http") or link in seen:
             continue
         seen.add(link)
         rows.append({"url": link, "title": html.unescape(_TAG.sub("", title)).strip(), "via": "duckduckgo", "query": query})
         if len(rows) >= limit:
             break
-    return rows
+    return rows or _search_error("duckduckgo", query, "empty", "empty")
+
+
+def _search_error(provider: str, query: str, reason: str, kind: str, status: int | None = None) -> list[dict]:
+    """오류 본문·인증정보를 남기지 않고 제공자와 실패 종류만 기록한다."""
+    row = {"error": f"search_failed:{reason}", "provider": provider, "kind": kind, "via": provider, "query": query}
+    if status is not None:
+        row["status"] = status
+    return [row]
+
+
+def searxng(query: str, limit: int, endpoint: str | None, user_agent: str, timeout: int = 20) -> list[dict]:
+    """명시한 SearXNG endpoint에서만 JSON 검색을 수행한다(기본 서버·키·가입 없음)."""
+    if limit <= 0:
+        return []
+    if not endpoint:
+        return _search_error("searxng", query, "unconfigured", "configuration")
+    try:
+        parts = urllib.parse.urlsplit(endpoint)
+    except ValueError:
+        return _search_error("searxng", query, "invalid_endpoint", "configuration")
+    if parts.scheme not in ("http", "https") or not parts.netloc or parts.username or parts.password or parts.query or parts.fragment:
+        return _search_error("searxng", query, "invalid_endpoint", "configuration")
+    try:
+        parts.port  # 속성 접근으로 잘못된 포트 형식·범위를 검사하되 유효한 포트는 허용한다.
+        if not parts.hostname:
+            return _search_error("searxng", query, "invalid_endpoint", "configuration")
+    except ValueError:
+        return _search_error("searxng", query, "invalid_endpoint", "configuration")
+    path = parts.path.rstrip("/")
+    if not path.endswith("/search"):
+        path += "/search"
+    url = urllib.parse.urlunsplit((parts.scheme, parts.netloc, path, "", ""))
+    try:
+        response = httpx.get(url, params={"q": query, "format": "json"},
+                             headers={"User-Agent": user_agent}, timeout=timeout, follow_redirects=True)
+        if response.status_code < 200 or response.status_code >= 300:
+            return _search_error("searxng", query, f"http_{response.status_code}", "http", response.status_code)
+    except httpx.TimeoutException:
+        return _search_error("searxng", query, "timeout", "timeout")
+    except httpx.HTTPError as error:
+        return _search_error("searxng", query, type(error).__name__, "transport")
+    try:
+        payload = response.json()
+    except (ValueError, TypeError):
+        return _search_error("searxng", query, "malformed_json", "response")
+    results = payload.get("results") if isinstance(payload, dict) else None
+    if not isinstance(results, list):
+        return _search_error("searxng", query, "invalid_results_schema", "schema")
+    rows, seen = [], set()
+    for item in results:
+        if not isinstance(item, dict) or not isinstance(item.get("title"), str) or not isinstance(item.get("url"), str):
+            return _search_error("searxng", query, "invalid_result_schema", "schema")
+        link = normalize_url(item["url"]).split("#", 1)[0]
+        try:
+            link_parts = urllib.parse.urlsplit(link)
+            valid_link = link_parts.scheme in ("http", "https") and bool(link_parts.hostname)
+        except ValueError:
+            valid_link = False
+        if not valid_link or link in seen:
+            continue
+        seen.add(link)
+        rows.append({"url": link, "title": item["title"].strip(), "via": "searxng", "query": query})
+        if len(rows) >= limit:
+            break
+    return rows or _search_error("searxng", query, "empty", "empty")
 
 
 def query_variants(prompt: str) -> list[str]:

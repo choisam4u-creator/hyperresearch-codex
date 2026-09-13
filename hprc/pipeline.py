@@ -8,8 +8,11 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
+from threading import Lock
 
 from . import schemas, scholar as scholarmod, search as searchmod
 from .cluster import cluster
@@ -17,16 +20,34 @@ from .codex_runner import AuthRequired, CodexError, CodexMissing, UsageLimit, ru
 from .config import load
 from .fetch import fetch_all
 from . import ledger
+from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist, judgment_sentences, report_lint
 from .manifest import Manifest, atomic_write
 from .text_select import select
 from .mock import mock_backend
 from .vault import note_body, read_front, sync, write_note
 
+try:
+    import fcntl
+except ImportError:  # Windows에서는 CLI import/help/doctor를 유지하고 실제 run만 읽을 수 있게 차단한다.
+    fcntl = None
+
 PROMPTS = Path(__file__).parent / "prompts"
 ANGLES = ["실무자 관점(어떻게 쓰나)", "반대 근거 우선(무엇이 틀릴 수 있나)", "맥락과 시간순(왜 지금 이렇게 됐나)"]
 STEPS = {"light": ["search", "fetch", "analyst", "draft", "critics", "patch", "citecheck", "final"],
          "full": ["search", "fetch", "analyst", "depth", "draft", "critics", "patch", "citecheck", "polish", "final"]}
+
+
+def _has_valid_candidate(rows: list[dict]) -> bool:
+    """검색 보조 경로 전에 실제로 가져올 수 있는 HTTP URL이 있는지 확인한다."""
+    for row in rows:
+        try:
+            parts = urllib.parse.urlsplit(row.get("url", ""))
+            if parts.scheme in ("http", "https") and parts.hostname:
+                return True
+        except ValueError:
+            continue
+    return False
 
 
 class Blocked(RuntimeError):
@@ -35,6 +56,36 @@ class Blocked(RuntimeError):
 
 class HardStop(Blocked):
     """사용량 한도·로그인 만료·codex 없음: 재시도하거나 다른 단계로 넘어가지 않고 그 자리에서 멈춘다."""
+
+
+@contextmanager
+def _run_lock(run_dir: Path):
+    """같은 run_id를 한 프로세스만 실행하게 하는 비차단 파일 잠금."""
+    if fcntl is None:
+        raise Blocked("이 플랫폼은 동일 run 중복 실행 잠금을 지원하지 않음")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = run_dir / ".run.lock"
+    stream = lock_path.open("a+", encoding="utf-8")
+    locked = False
+    try:
+        try:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            locked = True
+        except BlockingIOError as error:
+            stream.seek(0)
+            owner = stream.read().strip() or "소유자 정보 없음"
+            raise Blocked(f"같은 실행이 이미 실행 중: {run_dir.name} ({owner})") from error
+        stream.seek(0)
+        stream.truncate()
+        stream.write(f"pid={os.getpid()} at={time.time():.6f}\n")
+        stream.flush()
+        yield
+    finally:
+        try:
+            if locked:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+        finally:
+            stream.close()
 
 
 UI = {"ko": {"provenance": "## 출처 상세(자동 생성)", "cols": "| id | 제목 | 도메인 | 게시일 | 조회일 | 독립 묶음 | 경로 | 인용됨 |",
@@ -63,20 +114,30 @@ def _clip(body: str, cap: int, query: str = "") -> tuple[str, bool]:
 
 
 def estimate_cost(usage: list[dict], budget: dict) -> dict:
-    tin = sum((u.get("usage") or {}).get("input_tokens", 0) for u in usage)
-    tc = sum((u.get("usage") or {}).get("cached_input_tokens", 0) for u in usage)
-    tout = sum((u.get("usage") or {}).get("output_tokens", 0) for u in usage)
+    def is_known(row: dict) -> bool:
+        if row.get("usage_known") is not None:
+            return bool(row.get("usage_known"))
+        return bool(row.get("usage"))
+
+    known = [u for u in usage if is_known(u)]
+    unknown_calls = len(usage) - len(known)
+    tin = sum((u.get("usage") or {}).get("input_tokens", 0) for u in known)
+    tc = sum((u.get("usage") or {}).get("cached_input_tokens", 0) for u in known)
+    tout = sum((u.get("usage") or {}).get("output_tokens", 0) for u in known)
     pin, pout, pc = budget.get("price_input_per_m", 0), budget.get("price_output_per_m", 0), budget.get("price_cached_per_m")
     if pc is None:
         cost = tin / 1e6 * pin + tout / 1e6 * pout
     else:
         cost = (tin - tc) / 1e6 * pin + tc / 1e6 * pc + tout / 1e6 * pout
-    return {"input": tin, "cached": tc, "output": tout, "usd_upper": round(cost, 2)}
+    return {"input": tin, "cached": tc, "output": tout, "usd_upper": round(cost, 2),
+            "known_calls": len(known), "unknown_calls": unknown_calls}
 
 
 class Run:
     def __init__(self, root: Path, prompt: str, tier: str, run_id: str | None, quiet: bool = False, budget: int | None = None,
                  lang: str | None = None, preset: str | None = None):
+        if budget is not None and budget <= 0:
+            raise Blocked("예산 상한은 0보다 큰 정수여야 한다")
         self.root, self.quiet = root, quiet
         self.run_id = run_id or time.strftime("%Y%m%d-%H%M%S")
         self.dir = root / "research" / "runs" / self.run_id
@@ -97,6 +158,7 @@ class Run:
         self.T, self.G = self.cfg[self.tier], self.cfg["gates"]
         self.L, self.U = LANG.get(self.lang, LANG["ko"]), UI.get(self.lang, UI["ko"])
         self.sources, self.known, self.relevant = [], set(), set()
+        self._usage_lock = Lock()
 
     # ---- 진행 표시·상태 파일 ----
     def log(self, msg: str) -> None:
@@ -125,7 +187,8 @@ class Run:
         self.m.finish(step, status, note); self.state(step, status)
         cost = estimate_cost(self.m.data["usage"], self.cfg["budget"])
         elapsed = time.time() - self.m.data["created_at"]
-        self.log(f"{self.tag(step)}: {status} · {note} · 누적 in {cost['input']:,} / out {cost['output']:,} (≈${cost['usd_upper']}) · 경과 {elapsed/60:.1f}분")
+        unknown = f" · 미측정 {cost['unknown_calls']}회 · 요금 상한 미확정" if cost["unknown_calls"] else ""
+        self.log(f"{self.tag(step)}: {status} · {note} · 누적 in {cost['input']:,} / out {cost['output']:,} (측정분 ≈${cost['usd_upper']}){unknown} · 경과 {elapsed/60:.1f}분")
 
     def check_budget(self, step: str) -> None:
         limit = self.cfg["budget"].get("max_input_tokens")
@@ -135,31 +198,93 @@ class Run:
                 self.state(step, "budget_stop")
                 raise Blocked(f"예산 상한 도달: 입력 {used:,} ≥ {limit:,}. `hpr resume {self.run_id} --budget <더 큰 값>` 으로 이어 갈 수 있다")
 
+    def _next_attempt(self, name: str) -> int:
+        attempts = {u.get("attempt") for u in self.m.data.get("usage", []) if u.get("step") == name and isinstance(u.get("attempt"), int)}
+        for log in self.logs.glob(f"{name}.attempt-*.stderr.log"):
+            m = re.match(rf"^{re.escape(name)}\.attempt-(\d+)(?:\.[^.]+)?\.stderr\.log$", log.name)
+            if m:
+                attempts.add(int(m.group(1)))
+        return max(attempts or {0}) + 1
+
+    def _record_attempt(self, name: str, size: int, usage: dict, attempt: int, status: str) -> tuple[dict, dict]:
+        used = usage.get("usage") or {}
+        usage_known = usage.get("usage_known")
+        if usage_known is None:
+            usage_known = bool(used)
+        else:
+            usage_known = bool(usage_known)
+        at = usage.get("at", time.time())
+        record_id = f"{self.run_id}:{name}:{attempt}:{at:.6f}"
+        record = {
+            "step": name,
+            "status": status,
+            "attempt": attempt,
+            "at": at,
+            "input_chars": size,
+            "record_id": record_id,
+            "backend": usage.get("backend"),
+            "model": usage.get("model"),
+            "effort": usage.get("effort"),
+            "web_search": usage.get("web_search"),
+            "seconds": usage.get("seconds", 0),
+            "usage": used if usage_known else {},
+            "items": usage.get("items", {}),
+            "usage_known": usage_known,
+            "in": used.get("input_tokens", 0) if usage_known else 0,
+            "cached": used.get("cached_input_tokens", 0) if usage_known else 0,
+            "out": used.get("output_tokens", 0) if usage_known else 0,
+            "usage_unknown": not usage_known
+        }
+        ledger_record = dict(record)
+        ledger_record.update({"run_id": self.run_id, "tier": self.tier, "lang": self.lang, "preset": self.preset})
+        with self._usage_lock:
+            self.m.usage(record)
+            ledger.append(self.root, ledger_record)
+        u = used if usage_known else {}
+        measured = (f"in {u.get('input_tokens', 0):,} / out {u.get('output_tokens', 0):,}"
+                    if usage_known else "사용량 미측정")
+        self.log(f"  ← {name} {status} {usage.get('seconds', 0)}s · {measured}")
+        return record, ledger_record
+
     # ---- 모델 호출(재시도 1회) ----
     def call(self, name: str, prompt: str, schema: dict, inputs: dict, role: str, web_search: bool = False) -> dict:
-        attempt, last = 0, None
+        next_attempt, last = self._next_attempt(name), None
         size = sum(len(v) for v in inputs.values())
         self.log(f"  → {name} (입력 {size:,}자, 파일 {len(inputs)}개)")
-        while attempt < 2:
-            attempt += 1
+        retry = 0
+        model_info = self.cfg["models"][role]
+
+        def failure_meta(error) -> dict:
+            return {
+                "usage": getattr(error, "usage", {}) or {},
+                "usage_known": getattr(error, "usage_known", None),
+                "at": time.time(),
+                "backend": getattr(error, "backend", None) or os.environ.get("HPR_BACKEND", "codex"),
+                "seconds": getattr(error, "seconds", None) or 0,
+                "model": getattr(error, "model", None) or model_info.get("model"),
+                "effort": getattr(error, "effort", None) or model_info.get("effort"),
+                "web_search": web_search if getattr(error, "web_search", None) is None else error.web_search,
+            }
+
+        while retry <= 1:
+            self.check_budget(name)
+            attempt = next_attempt + retry
             try:
                 result, usage = run_step(name, prompt, schema, inputs, self.cfg["models"][role], self.cfg["codex"], self.logs,
                                          mock=mock_backend, web_search=web_search,
-                                         heartbeat=lambda msg: self.log(f"    … {name} {msg}"))
-                self.m.usage({**usage, "attempt": attempt, "at": time.time(), "input_chars": size})
-                u = usage.get("usage") or {}
-                ledger.append(self.root, {"run_id": self.run_id, "step": name, "tier": self.tier, "lang": self.lang, "preset": self.preset,
-                                          "backend": usage.get("backend"), "model": usage.get("model"), "effort": usage.get("effort"),
-                                          "in": u.get("input_tokens", 0), "cached": u.get("cached_input_tokens", 0), "out": u.get("output_tokens", 0),
-                                          "seconds": usage.get("seconds", 0), "attempt": attempt})
-                self.log(f"  ← {name} {usage.get('seconds')}s · in {u.get('input_tokens', 0):,} / out {u.get('output_tokens', 0):,}")
+                                         heartbeat=lambda msg: self.log(f"    … {name} {msg}"),
+                                         attempt=attempt)
+                usage["attempt"] = attempt
+                self._record_attempt(name, size, usage, attempt, "ok")
                 return result
             except UsageLimit as error:
+                self._record_attempt(name, size, failure_meta(error), attempt, "usage_limit")
                 atomic_write(self.dir / "state.json", json.dumps({"step": name, "status": "usage_limit", "resets_at": error.resets_at,
                                                                   "at": time.time(), "pid": os.getpid()}, ensure_ascii=False, indent=2))
                 self.log(f"  ! {name}: 사용량 한도. 리셋 뒤 `hpr resume {self.run_id}` (예: --at '09:00')")
                 raise HardStop(str(error) + f" → 리셋 뒤 `hpr resume {self.run_id}` 로 이어 간다. 이번 단계까지의 결과는 보존됨")
             except (AuthRequired, CodexMissing) as error:
+                self._record_attempt(name, size, failure_meta(error), attempt, "blocked")
                 status = "auth_required" if isinstance(error, AuthRequired) else "codex_missing"
                 atomic_write(self.dir / "state.json", json.dumps({"step": name, "status": status, "at": time.time(), "pid": os.getpid()},
                                                                   ensure_ascii=False, indent=2))
@@ -167,10 +292,14 @@ class Run:
                 raise HardStop(str(error) + f" → 고친 뒤 `hpr resume {self.run_id}`. 이번 단계까지의 결과는 보존됨")
             except (CodexError, ValueError) as error:
                 last = error
-                self.log(f"  ! {name} 실패({type(error).__name__}), 재시도")
+                self._record_attempt(name, size, failure_meta(error), attempt, "error")
+                if retry >= 1:
+                    break
                 prompt += f"\n\n[재시도 안내] 이전 답이 거부됨: {type(error).__name__}: {str(error)[:200]}. 스키마를 정확히 지켜 다시 답하라."
+                self.log(f"  ! {name} 실패({type(error).__name__}), 재시도")
+                retry += 1
         self.state(name, "failed")
-        raise Blocked(f"{name}: 2회 실패 → {last}. 로그 {self.logs / (name + '.stderr.log')} 확인 뒤 `hpr resume {self.run_id}`")
+        raise Blocked(f"{name}: 2회 실패 → {last}. 로그 {self.logs}/*.attempt-*.stderr.log 확인 뒤 `hpr resume {self.run_id}`")
 
     def parallel(self, jobs: list[tuple]) -> list:
         with ThreadPoolExecutor(max_workers=max(1, self.T.get("parallel", 2))) as pool:
@@ -254,9 +383,21 @@ class Run:
                     queries = searchmod.query_variants(self.prompt) if self.cfg["search"]["query_variants"] else [self.prompt]
                     found = []
                     for q in queries:
-                        found += [r for r in searchmod.duckduckgo(q, self.T["search_results"], self.cfg["fetch"]["user_agent"]) if "error" not in r]
+                        result = searchmod.duckduckgo(q, self.T["search_results"], self.cfg["fetch"]["user_agent"])
+                        stats.setdefault("errors", []).extend(r for r in result if "error" in r)
+                        found += [r for r in result if "error" not in r]
                     rows += found; stats["duckduckgo"] = len(found)
-        if scholar:
+                    # SearXNG는 명시한 endpoint가 있고 DuckDuckGo가 유효 후보를
+                    # 전혀 주지 못했을 때만 쓰는 보조 경로다.
+                    endpoint = self.cfg["search"].get("searxng_endpoint")
+                    if endpoint and not _has_valid_candidate(found) and not _has_valid_candidate(rows):
+                        fallback = []
+                        for q in queries:
+                            result = searchmod.searxng(q, self.T["search_results"], endpoint, self.cfg["fetch"]["user_agent"])
+                            stats.setdefault("errors", []).extend(r for r in result if "error" in r)
+                            fallback += [r for r in result if "error" not in r]
+                        rows += fallback; stats["searxng"] = len(fallback)
+        if scholar and not no_search:
             found = scholarmod.arxiv(self.prompt[:120], 5) + scholarmod.openalex(self.prompt[:120], 5)
             rows += found; stats["scholar"] = len(found)
         cands = searchmod.prioritize(rows, self.cfg["search"]["preferred_domains"])
@@ -282,6 +423,7 @@ class Run:
             texts[sid] = page["text"]
             kept.append({"id": sid, "path": str(path), "url": page["url"], "title": page["title"], "domain": page["domain"],
                          "published": page.get("published", ""), "published_source": page.get("published_source", "meta" if page.get("published") else ""),
+                         "modified": page.get("modified", ""), "modified_source": page.get("modified_source", ""),
                          "canonical": page.get("canonical", ""), "via": page.get("via", ""), "official": page.get("official", False),
                          "chars": len(page["text"]), "fetched_at": time.strftime("%Y-%m-%d")})
         assign = cluster(kept, texts, self.G["dup_jaccard"])
@@ -381,10 +523,17 @@ class Run:
         draft = (self.dir / "draft.md").read_text(encoding="utf-8")
         inputs = {"question.txt": self.prompt, "draft.md": draft, "_digest.md": self.digest(), "_independence.md": self.independence_md(),
                   **self.excerpts(self.relevant, self.prompt + "\n" + draft)}
+        partials = self.dir / "critics"
+        partials.mkdir(exist_ok=True)
 
         def critic(kind):
             def job():
-                res = self.call(f"critic_{kind}", _prompt(f"critic_{kind}", self.lang), schemas.CRITIC, inputs, "critic")
+                partial = partials / f"{kind}.json"
+                if partial.exists():
+                    res = json.loads(partial.read_text(encoding="utf-8"))
+                else:
+                    res = self.call(f"critic_{kind}", _prompt(f"critic_{kind}", self.lang), schemas.CRITIC, inputs, "critic")
+                    atomic_write(partial, json.dumps(res, ensure_ascii=False, indent=2))
                 kept, dropped = critic_quotes_exist(res["findings"], draft)
                 return [{**f, "critic": kind} for f in kept], [{**d, "critic": kind} for d in dropped]
             return job
@@ -432,11 +581,14 @@ class Run:
         if not self.begin("citecheck"):
             return
         report = (self.dir / "report.md").read_text(encoding="utf-8")
-        pieces = [s.strip() for s in re.split(r"(?<=[.!?。\]])\s+(?!\[S)|\n", report)]
-        sentences = [s for s in pieces if re.search(r"\[S\d+\]", s) and re.sub(r"\[S\d+\]", "", s).strip()
-                     and not s.startswith(("-", "|")) and self.L["judgment"] not in s]
-        samples = [{"sentence": s, "cites": re.findall(r"\[(S\d+)\]", s)} for s in sentences[: self.T["cite_sample"]]]
-        checks = {"checks": []}
+        # Full tier의 polish가 뒤에서 report.md를 바꾸므로, 표본·행 번호는 이
+        # 시점의 별도 스냅샷을 기준으로 고정한다.
+        snapshot = self.dir / "citecheck_report.md"
+        atomic_write(snapshot, report)
+        sampling = select_samples(report, self.T["cite_sample"], self.L["judgment"])
+        sampling["line_reference"] = snapshot.name
+        samples = sampling["samples"]
+        raw_checks = {"checks": []}
         if samples:
             ids = {c for s in samples for c in s["cites"]} & self.known
             # 출처마다 "그 출처를 인용한 문장"만 질의로 써서 관련 문단을 고른다.
@@ -445,10 +597,11 @@ class Run:
             for sid in sorted(ids):
                 query = "\n".join(s["sentence"] for s in samples if sid in s["cites"])
                 inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], query))
-            checks = self.call("citecheck", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
-        atomic_write(self.dir / "citecheck.json", json.dumps(checks, ensure_ascii=False, indent=2))
-        bad = [c for c in checks["checks"] if not c["supported"]]
-        self.end("citecheck", "ok", f"표본 {len(checks['checks'])}개 중 미지지 {len(bad)}개 (판단 문장 제외)")
+            raw_checks = self.call("citecheck", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
+        checks = enrich_checks(raw_checks["checks"], sampling)
+        atomic_write(self.dir / "citecheck.json", json.dumps({"checks": checks, "sampling": sampling}, ensure_ascii=False, indent=2))
+        bad = [c for c in checks if not c["supported"]]
+        self.end("citecheck", "ok", f"표본 {sampling['selected_count']}개 중 판정 {sampling['checked_count']}개, 미지지 {len(bad)}개")
 
     def step_polish(self):
         if self.tier != "full" or not self.T.get("polish"):
@@ -463,26 +616,32 @@ class Run:
             return out
         report = (self.dir / "report.md").read_text(encoding="utf-8")
         problems = report_lint(report, self.prompt, self.known, self.lang)
-        checks = json.loads((self.dir / "citecheck.json").read_text())["checks"]
+        citecheck = json.loads((self.dir / "citecheck.json").read_text())
+        checks = citecheck.get("checks", [])
+        sampling = citecheck.get("sampling")
         bad = [c for c in checks if not c["supported"]]
+        sample_count = sampling.get("selected_count", len(checks)) if sampling else len(checks)
         findings = json.loads((self.dir / "findings.json").read_text())["findings"]
         cost = estimate_cost(self.m.data["usage"], self.cfg["budget"])
         groups = len({s.get("cluster", s["id"]) for s in self.sources})
         warns = json.loads((self.dir / "sources.json").read_text()).get("warnings", [])
+        price = (f"요금 상한 미확정 (측정분 ≈${cost['usd_upper']}) · 미측정 {cost['unknown_calls']}회"
+                 if cost["unknown_calls"] else f"요금 상한 ≈${cost['usd_upper']}")
         header = ["<!-- hyperresearch-codex " + self.tier + " -->",
-                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(독립 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {len(checks)}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · 요금 상한 ≈${cost['usd_upper']}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
+                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(독립 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
         U = self.U
         prov = ["", U["provenance"], "", U["cols"], "|---|---|---|---|---|---|---|---|"]
         for s in self.sources:
             pub = (s.get("published") or U["unknown"]) + ("*" if s.get("published_source") == "last-modified" else "")
             prov.append(f"| {s['id']} | {s['title'][:60].replace('|', ' ')} | {s['domain']} | {pub} | {s.get('fetched_at','')} | {s.get('cluster', s['id'])} | {s.get('via','')}{U['primary'] if s.get('official') else ''} | {U['yes'] if s['id'] in self.relevant else U['no']} |")
         prov.append("\n" + U["lm_note"])
-        final = "\n".join(header) + report + "\n".join(prov) + "\n"
-        if bad:
-            final += "\n" + U["failed"] + "\n" + "\n".join(f"- {c['sentence']} → {c['reason']}" for c in bad) + "\n"
+        citation_summary = render_summary(checks, sampling, self.lang)
+        final = "\n".join(header) + report + "\n" + citation_summary + "\n".join(prov) + "\n"
         atomic_write(out, final)
         self.m.artifact("final_report", out)
-        self.end("final", "ok" if not problems else "warn", str(problems))
+        unreturned = sampling and sampling.get("checked_count", 0) < sampling.get("selected_count", 0)
+        uncertain = bool(sampling and sampling.get("unmatched_count", 0))
+        self.end("final", "warn" if problems or bad or unreturned or uncertain else "ok", str(problems))
         return out
 
 
@@ -491,23 +650,27 @@ def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = No
         lang: str | None = None, preset: str | None = None) -> Path:
     if tier not in STEPS:
         raise Blocked(f"모르는 tier: {tier}")
-    r = Run(root, prompt, tier, run_id, quiet, budget, lang, preset)
-    r.log(f"run {r.run_id} · {r.tier} · {r.lang} · {r.preset} · 예산 {r.cfg['budget']['max_input_tokens']:,} · {r.prompt[:60]}")
-    r.step_search(urls_file, no_search, scholar)
-    r.step_fetch()
-    r.load_sources()
-    r.step_analyst()
-    if r.tier == "full":
-        r.step_depth()
-    r.step_draft()
-    r.step_critics()
-    r.step_patch()
-    r.step_citecheck()
-    r.step_polish()
-    out = r.step_final()
-    r.log("완료 → " + str(out))
-    r.log(out.read_text(encoding="utf-8").splitlines()[1].strip("<!- >"))
-    return out
+    if budget is not None and budget <= 0:
+        raise Blocked("예산 상한은 0보다 큰 정수여야 한다")
+    actual_run_id = run_id or time.strftime("%Y%m%d-%H%M%S")
+    with _run_lock(root / "research" / "runs" / actual_run_id):
+        r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset)
+        r.log(f"run {r.run_id} · {r.tier} · {r.lang} · {r.preset} · 예산 {r.cfg['budget']['max_input_tokens']:,} · {r.prompt[:60]}")
+        r.step_search(urls_file, no_search, scholar)
+        r.step_fetch()
+        r.load_sources()
+        r.step_analyst()
+        if r.tier == "full":
+            r.step_depth()
+        r.step_draft()
+        r.step_critics()
+        r.step_patch()
+        r.step_citecheck()
+        r.step_polish()
+        out = r.step_final()
+        r.log("완료 → " + str(out))
+        r.log(out.read_text(encoding="utf-8").splitlines()[1].strip("<!- >"))
+        return out
 
 
 def run_light(root, prompt, urls_file=None, run_id=None, no_search=False):
