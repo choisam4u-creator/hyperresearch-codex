@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from importlib import resources
 from pathlib import Path
 
 from . import mcp_server, pipeline, vault
@@ -14,6 +15,7 @@ from .run_paths import InvalidRunId, run_directory, runs_directory
 
 PKG = Path(__file__).resolve().parent
 SKILL_SRC = PKG.parent / "skill/hyperresearch-codex/SKILL.md"
+SKILL_RESOURCE = resources.files("hprc").joinpath("_skill", "SKILL.md")
 TESTED_CODEX_VERSION = "0.153.4"
 CODEX_DOCTOR_TIMEOUT = 3
 _LOGIN_SUCCESS = re.compile(r"(?im)^\s*(?:you are\s+)?(logged in|authenticated)\b")
@@ -69,6 +71,20 @@ def _positive_int(value: str) -> int:
     if parsed <= 0:
         raise argparse.ArgumentTypeError("0보다 커야 합니다")
     return parsed
+
+
+def _skill_source():
+    """소스 checkout 또는 설치된 package resource에서 스킬을 읽는다."""
+    return SKILL_SRC if SKILL_SRC.is_file() else SKILL_RESOURCE
+
+
+def _copy_skill(src, dst: Path) -> None:
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(src, Path):
+        shutil.copyfile(src, dst)
+    else:
+        with src.open("rb") as stream, dst.open("wb") as target:
+            shutil.copyfileobj(stream, target)
 
 
 def doctor() -> int:
@@ -147,7 +163,7 @@ def status(run_id: str | None) -> None:
         manifest_path = run_dir / "manifest.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(f"실행 기록 없음: {rid} (`hpr status` 로 목록 확인)")
-        m = json.loads(manifest_path.read_text())
+        m = json.loads(manifest_path.read_text(encoding="utf-8"))
         secs = sum(u.get("seconds", 0) for u in m["usage"])
         from hprc.config import load
         from hprc.pipeline import estimate_cost
@@ -223,12 +239,13 @@ def main() -> int:
         print(f'# ~/.codex/config.toml 에 추가 (사용자가 직접):\n[mcp_servers.hyperresearch]\ncommand = "python3"\nargs = ["{Path(sys.argv[0]).resolve()}", "mcp"]')
         return 0
     if a.cmd == "install-skill":
-        src = SKILL_SRC; dst = Path.home() / ".codex/skills/hyperresearch-codex/SKILL.md"
+        src = _skill_source(); dst = Path.home() / ".codex/skills/hyperresearch-codex/SKILL.md"
         if not a.yes:
             print(f"복사 예정: {src} → {dst}\n실행하려면 --yes"); return 0
-        dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy(src, dst); print("설치됨:", dst); return 0
+        _copy_skill(src, dst); print("설치됨:", dst); return 0
     if a.cmd == "skill":
-        print(f'# Codex 스킬 설치 (사용자가 직접):\nmkdir -p ~/.codex/skills/hyperresearch-codex && cp "{SKILL_SRC}" ~/.codex/skills/hyperresearch-codex/SKILL.md')
+        src = _skill_source()
+        print(f'# Codex 스킬 설치 (사용자가 직접):\nmkdir -p ~/.codex/skills/hyperresearch-codex && cp "{src}" ~/.codex/skills/hyperresearch-codex/SKILL.md')
         return 0
     if a.cmd in ("run", "resume") and getattr(a, "at", None):
         import time as _t
@@ -267,9 +284,13 @@ def main() -> int:
             mpath = validated_run_dir / "manifest.json"
             if not mpath.exists():
                 print(f"BLOCKED: 실행 기록 없음: {a.run_id} (`hpr status` 로 목록 확인)", file=sys.stderr); return 2
-            m = json.loads(mpath.read_text())
+            m = json.loads(mpath.read_text(encoding="utf-8"))
             out = pipeline.run(ROOT, m["prompt"], m.get("tier", "light"), run_id=a.run_id, quiet=a.quiet, budget=a.budget)
     except pipeline.Blocked as error:
         print("BLOCKED:", error, file=sys.stderr); return 2
     print("최종 보고서:", out)
+    quality_path = out.parent / "quality.json"
+    if not quality_path.exists() or json.loads(quality_path.read_text(encoding="utf-8")).get("status") != "passed":
+        print("검토 필요: 보고서는 생성됐지만 자동 검증을 통과하지 않았습니다. quality.json 확인", file=sys.stderr)
+        return 3
     return 0

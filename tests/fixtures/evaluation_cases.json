@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "id": "facts-ko-v1",
+      "prompt": "고정 사실 두 가지를 한국어로 요약하라.",
+      "sources": {"S1": "공식 문서는 API가 읽기 전용 샌드박스를 사용한다고 설명한다.", "S2": "공식 기록의 기준일은 2026-09-14이다."},
+      "required_claims": ["API는 읽기 전용 샌드박스를 사용한다.", "기준일은 2026-09-14이다."],
+      "expected_findings": {"required_text_coverage": 1.0, "unsupported_count": 0, "missing_judgment_count": 0},
+      "reference_report": "API는 읽기 전용 샌드박스를 사용한다. [S1]\n기준일은 2026-09-14이다. [S2]\n"
+    },
+    {
+      "id": "comparison-en-v1",
+      "prompt": "Compare the two fixed options without choosing a winner.",
+      "sources": {"S1": "Option A completes in 10 seconds.", "S2": "Option B records a provenance table."},
+      "required_claims": ["Option A completes in 10 seconds.", "Option B records a provenance table."],
+      "expected_findings": {"required_text_coverage": 1.0, "unsupported_count": 0, "missing_judgment_count": 0},
+      "reference_report": "Option A completes in 10 seconds. [S1]\nOption B records a provenance table. [S2]\n"
+    },
+    {
+      "id": "controversy-ko-v1",
+      "prompt": "고정된 찬반 근거와 불확실성을 함께 적어라.",
+      "sources": {"S1": "찬성 측은 비용 감소 가능성을 보고했다.", "S2": "반대 측은 독립 재현이 없다고 지적했다."},
+      "required_claims": ["찬성 측은 비용 감소 가능성을 보고했다.", "반대 측은 독립 재현이 없다고 지적했다."],
+      "expected_findings": {"required_text_coverage": 1.0, "unsupported_count": 0, "missing_judgment_count": 0},
+      "reference_report": "찬성 측은 비용 감소 가능성을 보고했다. [S1]\n반대 측은 독립 재현이 없다고 지적했다. [S2]\n"
+    }
+  ]
+}

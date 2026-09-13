@@ -8,10 +8,14 @@
 
 ## 유지보수 회귀 검증 (Unreleased)
 
+### Phase 2–7 범위 정정
+
+현재 구현·fixture 검증에는 safe source wrapping과 정확한 private-host allowlist, `quality.json` 및 검토 필요 시 CLI 종료 코드 3, 기본 OFF인 Full gap 보충(최대 2 gaps·3 sources), 기본 OFF인 immutable vault reuse, 오프라인 evaluator, package resource 기반 `install-skill`이 포함된다. evaluator는 진실성·사실 정확도를 판정하지 않는다. Windows wheel smoke와 run/resume은 CI 실행·검토가 남아 있고, 실제 연구 benchmark·외부 2~3명 설치 피드백·릴리스도 pending이다. 따라서 Phase 2–7 전체 완료로 해석하지 않는다.
+
 2026-09-14 Phase 1 후속은 전체 **112개 통과(9.456초)**. 불변 노트·날짜 전달·CLI/MCP 실행 경계를 추가 검증하고, 최종 wheel을 임시 환경에 설치해 mock 완주·재개를 확인했다. 아래 96개는 앞선 유지보수 시점의 결과다. [페이즈 계획](DEVELOPMENT-PHASES.md) 참조.
 
 실행 명령: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py' -v`.
-최종 로컬 실행은 **96개 통과(9.636초)**. macOS 임시 venv에서 최종 wheel을 재설치해 저장소 밖 mock Light 완주와 재개 시 추가 호출 0을 확인했다. 한·영 프롬프트 각 14개 포함과 비공개 폴더 제외도 확인했다. help/doctor는 앞선 설치 스냅샷에서 통과했으며, 최종 wheel에는 최종 소스·프롬프트가 일치한다. 원격 CI와 Windows를 실행한 결과는 아니다.
+앞선 유지보수 시점 로컬 실행은 **96개 통과(9.636초)**. macOS 임시 venv에서 최종 wheel을 재설치해 저장소 밖 mock Light 완주와 재개 시 추가 호출 0을 확인했다. 한·영 프롬프트 각 14개 포함과 비공개 폴더 제외도 확인했다. help/doctor는 앞선 설치 스냅샷에서 통과했으며, 최종 wheel에는 최종 소스·프롬프트가 일치한다. 원격 CI와 Windows를 실행한 결과는 아니다.
 가짜 CLI의 실패·시간 초과·재시도 사용량, 구형 장부 backfill, 양수 예산·호출 직전 중단, 동일 실행 잠금과 비평 일부 완료 후 재개를 검증한다. 이는 모든 비정상 종료 시점의 무결성이나 실제 모델 호환성을 보장하지 않는다.
 
 `tests/fixtures/quality_cases.json`은 공개 가능한 합성 자료다. 한국어·영어·혼합 문서의 표·목록·판단·내부 인용·미등록 출처와, 잘린 근거·부분 지지로 반환된 미지지 판정의 표시를 검증한다. 모델의 사실 판정 정확도를 측정하는 벤치마크는 아니다. HTTP/PDF 오류는 mock으로 검증하며 Windows 실행 검증은 남아 있다.
@@ -75,3 +79,7 @@ Light 2회(v0.1, v0.3), Full 3회(v0.2 ×2, v0.3 ×1). mock 테스트 18개.
 - [x] 이름 유지(hyperresearch-codex), 저자·저작권자 samchoi (2026-09-13)
 - [x] docs/internal/ 은 미추적(.gitignore), TEST-PLAN.md 와 원본 비교(COMPARISON-drb67.html)만 공개
 - [x] 공개 저장소와 main CI 성공 확인 (2026-09-13 원격 조회, 위 현재 정정 참조)
+
+### 2026-09-14 Phase 2–7 최종 로컬 검증
+
+전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 Windows 결과는 원격 CI에서 별도 확인한다.

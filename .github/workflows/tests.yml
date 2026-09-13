@@ -53,3 +53,25 @@ jobs:
           PY
           )
           (cd "$RUNNER_TEMP" && "$smoke/bin/python" "$GITHUB_WORKSPACE/tests/wheel_smoke.py")
+  windows:
+    runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - shell: bash
+        run: pip install -e .
+      - shell: bash
+        run: hpr --help
+      - shell: bash
+        run: HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py' -v
+      - shell: bash
+        run: |
+          python -m pip wheel --no-deps . --wheel-dir "$RUNNER_TEMP/hpr-wheel"
+          python -m venv "$RUNNER_TEMP/hpr-smoke-venv"
+          "$RUNNER_TEMP/hpr-smoke-venv/Scripts/python.exe" -m pip install "$RUNNER_TEMP/hpr-wheel"/*.whl
+          (cd "$RUNNER_TEMP" && "$RUNNER_TEMP/hpr-smoke-venv/Scripts/hpr.exe" --help)
+          (cd "$RUNNER_TEMP" && "$RUNNER_TEMP/hpr-smoke-venv/Scripts/python.exe" "$GITHUB_WORKSPACE/tests/wheel_smoke.py")

@@ -1,5 +1,6 @@
 """합성 응답으로 fetch 본문·날짜·오류 표기를 검증한다. 네트워크는 사용하지 않는다."""
 import unittest
+import socket
 from unittest import mock
 
 import httpx
@@ -7,7 +8,7 @@ import httpx
 from hprc import fetch
 
 
-CFG = {"user_agent": "test", "timeout": 1, "max_bytes": 64, "parallel": 1}
+CFG = {"user_agent": "test", "timeout": 1, "max_bytes": 64, "parallel": 1, "allow_private_hosts": []}
 REAL_CLIENT = httpx.Client
 
 
@@ -16,6 +17,15 @@ def response(status, body=b"", headers=None):
 
 
 class FetchQualityTests(unittest.TestCase):
+    def setUp(self):
+        self.dns = mock.patch("hprc.safe_http.socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))
+        ])
+        self.dns.start()
+
+    def tearDown(self):
+        self.dns.stop()
+
     def client_for(self, handler):
         transport = httpx.MockTransport(handler)
         return mock.patch("hprc.fetch.httpx.Client", side_effect=lambda **kwargs: REAL_CLIENT(transport=transport, **kwargs))

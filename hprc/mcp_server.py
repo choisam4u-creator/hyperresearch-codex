@@ -6,6 +6,7 @@ from pathlib import Path
 
 from . import vault
 from .run_paths import run_directory
+from .untrusted import wrap_source
 
 TOOLS = [
     {"name": "search_notes", "description": "창고 노트 전문 검색(FTS5). query 는 검색어.", "inputSchema": {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["query"]}},
@@ -26,7 +27,10 @@ def call_tool(root: Path, name: str, args: dict) -> str:
     if name == "search_notes":
         if not (root / "research" / "index.sqlite").exists():
             vault.sync(root)
-        return json.dumps(vault.search(root, args["query"], int(args.get("limit", 10))), ensure_ascii=False, indent=1)
+        hits = vault.search(root, args["query"], int(args.get("limit", 10)))
+        for hit in hits:
+            hit["snippet"] = wrap_source(hit["snippet"], hit["url"])
+        return json.dumps(hits, ensure_ascii=False, indent=1)
     if name == "read_note":
         if args.get("path"):
             p = Path(args["path"])
@@ -34,7 +38,7 @@ def call_tool(root: Path, name: str, args: dict) -> str:
                 return "research/ 밖 경로는 읽지 않는다"
         else:
             p = next((n for n in _notes(root) if n.name.startswith(args.get("id", "") + "-")), None)
-        return p.read_text(encoding="utf-8") if p and p.exists() else "노트 없음"
+        return wrap_source(p.read_text(encoding="utf-8"), vault.read_front(p).get("url", "")) if p and p.exists() else "노트 없음"
     if name == "list_notes":
         return "\n".join(f"{vault.read_front(p).get('id','')}\t{vault.read_front(p).get('title','')[:70]}\t{p.name}" for p in _notes(root)[: int(args.get("limit", 30))]) or "노트 없음"
     if name == "vault_status":
@@ -50,7 +54,7 @@ def call_tool(root: Path, name: str, args: dict) -> str:
             except ValueError:
                 continue
             if mf.exists():
-                m = json.loads(mf.read_text())
+                m = json.loads(mf.read_text(encoding="utf-8"))
                 out.append(f"{d.name}\t{m.get('tier')}\t{m['prompt'][:50]}\t" + ",".join(f"{s['name']}:{s['status']}" for s in m["steps"]))
         return "\n".join(out) or "실행 없음"
     if name == "read_report":

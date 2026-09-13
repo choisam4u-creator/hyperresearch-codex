@@ -92,7 +92,7 @@ def backfill(root: Path) -> int:
         mf = d / "manifest.json"
         if not mf.exists():
             continue
-        m = json.loads(mf.read_text())
+        m = json.loads(mf.read_text(encoding="utf-8"))
         for u in m.get("usage", []):
             at = u.get("at") or u.get("ts")
             if not at:

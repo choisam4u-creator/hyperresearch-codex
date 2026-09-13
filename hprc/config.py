@@ -33,6 +33,8 @@ DEFAULTS = {
         "query_variants": True,
         "searxng_endpoint": None,                     # 기본 비활성. DuckDuckGo 무결과일 때만 명시 endpoint를 보조로 쓴다
     },
+    "reuse": {"enabled": False, "max_age_days": 30, "limit": 3},
+    "gap_fetch": {"enabled": False, "max_gaps": 2, "max_sources": 3},
     "light": {"search_results": 12, "max_sources": 10, "critics": ["dialectic", "depth", "instruction"],
               "cite_sample": 6, "target_words": 900, "parallel": 2},
     "full":  {"search_results": 24, "max_sources": 20, "loci_max": 4, "drafts": 3,
@@ -40,7 +42,7 @@ DEFAULTS = {
               "parallel": 2, "polish": True},
     "gates": {"patch_max_ratio": 0.30, "polish_max_ratio": 0.15, "hunk_max_chars": 1200, "min_note_chars": 400,
               "dup_jaccard": 0.6},
-    "fetch": {"timeout": 20, "max_bytes": 2_000_000, "parallel": 4,
+    "fetch": {"allow_private_hosts": [], "max_redirects": 5, "timeout": 20, "max_bytes": 2_000_000, "parallel": 4,
               "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"},
     "note_max_chars": 12000,      # 분석가·지점 조사에 넣는 노트 상한(자)
     "draft_note_chars": 8000,     # 초안에 넣는 노트 상한
@@ -72,7 +74,7 @@ def load(root: Path, preset: str | None = None, lang: str | None = None) -> dict
     cfg = json.loads(json.dumps(DEFAULTS))
     path = root / "research" / "config.json"
     if path.is_file():
-        _merge(cfg, json.loads(path.read_text()))
+        _merge(cfg, json.loads(path.read_text(encoding="utf-8")))
     cfg["preset"] = preset or cfg["preset"]
     _merge(cfg, cfg["presets"].get(cfg["preset"], {}))
     cfg["lang"] = lang or cfg["lang"]

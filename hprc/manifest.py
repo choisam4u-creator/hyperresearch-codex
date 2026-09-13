@@ -24,7 +24,7 @@ class Manifest:
     def __init__(self, run_dir: Path, prompt: str | None = None, tier: str = "light"):
         self.path = run_dir / "manifest.json"
         if self.path.exists():
-            self.data = json.loads(self.path.read_text())
+            self.data = json.loads(self.path.read_text(encoding="utf-8"))
         else:
             if prompt is None:
                 raise FileNotFoundError(f"manifest 없음: {self.path}")

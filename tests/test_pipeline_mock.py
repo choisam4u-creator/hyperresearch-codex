@@ -54,6 +54,8 @@ class Base(unittest.TestCase):
             (self.site / f"p{i}.html").write_text(PAGE.format(title=title, body=body, date=date or "2021-05-05", canon=canon, pad=pad), encoding="utf-8")
         self.server = Server(self.site)
         self.proj = self.tmp / "proj"; self.proj.mkdir()
+        (self.proj / "research").mkdir()
+        (self.proj / "research/config.json").write_text(json.dumps({"fetch": {"allow_private_hosts": ["127.0.0.1"]}}))
         shutil.copytree(ROOT / "hprc", self.proj / "hprc")
         self.urls = self.tmp / "urls.txt"
         self.urls.write_text("\n".join(f"http://127.0.0.1:{self.server.port}/p{i}.html" for i in range(4)) + "\n")
@@ -142,8 +144,10 @@ class DietTests(Base):
         self.assertTrue(out.exists())
 
     def test_domain_skew_and_truncation_flags(self):
-        (self.proj / "research/config.json").parent.mkdir(exist_ok=True)
-        (self.proj / "research/config.json").write_text(json.dumps({"note_max_chars": 300, "domain_skew_warn": 0.5}))
+        config_path = self.proj / "research/config.json"
+        config = json.loads(config_path.read_text())
+        config.update({"note_max_chars": 300, "domain_skew_warn": 0.5})
+        config_path.write_text(json.dumps(config))
         pipeline.run(self.proj, "질문", "light", urls_file=str(self.urls), run_id="s1", no_search=True, quiet=True)
         src = json.loads((self.proj / "research/runs/s1/sources.json").read_text())
         self.assertTrue(any(w.startswith("domain_skew:127.0.0.1") for w in src["warnings"]))
@@ -371,6 +375,7 @@ class DoctorMockRunTests(unittest.TestCase):
         self.assertIn("로그인: codex login status 실행 오류", out.getvalue())
 
 
+@unittest.skipIf(os.name == "nt", "fixture가 POSIX /bin/sh 스크립트를 사용함")
 class RunStepFailureTests(unittest.TestCase):
     def _fake_codex_script(self, d: Path) -> Path:
         script = d / "codex"
@@ -595,6 +600,7 @@ class FailurePathTests(Base):
         self.assertEqual(["scout"], calls)                     # 정찰에서 바로 멈춤: 덕덕고로 넘어가 분석가까지 가지 않는다
         self.assertEqual("auth_required", self._state("a1")["status"])
 
+    @unittest.skipIf(os.name == "nt", "fixture가 POSIX /bin/sh 스크립트를 사용함")
     def test_real_subprocess_path_with_fake_codex(self):
         """HPR_BACKEND 를 비우고 가짜 codex 실행 파일로 진짜 subprocess 경로를 지나 본다(토큰 0)."""
         bindir = self.tmp / "bin"; bindir.mkdir()

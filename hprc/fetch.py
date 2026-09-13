@@ -8,6 +8,8 @@ from html.parser import HTMLParser
 
 import httpx
 
+from .safe_http import open_safe_stream
+
 
 class _Text(HTMLParser):
     SKIP = {"script", "style", "noscript", "svg", "nav", "footer", "header", "aside", "form"}
@@ -162,8 +164,10 @@ def fetch_one(row: dict, cfg: dict) -> dict:
            "published": row.get("published", ""), "published_source": "row" if row.get("published") else "", "modified": "", "modified_source": "",
            "canonical": "", "status": "", "text": "", "error": ""}
     try:
-        with httpx.Client(headers={"User-Agent": cfg["user_agent"]}, timeout=cfg["timeout"], follow_redirects=True) as client:
-            with client.stream("GET", url) as response:
+        with httpx.Client(headers={"User-Agent": cfg["user_agent"]}, timeout=cfg["timeout"],
+                          follow_redirects=False, trust_env=False) as client:
+            with open_safe_stream(client, url, allow_private_hosts=cfg.get("allow_private_hosts", ()),
+                                  max_redirects=cfg.get("max_redirects", 5)) as response:
                 out["status"] = str(response.status_code)
                 ctype = response.headers.get("content-type", "")
                 out["final_url"] = str(response.url)

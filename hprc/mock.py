@@ -1,10 +1,13 @@
 """테스트용 가짜 모델: Codex 를 부르지 않고 스키마에 맞는 답을 입력에서 기계적으로 만든다."""
+import html
 import json
 import re
 
 
 def _first_sentence(text: str) -> str:
-    body = text.split("\n---\n", 1)[-1]
+    match = re.search(r"<data_only>\n(.*?)\n</data_only>", text, re.S)
+    body = html.unescape(match.group(1)) if match else text
+    body = body.split("\n---\n", 1)[-1]
     body = re.sub(r"^#.*$", "", body, flags=re.M).strip()
     match = re.search(r"[^.\n!?]{20,200}[.!?]", body)
     return (match.group(0) if match else body[:120]).strip()
@@ -29,7 +32,7 @@ def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
     question = inputs.get("question.txt", "").strip()
     if step == "scout":
         return {"results": []}   # 테스트에서는 URL 목록을 쓴다
-    if step == "analyst":
+    if step in ("analyst", "analyst_gap"):
         claims = [{"id": f"C{i+1}", "text": _first_sentence(v), "sources": [k], "confidence": "high"}
                   for i, (k, v) in enumerate(sorted(notes.items()))]
         return {"claims": claims, "contradictions": [], "gaps": ["모의 분석: 빈틈 예시"]}

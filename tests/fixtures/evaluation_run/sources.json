@@ -1,0 +1,6 @@
+{
+  "sources": [
+    {"id": "S1", "path": "notes/S1.md"},
+    {"id": "S2", "path": "notes/S2.md"}
+  ]
+}

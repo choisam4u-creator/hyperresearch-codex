@@ -1,0 +1,6 @@
+{
+  "prompt": "고정 사실 두 가지를 한국어로 요약하라.",
+  "created_at": 100,
+  "steps": [{"finished_at": 103}],
+  "usage": [{"backend": "mock", "model": "mock", "effort": "none", "usage_known": true, "in": 12, "cached": 3, "out": 2}]
+}

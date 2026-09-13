@@ -36,7 +36,7 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 - Codex CLI 로그인 상태(`codex login`). 비용·실측은 Codex CLI 0.153.4와 `gpt-6-astra`로 수행했다. 다른 버전은 프롬프트 손질이 필요할 수 있다.
 - `hpr doctor`는 `codex --version`과 `codex login status`를 timeout 제한으로 검사한다. 실측 기준 0.153.4와 다르면 비차단 경고를 띄우고, 버전·로그인 조회 실패는 실패 사유를 명확히 표시한다.
 - Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
-- macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows는 미검증이다.
+- macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows help/doctor·잠금·wheel smoke는 CI 설정에 포함했지만, Windows run/resume 지원은 CI 결과 검토 전까지 보류한다.
 
 ## 사용
 
@@ -55,7 +55,7 @@ python3 hpr.py mcp-config                            # Codex 에 창고 MCP 서�
 python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스킬 복사
 ```
 
-`hpr install-skill` 보조 기능은 현재 소스 체크아웃의 `skill/` 폴더를 찾으므로 체크아웃에서 사용한다. wheel smoke 검사는 패키지된 `hprc` 실행부만 확인하며 이 보조 기능이 wheel에 포함됐다고 보장하지 않는다.
+`hpr install-skill --yes`는 소스 체크아웃의 skill 또는 wheel에 포함된 package resource에서 스킬을 복사한다. 실제 쓰기는 `--yes`를 명시한 경우에만 한다.
 
 결과: `research/runs/<run_id>/final_report.md`. 첫 주석 줄에 출처 수(독립 묶음)·지적 수·인용 미지지 수·린트·호출 수·토큰이 있고, 끝에 "출처 상세(자동 생성)" 표(제목·도메인·게시일·조회일·독립 묶음·경로·1차 여부)가 붙는다.
 
@@ -95,13 +95,17 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 - `--preset lean`: 구독 계정용. 비평 2종·초안 2개(Full)·출처 수와 노트 상한 축소·일부 추론 강도 하향. 기본은 standard.
 - 실행별 기본 입력 토큰 기준: light 120만, full 350만. 각 단계·호출·재시도 직전에 검사하고 `hpr resume <id> --budget <더 큰 값>`으로 이어 간다. `--budget N`은 양수여야 한다. 진행 중인 호출·병렬 호출로 초과할 수 있고 미측정 사용량도 있어 정확한 비용 상한을 보장하지 않는다.
 - 모델 호출 시도는 실패 시 측정된 사용량까지 `research/usage-ledger.jsonl`에 기록된다. 측정되지 않은 호출은 별도로 표시하며 이 경우 비용 추정은 불완전하다. `hpr usage [--days N] [--json] [--backfill]`은 로컬 기록의 합계이며 계정의 남은 구독 사용량은 아니다.
-- 같은 실행 ID의 중복 실행은 잠금으로 차단하고 중단 전에 완료된 비평 결과는 재사용한다. 실행에는 POSIX 파일 잠금이 필요하다. Windows는 help/doctor만 열 수 있고 run/resume은 차단하며, 지원 검증은 아직 하지 않았다.
+- 같은 실행 ID의 중복 실행은 잠금으로 차단하고 중단 전에 완료된 비평 결과는 재사용한다. POSIX flock 또는 Windows msvcrt 잠금을 쓴다. Windows CI는 UTF-8 모드(`PYTHONUTF8=1`)를 사용하며, Windows의 실제 Codex 리서치 실행은 아직 검증하지 않았다.
 
 ## 토큰 다이어트 (v0.3)
 
 인용 검사는 문서 앞·중간·끝에 분산된 표본을 고르며 목록·표도 포함한다. `final_report.md`에 미지지 문장과 판정이 돌아오지 않은 표본을 표시하며, 표본 밖의 사실성을 보장하지 않는다. 행 번호는 다듬기 전 저장한 `citecheck_report.md` 기준이다. 실행이 완료돼도 품질 경고가 남을 수 있다.
 
 보조 검색은 기본 OFF다. 사용하려는 SearXNG 서버를 선택한 뒤 `research/config.json`의 `search.searxng_endpoint`에 주소를 설정하면 DuckDuckGo와 앞선 경로에 유효 후보가 없을 때만 사용한다. 서버는 자동 지정하지 않는다. 실패 종류는 `candidates.json`에 남긴다. `--no-search`는 `--scholar` 검색도 막지만, 제공한 URL의 본문 수집에는 네트워크가 필요하다.
+
+출처 수집은 scheme·redirect·DNS·연결된 peer를 검사한다. 사설 목적지는 `fetch.allow_private_hosts`에 호스트명이 정확히 적힌 경우만 허용하며, 인증정보·애매한 호스트 표기·허용하지 않은 사설 목적지는 거부한다. `gap_fetch.enabled`와 `reuse.enabled`는 기본 OFF다. Full 누락 근거 보충은 명시적으로 켠 경우에도 gap 최대 2개·출처 최대 3개로 제한한다. vault 재사용은 신선하고 불변이며 hash가 맞는 노트만 쓰고, 없는 색인을 다시 만들지 않는다.
+
+실행마다 `quality.json`을 쓴다. 보고서가 생성돼도 `review_required`면 검토 필요 상태이며, 기록된 품질 상태가 `passed`가 아니면 CLI는 종료 코드 3을 반환한다. 오프라인 evaluator는 제공된 fixture와 실행 메타데이터를 비교할 뿐 사실성·진실 판정기가 아니다. Windows run/resume과 최종 CI 결과는 아직 대기 중이다.
 
 | 단계 | 받는 입력 |
 |---|---|

@@ -13,7 +13,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from hprc import cli, codex_runner, ledger, pipeline  # noqa: E402
+from hprc import cli, codex_runner, ledger, locking, pipeline  # noqa: E402
 
 
 FAKE_CODEX = """#!/bin/sh
@@ -54,6 +54,7 @@ class UsageRecoveryTests(unittest.TestCase):
              error.web_search, error.seconds, error.stderr),
         )
 
+    @unittest.skipIf(os.name == "nt", "fixture가 POSIX /bin/sh 스크립트를 사용함")
     def test_uuid_logs_never_overwrite_legacy_or_colliding_attempt_logs(self):
         bindir = self._fake_codex()
         logs = self.root / "logs"
@@ -207,11 +208,11 @@ class UsageRecoveryTests(unittest.TestCase):
             self.assertIn("이미 실행 중", str(ctx.exception))
         with pipeline._run_lock(run_dir):
             pass
-        with mock.patch.object(pipeline, "fcntl", None):
+        with mock.patch.object(locking, "fcntl", None), mock.patch.object(locking, "msvcrt", None):
             with self.assertRaises(pipeline.Blocked) as ctx:
                 with pipeline._run_lock(run_dir):
                     pass
-        self.assertIn("지원하지 않음", str(ctx.exception))
+        self.assertIn("지원하지", str(ctx.exception))
 
     def test_parallel_critic_resume_reuses_completed_partial_result(self):
         run = pipeline.Run(self.root, "q", "light", "partial", quiet=True)

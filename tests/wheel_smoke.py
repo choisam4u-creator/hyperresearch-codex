@@ -56,12 +56,12 @@ def main() -> None:
         final = pipeline.run(preserved, "합성 출처에서 확인할 수 있는 내용은?", "light",
                              urls_file=str(urls), run_id=run_id, no_search=True, quiet=True)
         assert final.is_file(), final
-        manifest = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text())
+        manifest = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text(encoding="utf-8"))
         calls_before = len(manifest["usage"])
         resumed = pipeline.run(preserved, "합성 출처에서 확인할 수 있는 내용은?", "light",
                                run_id=run_id, no_search=True, quiet=True)
         assert resumed == final and resumed.is_file()
-        manifest_after = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text())
+        manifest_after = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text(encoding="utf-8"))
         assert calls_before > 0
         assert len(manifest_after["usage"]) == calls_before, (calls_before, len(manifest_after["usage"]))
 

@@ -38,7 +38,7 @@ New source notes use immutable snapshots with permanent IDs; each run keeps its 
 - Codex CLI, logged in (`codex login`). The published cost measurements used Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
 - `hpr doctor` verifies `codex --version` and `codex login status` with a timeout. A mismatch from the measured 0.153.4 is a non-blocking warning; version/query/login failures are shown clearly.
 - Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
-- macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows is untested.
+- macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows help/doctor, locking, and wheel smoke are covered by CI configuration; Windows run/resume support remains pending until that CI result is reviewed.
 
 ## 60-second start
 
@@ -55,7 +55,7 @@ open research/runs/*/final_report.md
 
 `hpr` uses `HPR_HOME` (or the nearest folder containing `research/`) as its workspace, so you can keep one vault per project. Inside the repo `python3 hpr.py …` does the same thing.
 
-The optional `hpr install-skill` helper currently expects the source checkout's `skill/` directory; use it from a checkout. The wheel smoke check covers the packaged `hprc` runtime and does not claim that this helper is included in the wheel.
+`hpr install-skill --yes` copies the skill from the source checkout or the packaged resource in a wheel. It writes only when `--yes` is explicit.
 
 ## Language, presets and budgets
 
@@ -63,13 +63,17 @@ The optional `hpr install-skill` helper currently expects the source checkout's 
 - `--preset lean` is for subscription accounts: 2 critics, 2 drafts (full), fewer sources, smaller note caps, lower reasoning effort where it matters least. `standard` is the default.
 - Every run has a default input-token threshold (`budget.default_by_tier`: light 1.2 M, full 3.5 M). It is checked before each step, call and retry; `hpr resume <id> --budget <bigger>` continues. `--budget N` must be positive. In-flight or parallel calls can exceed it, and unreported usage is unknown, so this is not a hard spending cap.
 - Model attempts are recorded in `research/usage-ledger.jsonl`, including measured usage from failures. Unreported usage is shown separately; the cost estimate is incomplete when any attempt is unmeasured. `hpr usage [--days N] [--json] [--backfill]` shows local totals, not your account's remaining subscription allowance.
-- A run lock rejects concurrent execution of the same run ID. Completed critic results are reused after interruption. Execution currently requires POSIX file locking; Windows run/resume is blocked, while help/doctor remains available. Windows support is unverified.
+- A run lock rejects concurrent execution of the same run ID. Completed critic results are reused after interruption. The lock uses POSIX flock or Windows msvcrt. Windows CI uses UTF-8 mode (`PYTHONUTF8=1`); actual Codex research on Windows is not yet verified.
 
 ## What you see while it runs
 
 Citation checks sample cited statements across the document, including lists and tables. `final_report.md` shows unsupported statements and unreturned judgments; it does not verify the rest of the report. Line references point to `citecheck_report.md`, saved before polishing. A completed run can finish with a quality warning.
 
 Optional search fallback is off by default. Set `search.searxng_endpoint` in `research/config.json` to a SearXNG server you choose to use; it is tried only after DuckDuckGo produces no usable candidate and no earlier candidate is usable. No server is configured automatically. Search failure types are saved in `candidates.json`; `--no-search` also suppresses `--scholar` searches. Fetching supplied URLs still requires network access.
+
+Source fetching validates schemes, redirects, DNS and connected peers. Private destinations require an exact hostname in `fetch.allow_private_hosts`; credentials, ambiguous host forms, and unapproved private targets are rejected. `research/config.json` keeps `gap_fetch.enabled` and `reuse.enabled` off by default. Full gap fetching is bounded by at most 2 gaps and 3 sources when explicitly enabled. Vault reuse accepts only fresh, immutable, hash-checked notes and never regenerates a missing index.
+
+Each run writes `quality.json`. A report may be generated with `review_required`; the CLI exits 3 whenever the recorded quality status is not `passed`. The offline evaluator compares supplied fixtures and run metadata only. It is not a truth or factual-accuracy judge. Windows run/resume and the final CI result remain pending.
 
 ![live progress of a real Light lean run, compressed to 24 s](docs/assets/run-light-lean.svg)
 
