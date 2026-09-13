@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- `doctor`에 검증된 Codex CLI 버전과의 불일치 경고, 버전·로그인 조회의 3초 제한, 실행 오류 진단을 추가했다. 버전 차이는 경고이며 조회 실패·로그인 미확인은 종료코드 1로 표시한다.
+- 진단 회귀 테스트 12개 추가: 전체 mock 40개 통과. 실제 리서치 모델 호환성 검증은 포함하지 않는다.
+
 ## 0.3.1 - 2026-09-13
 - Cite-check reads each cited note selected by the sentences that cite *that* source, not by all sample sentences at once (a Korean-vs-English mismatch left a 93-char note and produced false "unsupported" verdicts in the variance run). Verified with one more real run of the same question: unsupported 4/5 → 1/5, the English Google notes now reach the checker at 4–6k chars.
 - Paragraph selection tokenizes Latin and Hangul runs separately ("Google은" now matches "Google") and, when nothing overlaps, fills the cap in document order instead of returning only the title.

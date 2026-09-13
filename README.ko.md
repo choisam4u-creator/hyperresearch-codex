@@ -30,6 +30,7 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 ## 필요한 것
 
 - Codex CLI 로그인 상태(`codex login`). Codex CLI 0.153.4 와 `gpt-6-astra` 로 실측. 다른 버전은 프롬프트 손질이 필요할 수 있다.
+- `hpr doctor`에서는 `codex --version`와 `codex login status`를 timeout 제한으로 검사해 `0.153.4`와 버전 불일치 시 경고를 띄우고, 버전/로그인 진단 실패는 실패 사유를 명확히 표시합니다.
 - Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
 - macOS 에서 실측. Linux 는 CI 로만, Windows 는 미확인.
 

@@ -6,7 +6,7 @@ A Codex-only research pipeline that turns one prompt into a **sourced, adversari
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.
 
-**Status:** beta 0.3.1. 10 real runs on `gpt-6-astra` (4 full, 6 light), 28 mock tests including failure paths. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
+**Status:** beta 0.3.1. 10 real runs on `gpt-6-astra` (4 full, 6 light), 40 mock tests including failure paths. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
 
 ## Three rules
 
@@ -32,6 +32,7 @@ Honest table, checked 2026-09-13. Numbers for this tool are measured (see *Cost*
 ## Requirements
 
 - Codex CLI, logged in (`codex login`). Tested with Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
+- `hpr doctor` now verifies `codex --version` and `codex login status` with timeout; version mismatch to 0.153.4 is a warning, but version/query/login failures are shown clearly.
 - Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
 - Tested on macOS; Linux runs only through CI so far; Windows untested.
 
@@ -156,7 +157,7 @@ Unedited reports from real runs (only the header comment was added). Source titl
 
 ## Tests
 
-`HPR_BACKEND=mock python3 -m unittest tests/test_pipeline_mock.py` runs the whole light and full pipelines against local fixture pages without spending Codex usage (28 tests, including failure paths: network down, bad URLs, usage limit, login expired, missing codex, timeout).
+`HPR_BACKEND=mock python3 -m unittest tests/test_pipeline_mock.py` runs the whole light and full pipelines against local fixture pages without spending Codex usage (40 tests, including failure paths: network down, bad URLs, usage limit, login expired, missing codex, timeout).
 
 ## Credits
 

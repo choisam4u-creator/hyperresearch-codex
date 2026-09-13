@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -12,6 +13,37 @@ from . import mcp_server, pipeline, vault
 
 PKG = Path(__file__).resolve().parent
 SKILL_SRC = PKG.parent / "skill/hyperresearch-codex/SKILL.md"
+TESTED_CODEX_VERSION = "0.153.4"
+CODEX_DOCTOR_TIMEOUT = 3
+_LOGIN_SUCCESS = re.compile(r"(?im)^\s*(?:you are\s+)?(logged in|authenticated)\b")
+_LOGIN_FAIL = re.compile(r"(?im)^\s*(?:you are\s+not\s+logged\s+in|not\s+logged\s+in|please\s+login|login\s+required|authentication\s+required|unauthenticated)")
+
+
+def _run_codex_command(cmd: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=CODEX_DOCTOR_TIMEOUT)
+
+
+def _extract_version(text: str) -> str:
+    m = re.search(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?", text or "")
+    return m.group(0) if m else ""
+
+
+def _clean_output(cp: subprocess.CompletedProcess[str]) -> str:
+    return ((cp.stdout or "").strip() or (cp.stderr or "").strip())
+
+
+def _login_status(raw: str, return_code: int) -> tuple[bool, str]:
+    """로그인 결과를 종료코드 + 메시지로 판정한다."""
+    if return_code != 0:
+        return False, f"종료코드 {return_code}"
+    text = (raw or "").lower()
+    if not text:
+        return False, "출력 없음"
+    if _LOGIN_FAIL.search(text):
+        return False, "로그인 필요"
+    if _LOGIN_SUCCESS.search(text):
+        return True, "로그인됨"
+    return False, f"판독불가: {raw[:80] if raw else '(빈 출력)'}"
 
 
 def find_root() -> Path:
@@ -33,9 +65,41 @@ def doctor() -> int:
     codex = shutil.which("codex")
     print("codex CLI:", codex or "없음 → https://developers.openai.com/codex 에서 설치"); ok &= bool(codex)
     if codex:
-        print("  ", subprocess.run(["codex", "--version"], capture_output=True, text=True).stdout.strip())
-        login = subprocess.run(["codex", "login", "status"], capture_output=True, text=True)
-        print("   로그인:", (login.stdout or login.stderr).strip()[:80] or "확인 불가")
+        try:
+            version = _run_codex_command(["codex", "--version"])
+            version_output = _clean_output(version)
+            print("  codex --version:", version_output or "(빈 출력)")
+            if version.returncode != 0:
+                print("  경고: codex --version 종료코드", version.returncode)
+                ok = False
+            else:
+                parsed = _extract_version(version_output)
+                if not parsed:
+                    print("  경고: codex 버전 문자열을 읽지 못했습니다.")
+                    ok = False
+                elif parsed == TESTED_CODEX_VERSION:
+                    print(f"  테스트 기준 버전 {TESTED_CODEX_VERSION}과 일치")
+                else:
+                    print(f"  경고: 테스트 기준 버전({TESTED_CODEX_VERSION})과 다름 → 실제: {parsed}")
+        except subprocess.TimeoutExpired:
+            print(f"  경고: codex --version 호출 타임아웃 (>{CODEX_DOCTOR_TIMEOUT}s)")
+            ok = False
+        except OSError as error:
+            print(f"  경고: codex --version 실행 오류: {error}")
+            ok = False
+        try:
+            login = _run_codex_command(["codex", "login", "status"])
+            login_output = _clean_output(login)
+            logged_in, status_msg = _login_status(login_output, login.returncode)
+            print("   로그인:", status_msg, "-", login_output[:80] or "(출력 없음)")
+            if not logged_in:
+                ok = False
+        except subprocess.TimeoutExpired:
+            print("   로그인: codex login status 호출 타임아웃")
+            ok = False
+        except OSError as error:
+            print(f"   로그인: codex login status 실행 오류: {error}")
+            ok = False
     print("작업 폴더(ROOT):", ROOT, "(HPR_HOME 으로 바꿀 수 있음)")
     try:
         import httpx; print("httpx:", httpx.__version__)
@@ -167,5 +231,3 @@ def main() -> int:
         print("BLOCKED:", error, file=sys.stderr); return 2
     print("최종 보고서:", out)
     return 0
-
-

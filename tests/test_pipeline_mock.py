@@ -1,5 +1,7 @@
 """Codex 호출 없이(HPR_BACKEND=mock) 로컬 HTTP 고정 페이지로 Light/Full 파이프라인·게이트·부품을 검증한다."""
 import http.server
+import contextlib
+import io
 import json
 import os
 import shutil
@@ -8,11 +10,12 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from hprc import cluster, codex_runner, fetch, gates, pipeline, search, vault  # noqa: E402
+from hprc import cli, cluster, codex_runner, fetch, gates, pipeline, search, vault  # noqa: E402
 
 PAGE = """<html><head><title>{title}</title><meta property="article:published_time" content="{date}T09:00:00+09:00">
 <link rel="canonical" href="{canon}"><script type="application/ld+json">{{"@type":"Article","datePublished":"2020-01-01"}}</script></head>
@@ -314,6 +317,144 @@ class PartTests(unittest.TestCase):
             self.assertEqual(6, len(out[1]["result"]["tools"]))
             self.assertIn("S1", out[2]["result"]["content"][0]["text"])
             self.assertIn("밖 경로", out[3]["result"]["content"][0]["text"])
+
+
+class DoctorMockRunTests(unittest.TestCase):
+    def test_run_codex_command_passes_timeout(self):
+        with mock.patch("hprc.cli.subprocess.run") as run:
+            cp = subprocess.CompletedProcess(["codex", "--version"], 0, stdout="codex 0.153.4")
+            run.return_value = cp
+            cli._run_codex_command(["codex", "--version"])
+        run.assert_called_once_with(["codex", "--version"], capture_output=True, text=True, timeout=cli.CODEX_DOCTOR_TIMEOUT)
+
+    def test_login_status_anchor_unauthenticated(self):
+        self.assertFalse(cli._login_status("Error: Unauthenticated", 0)[0])
+        self.assertTrue(cli._login_status("You are logged in as test", 0)[0])
+
+    def test_doctor_login_nonzero_returncode(self):
+        version = subprocess.CompletedProcess(["codex", "--version"], 0, stdout="codex 0.153.4")
+        login = subprocess.CompletedProcess(["codex", "login", "status"], 1, stdout="Not logged in", stderr="")
+        with mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"), \
+                mock.patch("hprc.cli._run_codex_command", side_effect=[version, login]), \
+                mock.patch("sys.stdout", new=io.StringIO()) as out:
+            rc = cli.doctor()
+        self.assertEqual(1, rc)
+        self.assertIn("로그인: 종료코드 1", out.getvalue())
+
+    def test_doctor_login_empty_output(self):
+        version = subprocess.CompletedProcess(["codex", "--version"], 0, stdout="codex 0.153.4")
+        login = subprocess.CompletedProcess(["codex", "login", "status"], 0, stdout="", stderr="")
+        with mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"), \
+                mock.patch("hprc.cli._run_codex_command", side_effect=[version, login]), \
+                mock.patch("sys.stdout", new=io.StringIO()) as out:
+            rc = cli.doctor()
+        self.assertEqual(1, rc)
+        self.assertIn("로그인: 출력 없음", out.getvalue())
+
+    def test_doctor_login_timeout(self):
+        version = subprocess.CompletedProcess(["codex", "--version"], 0, stdout="codex 0.153.4")
+        with mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"), \
+                mock.patch("hprc.cli._run_codex_command", side_effect=[version, subprocess.TimeoutExpired(["codex", "login", "status"], 1)]), \
+                mock.patch("sys.stdout", new=io.StringIO()) as out:
+            rc = cli.doctor()
+        self.assertEqual(1, rc)
+        self.assertIn("로그인: codex login status 호출 타임아웃", out.getvalue())
+
+    def test_doctor_login_oserror(self):
+        version = subprocess.CompletedProcess(["codex", "--version"], 0, stdout="codex 0.153.4")
+        with mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"), \
+                mock.patch("hprc.cli._run_codex_command", side_effect=[version, OSError("missing")]), \
+                mock.patch("sys.stdout", new=io.StringIO()) as out:
+            rc = cli.doctor()
+        self.assertEqual(1, rc)
+        self.assertIn("로그인: codex login status 실행 오류", out.getvalue())
+
+
+class DoctorTests(unittest.TestCase):
+    def _mock_subprocess(self, responses):
+        calls = []
+
+        def _run(cmd, *args, **kwargs):
+            calls.append(cmd)
+            self.assertTrue(len(calls) <= len(responses), f"예상보다 많은 subprocess 호출: {cmd}")
+            out = responses[len(calls) - 1]
+            if "timeout" in out:
+                raise subprocess.TimeoutExpired(cmd, out["timeout"])
+            return subprocess.CompletedProcess(cmd, out.get("returncode", 0), out.get("stdout", ""), out.get("stderr", ""))
+
+        return _run, calls
+
+    def _run_doctor(self, responses):
+        from hprc import cli
+        old_root = cli.ROOT
+        fake_run, calls = self._mock_subprocess(responses)
+        try:
+            cli.ROOT = Path(self.tmp) if hasattr(self, "tmp") else Path.cwd()
+            with (
+                mock.patch("hprc.cli.shutil.which", return_value="/usr/bin/codex"),
+                mock.patch("subprocess.run", side_effect=fake_run),
+                contextlib.redirect_stdout(buf := io.StringIO())
+            ):
+                result = cli.doctor()
+        finally:
+            cli.ROOT = old_root
+        return result, buf.getvalue(), calls
+
+    def test_doctor_reported_ok_when_tested_version_matches(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "codex 0.153.4\n"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(0, out)
+        self.assertIn("테스트 기준 버전 0.153.4과 일치", text)
+        self.assertIn("로그인됨 - Logged in as user@example.com", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_warns_when_version_differs(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "codex 0.154.0-alpha.6.2\n"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(0, out)
+        self.assertIn("경고: 테스트 기준 버전(0.153.4)과 다름", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_output_empty(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": ""},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("버전 문자열", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_command_times_out(self):
+        out, text, calls = self._run_doctor([
+            {"timeout": 3},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("codex --version 호출 타임아웃", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_version_command_fails(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 2, "stderr": "permission denied"},
+            {"returncode": 0, "stdout": "Logged in as user@example.com\n"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("codex --version 종료코드", text)
+        self.assertEqual(2, len(calls))
+
+    def test_doctor_fails_when_login_not_confirmed(self):
+        out, text, calls = self._run_doctor([
+            {"returncode": 0, "stdout": "0.153.4"},
+            {"returncode": 0, "stdout": "You are not logged in. Run `codex login`"}
+        ])
+        self.assertEqual(1, out)
+        self.assertIn("로그인 필요", text)
+        self.assertEqual(2, len(calls))
+
 
 
 if __name__ == "__main__":
