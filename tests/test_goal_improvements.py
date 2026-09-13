@@ -126,3 +126,19 @@ class GoalImprovementsTests(unittest.TestCase):
             ledger = build_evidence_ledger('Atlas has no sandbox. [S1]', run.evidence_sources())
             run.attach_semantic_evidence(ledger)
             self.assertNotIn('semantic_atoms', ledger['claims'][0])
+
+    def test_final_resolves_only_freshly_passed_structural_findings(self):
+        run = self.semantic_run()
+        findings = [
+            {'id':'F1','quote':'old title','problem':'title','severity':'high','source_ids':[],
+             'origin':'deterministic','check_id':'first_line_question'},
+            {'id':'F2','quote':'Atlas','problem':'unsupported claim','severity':'high','source_ids':[]},
+            {'id':'F3','quote':'old section','problem':'missing','severity':'high','source_ids':[],
+             'origin':'deterministic','check_id':'required_section_1'}]
+        (run.dir/'report.md').write_text('# 질문: q\nAtlas runs in a sandbox. [S1]\n')
+        (run.dir/'findings.json').write_text(json.dumps({'findings':findings}))
+        with mock.patch.dict('os.environ', {'HPR_BACKEND':'mock'}):
+            run.step_citecheck()
+        with mock.patch.object(pipeline,'verify_report',wraps=pipeline.verify_report) as verify:
+            run.step_final()
+        self.assertEqual(['F2','F3'],verify.call_args.args[6])

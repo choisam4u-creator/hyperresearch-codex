@@ -34,6 +34,7 @@ from .untrusted import wrap_source
 from .gap_plan import plan_gaps
 from .evidence import build_evidence_ledger, validate_evidence_ledger
 from .brief import render_brief
+from .cost_guidance import cost_guidance, render_cost_guidance
 from .report_format import format_instruction
 from .token_policy import estimate_next_input, fingerprint, plan_run, usage_summary
 
@@ -188,8 +189,10 @@ class Run:
         if not self.quiet:
             print(f"[hpr {time.strftime('%H:%M:%S')}] {msg}", file=sys.stderr, flush=True)
 
-    def state(self, step: str, status: str) -> None:
-        atomic_write(self.dir / "state.json", json.dumps({"step": step, "status": status, "at": time.time(), "pid": os.getpid(),
+    def state(self, step: str, status: str, reason: str | None = None) -> None:
+        guidance = cost_guidance(self.cfg, self.m.data["usage"], getattr(self, "_reservations", {}), reason)
+        atomic_write(self.dir / "cost_guidance.json", json.dumps(guidance, ensure_ascii=False, indent=2))
+        atomic_write(self.dir / "state.json", json.dumps({"budget": guidance, "stop_reason": reason, "step": step, "status": status, "at": time.time(), "pid": os.getpid(),
                                                           "cost": estimate_cost(self.m.data["usage"], self.cfg["budget"])}, ensure_ascii=False, indent=2))
 
     def tag(self, step: str) -> str:
@@ -216,14 +219,16 @@ class Run:
     def check_budget(self, step: str) -> None:
         total_limit = self.cfg["budget"].get("max_total_tokens")
         if total_limit and usage_summary(self.m.data["usage"])["total_tokens"] >= total_limit:
-            self.state(step, "budget_stop")
-            raise Blocked("총 입력+출력 토큰 상한 도달. resume --total-budget으로 조정할 수 있습니다")
+            message = "총 입력+출력 토큰 상한 도달. resume --total-budget으로 조정할 수 있습니다"
+            self.state(step, "budget_stop", message)
+            raise Blocked(message)
         limit = self.cfg["budget"].get("max_input_tokens")
         if limit:
             used = estimate_cost(self.m.data["usage"], self.cfg["budget"])["input"]
             if used >= limit:
-                self.state(step, "budget_stop")
-                raise Blocked(f"예산 상한 도달: 입력 {used:,} ≥ {limit:,}. `hpr resume {self.run_id} --budget <더 큰 값>` 으로 이어 갈 수 있다")
+                message = f"예산 상한 도달: 입력 {used:,} ≥ {limit:,}. `hpr resume {self.run_id} --budget <더 큰 값>` 으로 이어 갈 수 있다"
+                self.state(step, "budget_stop", message)
+                raise Blocked(message)
 
     def _reserve_call(self, key, name, prompt, inputs, role):
         with self._usage_lock:
@@ -231,24 +236,28 @@ class Run:
             budget = self.cfg["budget"]
             maximum = budget.get("max_model_calls")
             if maximum is not None and summary["calls"] + len(self._reservations) >= maximum:
-                self.state(name, "budget_stop")
-                raise Blocked(f"모델 호출 상한 {maximum}회 도달(실패·재시도 포함)")
+                message = f"모델 호출 상한 {maximum}회 도달(실패·재시도 포함)"
+                self.state(name, "budget_stop", message)
+                raise Blocked(message)
             if (budget.get("stop_on_unknown") or budget.get("max_total_tokens")) and summary["unknown_calls"]:
-                self.state(name, "budget_stop")
-                raise Blocked("미측정 호출이 있어 다음 호출 예산을 확정할 수 없습니다. 사용량 기록을 확인하세요")
+                message = "미측정 호출이 있어 다음 호출 예산을 확정할 수 없습니다. 사용량 기록을 확인하세요"
+                self.state(name, "budget_stop", message)
+                raise Blocked(message)
             estimate = estimate_next_input(prompt, inputs, self.m.data["usage"], role)
             reserved = sum(self._reservations.values())
             limit = budget.get("max_input_tokens")
             if budget.get("reserve_input") and limit and summary["input_tokens"] + reserved + estimate["input_reservation"] > limit:
-                self.state(name, "budget_stop")
-                raise Blocked(f"다음 호출 예상 입력 {estimate['input_reservation']:,}과 진행 중 예약 {reserved:,}이 남은 예산을 초과합니다")
+                message = f"다음 호출 예상 입력 {estimate['input_reservation']:,}과 진행 중 예약 {reserved:,}이 남은 예산을 초과합니다"
+                self.state(name, "budget_stop", message)
+                raise Blocked(message)
             total_limit = budget.get("max_total_tokens")
             output_reserve = max(0, int(budget.get("output_reservation", 4096)))
             # 진행 중 각 호출의 입력 예약과 출력 여유분을 함께 계산한다.
             total_reserved = reserved + len(self._reservations) * output_reserve
             if total_limit and summary["total_tokens"] + total_reserved + estimate["input_reservation"] + output_reserve > total_limit:
-                self.state(name, "budget_stop")
-                raise Blocked("다음 호출의 입력·출력 예약이 남은 총 토큰 예산을 초과합니다")
+                message = "다음 호출의 입력·출력 예약이 남은 총 토큰 예산을 초과합니다"
+                self.state(name, "budget_stop", message)
+                raise Blocked(message)
             estimate["output_reservation"] = output_reserve
             self._reservations[key] = estimate["input_reservation"]
             return estimate
@@ -299,6 +308,11 @@ class Run:
             self._reservations.pop(f"{name}:{attempt}", None)
             self.m.usage(record)
             ledger.append(self.root, ledger_record)
+            # 병렬 예산 중단 이후 늦게 끝난 호출도 현재 비용에 포함한다.
+            state_path = self.dir / "state.json"
+            if state_path.exists():
+                prior = json.loads(state_path.read_text(encoding="utf-8"))
+                self.state(prior["step"], prior["status"], prior.get("stop_reason"))
         u = used if usage_known else {}
         measured = (f"in {u.get('input_tokens', 0):,} / out {u.get('output_tokens', 0):,}"
                     if usage_known else "사용량 미측정")
@@ -752,6 +766,12 @@ class Run:
         draft = (self.dir / "draft.md").read_text(encoding="utf-8")
         inputs = {"question.txt": self.prompt, "draft.md": draft, "_digest.md": self.digest(), "_independence.md": self.independence_md(),
                   **self.excerpts(self.relevant, self.prompt + "\n" + draft)}
+        from .critique_policy import apply_critique_policy, deterministic_report_checks, CRITIC_COMBINED, CRITIC_COMBINED_PROMPT
+        deterministic = deterministic_report_checks(draft, self.prompt, self.lang)
+        policy = self.cfg.get("critic_policy", {})
+        kinds = self.T["critics"]
+        if policy.get("combine_light") and self.tier == "light" and set(kinds) == {"dialectic", "instruction"}:
+            kinds = ["combined"]
         partials = self.dir / "critics"
         partials.mkdir(exist_ok=True)
 
@@ -761,17 +781,25 @@ class Run:
                 if partial.exists():
                     res = json.loads(partial.read_text(encoding="utf-8"))
                 else:
-                    res = self.call(f"critic_{kind}", _prompt(f"critic_{kind}", self.lang), schemas.CRITIC, inputs, "critic")
+                    selected_inputs = inputs
+                    if kind == "instruction" and policy.get("compact_inputs", True):
+                        selected_inputs = {"question.txt": self.prompt, "draft.md": draft,
+                                           "deterministic_checks.json": json.dumps(deterministic, ensure_ascii=False)}
+                    prompt = (CRITIC_COMBINED_PROMPT + f"\nReport language: {self.lang}" if kind == "combined" else _prompt(f"critic_{kind}", self.lang))
+                    res = self.call(f"critic_{kind}", prompt, CRITIC_COMBINED if kind == "combined" else schemas.CRITIC, selected_inputs, "critic")
                     atomic_write(partial, json.dumps(res, ensure_ascii=False, indent=2))
                 kept, dropped = critic_quotes_exist(res["findings"], draft)
                 return [{**f, "critic": kind} for f in kept], [{**d, "critic": kind} for d in dropped]
             return job
-        results = self.parallel([(k, critic(k)) for k in self.T["critics"]])
+        results = self.parallel([(k, critic(k)) for k in kinds])
         findings = [f for kept, _ in results for f in kept]
         dropped = [d for _, dr in results for d in dr]
+        filtered = apply_critique_policy(findings, draft, self.prompt, self.lang)
+        findings = filtered["kept"]
+        dropped += filtered["dropped"]
         for i, f in enumerate(findings, 1):
             f["id"] = f"F{i}"
-        atomic_write(self.dir / "findings.json", json.dumps({"findings": findings, "dropped": dropped}, ensure_ascii=False, indent=2))
+        atomic_write(self.dir / "findings.json", json.dumps({"findings": findings, "dropped": dropped, "deterministic": filtered["deterministic"]}, ensure_ascii=False, indent=2))
         self.end("critics", "ok", f"지적 {len(findings)}개, 인용 불일치로 버림 {len(dropped)}개")
 
     def _apply_hunk_step(self, name, prompt_name, src_file, dst_file, role, ratio, extra):
@@ -973,7 +1001,12 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         findings = json.loads((self.dir / "findings.json").read_text(encoding="utf-8"))["findings"]
         cost = estimate_cost(self.m.data["usage"], self.cfg["budget"])
         resolution_path = self.dir / "patcher_resolution.json"
-        resolved = []  # 부분 수정 적용만으로 의미적 지적을 해결 처리하지 않는다.
+        from .critique_policy import deterministic_report_checks
+        fresh = deterministic_report_checks(report, self.prompt, self.lang)
+        passed_structural = {check["id"] for check in fresh["checks"] if check["passed"]}
+        # 직접 재검사할 수 있는 구조 지적만 해결한다. 의미 지적은 패치만으로 해결하지 않는다.
+        resolved = [f["id"] for f in findings if f.get("origin") == "deterministic"
+                    and f.get("check_id") in passed_structural]
         snapshot_path = self.dir / ("citecheck_final_report.md" if final_check else "citecheck_report.md")
         quality = verify_report(report, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, checks, sampling,
                                 snapshot_path.read_text(encoding="utf-8") if snapshot_path.exists() else None,
@@ -1049,7 +1082,7 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         summary["qualified_report"] = quality["status"] == "passed"
         summary["qualification_scope"] = "automatic_checks_only_not_factual_accuracy"
         atomic_write(self.dir / "usage_summary.json", json.dumps(summary, ensure_ascii=False, indent=2))
-        atomic_write(self.dir / "review.md", render_brief(report, quality, summary, self.lang, self.cfg.get("report_format", "brief")))
+        atomic_write(self.dir / "review.md", render_brief(report, quality, summary, self.lang, self.cfg.get("report_format", "brief")) + "\n" + render_cost_guidance(cost_guidance(self.cfg, self.m.data["usage"]), self.lang))
         self.m.artifact("review", self.dir / "review.md")
         self.m.artifact("usage_summary", self.dir / "usage_summary.json")
         self.m.artifact("final_report", out)

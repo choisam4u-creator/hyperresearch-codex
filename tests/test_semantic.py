@@ -45,6 +45,7 @@ class SemanticCheckTests(unittest.TestCase):
         self.assertFalse(result["semantic"]["scope"]["semantic_decomposition_complete"])
         self.assertFalse(result["semantic"]["scope"]["factual_accuracy_truth_guarantee"])
         self.assertFalse(record["deterministic_character_coverage"]["is_semantic_coverage"])
+        self.assertTrue(record["deterministic_character_coverage"]["complete"])
 
     def test_mixed_compound_claim_is_not_overall_supported(self):
         response = self.response([
@@ -170,6 +171,81 @@ class SemanticCheckTests(unittest.TestCase):
         self.assertEqual([], result["checks"])
         self.assertIn("evidence_quote_not_in_original",
                       {issue["kind"] for issue in result["semantic"]["records"][0]["issues"]})
+
+    def test_only_first_clause_cannot_make_compound_north_south_claim_supported(self):
+        sentence = "North grew 5%, while South fell 3% in 2026. [S1][S2]"
+        samples = [{"sentence": sentence, "cites": ["S1", "S2"]}]
+        sources = {"S1": "North grew 5% in the measured period.", "S2": "South fell 3% in 2026."}
+        response = {"checks": [{"sentence": sentence, "cites": ["S1", "S2"], "supported": True, "reason": "partial",
+                                "atoms": [atom("North grew 5%", "supported", [evidence("S1", "North grew 5%")])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        record = result["semantic"]["records"][0]
+        self.assertFalse(result["checks"][0]["supported"])
+        self.assertEqual("insufficient", record["overall_verdict"])
+        self.assertFalse(record["deterministic_character_coverage"]["complete"])
+        self.assertIn("South", record["deterministic_character_coverage"]["uncovered_fragments"])
+
+    def test_mixed_source_binding_cannot_borrow_quote_from_other_cited_source(self):
+        sentence = "North grew 5% and South fell 3%. [S1][S2]"
+        samples = [{"sentence": sentence, "cites": ["S1", "S2"]}]
+        sources = {"S1": "North grew 5%.", "S2": "South fell 3%."}
+        response = {"checks": [{"sentence": sentence, "cites": ["S1", "S2"], "supported": True, "reason": "mixed",
+                                "atoms": [atom("North grew 5%", "supported", [evidence("S1", "North grew 5%")]),
+                                          atom("South fell 3%", "supported", [evidence("S1", "South fell 3%")])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        self.assertEqual([], result["checks"])
+        self.assertIn("evidence_quote_not_exact_substring",
+                      {issue["kind"] for issue in result["semantic"]["records"][0]["issues"]})
+
+    def test_omitted_condition_prevents_supported_even_when_core_number_is_bound(self):
+        sentence = "Latency is 2 seconds only under warm cache. [S1]"
+        samples = [{"sentence": sentence, "cites": ["S1"]}]
+        sources = {"S1": "Latency is 2 seconds only under warm cache."}
+        response = {"checks": [{"sentence": sentence, "cites": ["S1"], "supported": True, "reason": "condition omitted",
+                                "atoms": [atom("Latency is 2 seconds", "supported",
+                                               [evidence("S1", "Latency is 2 seconds")])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        record = result["semantic"]["records"][0]
+        self.assertFalse(result["checks"][0]["supported"])
+        self.assertIn("substantive_coverage_incomplete", {issue["kind"] for issue in record["issues"]})
+        self.assertTrue({"only", "under", "warm", "cache"} <= set(record["deterministic_character_coverage"]["uncovered_fragments"]))
+
+    def test_omitted_comparison_operator_prevents_complete_coverage(self):
+        sentence = "x < 2 under load. [S1]"
+        samples = [{"sentence": sentence, "cites": ["S1"]}]
+        sources = {"S1": "x < 2 under load."}
+        response = {"checks": [{"sentence": sentence, "cites": ["S1"], "supported": True, "reason": "operator omitted",
+                                "atoms": [atom("x", "supported", [evidence("S1", "x < 2")]),
+                                          atom("2 under load", "supported", [evidence("S1", "2 under load")])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        record = result["semantic"]["records"][0]
+        self.assertFalse(result["checks"][0]["supported"])
+        self.assertIn("<", record["deterministic_character_coverage"]["uncovered_fragments"])
+
+    def test_included_operators_units_and_numeric_separators_complete_coverage(self):
+        sentence = "Error is ≤ 2.5% +/- 0.5% at 20℃. [S1]"
+        samples = [{"sentence": sentence, "cites": ["S1"]}]
+        sources = {"S1": sentence.removesuffix(" [S1]")}
+        claim = sentence.removesuffix(". [S1]")
+        response = {"checks": [{"sentence": sentence, "cites": ["S1"], "supported": True, "reason": "fully quoted",
+                                "atoms": [atom(claim, "supported", [evidence("S1", claim)])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        coverage = result["semantic"]["records"][0]["deterministic_character_coverage"]
+        self.assertTrue(result["checks"][0]["supported"])
+        self.assertTrue(coverage["complete"])
+        self.assertEqual("comparison_range_arithmetic_unit_symbols", coverage["meaning_bearing_symbols_required"])
+
+    def test_markdown_emphasis_markers_are_presentation_not_required_claim_content(self):
+        sentence = "**Latency** is < 2 s. [S1]"
+        samples = [{"sentence": sentence, "cites": ["S1"]}]
+        sources = {"S1": "Latency is < 2 s."}
+        response = {"checks": [{"sentence": sentence, "cites": ["S1"], "supported": True, "reason": "markup excluded",
+                                "atoms": [atom("Latency", "supported", [evidence("S1", "Latency")]),
+                                          atom("is < 2 s", "supported", [evidence("S1", "is < 2 s")])]}]}
+        result = validate_semantic_checks(response, samples, sources)
+        coverage = result["semantic"]["records"][0]["deterministic_character_coverage"]
+        self.assertTrue(result["checks"][0]["supported"])
+        self.assertTrue(coverage["markdown_syntax_excluded"])
 
 
 if __name__ == "__main__":

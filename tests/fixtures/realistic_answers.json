@@ -1,0 +1,11 @@
+{
+  "benchmark_version": "realistic-synthetic-v1",
+  "cases": [
+    {"id":"real-ko-table","items":[{"item_id":"peak-unit","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"scope-limit","accepted_verdicts":["supported","insufficient"],"evidence":{"all_of":["S1"]}}]},
+    {"id":"real-en-date","items":[{"item_id":"v28-date","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"reliability-unknown","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1","S2"]}}]},
+    {"id":"real-ko-conflict","items":[{"item_id":"controlled-time","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"operational-limit","accepted_verdicts":["supported","insufficient"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"real-en-boundary","items":[{"item_id":"cedar-condition","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"maple-boundary","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"real-ko-missing","items":[{"item_id":"marketing-limit","accepted_verdicts":["insufficient","unknown"],"evidence":{"all_of":["S1"]}},{"item_id":"known-issue","accepted_verdicts":["supported"],"evidence":{"all_of":["S2"]}}]},
+    {"id":"real-en-long","items":[{"item_id":"match-rate","accepted_verdicts":["supported"],"evidence":{"all_of":["S1"]}},{"item_id":"accessibility-limit","accepted_verdicts":["supported","insufficient"],"evidence":{"all_of":["S2"]}}]}
+  ]
+}

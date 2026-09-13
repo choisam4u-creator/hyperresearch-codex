@@ -105,3 +105,7 @@ Light 2회(v0.1, v0.3), Full 3회(v0.2 ×2, v0.3 ×1). mock 테스트 18개.
 ## 2026-09-14 승인된 고정 입력 실제 4회
 
 코드9efb48e에서 실제 Codex 호출 21회, 합계 입력+출력808,255토큰으로 4개 실행 완료. 자동 검사4/4 passed, 사례별 필수 항목2개 대조8/8 보존(비블라인드·전체 정확도 평가 아님). 실패·재시도·미측정0회. 역할별 배정의 총 토큰+6.3%, 시간+11.2%; 기본값 유지. [상세 결과](PILOT-20260914.md). 기존 mock 검증과 구분한다.
+
+## 후속 1–7 내부 회귀
+
+`tests/test_critique_policy.py`, `test_critic_integration.py`, `test_semantic.py`, `test_blind_eval.py`, `test_policy_experiment.py`, `test_cost_guidance.py`에서 비평 필터·출처 없는 지시 검사·원자 주장 범위·전체 주장 판정 경계·통제 실험·미측정/병렬 비용을 확인한다. [실측 조건](SEVEN-STEP-GOAL.md)은 오프라인 통과와 별개다.

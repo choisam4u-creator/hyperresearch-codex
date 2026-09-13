@@ -195,3 +195,5 @@ The Phase 8–13 implementation adds an experimental `--preset economy`, `--max-
 Resume preserves the initial configuration; use `resume --budget N --max-calls N` for explicit budget changes. Further model calls stop if the code or prompt files changed since the run started.
 
 Follow-up: `--total-budget` counts input plus output, `--format facts|comparison|analysis` selects a writing format, and optional `verification.semantic` binds model-proposed atomic evidence to exact supplied excerpts and originals. These are implementation checks, not measured accuracy improvements. See [remaining-work Goal](docs/REMAINING-GOAL.md).
+
+후속 1–7 개선의 구현 범위와 통제 실험 계획은 [작업·검증 문서](docs/SEVEN-STEP-GOAL.md)를 참조하세요. 비평 통합과 세부 근거 검사는 기본 비활성입니다.

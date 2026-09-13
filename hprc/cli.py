@@ -171,6 +171,10 @@ def status(run_id: str | None) -> None:
         unknown = (f" · 미측정 {cost['unknown_calls']}회 · 요금 상한 미확정 (측정분 ≈${cost['usd_upper']})"
                    if cost["unknown_calls"] else f" · 요금 상한 ≈${cost['usd_upper']}")
         print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")
+        guidance_path = run_dir / "cost_guidance.json"
+        if guidance_path.is_file():
+            from hprc.cost_guidance import render_cost_guidance
+            print(render_cost_guidance(json.loads(guidance_path.read_text(encoding="utf-8")), m.get("lang", "ko")))
         print("   " + ", ".join(f"{s['name']}:{s['status']}" for s in m["steps"]))
 
 

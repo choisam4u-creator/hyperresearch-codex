@@ -7,11 +7,16 @@ checker에 보낸 출처 발췌의 정확한 문자열에 묶는다. 이 검사�
 from __future__ import annotations
 
 import hashlib
+import re
 from typing import Any
 
 
 _VERDICTS = {"supported", "contradicted", "insufficient"}
 _RELATIONS = {"supports", "contradicts"}
+_CITATION = re.compile(r"\[S\d+\]")
+_NON_SUBSTANTIVE_WORD = re.compile(r"\b(?:and|or|but)\b|(?:그리고|및|또는|그러나|하지만)", re.IGNORECASE)
+_SEMANTIC_SYMBOLS = frozenset("<>=≤≥≠≈±−-+/%‰‱°℃℉×÷$€£¥₩")
+_MARKDOWN_LINE_PREFIX = re.compile(r"(?m)^[ \t]{0,3}(?:#{1,6}[ \t]+|[-+>][ \t]+)")
 
 _EVIDENCE_ITEM = {
     "type": "object",
@@ -89,6 +94,50 @@ def _exact_span(parent: str, quote: Any) -> dict | None:
         "quote_sha256": _sha256(quote),
         "occurrence_count": parent.count(quote),
     }
+
+
+def _substantive_indices(sentence: str) -> set[int]:
+    """Return lexical and meaning-bearing symbol positions, excluding Markdown syntax.
+
+    Emphasis/link delimiters and line prefixes are presentation syntax. Comparison,
+    range, arithmetic, percent, temperature, and currency symbols are retained so an
+    atom cannot silently omit ``<`` from ``x < 2`` or ``%`` from a numeric claim.
+    """
+    excluded = set()
+    for pattern in (_CITATION, _NON_SUBSTANTIVE_WORD):
+        for match in pattern.finditer(sentence):
+            excluded.update(range(match.start(), match.end()))
+    for match in _MARKDOWN_LINE_PREFIX.finditer(sentence):
+        excluded.update(range(match.start(), match.end()))
+
+    required = set()
+    for index, char in enumerate(sentence):
+        if index in excluded:
+            continue
+        if char.isalnum() or char in _SEMANTIC_SYMBOLS:
+            required.add(index)
+            continue
+        # Numeric separators carry meaning, while ordinary sentence punctuation does not.
+        if (char in ".,:" and 0 < index < len(sentence) - 1
+                and sentence[index - 1].isdigit() and sentence[index + 1].isdigit()):
+            required.add(index)
+    return required
+
+
+def _uncovered_fragments(sentence: str, uncovered: set[int]) -> list[str]:
+    if not uncovered:
+        return []
+    fragments, start, previous = [], None, None
+    for index in sorted(uncovered):
+        if start is None:
+            start = previous = index
+        elif index == previous + 1:
+            previous = index
+        else:
+            fragments.append(sentence[start:previous + 1])
+            start = previous = index
+    fragments.append(sentence[start:previous + 1])
+    return fragments
 
 
 def _validate_atom(atom: Any, sentence: str, parent_cites: set[str], sources: dict[str, str],
@@ -332,17 +381,26 @@ def validate_semantic_checks(response: Any, samples: list[dict], sources: dict[s
             continue
 
         verdicts = {atom["verdict"] for atom in validated_atoms}
+        required = _substantive_indices(sample["sentence"])
+        covered = set()
+        for atom_value in validated_atoms:
+            covered.update(range(atom_value["char_start"], atom_value["char_end"]))
+        covered_substantive = required & covered
+        uncovered = required - covered
+        coverage_complete = bool(required) and not uncovered
         if "contradicted" in verdicts:
             overall_verdict = "contradicted"
-        elif "insufficient" in verdicts or check["supported"] is False:
+        elif "insufficient" in verdicts or check["supported"] is False or not coverage_complete:
             overall_verdict = "insufficient"
         else:
             overall_verdict = "supported"
         safe_supported = bool(check["supported"] and overall_verdict == "supported"
-                              and validated_atoms and all(atom["verdict"] == "supported" for atom in validated_atoms))
-        covered = set()
-        for atom_value in validated_atoms:
-            covered.update(range(atom_value["char_start"], atom_value["char_end"]))
+                              and coverage_complete and validated_atoms
+                              and all(atom["verdict"] == "supported" for atom in validated_atoms))
+        record_issues = []
+        if not coverage_complete:
+            record_issues.append(_issue("substantive_coverage_incomplete",
+                                        "atom exact spans가 부모 문장의 모든 실질 문자를 덮지 않아 overall을 insufficient로 낮췄습니다."))
         legacy = {"sentence": sample["sentence"], "cites": sample.get("cites", []),
                   "supported": safe_supported, "reason": check["reason"]}
         if "line" in sample:
@@ -358,12 +416,16 @@ def validate_semantic_checks(response: Any, samples: list[dict], sources: dict[s
             "model_asserted_atom_count": len(validated_atoms),
             "validated_atoms": validated_atoms,
             "deterministic_character_coverage": {
-                "covered_chars": len(covered),
-                "sentence_chars": len(sample["sentence"]),
-                "ratio": len(covered) / max(1, len(sample["sentence"])),
+                "covered_substantive_chars": len(covered_substantive),
+                "required_substantive_chars": len(required),
+                "ratio": len(covered_substantive) / max(1, len(required)),
+                "complete": coverage_complete,
+                "uncovered_fragments": _uncovered_fragments(sample["sentence"], uncovered),
                 "is_semantic_coverage": False,
+                "markdown_syntax_excluded": True,
+                "meaning_bearing_symbols_required": "comparison_range_arithmetic_unit_symbols",
             },
-            "issues": [],
+            "issues": record_issues,
         })
 
     validated_count = sum(record["status"] == "validated" for record in records)
