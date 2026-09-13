@@ -2,7 +2,7 @@
 
 영문 README(기본): [README.md](README.md) · 상태: 베타 0.3.1 · 저자 samchoi
 
-Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 다음 조사와 Codex 세션(MCP)에서 재사용된다.
+Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있다. 새 조사에서의 자동 재사용은 후속 개발 대상이다.
 
 [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code 전용)에서 영감을 받아 samchoi 가 Codex 전용으로 새로 만들었다. 지휘 장치를 파이썬으로 옮기고 모델 호출을 `codex exec` 로 바꾼 별도 구현이며 코드·프롬프트를 공유하지 않는다.
 
@@ -21,11 +21,15 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 | 돌아가는 곳 | Codex CLI(구독·API) + Python 3.11 | Claude Code. 원본에도 Codex 설치 경로가 검토 중([PR #63](https://github.com/jordan-gibbs/hyperresearch/pull/63), 2026-09-11 원칙 수락) | Codex 플러그인 마켓(`codex plugin marketplace add …`) | ChatGPT 앱 |
 | 단계를 누가 밟나 | 파이썬. 모델은 읽기 전용 `codex exec` + JSON 스키마 안에서 판단만 | Claude Code 스킬·서브에이전트 | Codex 스킬 + 보조 스크립트, 조사 에이전트 병렬 가능 | 서비스 |
 | 결과물 | 1천~3.5천 단어 출처 브리프 + 출처 상세표 + 인용 검사 줄. 노트는 디스크의 FTS5 창고에 남고 읽기 전용 MCP 로 재사용 | 1만 단어급 서베이(예시 보고서 11,209단어·출처 97개) | 주장 장부·출처 등급 A–E·`RESEARCH/` 상태가 붙은 인용 중심 보고서 | 인용 달린 채팅 답 |
-| 눈으로 확인 가능한 검증 | 없는 출처 인용 차단, 비평 인용문 존재 확인, 수정 ≤30%·다듬기 ≤15%, (판단) 표시, 인용 표본 검사, 린트 | 다단계 비평 | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | 없음 |
+| 눈으로 확인 가능한 검증 | 없는 출처 인용 차단, 비평 인용문 존재 확인, 수정 ≤30%·다듬기 ≤15%, (판단) 표시, 인용 표본 검사, 린트 | 다단계 비평, 인용 연결 검사, 직접 인용·철회 논문 최종 게이트 | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | 없음 |
 | 실측 비용·시간 | Light lean 입력 53만~69만 토큰·5~6분, Full lean 127만·11분, Full 표준 258만·29분 | Full 1회 약 2시간(저자 예시), 토큰 미공개 | 미공개 | 구독에 포함 |
-| 사용량 통제 | 실행별 예산 정지→재개, 토큰 장부, `--at HH:MM` 리셋 예약 | – | – | – |
+| 사용량 통제 | 실행별 예산 정지→재개, 토큰 장부, `--at HH:MM` 리셋 예약 | 추정 USD 예산, 재개, 단계별 사용량·시간 기록 | – | – |
 | 언어 | 한국어·영어 프롬프트 세트 | 영어 | 영어(채팅 우선) | 다수 |
 | 이럴 때 고른다 | Codex 로 몇 분 안에 재현·감사 가능한 브리프가 필요하고 구독 한도를 지켜봐야 할 때 | Claude Code 를 쓰고 긴 서베이가 필요할 때 | 마켓 한 줄 설치와 더 넓은 단계 모델을 Codex 안에서 원할 때 | 설치 0 을 원할 때 |
+
+원본의 검증·사용량 통제 항목은 2026-09-14 [`75b1ecf` 코드](https://github.com/jordan-gibbs/hyperresearch/blob/75b1ecfb2891184fad2cc1a2ddf9abe476f5b54c/src/hyperresearch/core/runs.py)로 정정했다. 나머지는 앞선 비교 시점의 기록이며, 같은 조건의 보고서 품질 실측은 아니다.
+
+새 출처 노트는 영구 ID를 가진 불변 스냅샷으로 저장하고 실행별 `S1` 별칭은 `sources.json`에 유지한다. 구형 노트는 그대로 읽으며, 과거에 이미 덮어쓴 내용은 자동 복구할 수 없다. [페이즈별 개발 계획](docs/DEVELOPMENT-PHASES.md)을 참고한다.
 
 ## 필요한 것
 

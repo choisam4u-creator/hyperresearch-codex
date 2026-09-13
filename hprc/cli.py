@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from . import mcp_server, pipeline, vault
+from .run_paths import InvalidRunId, run_directory, runs_directory
 
 PKG = Path(__file__).resolve().parent
 SKILL_SRC = PKG.parent / "skill/hyperresearch-codex/SKILL.md"
@@ -129,10 +130,24 @@ def doctor() -> int:
 
 
 def status(run_id: str | None) -> None:
-    runs = ROOT / "research" / "runs"
-    ids = [run_id] if run_id else (sorted(p.name for p in runs.iterdir() if (p / "manifest.json").exists()) if runs.is_dir() else [])
-    for rid in ids:
-        m = json.loads((runs / rid / "manifest.json").read_text())
+    runs = runs_directory(ROOT)
+    run_dirs: list[tuple[str, Path]] = []
+    if run_id is not None:
+        run_dirs.append((run_id, run_directory(ROOT, run_id)))
+    elif runs.is_dir():
+        for entry in sorted(runs.iterdir(), key=lambda path: path.name):
+            try:
+                safe_dir = run_directory(ROOT, entry.name)
+            except InvalidRunId as error:
+                print(f"건너뜀: 안전하지 않은 실행 경로 {entry.name}: {error}", file=sys.stderr)
+                continue
+            if (safe_dir / "manifest.json").is_file():
+                run_dirs.append((entry.name, safe_dir))
+    for rid, run_dir in run_dirs:
+        manifest_path = run_dir / "manifest.json"
+        if not manifest_path.is_file():
+            raise FileNotFoundError(f"실행 기록 없음: {rid} (`hpr status` 로 목록 확인)")
+        m = json.loads(manifest_path.read_text())
         secs = sum(u.get("seconds", 0) for u in m["usage"])
         from hprc.config import load
         from hprc.pipeline import estimate_cost
@@ -163,6 +178,18 @@ def main() -> int:
     for name in ("sync", "doctor", "mcp", "mcp-config", "skill"):
         sub.add_parser(name)
     a = p.parse_args()
+    validated_run_dir = None
+    try:
+        if a.cmd == "run":
+            validated_run_dir = run_directory(ROOT, a.run_id) if a.run_id is not None else None
+            if validated_run_dir is None:
+                runs_directory(ROOT)
+        elif a.cmd in ("resume", "status"):
+            validated_run_dir = run_directory(ROOT, a.run_id) if a.run_id is not None else None
+            if validated_run_dir is None:
+                runs_directory(ROOT)
+    except InvalidRunId as error:
+        print("BLOCKED:", error, file=sys.stderr); return 2
     if a.cmd == "doctor":
         return doctor()
     if a.cmd == "sync":
@@ -172,7 +199,11 @@ def main() -> int:
             print(f"{row['id']:<4} {row['title'][:60]:<60} {row['snippet']}")
         return 0
     if a.cmd == "status":
-        status(a.run_id); return 0
+        try:
+            status(a.run_id)
+        except (InvalidRunId, FileNotFoundError) as error:
+            print("BLOCKED:", error, file=sys.stderr); return 2
+        return 0
     if a.cmd == "usage":
         from hprc import ledger
         if a.backfill:
@@ -233,7 +264,7 @@ def main() -> int:
             out = pipeline.run(ROOT, a.prompt, a.tier, urls_file=a.urls, run_id=a.run_id, no_search=a.no_search, scholar=a.scholar,
                                quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset)
         else:
-            mpath = ROOT / "research" / "runs" / a.run_id / "manifest.json"
+            mpath = validated_run_dir / "manifest.json"
             if not mpath.exists():
                 print(f"BLOCKED: 실행 기록 없음: {a.run_id} (`hpr status` 로 목록 확인)", file=sys.stderr); return 2
             m = json.loads(mpath.read_text())

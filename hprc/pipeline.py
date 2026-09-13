@@ -23,6 +23,7 @@ from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist, judgment_sentences, report_lint
 from .manifest import Manifest, atomic_write
+from .run_paths import run_directory
 from .text_select import select
 from .mock import mock_backend
 from .vault import note_body, read_front, sync, write_note
@@ -139,8 +140,11 @@ class Run:
         if budget is not None and budget <= 0:
             raise Blocked("예산 상한은 0보다 큰 정수여야 한다")
         self.root, self.quiet = root, quiet
-        self.run_id = run_id or time.strftime("%Y%m%d-%H%M%S")
-        self.dir = root / "research" / "runs" / self.run_id
+        self.run_id = run_id if run_id is not None else time.strftime("%Y%m%d-%H%M%S")
+        try:
+            self.dir = run_directory(root, self.run_id)
+        except ValueError as error:
+            raise Blocked(str(error)) from error
         self.notes_dir = root / "research" / "notes"
         self.logs = self.dir / "logs"
         self.m = Manifest(self.dir, prompt=prompt, tier=tier)
@@ -316,8 +320,13 @@ class Run:
                 continue
             front = read_front(Path(s["path"]))
             body, truncated = _clip(note_body(Path(s["path"])), cap, query)
+            # 구형 노트에 빠진 날짜는 실행별 출처 메타에서 복구한다.
+            published = front.get('published') or s.get('published') or '미표기'
+            modified = front.get('modified') or s.get('modified') or '미표기'
             out[f"{s['id']}-note.md"] = (f"---\nid: {s['id']}\ntitle: {front.get('title','')}\nurl: {front.get('url','')}\n"
-                                        f"published: {front.get('published','') or '미표기'}\ndomain: {front.get('domain','')}\n"
+                                        f"published: {published}\npublished_source: {front.get('published_source') or s.get('published_source', '')}\n"
+                                        f"modified: {modified}\nmodified_source: {front.get('modified_source') or s.get('modified_source', '')}\n"
+                                        f"domain: {front.get('domain','')}\n"
                                         f"truncated: {'true' if truncated else 'false'}\n---\n{body}")
         return out
 
@@ -421,7 +430,7 @@ class Run:
             sid = f"S{len(kept) + 1}"
             path = write_note(self.notes_dir, sid, page)
             texts[sid] = page["text"]
-            kept.append({"id": sid, "path": str(path), "url": page["url"], "title": page["title"], "domain": page["domain"],
+            kept.append({"id": sid, "note_id": read_front(path).get("id", sid), "path": str(path), "url": page["url"], "title": page["title"], "domain": page["domain"],
                          "published": page.get("published", ""), "published_source": page.get("published_source", "meta" if page.get("published") else ""),
                          "modified": page.get("modified", ""), "modified_source": page.get("modified_source", ""),
                          "canonical": page.get("canonical", ""), "via": page.get("via", ""), "official": page.get("official", False),
@@ -652,8 +661,12 @@ def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = No
         raise Blocked(f"모르는 tier: {tier}")
     if budget is not None and budget <= 0:
         raise Blocked("예산 상한은 0보다 큰 정수여야 한다")
-    actual_run_id = run_id or time.strftime("%Y%m%d-%H%M%S")
-    with _run_lock(root / "research" / "runs" / actual_run_id):
+    actual_run_id = run_id if run_id is not None else time.strftime("%Y%m%d-%H%M%S")
+    try:
+        run_dir = run_directory(root, actual_run_id)
+    except ValueError as error:
+        raise Blocked(str(error)) from error
+    with _run_lock(run_dir):
         r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset)
         r.log(f"run {r.run_id} · {r.tier} · {r.lang} · {r.preset} · 예산 {r.cfg['budget']['max_input_tokens']:,} · {r.prompt[:60]}")
         r.step_search(urls_file, no_search, scholar)

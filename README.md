@@ -16,18 +16,22 @@ Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gi
 
 ## How it compares
 
-Honest table, checked 2026-09-13. Numbers for this tool are measured (see *Cost*); numbers for others come from their own READMEs or examples.
+Upstream verification and usage-control entries checked 2026-09-14 at commit `75b1ecf`; other comparison entries retain the 2026-09-13 snapshot. Numbers for this tool are measured (see *Cost*); numbers for others come from their own READMEs or examples.
 
 | | **hyperresearch-codex** (this) | [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) | [insane-research-codex](https://github.com/fivetaku/gptaku-plugins-codex) | ChatGPT Deep Research |
 |---|---|---|---|---|
 | Runs on | Codex CLI (subscription or API) + Python 3.11 | Claude Code; a Codex install path is in review upstream ([PR #63](https://github.com/jordan-gibbs/hyperresearch/pull/63), accepted in principle 2026-09-11) | Codex plugin marketplace (`codex plugin marketplace add …`) | ChatGPT app |
 | Who drives the steps | Python. The model only judges, inside read-only `codex exec` calls with a JSON schema | Claude Code skill and sub-agents | Codex skill with helper scripts; can fan out research agents | the service |
 | What you get | 1–3.5k-word sourced brief, provenance table, cite-check line; notes stay on disk in an FTS5 vault with a read-only MCP server | 10k-word survey (example report: 11,209 words, 97 sources) | citation-heavy report with a claim ledger, A–E source grades and `RESEARCH/` state | chat answer with citations |
-| Verification you can inspect | unknown-citation gate, critic-quote gate, patch ≤30 % / polish ≤15 %, judgment markers, cite-check sample, lint | multi-step critique | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | none |
+| Verification you can inspect | unknown-citation gate, critic-quote gate, patch ≤30 % / polish ≤15 %, judgment markers, cite-check sample, lint | adversarial critique, citation binding audit, quote-integrity and retracted-citation ship gates | `validate_ledger.py` → `verify_report.py` → `eval_report.py` | none |
 | Measured cost / time | light lean 0.53–0.69 M input tokens, 5–6 min; full lean 1.27 M, 11 min; full standard 2.58 M, 29 min | ~2 h per full run (author's example); tokens not published | not published | included in the subscription |
-| Usage control | per-run budget stop + resume, token ledger, `--at HH:MM` reset scheduling | – | – | – |
+| Usage control | per-run budget stop + resume, token ledger, `--at HH:MM` reset scheduling | estimated USD budget, resume, per-step spend/time telemetry | – | – |
 | Languages | Korean and English prompt sets | English | English (chat-first) | many |
 | Pick it when | you want a reproducible, auditable brief from Codex in minutes and need to watch a subscription window | you use Claude Code and want the long survey | you want a one-line marketplace install and the richer phase model inside Codex | you want zero setup |
+
+Upstream references: [run verification and budget code](https://github.com/jordan-gibbs/hyperresearch/blob/75b1ecfb2891184fad2cc1a2ddf9abe476f5b54c/src/hyperresearch/core/runs.py). This is a feature comparison, not a controlled report-quality benchmark.
+
+New source notes use immutable snapshots with permanent IDs; each run keeps its own `S1` aliases in `sources.json`. Legacy notes remain readable. Previously overwritten content cannot be reconstructed automatically. Phase milestones are listed in [the development plan](docs/DEVELOPMENT-PHASES.md).
 
 ## Requirements
 

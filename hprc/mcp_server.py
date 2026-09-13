@@ -5,10 +5,11 @@ import sys
 from pathlib import Path
 
 from . import vault
+from .run_paths import run_directory
 
 TOOLS = [
     {"name": "search_notes", "description": "창고 노트 전문 검색(FTS5). query 는 검색어.", "inputSchema": {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["query"]}},
-    {"name": "read_note", "description": "노트 하나 읽기. id(S3 처럼) 또는 path.", "inputSchema": {"type": "object", "properties": {"id": {"type": "string"}, "path": {"type": "string"}}}},
+    {"name": "read_note", "description": "노트 하나 읽기. list_notes의 영구 id 또는 path(구형 S번호도 지원).", "inputSchema": {"type": "object", "properties": {"id": {"type": "string"}, "path": {"type": "string"}}}},
     {"name": "list_notes", "description": "노트 목록(최근 순).", "inputSchema": {"type": "object", "properties": {"limit": {"type": "integer"}}}},
     {"name": "vault_status", "description": "노트 수·색인 존재·실행 수.", "inputSchema": {"type": "object", "properties": {}}},
     {"name": "list_runs", "description": "실행(run) 목록과 단계 상태.", "inputSchema": {"type": "object", "properties": {}}},
@@ -44,13 +45,19 @@ def call_tool(root: Path, name: str, args: dict) -> str:
         runs = root / "research" / "runs"
         out = []
         for d in sorted(runs.iterdir()) if runs.is_dir() else []:
-            mf = d / "manifest.json"
+            try:
+                mf = run_directory(root, d.name) / "manifest.json"
+            except ValueError:
+                continue
             if mf.exists():
                 m = json.loads(mf.read_text())
                 out.append(f"{d.name}\t{m.get('tier')}\t{m['prompt'][:50]}\t" + ",".join(f"{s['name']}:{s['status']}" for s in m["steps"]))
         return "\n".join(out) or "실행 없음"
     if name == "read_report":
-        p = root / "research" / "runs" / args["run_id"] / "final_report.md"
+        try:
+            p = run_directory(root, args["run_id"]) / "final_report.md"
+        except ValueError as error:
+            return str(error)
         return p.read_text(encoding="utf-8") if p.exists() else "보고서 없음"
     return f"모르는 도구: {name}"
 
