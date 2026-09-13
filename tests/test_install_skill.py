@@ -1,4 +1,3 @@
-import os
 import sys
 import tempfile
 import unittest
@@ -14,7 +13,7 @@ class InstallSkillTests(unittest.TestCase):
 
     def test_yes_copies_to_isolated_home_without_real_home(self):
         with tempfile.TemporaryDirectory(prefix="hpr-skill-home-") as home, \
-             mock.patch.dict(os.environ, {"HOME": home}), \
+             mock.patch.object(Path, "home", return_value=Path(home)), \
              mock.patch.object(sys, "argv", ["hpr", "install-skill", "--yes"]):
             self.assertEqual(0, cli.main())
             installed = Path(home) / ".codex" / "skills" / "hyperresearch-codex" / "SKILL.md"
@@ -22,7 +21,7 @@ class InstallSkillTests(unittest.TestCase):
 
     def test_resource_fallback_copies_without_checkout(self):
         with tempfile.TemporaryDirectory(prefix="hpr-skill-home-") as home, \
-             mock.patch.dict(os.environ, {"HOME": home}), \
+             mock.patch.object(Path, "home", return_value=Path(home)), \
              mock.patch.object(cli, "SKILL_SRC", Path(home) / "missing"), \
              mock.patch.object(sys, "argv", ["hpr", "install-skill", "--yes"]):
             self.assertEqual(0, cli.main())
