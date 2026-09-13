@@ -6,6 +6,7 @@ DEFAULT_MODEL = "gpt-6-astra"
 
 DEFAULTS = {
     "default_model": DEFAULT_MODEL,
+    "report_format": "brief",
     "lang": "ko",                 # 프롬프트·보고서 언어: ko | en
     "preset": "standard",         # standard | lean (구독 계정용: 비평 2·초안 2·상한 축소)
     "presets": {
@@ -44,7 +45,7 @@ DEFAULTS = {
         "searxng_endpoint": None,                     # 기본 비활성. DuckDuckGo 무결과일 때만 명시 endpoint를 보조로 쓴다
     },
     "routing": {"enabled": False, "escalation_model": "gpt-6-astra", "escalation_effort": "high", "max_escalations": 1},
-    "verification": {"recheck_changed": False, "require_traceability": False},
+    "verification": {"recheck_changed": False, "require_traceability": False, "semantic": False},
     "reuse": {"enabled": False, "max_age_days": 30, "limit": 3},
     "gap_fetch": {"enabled": False, "max_gaps": 2, "max_sources": 3},
     "light": {"search_results": 12, "max_sources": 10, "critics": ["dialectic", "depth", "instruction"],
@@ -61,7 +62,7 @@ DEFAULTS = {
     "excerpt_chars": 2500,        # 비평·수정에 넣는 출처 발췌 상한
     "cite_note_chars": 6000,      # 인용 검사에 넣는 인용된 노트 상한
     "scout_max_searches": 6,      # 정찰 웹 검색 횟수 상한(프롬프트로 지시)
-    "budget": {"max_model_calls": 64, "max_retries": 1, "reserve_input": False, "stop_on_unknown": False, "max_input_tokens": None,            # 명시하면 tier 기본값보다 우선
+    "budget": {"max_total_tokens": None, "output_reservation": 4096, "max_model_calls": 64, "max_retries": 1, "reserve_input": False, "stop_on_unknown": False, "max_input_tokens": None,            # 명시하면 tier 기본값보다 우선
                "default_by_tier": {"light": 1_200_000, "full": 3_500_000},   # 실행별 기본 상한(넘으면 멈춤, resume 가능)
                "price_input_per_m": 10.0, "price_output_per_m": 50.0, "price_cached_per_m": None},
     "domain_skew_warn": 0.6,      # 한 도메인이 출처의 60% 넘으면 경고

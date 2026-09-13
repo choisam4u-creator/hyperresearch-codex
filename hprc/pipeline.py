@@ -34,6 +34,7 @@ from .untrusted import wrap_source
 from .gap_plan import plan_gaps
 from .evidence import build_evidence_ledger, validate_evidence_ledger
 from .brief import render_brief
+from .report_format import format_instruction
 from .token_policy import estimate_next_input, fingerprint, plan_run, usage_summary
 
 PROMPTS = Path(__file__).parent / "prompts"
@@ -126,7 +127,12 @@ def runtime_hashes(lang):
 
 class Run:
     def __init__(self, root: Path, prompt: str, tier: str, run_id: str | None, quiet: bool = False, budget: int | None = None,
-                 lang: str | None = None, preset: str | None = None, max_calls: int | None = None):
+                 lang: str | None = None, preset: str | None = None, max_calls: int | None = None, total_budget: int | None = None,
+                 report_format: str | None = None):
+        if total_budget is not None and total_budget <= 0:
+            raise Blocked("총 토큰 상한은 양수여야 합니다")
+        if report_format is not None and report_format not in {"brief", "facts", "comparison", "analysis"}:
+            raise Blocked("모르는 보고서 형식")
         if max_calls is not None and max_calls <= 0:
             raise Blocked("호출 상한은 양수여야 합니다")
         if budget is not None and budget <= 0:
@@ -146,10 +152,14 @@ class Run:
         self.lang = self.m.data.setdefault("lang", lang or load(root)["lang"])
         self.preset = self.m.data.setdefault("preset", preset or load(root)["preset"])
         loaded = load(root, preset=self.preset, lang=self.lang)
+        if report_format is not None:
+            loaded["report_format"] = report_format
         self.cfg = json.loads(json.dumps(self.m.data.setdefault("config_snapshot", loaded)))
         self.m.data.setdefault("as_of", time.strftime("%Y-%m-%d", time.gmtime()))
         self.m.data.setdefault("runtime", {"config_hash": fingerprint(self.cfg), "models": self.cfg["models"], **runtime_hashes(self.lang)})
         overrides = self.m.data.setdefault("budget_overrides", {})
+        if total_budget is not None:
+            overrides["max_total_tokens"] = total_budget
         if budget:
             overrides["max_input_tokens"] = budget
         if max_calls is not None:
@@ -204,6 +214,10 @@ class Run:
         self.log(f"{self.tag(step)}: {status} · {note} · 누적 in {cost['input']:,} / out {cost['output']:,} (측정분 ≈${cost['usd_upper']}){unknown} · 경과 {elapsed/60:.1f}분")
 
     def check_budget(self, step: str) -> None:
+        total_limit = self.cfg["budget"].get("max_total_tokens")
+        if total_limit and usage_summary(self.m.data["usage"])["total_tokens"] >= total_limit:
+            self.state(step, "budget_stop")
+            raise Blocked("총 입력+출력 토큰 상한 도달. resume --total-budget으로 조정할 수 있습니다")
         limit = self.cfg["budget"].get("max_input_tokens")
         if limit:
             used = estimate_cost(self.m.data["usage"], self.cfg["budget"])["input"]
@@ -219,7 +233,7 @@ class Run:
             if maximum is not None and summary["calls"] + len(self._reservations) >= maximum:
                 self.state(name, "budget_stop")
                 raise Blocked(f"모델 호출 상한 {maximum}회 도달(실패·재시도 포함)")
-            if budget.get("stop_on_unknown") and summary["unknown_calls"]:
+            if (budget.get("stop_on_unknown") or budget.get("max_total_tokens")) and summary["unknown_calls"]:
                 self.state(name, "budget_stop")
                 raise Blocked("미측정 호출이 있어 다음 호출 예산을 확정할 수 없습니다. 사용량 기록을 확인하세요")
             estimate = estimate_next_input(prompt, inputs, self.m.data["usage"], role)
@@ -228,6 +242,14 @@ class Run:
             if budget.get("reserve_input") and limit and summary["input_tokens"] + reserved + estimate["input_reservation"] > limit:
                 self.state(name, "budget_stop")
                 raise Blocked(f"다음 호출 예상 입력 {estimate['input_reservation']:,}과 진행 중 예약 {reserved:,}이 남은 예산을 초과합니다")
+            total_limit = budget.get("max_total_tokens")
+            output_reserve = max(0, int(budget.get("output_reservation", 4096)))
+            # 진행 중 각 호출의 입력 예약과 출력 여유분을 함께 계산한다.
+            total_reserved = reserved + len(self._reservations) * output_reserve
+            if total_limit and summary["total_tokens"] + total_reserved + estimate["input_reservation"] + output_reserve > total_limit:
+                self.state(name, "budget_stop")
+                raise Blocked("다음 호출의 입력·출력 예약이 남은 총 토큰 예산을 초과합니다")
+            estimate["output_reservation"] = output_reserve
             self._reservations[key] = estimate["input_reservation"]
             return estimate
 
@@ -686,6 +708,9 @@ class Run:
         d = self.dir / "interim"
         return {f"interim/{p.name}": p.read_text(encoding="utf-8") for p in sorted(d.glob("*.md"))} if d.is_dir() else {}
 
+    def writing_prompt(self, name, **values):
+        return _prompt(name, self.lang, **values) + format_instruction(self.cfg.get("report_format", "brief"), self.lang)
+
     def step_draft(self):
         if not self.begin("draft"):
             return
@@ -693,7 +718,7 @@ class Run:
         base = {"question.txt": self.prompt, "claims.json": (self.dir / "claims.json").read_text(encoding="utf-8"), "_digest.md": digest,
                 "_independence.md": self.independence_md(), **self.notes(self.relevant, self.cfg["draft_note_chars"])}
         if self.tier == "light":
-            draft = self.call("writer", _prompt("writer", self.lang, target_words=self.T["target_words"]), schemas.WRITER, base, "writer")["markdown"]
+            draft = self.call("writer", self.writing_prompt("writer", target_words=self.T["target_words"]), schemas.WRITER, base, "writer")["markdown"]
         else:
             drafts_dir = self.dir / "drafts"; drafts_dir.mkdir(exist_ok=True)
             inputs = {**base, **self._interim()}
@@ -702,13 +727,13 @@ class Run:
                 def job():
                     out = drafts_dir / f"draft_{k}.md"
                     if not out.exists():
-                        res = self.call(f"draft_{k}", _prompt("draft", self.lang, angle=angle, target_words=self.T["target_words"]), schemas.WRITER, inputs, "writer")
+                        res = self.call(f"draft_{k}", self.writing_prompt("draft", angle=angle, target_words=self.T["target_words"]), schemas.WRITER, inputs, "writer")
                         atomic_write(out, res["markdown"])
                 return job
             self.parallel([(f"draft_{k}", make(k, a)) for k, a in enumerate(ANGLES[: self.T["drafts"]], 1)])
             drafts_in = {f"drafts/{p.name}": p.read_text(encoding="utf-8") for p in sorted(drafts_dir.glob("draft_*.md"))}
             # 종합에는 노트 원문 없이 초안·interim·요약·발췌만 (토큰 다이어트)
-            draft = self.call("synth", _prompt("synth", self.lang, target_words=self.T["target_words"]), schemas.WRITER,
+            draft = self.call("synth", self.writing_prompt("synth", target_words=self.T["target_words"]), schemas.WRITER,
                               {"question.txt": self.prompt, "_digest.md": digest, "_independence.md": self.independence_md(),
                                **drafts_in, **self._interim(), **self.excerpts(self.relevant, self.prompt + "\n" + "\n".join(drafts_in.values())[:20000])}, "synth")["markdown"]
         draft, fixed = clean_internal_cites(draft, self.lang)
@@ -802,9 +827,44 @@ class Run:
             sources[source["id"]] = {"text": body, "metadata": {**front, "cluster": source.get("cluster"), "id": source.get("note_id", front.get("id")), "fetched_at": source.get("fetched_at", front.get("fetched_at"))}}
         return sources
 
+    def citation_contract(self):
+        prompt = _prompt("citecheck", self.lang)
+        if not self.cfg["verification"].get("semantic", False):
+            return prompt, schemas.CITECHECK
+        from .semantic import SEMANTIC_CITECHECK
+        prompt += """
+
+SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual assertion as an exact quote substring. Return atoms with quote, verdict (supported/contradicted/insufficient), evidence (source_id, exact source quote, relation supports/contradicts), conditions, limitations. Copy quotes from the supplied data only (decode HTML entities used by the source wrapper). Cite only the sentence's given source IDs. Preserve dates, units, population, attribution and qualifications. Search the supplied excerpts for both supporting and opposing evidence. Missing context is insufficient, not false. Return supported=true only when every assertion is supported, no contradicting evidence remains, and the decomposition covers the full sentence. Do not infer truth from matching words. Conditions and limitations must be explicit, or unknown. Keep atomic quotes short; do not repeat the full source. This replaces the simpler output fields above; follow the supplied schema. No additional browsing or calls."""
+        return prompt, SEMANTIC_CITECHECK
+
+    def check_citations(self, name, samples):
+        """동일 인용 검사 호출에서 선택적 세부 근거를 받고, 전달한 발췌만 검증한다."""
+        inputs = {"samples.json": json.dumps(samples, ensure_ascii=False)}
+        source_inputs = {}
+        semantic = self.cfg["verification"].get("semantic", False)
+        raw_sources = self.evidence_sources() if semantic else {}
+        for sid in sorted({sid for sample in samples for sid in sample["cites"]} & self.known):
+            query = "\n".join(c["sentence"] for c in samples if sid in c["cites"])
+            if semantic:
+                excerpt, _ = select(raw_sources[sid]["text"], query, self.cfg["cite_note_chars"])
+                source_inputs[sid] = excerpt
+                inputs[f"{sid}.md"] = wrap_source(excerpt, raw_sources[sid]["metadata"].get("url", ""))
+            else:
+                inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], query))
+        prompt, schema = self.citation_contract()
+        response = self.call(name, prompt, schema, inputs, "citecheck")
+        if semantic:
+            from .semantic import validate_semantic_checks
+            response = validate_semantic_checks(response, samples, source_inputs, original_sources={sid: raw_sources[sid]["text"] for sid in source_inputs})
+            payload = {**response["semantic"], "verification_context": self.verification_context(),
+                       "report_sha256": hashlib.sha256((self.dir / "report.md").read_text(encoding="utf-8").encode()).hexdigest(),
+                       "backend": os.environ.get("HPR_BACKEND", "codex")}
+            atomic_write(self.dir / f"{name}_semantic.json", json.dumps(payload, ensure_ascii=False, indent=2))
+        return response
+
     def verification_context(self):
         return fingerprint({"sources": self.source_hashes(), "model": self.cfg["models"]["citecheck"],
-                            "prompt": _prompt("citecheck", self.lang), "schema": schemas.CITECHECK,
+                            "prompt": self.citation_contract()[0], "schema": self.citation_contract()[1],
                             "config": self.cfg["verification"], "as_of": self.m.data["as_of"],
                             "backend": os.environ.get("HPR_BACKEND", "codex")})
 
@@ -824,14 +884,7 @@ class Run:
         samples = sampling["samples"]
         raw_checks = {"checks": []}
         if samples:
-            ids = {c for s in samples for c in s["cites"]} & self.known
-            # 출처마다 "그 출처를 인용한 문장"만 질의로 써서 관련 문단을 고른다.
-            # (한 질의로 모든 노트를 자르면 검사 문장의 근거 문단이 빠져 '본문 생략' 오탐이 난다 — tp-light-ko-1b 실측)
-            inputs = {"samples.json": json.dumps(samples, ensure_ascii=False)}
-            for sid in sorted(ids):
-                query = "\n".join(s["sentence"] for s in samples if sid in s["cites"])
-                inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], query))
-            raw_checks = self.call("citecheck", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
+            raw_checks = self.check_citations("citecheck", samples)
         checks = enrich_checks(raw_checks["checks"], sampling)
         atomic_write(self.dir / "citecheck.json", json.dumps({"checks": checks, "sampling": sampling, "report_sha256": hashlib.sha256(report.encode("utf-8")).hexdigest(), "source_hashes": self.source_hashes(), "verification_context": self.verification_context()}, ensure_ascii=False, indent=2))
         bad = [c for c in checks if not c["supported"]]
@@ -864,10 +917,7 @@ class Run:
         meta = {"samples": selected, "selected_count": len(selected), "scope": "changed_or_unchecked_only"}
         checks = []
         if selected:
-            inputs = {"samples.json": json.dumps(selected, ensure_ascii=False)}
-            for sid in {sid for c in selected for sid in c["cites"]} & self.known:
-                inputs.update(self.notes({sid}, self.cfg["cite_note_chars"], "\n".join(c["sentence"] for c in selected if sid in c["cites"])))
-            response = self.call("citecheck_changed", _prompt("citecheck", self.lang), schemas.CITECHECK, inputs, "citecheck")
+            response = self.check_citations("citecheck_changed", selected)
             checks = enrich_checks(response["checks"], meta)
         merged = retained + checks
         lines = {key(c): c["line"] for c in current["samples"]}
@@ -880,6 +930,33 @@ class Run:
                      "report_sha256": hashlib.sha256(report.encode("utf-8")).hexdigest(), "source_hashes": self.source_hashes(),
                      "verification_context": self.verification_context(), "unchecked_count": len(current["samples"]) - len(merged)}, ensure_ascii=False, indent=2))
         self.end("recheck", "ok", f"기존 판정 재사용 {len(retained)}, 추가 판정 {len(checks)}")
+
+    def attach_semantic_evidence(self, evidence):
+        """호환되는 검사 스냅샷의 정확히 같은 문장에만 세부 판정을 붙인다."""
+        if not self.cfg["verification"].get("semantic", False):
+            return 0
+        index, issue_count = {}, 0
+        context = self.verification_context()
+        for stem, snapshot in (("citecheck", "citecheck_report.md"), ("citecheck_changed", "citecheck_final_report.md")):
+            path, snapshot_path = self.dir / f"{stem}_semantic.json", self.dir / snapshot
+            if not path.exists() or not snapshot_path.exists():
+                continue
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            if payload.get("verification_context") != context or payload.get("report_sha256") != hashlib.sha256(snapshot_path.read_text(encoding="utf-8").encode()).hexdigest():
+                continue
+            issue_count += len(payload.get("issues", []))
+            for item in payload.get("records", []):
+                index[(item["sentence"], frozenset(item["cites"]))] = item
+        attached = 0
+        for claim in evidence["claims"]:
+            item = index.get((claim["statement"], frozenset(claim["citations"])))
+            if item and item.get("status") == "validated":
+                claim["semantic_atoms"] = item["validated_atoms"]
+                claim["semantic_verification"] = {"verdict": item["overall_verdict"], "basis": "model_asserted_with_exact_source_binding"}
+                attached += 1
+        evidence["scope"]["semantic"] = {"attached_candidates": attached, "complete": False,
+                                          "basis": "sampled_model_assertions_not_independent_truth"}
+        return issue_count
 
     def step_final(self) -> Path:
         out = self.dir / "final_report.md"
@@ -913,6 +990,11 @@ class Run:
         if compatible_check:
             record = {"report": snapshot_path.read_text(encoding="utf-8"), "report_sha256": citecheck.get("report_sha256"), "checks": checks}
         evidence = build_evidence_ledger(report, evidence_sources, citation_record=record)
+        semantic_issues = self.attach_semantic_evidence(evidence)
+        if semantic_issues:
+            quality["issues"].append({"kind": "semantic_response_integrity", "severity": "medium", "line": None,
+                                      "message": "세부 근거 응답에 중복 또는 표본 밖 항목이 있어 검토가 필요합니다."})
+            quality["status"] = "review_required"
         evidence_errors = validate_evidence_ledger(evidence, evidence_sources, report)
         atomic_write(self.dir / "evidence_ledger.json", json.dumps(evidence, ensure_ascii=False, indent=2))
         self.m.artifact("evidence_ledger", self.dir / "evidence_ledger.json")
@@ -967,7 +1049,7 @@ class Run:
         summary["qualified_report"] = quality["status"] == "passed"
         summary["qualification_scope"] = "automatic_checks_only_not_factual_accuracy"
         atomic_write(self.dir / "usage_summary.json", json.dumps(summary, ensure_ascii=False, indent=2))
-        atomic_write(self.dir / "review.md", render_brief(report, quality, summary, self.lang))
+        atomic_write(self.dir / "review.md", render_brief(report, quality, summary, self.lang, self.cfg.get("report_format", "brief")))
         self.m.artifact("review", self.dir / "review.md")
         self.m.artifact("usage_summary", self.dir / "usage_summary.json")
         self.m.artifact("final_report", out)
@@ -978,7 +1060,10 @@ class Run:
 def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = None, run_id: str | None = None,
         no_search: bool = False, scholar: bool = False, quiet: bool = False, budget: int | None = None,
         lang: str | None = None, preset: str | None = None, max_calls: int | None = None,
-        replay_file: str | None = None, case_id: str | None = None) -> Path:
+        replay_file: str | None = None, case_id: str | None = None,
+        total_budget: int | None = None, report_format: str | None = None) -> Path:
+    if total_budget is not None and total_budget <= 0:
+        raise Blocked("총 토큰 상한은 양수여야 합니다")
     if tier not in STEPS:
         raise Blocked(f"모르는 tier: {tier}")
     if budget is not None and budget <= 0:
@@ -989,7 +1074,7 @@ def run(root: Path, prompt: str, tier: str = "light", urls_file: str | None = No
     except ValueError as error:
         raise Blocked(str(error)) from error
     with _run_lock(run_dir):
-        r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset, max_calls)
+        r = Run(root, prompt, tier, actual_run_id, quiet, budget, lang, preset, max_calls, total_budget, report_format)
         atomic_write(r.dir / "execution_plan.json", json.dumps(plan_run(r.cfg, r.tier, no_search or r.m.data.get("no_search", False)), ensure_ascii=False, indent=2))
         r.log(f"run {r.run_id} · {r.tier} · {r.lang} · {r.preset} · 예산 {r.cfg['budget']['max_input_tokens']:,} · {r.prompt[:60]}")
         replay_case = None

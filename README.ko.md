@@ -192,3 +192,5 @@ docs/                   테스트 계획(TEST-PLAN.md)·원본 비교(COMPARISON
 실험 후보 `--preset economy`, 실패를 포함한 `--max-calls`, 호출 없는 `--plan-json`, 고정 출처 `--replay FILE --case ID`, 근거·사용량 원장과 짧은 `review.md`를 추가했다. 기본값은 standard를 유지한다. 입력 예약은 추정이며 결제 상한을 보장하지 않는다. 이번 변경의 실제 품질과 토큰 절감률은 아직 미측정이다. [페이즈별 구현 범위와 남은 작업](docs/TOKEN-FIRST-PHASES.md), [오프라인 평가](docs/EVALUATION.md)를 참고한다.
 
 재개는 초기 설정을 유지하며 예산은 `resume --budget N --max-calls N`으로 변경한다. 시작 이후 코드·프롬프트 파일이 바뀌었으면 추가 모델 호출을 막는다.
+
+후속으로 입력+출력 `--total-budget`, `--format facts|comparison|analysis`, 모델이 제안한 세부 근거를 발췌·원문에 묶는 선택적 `verification.semantic`을 추가했다. 실제 정확도 향상은 미측정이다. [남은 작업 Goal](docs/REMAINING-GOAL.md)을 참고한다.

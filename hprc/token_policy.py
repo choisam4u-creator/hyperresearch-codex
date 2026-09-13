@@ -61,6 +61,9 @@ def plan_run(cfg, tier, no_search=False, replay=False):
             'estimate_basis': 'historical_reference_not_model_calibrated',
             'input_stop_threshold': cfg['budget']['max_input_tokens'] or cfg['budget']['default_by_tier'][tier],
             'reservation_enabled': cfg['budget'].get('reserve_input', False),
-            'stop_on_unknown': cfg['budget'].get('stop_on_unknown', False),
+            'stop_on_unknown': bool(cfg['budget'].get('stop_on_unknown', False) or cfg['budget'].get('max_total_tokens')),
+            'total_token_stop_threshold': cfg['budget'].get('max_total_tokens'),
+            'output_reservation': cfg['budget'].get('output_reservation', 4096),
+            'report_format': cfg.get('report_format', 'brief'),
             'models': cfg['models'], 'gap_fetch_enabled': bool(gaps), 'hard_spending_cap': False,
             'note': 'Failed attempts and retries count. In-flight usage may exceed estimates. Subscription allowance is unknown.'}

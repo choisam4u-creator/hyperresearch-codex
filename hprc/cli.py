@@ -185,11 +185,13 @@ def main() -> int:
     r.add_argument("--plan-json", action="store_true", help="호출하지 않고 실행 계획을 JSON으로 출력")
     r.add_argument("--dry-run", action="store_true", help="실행하지 않고 단계·예상 호출 수·예상 비용만 출력")
     r.add_argument("--lang", choices=["ko", "en"], help="프롬프트·보고서 언어 (기본 config lang=ko)")
+    r.add_argument("--format", dest="report_format", choices=["brief", "facts", "comparison", "analysis"], help="같은 분량 범위 안에서 보고서 형식 선택")
     r.add_argument("--preset", choices=["standard", "lean", "economy"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
     u = sub.add_parser("usage"); u.add_argument("--days", type=int, default=30); u.add_argument("--json", action="store_true")
     u.add_argument("--backfill", action="store_true", help="장부 이전 실행들의 manifest 를 장부에 채움")
     s = sub.add_parser("resume"); s.add_argument("run_id"); s.add_argument("--budget", type=_positive_int); s.add_argument("--quiet", action="store_true")
     for parser in (r, s):
+        parser.add_argument("--total-budget", type=_positive_int, help="입력+출력 전체 토큰 중단 기준, 미측정 호출 뒤 중단")
         parser.add_argument("--max-calls", type=_positive_int, help="실패·재시도를 포함한 실행 전체 모델 호출 상한")
         parser.add_argument("--at", help="이 시각까지 기다렸다가 시작. 'HH:MM'(오늘/내일) 또는 'YYYY-MM-DD HH:MM'. 사용량 리셋 뒤 자동 재개용")
     ins = sub.add_parser("install-skill"); ins.add_argument("--yes", action="store_true", help="~/.codex/skills 에 실제로 복사")
@@ -275,26 +277,31 @@ def main() -> int:
             cfg["budget"]["max_input_tokens"] = a.budget
         if a.max_calls:
             cfg["budget"]["max_model_calls"] = a.max_calls
+        if a.total_budget:
+            cfg["budget"]["max_total_tokens"] = a.total_budget
+        if a.report_format:
+            cfg["report_format"] = a.report_format
         plan = plan_run(cfg, a.tier, a.no_search, replay=bool(a.replay))
         if a.plan_json:
             print(json.dumps(plan, ensure_ascii=False, indent=2))
         else:
             print(f"프리셋 {plan['preset']} · 예상 단계 호출 최대 {plan['planned_calls_max']} · 재시도 포함 호출 상한 {plan['attempts_max']}\n"
                   f"과거 참고 입력 범위 {plan['input_estimate_range'][0]:,}–{plan['input_estimate_range'][1]:,} (현재 모델의 보장값 아님)\n"
-                  f"입력 중단 기준 {plan['input_stop_threshold']:,} · 예약 검사 {plan['reservation_enabled']} · 미측정 중단 {plan['stop_on_unknown']}\n"
+                  f"입력 중단 기준 {plan['input_stop_threshold']:,} · 입력 예약 검사 {plan['reservation_enabled']} · 미측정 중단 {plan['stop_on_unknown']}\n"
+                  f"총 토큰 중단 기준 {plan['total_token_stop_threshold']} · 호출당 출력 예약 {plan['output_reservation']} · 형식 {plan['report_format']}\n"
                   f"진행 중 호출은 예상치를 초과할 수 있으며 구독 잔량을 나타내지 않습니다.\n"
                   + "\n".join(f"{role}: {value['model']} / {value['effort']}" for role, value in plan['models'].items()))
         return 0
     try:
         if a.cmd == "run":
             out = pipeline.run(ROOT, a.prompt, a.tier, urls_file=a.urls, run_id=a.run_id, no_search=a.no_search, scholar=a.scholar,
-                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset, max_calls=a.max_calls, replay_file=a.replay, case_id=a.case_id)
+                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset, max_calls=a.max_calls, replay_file=a.replay, case_id=a.case_id, total_budget=a.total_budget, report_format=a.report_format)
         else:
             mpath = validated_run_dir / "manifest.json"
             if not mpath.exists():
                 print(f"BLOCKED: 실행 기록 없음: {a.run_id} (`hpr status` 로 목록 확인)", file=sys.stderr); return 2
             m = json.loads(mpath.read_text(encoding="utf-8"))
-            out = pipeline.run(ROOT, m["prompt"], m.get("tier", "light"), run_id=a.run_id, quiet=a.quiet, budget=a.budget, max_calls=a.max_calls)
+            out = pipeline.run(ROOT, m["prompt"], m.get("tier", "light"), run_id=a.run_id, quiet=a.quiet, budget=a.budget, max_calls=a.max_calls, total_budget=a.total_budget)
     except pipeline.Blocked as error:
         print("BLOCKED:", error, file=sys.stderr); return 2
     print("최종 보고서:", out)

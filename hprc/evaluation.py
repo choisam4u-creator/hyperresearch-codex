@@ -8,6 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 
 from .vault import note_body
 
@@ -439,6 +440,33 @@ def _validate_synthetic_run(run_dir: Path, manifest: dict, case: dict) -> None:
         raise ValueError("case sources와 sources.json 노트 원문이 달라 평가 불가")
 
 
+def _validate_frozen_replay_run(run_dir: Path, manifest: dict, case: dict) -> None:
+    """재생 실행이 선택한 frozen case와 완전히 같은 입력을 썼는지 확인한다."""
+    _validate_synthetic_run(run_dir, manifest, case)
+    if manifest.get("lang") != case.get("lang"):
+        raise ValueError("frozen case lang과 manifest.lang이 달라 평가 불가")
+    if manifest.get("as_of") != case.get("baseline_time"):
+        raise ValueError("frozen case baseline_time과 manifest.as_of가 달라 평가 불가")
+    digest = case_input_hash(case)
+    if manifest.get("frozen_input_hash") != digest:
+        raise ValueError("frozen case input hash와 manifest.frozen_input_hash가 달라 평가 불가")
+    saved = run_dir / "frozen_input.json"
+    if not saved.is_file():
+        raise ValueError("frozen replay 실행에 frozen_input.json이 없음")
+    saved_case = json.loads(saved.read_text(encoding="utf-8"))
+    if saved_case != case or case_input_hash(saved_case) != digest:
+        raise ValueError("frozen_input.json이 선택한 case와 달라 평가 불가")
+
+
+def _adjudication_envelope(path: Path) -> tuple[list[dict], str]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict) or set(value) != {"report_sha256", "items"}:
+        raise ValueError("adjudications는 report_sha256와 items만 가진 envelope여야 함")
+    if not isinstance(value["report_sha256"], str) or not isinstance(value["items"], list):
+        raise ValueError("adjudications envelope 형식이 올바르지 않음")
+    return value["items"], value["report_sha256"]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="고정 합성 자료 오프라인 평가")
     parser.add_argument("--cases", required=True, type=Path)
@@ -446,8 +474,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--run-dir", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--model-config", default="{}", help="사용자가 붙이는 비교 라벨 JSON. 실제 실행 설정을 검증하거나 모델을 호출하지 않는다.")
+    parser.add_argument("--answers", type=Path, help="정답을 분리한 benchmark answers JSON. 지정하면 frozen replay 입력을 엄격히 확인한다.")
+    parser.add_argument("--adjudications", type=Path, help="report_sha256와 items를 가진 독립 판정 envelope JSON")
+    parser.add_argument("--compare", type=Path, help="이전에 저장한 evaluation JSON과 비교한다. 모델 호출은 하지 않는다.")
+    parser.add_argument("--comparison-mode", choices=("code_only", "model_routing"), help="--compare에 필요한 엄격 비교 모드")
     args = parser.parse_args(argv)
-    case = _case(args.cases, args.case_id)
+    if bool(args.compare) != bool(args.comparison_mode):
+        parser.error("--compare와 --comparison-mode는 함께 지정해야 합니다")
+    frozen_inputs = answer_by_id = None
+    if args.answers:
+        frozen_inputs, answer_by_id = load_benchmark(args.cases, args.answers)
+        case = next((item for item in frozen_inputs["cases"] if item["id"] == args.case_id), None)
+        if case is None:
+            raise ValueError(f"알 수 없는 benchmark case: {args.case_id}")
+    else:
+        case = _case(args.cases, args.case_id)
     run_dir = args.run_dir
     report_path = run_dir / "final_report.md"
     if not report_path.is_file():
@@ -455,15 +496,35 @@ def main(argv: list[str] | None = None) -> int:
     if not report_path.is_file():
         raise FileNotFoundError("final_report.md 또는 report.md 없음")
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
-    _validate_synthetic_run(run_dir, manifest, case)
+    if frozen_inputs:
+        _validate_frozen_replay_run(run_dir, manifest, case)
+    else:
+        _validate_synthetic_run(run_dir, manifest, case)
     quality_path = run_dir / "quality.json"
     quality = json.loads(quality_path.read_text(encoding="utf-8")) if quality_path.is_file() else None
     model_config = json.loads(args.model_config)
-    result = evaluate(report_path.read_text(encoding="utf-8"), case, manifest.get("usage", []), _elapsed(manifest), quality, model_config)
+    report = report_path.read_text(encoding="utf-8")
+    submitted = submitted_hash = None
+    if args.adjudications:
+        submitted, submitted_hash = _adjudication_envelope(args.adjudications)
+    result = evaluate(report, case, manifest.get("usage", []), _elapsed(manifest), quality, model_config,
+                      benchmark_answer=(answer_by_id or {}).get(case["id"]), submitted_adjudications=submitted,
+                      adjudication_report_sha256=submitted_hash,
+                      runtime_metadata=runtime_metadata_from_manifest(manifest, frozen_inputs) if frozen_inputs else None)
+    if args.compare:
+        prior = json.loads(args.compare.read_text(encoding="utf-8"))
+        if not isinstance(prior, dict):
+            raise ValueError("--compare evaluation JSON은 객체여야 함")
+        # 비교 결과가 current result 자체를 right로 보존하므로, 순환 참조 없이 저장할 얕은 스냅샷을 건넨다.
+        result["comparison"] = compare(prior, dict(result), mode=args.comparison_mode)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (ValueError, OSError, json.JSONDecodeError) as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        raise SystemExit(2)

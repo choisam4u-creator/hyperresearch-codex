@@ -193,3 +193,5 @@ MIT © 2026 samchoi. Korean README: [README.ko.md](README.ko.md).
 The Phase 8–13 implementation adds an experimental `--preset economy`, `--max-calls`, a no-call `--plan-json`, frozen-source `--replay FILE --case ID`, evidence and usage ledgers, and a short `review.md`. Standard remains the default. Input reservations are estimates, not a guaranteed billing cap. Real quality and token savings have not been measured for these changes. See [phase scope and remaining work](docs/TOKEN-FIRST-PHASES.md) and [offline evaluation](docs/EVALUATION.md).
 
 Resume preserves the initial configuration; use `resume --budget N --max-calls N` for explicit budget changes. Further model calls stop if the code or prompt files changed since the run started.
+
+Follow-up: `--total-budget` counts input plus output, `--format facts|comparison|analysis` selects a writing format, and optional `verification.semantic` binds model-proposed atomic evidence to exact supplied excerpts and originals. These are implementation checks, not measured accuracy improvements. See [remaining-work Goal](docs/REMAINING-GOAL.md).
