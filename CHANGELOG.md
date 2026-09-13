@@ -1,12 +1,13 @@
 # Changelog
 
 ## 0.3.1 - 2026-09-13
-- Cite-check reads each cited note selected by the sentences that cite *that* source, not by all sample sentences at once (a Korean-vs-English mismatch left a 93-char note and produced false "unsupported" verdicts in the variance run).
+- Cite-check reads each cited note selected by the sentences that cite *that* source, not by all sample sentences at once (a Korean-vs-English mismatch left a 93-char note and produced false "unsupported" verdicts in the variance run). Verified with one more real run of the same question: unsupported 4/5 → 1/5, the English Google notes now reach the checker at 4–6k chars.
 - Paragraph selection tokenizes Latin and Hangul runs separately ("Google은" now matches "Google") and, when nothing overlaps, fills the cap in document order instead of returning only the title.
 - URL normalization maps developers.google.cn to developers.google.com and drops `hl=` on Google docs (a German translation had been fetched as a source).
 - Test plan results for the four Light lean runs recorded in docs/TEST-PLAN.md.
 - Failure paths are readable stops, not tracebacks: login expired → `state.json` `auth_required` with a `codex login` hint; codex binary missing → `codex_missing`; usage limit, auth and missing binary no longer retry or fall through to the next search provider (`HardStop`); a missing `--urls` file, an unknown `resume` id, and malformed URLs (`https://[::1`) are skipped or reported instead of crashing; a step that fails twice records `failed`.
 - Timeout is enforced with the remaining time, not in 30-second heartbeat steps.
+- Examples and a picture: `examples/report-en-light-lean.md` and `examples/report-ko-light-lean.md` are unedited real reports; `scripts/render-log-svg.py` turns a run log into the animated terminal SVG shown in the README (no external tools).
 - Packaging for GitHub: author `samchoi`, project URLs, issue/PR templates, CI installs the package and runs the 28 mock tests on Python 3.11–3.13, comparison table and credits in both READMEs.
 - 7 failure-path tests (network down, bad URLs, missing file, all search providers failing, usage limit mid-run then resume, auth error in scout, and a fake `codex` executable exercising the real subprocess path for ok/limit/auth/garbage/timeout/missing).
 

@@ -46,6 +46,20 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 결과: `research/runs/<run_id>/final_report.md`. 첫 주석 줄에 출처 수(독립 묶음)·지적 수·인용 미지지 수·린트·호출 수·토큰이 있고, 끝에 "출처 상세(자동 생성)" 표(제목·도메인·게시일·조회일·독립 묶음·경로·1차 여부)가 붙는다.
 
+## 실행 화면
+
+![실제 Light lean 실행의 진행 표시(24초로 압축)](docs/assets/run-light-lean.svg)
+
+## 예시 보고서
+
+실제 실행 결과를 손대지 않고 넣었다(머리 주석 한 줄만 추가). 출처 제목·URL 만 있고 가져온 본문은 없다.
+
+| 파일 | 언어·계층 | 질문 | 실행 요약 |
+|---|---|---|---|
+| [examples/report-en-light-lean.md](examples/report-en-light-lean.md) | en · light lean | Apple Silicon 통합 메모리로 로컬 이미지 생성 모델을 돌릴 때의 한계와 GGUF 양자화 | 출처 8(1차 8), 지적 7, 인용 미지지 1/5, 판단 2, 호출 7회, 4.8분, 입력 604,783 |
+| [examples/report-ko-light-lean.md](examples/report-ko-light-lean.md) | ko · light lean | 티스토리 블로그에 JSON-LD 구조화 데이터를 넣으면 Google 노출에 어떤 영향이 있고 무엇을 주의해야 하나 | 출처 8(1차 6, 실제 인용 5), 지적 3, 인용 미지지 1/5, 판단 2, 호출 7회, 4.6분, 입력 382,829, 도메인 편중 경고(developers.google.com 75%) |
+| [examples/report-codex-exec-light.md](examples/report-codex-exec-light.md) | ko · light (v0.1) | `codex exec` 비대화 사용법 | 초기 데모, 형식 변천 참고용 |
+
 ## 단계
 
 | 단계 | Light | Full | 누가 |
@@ -115,7 +129,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 | 실제 `codex exec --json --ignore-user-config` 토큰 비교 | 18,781 vs 119,520 |
 | 실제 `codex --search exec` 정찰 | 공식 문서 3건(developers.openai.com/codex/noninteractive 등) |
 | Light 실제 실행(v0.1 설정) | demo-01: 8분, 출처 8, 지적 4, 표본 6 중 미지지 2 |
-| Light lean 실제 실행 4회(v0.3, 예산 70만) | 완주 4/4, 호출 7회, 4.8–6.3분, 입력 52.6만–68.6만(캐시 54–66%), 출력 7.0천–9.4천, 회당 ≈$5.7–7.3 상한. 같은 질문 2회: 입력 −23%, 지적 8→4 (docs/TEST-PLAN.md) |
+| Light lean 실제 실행 5회(v0.3/0.3.1, 예산 70만·80만) | 완주 5/5, 호출 7회, 4.6–6.3분, 입력 38.3만–68.6만(캐시 51–66%), 출력 6.8천–9.4천, 회당 ≈$4.2–7.3 상한. 같은 질문 3회: 지적 8→4→3, 인용 미지지 1→4→1(0.3.1 수정 뒤) (docs/TEST-PLAN.md) |
 | Full 실제 실행 | v0.2 2회(ComfyUI·AdSense 질문), v0.3 1회(입력 2,578,112 · v0.2 대비 −50% · 29.4분), 영어 Full lean 1회(1,273,850 · 11.2분 · 미지지 0/6) |
 | arXiv·OpenAlex 실제 호출 | 영어 Full lean 실행(`--scholar`)에서 사용. PDF 본문은 pypdf 로 읽음(arXiv 논문 1편 161,228자 확인) |
 

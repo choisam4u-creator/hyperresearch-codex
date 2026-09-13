@@ -5,3 +5,4 @@
 - Prompts live in `hprc/prompts/*.md`. If you tune them for a model, say which model and show a before/after run header line.
 - Do not commit anything under `research/` (fetched third-party page text, run logs).
 - Korean and English are both welcome in issues and PRs.
+- Screenshots for docs come from real logs: `python3 scripts/render-log-svg.py research/logs/<run>.log docs/assets/<name>.svg` (add `--static` for a still image).

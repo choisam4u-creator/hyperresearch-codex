@@ -53,6 +53,8 @@ open research/runs/*/final_report.md
 
 ## What you see while it runs
 
+![live progress of a real Light lean run, compressed to 24 s](docs/assets/run-light-lean.svg)
+
 ```
 [hpr 02:22:56] [3/8] analyst: 시작
 [hpr 02:22:56]   → analyst (입력 65,670자, 파일 12개)
@@ -117,8 +119,18 @@ Analyst sees every note; drafts only the sources the analyst actually cited; cri
 - Per call input tokens: 119,520 with the user config loaded → **18,781** with `--ignore-user-config` (default here).
 - Scout search: 74.5 s, 6 web searches, 380,440 input (309,248 cached) / 952 output. It is the most expensive step; pass `--urls --no-search` when you already know the sources.
 - Light v0.3 (10 sources, no scout): 7 calls, 6.5 min, 539,759 input (317,056 cached) / 10,777 output, ≈$5.9 upper bound. Versus v0.2 full-tier steps: analyst −58 %, draft −58 %, critics −86…−88 %, patcher −55 %, cite-check −31 %.
-- **Light lean, four runs (2026-09-13, `--preset lean --budget 700000`, 8 sources each)**: 7 calls per run, 4.8–6.3 min, input 525,777–686,386 (54–66 % cached), output 7,018–9,362, ≈$5.7–7.3 upper bound each. Same question twice: input −23 %, critic findings 8 → 4 — expect that much variance.
+- **Light lean, four runs (2026-09-13, `--preset lean --budget 700000`, 8 sources each)**: 7 calls per run, 4.8–6.3 min, input 525,777–686,386 (54–66 % cached), output 7,018–9,362, ≈$5.7–7.3 upper bound each. Same question twice: input −23 %, critic findings 8 → 4 — expect that much variance. A fifth run of that question after the 0.3.1 cite-check fix: 382,829 input, 4.6 min, cite-check 1/5 unsupported (the run before the fix had 4/5, two of them caused by a note clipped to its title).
 - **Full v0.3 vs v0.2, same question (ComfyUI on M4 Pro), 20 sources, scout on**: 18 calls both. Input 5,181,822 → **2,578,112 (−50 %)**, model time 35.6 → 29.4 min, output 56,490 → 50,977, USD upper bound $54.6 → $28.3. Per step: scout −73 %, loci/investigators −77…−81 %, critics −60…−71 %, cite-check −72 %, drafts −24…−28 %, synthesis −28 %; analyst +30 % and patcher +18 % (more/longer notes and 18 findings instead of 10 — not diet steps).
+
+## Examples
+
+Unedited reports from real runs (only the header comment was added). Source titles and URLs are listed; fetched page text is not.
+
+| file | language · tier | question | run header |
+|---|---|---|---|
+| [examples/report-en-light-lean.md](examples/report-en-light-lean.md) | en · light lean | practical limits of Apple Silicon unified memory for local image generation, GGUF quantizations | 8 sources (8 primary), 7 findings, cite-check 1/5 unsupported, 2 judgment lines, 7 calls, 4.8 min, 604,783 input tokens |
+| [examples/report-ko-light-lean.md](examples/report-ko-light-lean.md) | ko · light lean | effect of JSON-LD structured data on a Tistory blog's Google visibility, and what to watch | 8 sources (6 primary, 5 cited), 3 findings, cite-check 1/5 unsupported, 2 judgment lines, 7 calls, 4.6 min, 382,829 input tokens; domain-skew warning (75 % developers.google.com) |
+| [examples/report-codex-exec-light.md](examples/report-codex-exec-light.md) | ko · light (v0.1) | `codex exec` non-interactive usage | early demo; kept to show how the format evolved |
 
 ## Troubleshooting
 
