@@ -1,0 +1,38 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>원본 hyperresearch vs hyperresearch-codex · DRB #67</title>
+<style>:root{--bg:#fafaf7;--fg:#1f2328;--mut:#59636e;--line:#d9dee3;--warn:#b35c00;--ok:#1a7f37;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e6e8eb;--mut:#9aa3ad;--line:#2b3138;--warn:#f2a950;--ok:#57d38c;--card:#171a20}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,"Apple SD Gothic Neo",Pretendard,sans-serif}main{max-width:900px;margin:0 auto;padding:32px 20px 60px}
+h1{font-size:23px;margin:0 0 4px}h2{font-size:17px;margin:30px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}p{margin:8px 0}.mut{color:var(--mut)}.warn{color:var(--warn)}.ok{color:var(--ok)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}th,td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}th{background:var(--card)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}.wrap{overflow-x:auto}ul{padding-left:22px}li{margin:4px 0}
+</style></head><body><main>
+<h1>원본 hyperresearch(Claude) vs hyperresearch-codex(lean) · 같은 질문</h1>
+<p class="mut">2026-09-13 · 질문: DRB #67 "sparse rewards·constraints 하의 RL 탐색 연구 진전과 궤적 계획 시사점" · 평가자: Claude 세션이 두 보고서를 읽고 RACE 4축으로 판단(비공식, Codex 사용량 0)</p>
+<div class="box"><b>한 줄 결론</b><br>같은 질문에 원본은 <b>11,209단어·출처 97개·약 2시간(Opus 4.7, Full 16단계)</b>짜리 "서베이"를, 우리 lean은 <b>1,978단어·출처 12개·11분·입력 127만 토큰</b>짜리 "브리프"를 냈다. 포괄성·통찰은 원본이 확실히 위, 지시 준수·가독성·검증 가능성은 우리가 앞선다. <b>"원본을 이겼다"고 말하면 안 되고, "같은 돈의 10분의 1 이하로 결정용 브리프를 낸다"가 정직한 문장이다.</b></div>
+<h2>0. 이 비교의 한계</h2><ul>
+<li>공식 RACE 채점이 아니다. 원본 58.3점은 저자 자체 채점(Gemini 심판, n=9)이고 우리 쪽 점수는 없다.</li>
+<li>조건이 다르다: 원본 standard 이상(출처 97) vs 우리 lean(출처 12, 초안 2, 비평 3). 우리 standard Full로 돌리면 격차는 줄겠지만 토큰이 2배 든다.</li>
+<li>평가자(Claude)는 우리 도구를 만든 쪽이라 편향 가능성이 있다. 그래서 아래는 유리한 쪽이 아니라 불리한 쪽부터 적었다.</li>
+<li>우리 실행에서 PDF 3건이 건너뛰어졌다(pypdf 미설치). 이제 기본 의존성으로 넣었다.</li></ul>
+<h2>1. RACE 4축 비교 (평가자 판단)</h2><div class="wrap"><table>
+<tr><th>축</th><th>원본</th><th>hyperresearch-codex lean</th><th>판정</th></tr>
+<tr><td>포괄성</td><td>6개 대절, 97개 출처, 두 탐색 체제(희소 보상·제약)를 각각 방법 계보까지 정리</td><td>12개 출처(arXiv 9·PMLR 3, 전부 1차)로 두 체제와 궤적 계획 시사점을 각 2~4문단</td><td class="warn">원본 압승. 출처 8배</td></tr>
+<tr><td>통찰</td><td>"희소 보상은 커버리지 문제, 제약은 표현 문제"라는 프레이밍, noisy-TV 같은 실패 양상 설명</td><td>"목표 지향 커리큘럼·불확실성 인식 계획·안전 제어기"로 정리, 결합 보장은 없다고 선 그음</td><td class="warn">원본 우세. 우리는 정리에 가깝다</td></tr>
+<tr><td>지시 준수</td><td>질문의 두 부분(연구 진전·궤적 계획 시사점) 모두 답함. 다만 시사점 절이 전체의 일부</td><td>첫 줄에 질문 원문, 답→근거→반대 근거·한계→다음 행동 구조로 두 부분에 직접 답함</td><td class="ok">우리 소폭 우세(구조가 질문을 따라감)</td></tr>
+<tr><td>가독성</td><td>길고 밀도 높음. 전문가에겐 좋고 결정권자에겐 부담</td><td>2천 단어, 결론 먼저, 한계 목록화</td><td class="ok">우리 우세(용도가 다름)</td></tr>
+<tr><td>검증 가능성(RACE 밖)</td><td>인용 번호 97개, 일부는 제목만</td><td>인용 표본 6/6 지지, 출처 상세표(게시일·독립 묶음·인용 여부), 한계에 "확인 안 됨" 명시</td><td class="ok">우리 우세</td></tr></table></div>
+<h2>2. 비용·시간</h2><div class="wrap"><table>
+<tr><th></th><th>원본</th><th>우리 lean</th></tr><tr><td>모델</td><td>Opus 4.7 + Sonnet 4.6, Claude Code</td><td>gpt-6-astra, codex exec</td></tr>
+<tr><td>호출·시간</td><td>16단계 다수 서브에이전트, 약 2시간</td><td>14회, 모델 시간 11.2분</td></tr>
+<tr><td>토큰</td><td>미공개</td><td>입력 1,273,850(캐시 767,488)·출력 17,692·요금 상한 $13.6</td></tr></table></div>
+<h2>3. 이번 실행에서 잡은 결함과 조치 (토큰 0)</h2><ul>
+<li><b>내부 파일을 출처처럼 인용</b>: <code>[_digest.md; interim/L1.md; S6]</code> 11건. → 정리기 추가(대괄호 안 S만 남기고, 없으면 "(no source)"), 프롬프트에 금지 문구. 최종 보고서에 소급 적용.</li>
+<li><b>"(judgment)" 표시 소실</b>: 초안 4개 → 다듬기 뒤 0개. 모델이 표시를 별도 줄에 두어 다듬기가 지움. → 보존 게이트(수정·다듬기 뒤 개수 감소 시 거부) + "같은 줄에" 지시.</li>
+<li><b>PDF 3건 건너뜀</b>(arXiv·Springer·ACL). → pypdf 기본 의존성, arXiv pdf 링크는 abs 페이지로 자동 전환.</li>
+<li>arXiv 편중 67% 경고는 학술 질문이라 정상.</li></ul>
+<h2>4. 그래서 어느 수준인가</h2><ul>
+<li><b>개인 사용</b>: 결정 전 조사 메모·정책 점검표·모델 선택표 용도로는 지금 lean/Light가 충분하다(오늘 4건 모두 완주, 인용 검사 통과).</li>
+<li><b>오픈소스</b>: "서베이 생성기"가 아니라 "출처 검증이 붙은 브리프 생성기"로 설명하면 정직하다. README 첫 줄을 그렇게 고쳤다.</li>
+<li><b>원본과 겨루려면</b>: standard Full + 출처 30개 + PDF + 초안 3개가 필요하고 토큰은 3~4배. 그건 사용자가 필요할 때 켜는 옵션이지 기본값이 아니다.</li></ul>
+</main></body></html>

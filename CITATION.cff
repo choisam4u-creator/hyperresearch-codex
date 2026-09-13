@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this tool in research, please cite it as below."
+title: "hyperresearch-codex"
+version: 0.3.1
+date-released: 2026-09-13
+license: MIT
+repository-code: "https://github.com/choisam4u-creator/hyperresearch-codex"
+authors:
+  - name: "samchoi"
+abstract: "Codex-only research pipeline: Python orchestrates the steps, codex exec judges inside read-only calls, gates verify every model output. Inspired by jordan-gibbs/hyperresearch."
