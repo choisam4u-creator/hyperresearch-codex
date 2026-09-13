@@ -38,7 +38,7 @@ New source notes use immutable snapshots with permanent IDs; each run keeps its 
 - Codex CLI, logged in (`codex login`). The published cost measurements used Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
 - `hpr doctor` verifies `codex --version` and `codex login status` with a timeout. A mismatch from the measured 0.153.4 is a non-blocking warning; version/query/login failures are shown clearly.
 - Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
-- macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows help/doctor, locking, and wheel smoke are covered by CI configuration; Windows run/resume support remains pending until that CI result is reviewed.
+- macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows 3.12 passed installation, help, locking, mock run/resume and wheel smoke in [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191) (`PYTHONUTF8=1`). Four POSIX shell fixtures are skipped on Windows; actual Codex research remains unverified.
 
 ## 60-second start
 
@@ -73,7 +73,7 @@ Optional search fallback is off by default. Set `search.searxng_endpoint` in `re
 
 Source fetching validates schemes, redirects, DNS and connected peers. Private destinations require an exact hostname in `fetch.allow_private_hosts`; credentials, ambiguous host forms, and unapproved private targets are rejected. `research/config.json` keeps `gap_fetch.enabled` and `reuse.enabled` off by default. Full gap fetching is bounded by at most 2 gaps and 3 sources when explicitly enabled. Vault reuse accepts only fresh, immutable, hash-checked notes and never regenerates a missing index.
 
-Each run writes `quality.json`. A report may be generated with `review_required`; the CLI exits 3 whenever the recorded quality status is not `passed`. The offline evaluator compares supplied fixtures and run metadata only. It is not a truth or factual-accuracy judge. Windows run/resume and the final CI result remain pending.
+Each run writes `quality.json`. A report may be generated with `review_required`; the CLI exits 3 whenever the recorded quality status is not `passed`. The offline evaluator compares supplied fixtures and run metadata only. It is not a truth or factual-accuracy judge. Windows mock run/resume and wheel smoke passed CI; actual Codex research on Windows remains unverified.
 
 ![live progress of a real Light lean run, compressed to 24 s](docs/assets/run-light-lean.svg)
 

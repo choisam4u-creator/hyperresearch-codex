@@ -3,7 +3,7 @@
 ## Unreleased
 - Phase 2–7 최종 로컬 회귀 166개와 격리 wheel mock 실행·재개를 통과했다. Astra 검수 지적을 수정하고 관련 회귀를 추가했다.
 - Phase 2–7 구현 범위를 문서화했다: 안전한 source wrapping과 정확한 private-host allowlist, `quality.json`과 검토 필요 시 CLI exit 3, 기본 OFF인 Full gap 보충(최대 2 gaps/3 sources)과 immutable vault reuse, 오프라인 evaluator, wheel package resource 기반 `install-skill`을 포함한다. 실제 모델 benchmark·외부 설치 피드백·릴리스는 아직 보류다.
-- Windows 3.12 CI와 wheel smoke 단계를 추가했다. Windows run/resume 지원은 CI 실행·검토 전까지 미검증이며, 이 변경만으로 지원 완료를 선언하지 않는다.
+- Windows 3.12 CI와 wheel smoke 단계를 추가했다. 구현 커밋 `346a82d`의 [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13과 Windows 3.12가 모두 통과했다. Windows는 POSIX fixture 4개를 제외한 회귀·설치·mock 실행/재개·wheel 범위이며 실제 Codex 리서치는 미검증이다.
 - 2026-09-14 Phase 1 후속 검증: 전체 회귀 112개 통과, 임시 wheel 설치·mock 실행·재개 확인. 이전 96개 기록은 앞선 구현 시점이다.
 - 출처 노트를 영구 ID 기반 불변 스냅샷으로 저장해 실행 간 S번호·제목 충돌을 방지한다. 실행별 인용 별칭은 유지하고 구형 노트는 다시 쓰지 않는다.
 - 게시일·수정일과 근거 메타를 노트와 모델 입력까지 전달한다. 구형 노트의 빠진 날짜는 해당 실행의 출처 메타로 보충한다.

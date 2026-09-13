@@ -10,7 +10,7 @@
 
 ### Phase 2–7 범위 정정
 
-현재 구현·fixture 검증에는 safe source wrapping과 정확한 private-host allowlist, `quality.json` 및 검토 필요 시 CLI 종료 코드 3, 기본 OFF인 Full gap 보충(최대 2 gaps·3 sources), 기본 OFF인 immutable vault reuse, 오프라인 evaluator, package resource 기반 `install-skill`이 포함된다. evaluator는 진실성·사실 정확도를 판정하지 않는다. Windows wheel smoke와 run/resume은 CI 실행·검토가 남아 있고, 실제 연구 benchmark·외부 2~3명 설치 피드백·릴리스도 pending이다. 따라서 Phase 2–7 전체 완료로 해석하지 않는다.
+현재 구현·fixture 검증에는 safe source wrapping과 정확한 private-host allowlist, `quality.json` 및 검토 필요 시 CLI 종료 코드 3, 기본 OFF인 Full gap 보충(최대 2 gaps·3 sources), 기본 OFF인 immutable vault reuse, 오프라인 evaluator, package resource 기반 `install-skill`이 포함된다. evaluator는 진실성·사실 정확도를 판정하지 않는다. Windows wheel smoke와 mock 실행/재개는 아래 최종 원격 CI에서 통과했으며, 실제 연구 benchmark·외부 2~3명 설치 피드백·릴리스도 pending이다. 따라서 Phase 2–7 전체 완료로 해석하지 않는다.
 
 2026-09-14 Phase 1 후속은 전체 **112개 통과(9.456초)**. 불변 노트·날짜 전달·CLI/MCP 실행 경계를 추가 검증하고, 최종 wheel을 임시 환경에 설치해 mock 완주·재개를 확인했다. 아래 96개는 앞선 유지보수 시점의 결과다. [페이즈 계획](DEVELOPMENT-PHASES.md) 참조.
 
@@ -82,4 +82,4 @@ Light 2회(v0.1, v0.3), Full 3회(v0.2 ×2, v0.3 ×1). mock 테스트 18개.
 
 ### 2026-09-14 Phase 2–7 최종 로컬 검증
 
-전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 Windows 결과는 원격 CI에서 별도 확인한다.
+전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 구현 커밋 `346a82d`의 [원격 CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13 및 Windows 3.12 설치·회귀·wheel smoke를 확인했다. Windows는 166개 중 POSIX 셸 fixture 4개를 제외한 162개 통과이며 UTF-8 모드를 사용한다. 최초 Windows 설치 테스트의 HOME 격리 오류를 Path.home 대역으로 수정했다. 실제 Windows Codex 모델 호출은 검증 범위 밖이다.
