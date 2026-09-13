@@ -27,6 +27,12 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 | 언어 | 한국어·영어 프롬프트 세트 | 영어 | 영어(채팅 우선) | 다수 |
 | 이럴 때 고른다 | Codex 로 몇 분 안에 재현·감사 가능한 브리프가 필요하고 구독 한도를 지켜봐야 할 때 | Claude Code 를 쓰고 긴 서베이가 필요할 때 | 마켓 한 줄 설치와 더 넓은 단계 모델을 Codex 안에서 원할 때 | 설치 0 을 원할 때 |
 
+## 필요한 것
+
+- Codex CLI 로그인 상태(`codex login`). Codex CLI 0.153.4 와 `gpt-6-astra` 로 실측. 다른 버전은 프롬프트 손질이 필요할 수 있다.
+- Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
+- macOS 에서 실측. Linux 는 CI 로만, Windows 는 미확인.
+
 ## 사용
 
 ```bash

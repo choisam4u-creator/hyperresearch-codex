@@ -29,6 +29,12 @@ Honest table, checked 2026-09-13. Numbers for this tool are measured (see *Cost*
 | Languages | Korean and English prompt sets | English | English (chat-first) | many |
 | Pick it when | you want a reproducible, auditable brief from Codex in minutes and need to watch a subscription window | you use Claude Code and want the long survey | you want a one-line marketplace install and the richer phase model inside Codex | you want zero setup |
 
+## Requirements
+
+- Codex CLI, logged in (`codex login`). Tested with Codex CLI 0.153.4 and `gpt-6-astra`; other versions may need prompt tuning.
+- Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
+- Tested on macOS; Linux runs only through CI so far; Windows untested.
+
 ## 60-second start
 
 ```bash
