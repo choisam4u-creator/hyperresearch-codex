@@ -1,5 +1,7 @@
 """실패한 모델 호출의 사용량, 로그, 장부와 재개 동작 회귀 테스트."""
 import json
+import io
+import contextlib
 import os
 import shutil
 import sys
@@ -132,6 +134,26 @@ class UsageRecoveryTests(unittest.TestCase):
         report = run.step_final().read_text(encoding="utf-8")
         self.assertIn("미측정 1회", report)
         self.assertIn("요금 상한 미확정", report)
+
+    def test_status_uses_saved_prices_after_current_config_changes(self):
+        run = pipeline.Run(self.root, "q", "light", "historical-price", quiet=True)
+        run.m.data['config_snapshot']['budget']['price_input_per_m'] = 3
+        run.m.data['effective_config_snapshot']['budget']['price_input_per_m'] = 2
+        run.m.usage({'step':'writer','seconds':1,'usage_known':True,'usage':{'input_tokens':1000000,'output_tokens':0}})
+        (self.root/'research/config.json').write_text(json.dumps({'budget':{'price_input_per_m':99}}))
+        with mock.patch.object(cli, 'ROOT', self.root), contextlib.redirect_stdout(io.StringIO()) as out:
+            cli.status(run.run_id)
+        self.assertIn('≈$2.0',out.getvalue())
+        self.assertIn('실행에 저장된 설정 단가',out.getvalue())
+        del run.m.data['effective_config_snapshot']; run.m.save()
+        with mock.patch.object(cli, 'ROOT', self.root), contextlib.redirect_stdout(io.StringIO()) as out:
+            cli.status(run.run_id)
+        self.assertIn('≈$3.0',out.getvalue())
+        del run.m.data['config_snapshot']; run.m.save()
+        with mock.patch.object(cli, 'ROOT', self.root), contextlib.redirect_stdout(io.StringIO()) as out:
+            cli.status(run.run_id)
+        self.assertIn('≈$99.0',out.getvalue())
+        self.assertIn('과거 단가 기록 없음',out.getvalue())
 
     def test_failure_metadata_falls_back_and_resume_continues_attempt_numbers(self):
         run = pipeline.Run(self.root, "질문", "light", "retry-resume", quiet=True)
