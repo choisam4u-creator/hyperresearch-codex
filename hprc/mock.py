@@ -32,9 +32,13 @@ def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
     question = inputs.get("question.txt", "").strip()
     if step == "scout":
         return {"results": []}   # 테스트에서는 URL 목록을 쓴다
-    if step in ("analyst", "analyst_gap"):
+    if step in ("analyst", "analyst_gap", "analyst_update"):
         claims = [{"id": f"C{i+1}", "text": _first_sentence(v), "sources": [k], "confidence": "high"}
                   for i, (k, v) in enumerate(sorted(notes.items()))]
+        if step == 'analyst_update':
+            retained = json.loads(inputs.get('retained_claims.json', '[]'))
+            for i, claim in enumerate(claims): claim['id'] = f'UPDATED{i+1}'
+            claims = retained + claims
         return {"claims": claims, "contradictions": [], "gaps": ["모의 분석: 빈틈 예시"]}
     if step == "loci":
         first = sorted(notes)[:1]

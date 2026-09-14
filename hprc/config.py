@@ -44,6 +44,7 @@ DEFAULTS = {
         "query_variants": True,
         "searxng_endpoint": None,                     # 기본 비활성. DuckDuckGo 무결과일 때만 명시 endpoint를 보조로 쓴다
     },
+    "efficiency": {"packet_inputs": False, "evidence_selection": False, "reuse_analysis": False, "strategy": "standard"},
     "critic_policy": {"compact_inputs": True, "combine_light": False},
     "routing": {"enabled": False, "escalation_model": "gpt-6-astra", "escalation_effort": "high", "max_escalations": 1},
     "verification": {"recheck_changed": False, "require_traceability": False, "semantic": False},

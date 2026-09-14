@@ -201,6 +201,15 @@ def main() -> int:
     r.add_argument("--lang", choices=["ko", "en"], help="프롬프트·보고서 언어 (기본 config lang=ko)")
     r.add_argument("--format", dest="report_format", choices=["brief", "facts", "comparison", "analysis"], help="같은 분량 범위 안에서 보고서 형식 선택")
     r.add_argument("--preset", choices=["standard", "lean", "economy"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
+    r.add_argument('--packet-inputs', action='store_true', help='선택 실험: 중복 주장 제거 및 파일 입력 묶음')
+    r.add_argument('--evidence-selection', action='store_true', help='선택 실험: 조건을 보존하는 근거 선택')
+    r.add_argument('--reuse-analysis', action='store_true', help='동일 조건의 분석 산출물 재사용')
+    r.add_argument('--strategy', choices=['standard', 'adaptive'], help='facts Full에서 단일 초안 경로 선택')
+    r.add_argument('--update-from', help='이전 실행과 변경 출처를 비교하여 분석 갱신')
+    changes = sub.add_parser('changes'); changes.add_argument('before'); changes.add_argument('after')
+    profile = sub.add_parser('profile'); profile.add_argument('run_id')
+    evidence = sub.add_parser('evidence'); evidence.add_argument('run_id')
+    calc = sub.add_parser('calculate'); calc.add_argument('run_id'); calc.add_argument('spec')
     u = sub.add_parser("usage"); u.add_argument("--days", type=int, default=30); u.add_argument("--json", action="store_true")
     u.add_argument("--backfill", action="store_true", help="장부 이전 실행들의 manifest 를 장부에 채움")
     s = sub.add_parser("resume"); s.add_argument("run_id"); s.add_argument("--budget", type=_positive_int); s.add_argument("--quiet", action="store_true")
@@ -214,6 +223,30 @@ def main() -> int:
     for name in ("sync", "doctor", "mcp", "mcp-config", "skill"):
         sub.add_parser(name)
     a = p.parse_args()
+    if a.cmd in {'changes', 'evidence', 'calculate', 'profile'}:
+        try:
+            if a.cmd == 'changes':
+                from .research_updates import compare_runs
+                result = compare_runs(run_directory(ROOT, a.before), run_directory(ROOT, a.after))
+            elif a.cmd == 'profile':
+                from .research_review import input_diagnostics
+                result = input_diagnostics(json.loads((run_directory(ROOT, a.run_id) / 'manifest.json').read_text(encoding='utf-8')))
+            elif a.cmd == 'evidence':
+                print((run_directory(ROOT, a.run_id) / 'evidence_matrix.md').read_text(encoding='utf-8'))
+                return 0
+            else:
+                from .research_review import check_calculation
+                from .research_updates import verified_source_texts
+                texts = verified_source_texts(run_directory(ROOT, a.run_id))
+                result = check_calculation(json.loads(Path(a.spec).read_text(encoding='utf-8')), texts)
+            print(json.dumps(result, ensure_ascii=False, indent=2)); return 0
+        except (ValueError, OSError, KeyError, TypeError) as error:
+            print('BLOCKED:', error, file=sys.stderr); return 2
+    efficiency = {}
+    if a.cmd == 'run':
+        for arg, key in [('packet_inputs', 'packet_inputs'), ('evidence_selection', 'evidence_selection'), ('reuse_analysis', 'reuse_analysis')]:
+            if getattr(a, arg): efficiency[key] = True
+        if a.strategy: efficiency['strategy'] = a.strategy
     if a.cmd == "run" and bool(a.replay) != bool(a.case_id):
         p.error("--replay와 --case는 함께 지정해야 합니다")
     validated_run_dir = None
@@ -293,6 +326,7 @@ def main() -> int:
             cfg["budget"]["max_model_calls"] = a.max_calls
         if a.total_budget:
             cfg["budget"]["max_total_tokens"] = a.total_budget
+        cfg["efficiency"].update(efficiency)
         if a.report_format:
             cfg["report_format"] = a.report_format
         plan = plan_run(cfg, a.tier, a.no_search, replay=bool(a.replay))
@@ -309,7 +343,7 @@ def main() -> int:
     try:
         if a.cmd == "run":
             out = pipeline.run(ROOT, a.prompt, a.tier, urls_file=a.urls, run_id=a.run_id, no_search=a.no_search, scholar=a.scholar,
-                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset, max_calls=a.max_calls, replay_file=a.replay, case_id=a.case_id, total_budget=a.total_budget, report_format=a.report_format)
+                               quiet=a.quiet, budget=a.budget, lang=a.lang, preset=a.preset, max_calls=a.max_calls, replay_file=a.replay, case_id=a.case_id, total_budget=a.total_budget, report_format=a.report_format, efficiency=efficiency, update_from=a.update_from)
         else:
             mpath = validated_run_dir / "manifest.json"
             if not mpath.exists():

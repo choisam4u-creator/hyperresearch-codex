@@ -194,3 +194,5 @@ docs/                   테스트 계획(TEST-PLAN.md)·원본 비교(COMPARISON
 재개는 초기 설정을 유지하며 예산은 `resume --budget N --max-calls N`으로 변경한다. 시작 이후 코드·프롬프트 파일이 바뀌었으면 추가 모델 호출을 막는다.
 
 후속으로 입력+출력 `--total-budget`, `--format facts|comparison|analysis`, 모델이 제안한 세부 근거를 발췌·원문에 묶는 선택적 `verification.semantic`을 추가했다. 실제 정확도 향상은 미측정이다. [남은 작업 Goal](docs/REMAINING-GOAL.md)을 참고한다.
+
+입력 효율·정확 조건 재사용·변경분 분석·근거 비교표·계산 검산의 선택 기능과 검증 한계는 [효율 기능 안내](docs/EFFICIENCY.md)를 참고한다.

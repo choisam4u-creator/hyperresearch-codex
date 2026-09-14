@@ -199,3 +199,5 @@ Follow-up: `--total-budget` counts input plus output, `--format facts|comparison
 후속 1–7 개선의 구현 범위와 통제 실험 계획은 [작업·검증 문서](docs/SEVEN-STEP-GOAL.md)를 참조하세요. 비평 통합과 세부 근거 검사는 기본 비활성입니다.
 
 [6회 정책 실측 결과](docs/POLICY-MEASUREMENT-20260914.md): 총 1,426,492토큰. 비평 통합은 호출을 줄였지만 합계 토큰이 약 1% 늘어 절감을 입증하지 못했습니다. 자동 검사와 전체 본문 검토 결과를 함께 공개합니다.
+
+Optional input packets, exact analysis reuse, incremental analysis, evidence tables and source-bound arithmetic are documented in [Efficiency and updates](docs/EFFICIENCY.md). Live token savings and quality gains are not established; execution-changing options remain off by default.

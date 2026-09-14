@@ -41,11 +41,15 @@ def estimate_next_input(prompt, inputs, history, role):
 
 
 def plan_run(cfg, tier, no_search=False, replay=False):
+    from .workflow_policy import workflow_config
+    cfg, workflow = workflow_config(cfg, tier)
     t = cfg[tier]
     scout = int(not no_search and not replay and 'codex_scout' in cfg['search']['providers'])
     # 초안 및 비평은 최대 개수. patch/citecheck는 근거가 없어 생략될 수 있다.
     ordinary = 1 + (1 if tier == 'light' else 1 + t['loci_max'] + t['drafts'] + 1)
     combined = bool(cfg.get('critic_policy', {}).get('combine_light') and tier == 'light' and set(t['critics']) == {'dialectic', 'instruction'})
+    if workflow["single_draft"]:
+        ordinary -= 1  # synthesis omitted for the explicit single-draft facts route
     ordinary += (1 if combined else len(t['critics'])) + 1 + 1
     ordinary += int(tier == 'full' and t.get('polish', False))
     gaps = int(tier == 'full' and cfg['gap_fetch']['enabled'] and not no_search and not replay)
@@ -57,7 +61,7 @@ def plan_run(cfg, tier, no_search=False, replay=False):
         attempts = min(attempts, maximum)
     # 과거 실측에 기반한 넓은 계획 범위일 뿐 새로운 모델의 비용 보장이 아니다.
     low, high = ((380_000, 700_000) if tier == 'light' else (1_200_000, 3_500_000))
-    return {'tier': tier, 'preset': cfg['preset'], 'combined_critic': combined, 'planned_calls_max': planned,
+    return {'workflow': workflow, 'tier': tier, 'preset': cfg['preset'], 'combined_critic': combined, 'planned_calls_max': planned,
             'attempts_max': attempts, 'input_estimate_range': [low, high],
             'estimate_basis': 'historical_reference_not_model_calibrated',
             'input_stop_threshold': cfg['budget']['max_input_tokens'] or cfg['budget']['default_by_tier'][tier],
