@@ -17,6 +17,7 @@ CRITIC_COMBINED = {
 }
 
 CRITIC_COMBINED_PROMPT = """Perform both dialectic and instruction-compliance critique in one pass.
+Read question.txt, draft.md, _digest.md, _independence.md, S*-excerpt.md and _schema.json together in one command from the current input folder. Do not search unrelated folders or repeat file reads unnecessarily. Return one JSON object matching _schema.json.
 Return only findings that quote an exact non-empty substring of draft.md. Check whether cited evidence actually allows the conclusion, including contradictions, attribution, dates, units, conditions, and missing limits. Separately check the literal question and required report structure. Do not request removal of the valid '# 질문:' or '# Question:' first-line wrapper. Do not turn formatting preferences into factual findings. Keep distinct substantive contradictions as distinct findings and use the required finding schema."""
 
 _KNOWN_COSMETIC_PREFIX_PROBLEMS = (

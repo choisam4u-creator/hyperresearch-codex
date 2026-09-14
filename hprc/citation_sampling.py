@@ -4,7 +4,7 @@ import re
 
 _CITE = re.compile(r"\[S(\d+)\]")
 _HEADING = re.compile(r"^\s{0,3}#{1,6}\s+")
-_SENTENCE_BREAK = re.compile(r"(?<=[.!?。\]])\s+(?!\[S\d+\])")
+_SENTENCE_SPACE = re.compile(r"(?<=[.!?。\]])\s+")
 
 
 def _is_source_heading(line: str) -> bool:
@@ -16,6 +16,24 @@ def _has_content(sentence: str) -> bool:
     """인용 표식만 있는 표·목록 항목은 검사할 주장으로 세지 않는다."""
     remainder = _CITE.sub("", sentence)
     return bool(re.sub(r"[\s|*`_~>\-–—]", "", remainder))
+
+
+def _sentences(raw: str, judgment_marker: str) -> list[str]:
+    # 먼저 공백 전체를 소비한 뒤 표식을 판정해 정규식 역추적으로 분리되지 않게 한다.
+    spaces = {(m.start(), m.end()) for m in _SENTENCE_SPACE.finditer(raw)}
+    if judgment_marker:
+        spaces.update((m.start() + len(judgment_marker), m.end())
+                      for m in re.finditer(re.escape(judgment_marker) + r"\s+", raw))
+    parts, start = [], 0
+    for left, right in sorted(spaces):
+        if _CITE.match(raw, right) or (judgment_marker and raw.startswith(judgment_marker, right)):
+            continue
+        if left < start:
+            continue
+        parts.append(raw[start:left])
+        start = right
+    parts.append(raw[start:])
+    return parts
 
 
 def _candidates(report: str, judgment_marker: str) -> tuple[list[dict], int]:
@@ -35,7 +53,7 @@ def _candidates(report: str, judgment_marker: str) -> tuple[list[dict], int]:
             continue
         if in_sources:
             continue
-        pieces = [raw] if stripped.startswith("|") else _SENTENCE_BREAK.split(raw)
+        pieces = [raw] if stripped.startswith("|") else _sentences(raw, judgment_marker)
         for sentence in pieces:
             cites = _CITE.findall(sentence)
             if not cites:

@@ -221,6 +221,7 @@ class SemanticCheckTests(unittest.TestCase):
         record = result["semantic"]["records"][0]
         self.assertFalse(result["checks"][0]["supported"])
         self.assertIn("<", record["deterministic_character_coverage"]["uncovered_fragments"])
+        self.assertIn("Atomic quotes omit", result["checks"][0]["reason"])
 
     def test_included_operators_units_and_numeric_separators_complete_coverage(self):
         sentence = "Error is ≤ 2.5% +/- 0.5% at 20℃. [S1]"

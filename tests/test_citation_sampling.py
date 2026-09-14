@@ -53,6 +53,28 @@ print('[S3]')
         self.assertEqual(2, got["eligible_count"])
         self.assertEqual(["S1", "S2"], [sample["cites"][0] for sample in got["samples"]])
 
+    def test_trailing_judgment_stays_attached_without_hiding_adjacent_facts(self):
+        for marker in ("(판단)", "(judgment)", "[recommendation]"):
+            with self.subTest(marker=marker):
+                report = f"Fact one.[S1] Recommend action.[S2] {marker}\nFact two. [S3]"
+                result = select_samples(report, 10, marker)
+                self.assertEqual(1, result["excluded_judgment_count"])
+                self.assertEqual(["Fact one.[S1]", "Fact two. [S3]"], [s["sentence"] for s in result["samples"]])
+
+    def test_judgment_suffix_multiple_spaces_and_following_fact(self):
+        for marker in ("(판단)", "(judgment)", "[recommendation]"):
+            for space in (" ", "  ", "\t "):
+                for recommendation in (f"Recommend.[S1]{space}{marker}", f"Recommend.{space}{marker} [S1]"):
+                    with self.subTest(marker=marker, space=space, recommendation=recommendation):
+                        result = select_samples(recommendation + " Actual fact.[S2]", 10, marker)
+                        self.assertEqual(1, result["excluded_judgment_count"])
+                        self.assertEqual(["Actual fact.[S2]"], [s["sentence"] for s in result["samples"]])
+
+    def test_marker_before_citation_and_empty_marker_still_work(self):
+        result = select_samples("Recommend. (판단) [S1]\nFact.[S2]", 10, "(판단)")
+        self.assertEqual((1, 1), (result["eligible_count"], result["excluded_judgment_count"]))
+        self.assertEqual(2, select_samples("One.[S1] Two.[S2]", 10, "")["eligible_count"])
+
     def test_limit_duplicates_and_late_source_are_deterministic(self):
         report = """앞 동일 [S1]
 앞 동일 [S1]

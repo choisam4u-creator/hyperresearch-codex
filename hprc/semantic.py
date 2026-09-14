@@ -403,6 +403,11 @@ def validate_semantic_checks(response: Any, samples: list[dict], sources: dict[s
                                         "atom exact spans가 부모 문장의 모든 실질 문자를 덮지 않아 overall을 insufficient로 낮췄습니다."))
         legacy = {"sentence": sample["sentence"], "cites": sample.get("cites", []),
                   "supported": safe_supported, "reason": check["reason"]}
+        if not coverage_complete:
+            explanation = ("세부 주장에 문장 일부가 빠져 근거 충족 여부를 확정하지 못했습니다."
+                           if re.search(r"[가-힣]", sample["sentence"]) else
+                           "Atomic quotes omit parts of this sentence; support remains unconfirmed.")
+            legacy["reason"] = explanation + " " + check["reason"]
         if "line" in sample:
             legacy["line"] = sample["line"]
         legacy_checks.append(legacy)
