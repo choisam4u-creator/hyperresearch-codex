@@ -1,0 +1,21 @@
+{
+  "baseline": "../provenance-repair-20260915/reproduction.json",
+  "baseline_public_bundle": "../provenance-repair-20260915/bundle.json",
+  "patch": "patcher-only.patch",
+  "patch_sha256": "b370f6e1c8a97f0256d2b6f3a5472f7d522cdd6d6bb79bf36acde52b1f23c950",
+  "runtime": {
+    "codex_runner_sha256": "b302107ba75e5896b16cb46fbb8fa77eac7277777ad2e31f666fa8b69b5db8b7",
+    "gates_sha256": "3e2f6cc34b6591b329527e1f1c941204cd2f697bda6e982d06aab3f49b4cefd4",
+    "patch_apply_method_sha256": "64de992f269e633811a2659c028e12bbd7b7ea5faf22b280dbd708772b9fc542",
+    "patch_step_sha256": "25c9eb8c5d59a42757f6468fb796e9a3db469dc606b33cca6f44928a92646677"
+  },
+  "patcher_prompts": {
+    "ko": {
+      "before_source_sha256": "d8b7b2a7d3f385c67eb35d42bed35d2f2ae30f2870fbc863d95e00855be85d7d",
+      "after_source_sha256": "2b5b76fafd7fa117833f1628ad144aa688c4cb5751f61356af5ffec01ddc35ad",
+      "before_delivered_sha256": "979368a8c253aad5fd720ac5eb3313fb33ddd05b72d52e21af627a2c4e68acb2",
+      "after_delivered_sha256": "65b4ab5f1c02a875dedbb202089dead958f24f3960736e2f3171f0722ec0b9f2"
+    }
+  },
+  "instructions": "Run python3 verify.py . ../provenance-repair-20260915/bundle.json. This validates saved raw patch responses and deterministic gates only; it makes no model or research call."
+}

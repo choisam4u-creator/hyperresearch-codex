@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from hprc.input_packets import claims_evidence_packet, evidence_packet, input_profile, make_packet, prepare_writer
+from hprc.input_packets import claims_evidence_packet, evidence_packet, inline_input_prompt, input_profile, make_packet, prepare_writer
 from hprc.untrusted import wrap_source
 
 
@@ -44,6 +44,16 @@ class InputPacketTests(unittest.TestCase):
             self.assertIn(f"## Virtual file: {name}\n{body}\n<!-- End virtual file: {name} -->", packet)
             self.assertEqual(len(body.encode("utf-8")), profile["files"][name]["bytes"])
             self.assertEqual(64, len(profile["files"][name]["sha256"]))
+
+    def test_inline_prompt_preserves_same_virtual_files_without_shell_contract_loss(self):
+        source = wrap_source("Condition remains unless caching is disabled.", "https://example.test/a")
+        inputs = {"S1-note.md": source, "question.txt": "What is the limit?"}
+        inline = inline_input_prompt(inputs)
+        self.assertIn("INLINE INPUT CONTRACT", inline)
+        self.assertIn("Do not use shell commands", inline)
+        self.assertIn("## Virtual file: S1-note.md", inline)
+        self.assertIn("## Virtual file: question.txt", inline)
+        self.assertIn(source, inline)
 
     def test_supplemental_selection_is_recorded_and_bound(self):
         body = 'Measured capacity reached 31 units. Only valid with cooling.'

@@ -1,0 +1,53 @@
+[
+  {
+    "opaque_id": "eab45e147738e1a47a2389bb",
+    "case_id": "real-ko-table",
+    "report_sha256": "971d77b2c5342dcf4673037ca4702be7f4904d7c1f1cd987acd816641644be27",
+    "expected_disposition": "pass",
+    "expected_failure_ids": []
+  },
+  {
+    "opaque_id": "75d0165fcb0a36b467f19392",
+    "case_id": "real-ko-table",
+    "report_sha256": "2de22c5e5a0d7dc8951ba492e72b1ea7fecba0a000e2f00fd2e4927982291546",
+    "expected_disposition": "fail",
+    "expected_failure_ids": [
+      "ko.measurement-window"
+    ]
+  },
+  {
+    "opaque_id": "ed5c9cd42c2f24262def95be",
+    "case_id": "real-ko-table",
+    "report_sha256": "10aa3d0243652184dd6c2858cf206eae0e5931d532e87c12f99591eb23d8ac0f",
+    "expected_disposition": "fail",
+    "expected_failure_ids": [
+      "ko.flip-peak-direction-or-unit"
+    ]
+  },
+  {
+    "opaque_id": "f1b99c6078a3c542f2595bec",
+    "case_id": "real-en-long",
+    "report_sha256": "a18c3c5946e95953f375e3543238b242f534db7cf036508b0b3aace4dd101408",
+    "expected_disposition": "pass",
+    "expected_failure_ids": []
+  },
+  {
+    "opaque_id": "8434c5801a3ed988f5a78877",
+    "case_id": "real-en-long",
+    "report_sha256": "7e506f0aebdde074e46566a0c9235f0a6addbd79aa536168afc91d97e104cb52",
+    "expected_disposition": "fail",
+    "expected_failure_ids": [
+      "en.false-absence-of-exclusions"
+    ]
+  },
+  {
+    "opaque_id": "bfc0514330544a5e3a77178f",
+    "case_id": "real-en-long",
+    "report_sha256": "c9a33805bd512e05ff24b829b811a8d126fb9a1c7e956a1bb5d662a9ce18e408",
+    "expected_disposition": "fail",
+    "expected_failure_ids": [
+      "en.causal-abandonment-claim",
+      "en.no-causal-abandonment-claim"
+    ]
+  }
+]

@@ -159,7 +159,8 @@ def _attempt_log_paths(log_dir: Path, name: str, attempt: int) -> tuple[Path, Pa
 
 
 def run_step(name: str, prompt: str, schema: dict, inputs: dict[str, str], role_cfg: dict, codex_cfg: dict,
-             log_dir: Path, mock=None, web_search: bool = False, heartbeat=None, attempt: int = 1) -> tuple[dict, dict]:
+             log_dir: Path, mock=None, web_search: bool = False, heartbeat=None, attempt: int = 1,
+             prompt_stdin: bool = False) -> tuple[dict, dict]:
     backend = os.environ.get("HPR_BACKEND", "codex")
     started = time.time()
     if backend == "mock":
@@ -178,7 +179,9 @@ def run_step(name: str, prompt: str, schema: dict, inputs: dict[str, str], role_
         schema_path = work / "_schema.json"
         schema_path.write_text(json.dumps(schema, ensure_ascii=False, indent=2), encoding="utf-8")
         out_file = work / "_last_message.txt"
-        cmd = build_cmd(work, schema_path, out_file, role_cfg, codex_cfg, web_search) + [prompt]
+        cmd = build_cmd(work, schema_path, out_file, role_cfg, codex_cfg, web_search)
+        if not prompt_stdin:
+            cmd.append(prompt)
         log_dir.mkdir(parents=True, exist_ok=True)
         events, stderr = _attempt_log_paths(log_dir, name, attempt)
         elapsed = lambda: round(time.time() - started, 1)
@@ -189,14 +192,22 @@ def run_step(name: str, prompt: str, schema: dict, inputs: dict[str, str], role_
             "web_search": web_search
         }
         with open(events, "x", encoding="utf-8") as out, open(stderr, "x", encoding="utf-8") as err:
-            err.write("$ " + " ".join(cmd[:-1]) + " <prompt>\n\n")
+            err.write("$ " + " ".join(cmd if prompt_stdin else cmd[:-1]) + (" <prompt via stdin>\n\n" if prompt_stdin else " <prompt>\n\n"))
             err.flush()
+            # File-backed UTF-8 stdin cannot block on a full pipe before timeout.
+            prompt_stream = tempfile.TemporaryFile(mode="w+b") if prompt_stdin else None
             try:
-                proc = subprocess.Popen(cmd, cwd=work, stdin=subprocess.DEVNULL, stdout=out, stderr=err, text=True,
+                if prompt_stream is not None:
+                    prompt_stream.write(prompt.encode("utf-8"))
+                    prompt_stream.seek(0)
+                proc = subprocess.Popen(cmd, cwd=work, stdin=prompt_stream if prompt_stream is not None else subprocess.DEVNULL, stdout=out, stderr=err, text=True,
                                         env={**os.environ, "NO_COLOR": "1"})
             except FileNotFoundError as error:
                 raise CodexMissing("codex 실행 파일을 찾을 수 없음. `npm i -g @openai/codex` 로 설치하고 `hpr doctor` 로 확인",
                                    backend=backend, model=role_cfg.get("model"), effort=role_cfg.get("effort"), web_search=web_search) from error
+            finally:
+                if prompt_stream is not None:
+                    prompt_stream.close()
             try:
                 _wait_with_heartbeat(proc, events, codex_cfg.get("timeout", 900), heartbeat)
             except subprocess.TimeoutExpired as error:

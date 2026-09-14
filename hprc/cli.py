@@ -202,6 +202,7 @@ def main() -> int:
     r.add_argument("--format", dest="report_format", choices=["brief", "facts", "comparison", "analysis"], help="같은 분량 범위 안에서 보고서 형식 선택")
     r.add_argument("--preset", choices=["standard", "lean", "economy"], help="lean: 구독 계정용 절약 프리셋(비평 2·초안 2·상한 축소)")
     r.add_argument('--packet-inputs', action='store_true', help='선택 실험: 중복 주장 제거 및 파일 입력 묶음')
+    r.add_argument('--inline-inputs', action='store_true', help='선택 실험: writer·비평 입력을 프롬프트 stdin으로 전달')
     r.add_argument('--evidence-selection', action='store_true', help='선택 실험: 조건을 보존하는 근거 선택')
     r.add_argument('--reuse-analysis', action='store_true', help='동일 조건의 분석 산출물 재사용')
     r.add_argument('--strategy', choices=['standard', 'adaptive'], help='facts Full에서 단일 초안 경로 선택')
@@ -244,7 +245,9 @@ def main() -> int:
             print('BLOCKED:', error, file=sys.stderr); return 2
     efficiency = {}
     if a.cmd == 'run':
-        for arg, key in [('packet_inputs', 'packet_inputs'), ('evidence_selection', 'evidence_selection'), ('reuse_analysis', 'reuse_analysis')]:
+        if a.packet_inputs and a.inline_inputs:
+            p.error('--packet-inputs와 --inline-inputs는 함께 사용할 수 없습니다')
+        for arg, key in [('packet_inputs', 'packet_inputs'), ('inline_inputs', 'inline_inputs'), ('evidence_selection', 'evidence_selection'), ('reuse_analysis', 'reuse_analysis')]:
             if getattr(a, arg): efficiency[key] = True
         if a.strategy: efficiency['strategy'] = a.strategy
     if a.cmd == "run" and bool(a.replay) != bool(a.case_id):

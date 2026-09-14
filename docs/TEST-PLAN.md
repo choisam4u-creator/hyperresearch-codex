@@ -160,3 +160,16 @@ Astra 검수에서 발견한 실제 호출 정보 미대조와 회계/정책 위
 ## 기존 실측 로그 기반 오프라인 수정 (2026-09-14)
 
 `tests/test_claim_delivery.py`, `tests/test_text_select.py`, `tests/test_input_packets.py`, `tests/test_patch_salvage.py`로 작성자 근거 보충·연속 조건·분할 경계·공유 예산·감사 기록과 부분 패치 안전 검사를 재현한다. [결과와 한계](OFFLINE-REPAIR-20260914.md)를 참고한다. 새 실제 리서치 호출은 수행하지 않았다.
+
+
+## 2026-09-15 직접 전달·출처 메타 경계·공개 데이터
+
+직접 전달은 파일명·본문·원문 wrapper 보존, 입력 예산 반영, 기본 OFF와 packet 동시 사용 거부를 검사한다. 큰 UTF-8 입력의 바이트 보존과 stdin을 읽지 않는 자식 프로세스의 시간 초과를 실제 로컬 자식 프로세스로 재현한다. mock 입력은 원래 파일 맵을 유지한다.
+
+`tests/test_provenance_boundary.py`는 같은 host의 서로 다른 자료를 자동으로 하나의 출처로 합치지 않는 동작과 메타에서 원문 사실을 추론하지 않는 안내를 확인한다. 실제 의미 품질은 [별도 측정](INLINE-MEASUREMENT-20260915.md)과 구분한다.
+
+`tests/test_inline_measurement.py`는 공개 자료를 `python -O`로 검증하고, 다른 출처 ID로 바꾼 인용·미측정으로 표시한 확정 비용·연구 호출 누락이 거부되는지 검사한다. 공개 원장은 이전 수정 비교와 직접 전달 비교를 분리하고 보정/실패 평가 비용을 보존한다. 일반 품질 우위, 외부 사용자 환경, 실제 Windows 모델 검증을 의미하지 않는다.
+
+`tests/test_provenance_measurement.py`는 후속 E 수정 검증과 원래 C 결과·비용을 분리한다. `tests/test_patch_measurement.py`와 공개 F 검증기는 기존·새 패치 응답을 같은 수정 게이트에 적용해 보고서를 재현하고, 재사용 비용 중복·사용량 및 판정 결속을 검사한다. F는 알려진 사례의 패치만 재실행한 결과이며 writer·critic·citecheck·자동 quality 및 전체 연구를 다시 실행한 결과가 아니다.
+
+통합본 전체 mock 회귀 **424개 통과**(14.441초). macOS 임시 wheel 설치 후 저장소 밖에서 inline 입력 프로필과 추가 호출 없는 재개를 확인했다. 공개 C/E/F 검증기를 `python -O`로 통과했다. 원격 CI 결과는 푸시 후 커밋 댓글에 별도로 기록한다.

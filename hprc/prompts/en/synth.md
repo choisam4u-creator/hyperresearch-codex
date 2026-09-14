@@ -4,6 +4,7 @@ Same format as the drafts (first line "# Question: " verbatim, ## Answer, ## Evi
 Rules:
 - Append "(judgment)" only to recommendation / priority / ordering sentences that the sources do not state themselves. At most 8 in the whole report.
 - Drop claims that appear only in a draft but not in the notes. Record settled disagreements under "## Counter-evidence and limits".
+- `_independence.md` and note-header domain, date and cluster fields are processing/relationship metadata. A shared host/cluster or an unstated date alone does not establish a common publisher/original, insufficient independent or external verification, or that the original source lacks a date. State such a limit only when a source directly says it, with [S#].
 Read every file in one command (e.g. `cat *.md *.json`). Return exactly one JSON object matching _schema.json (field `markdown`).
 Cite only [S#]. Never cite _digest.md, interim/*.md or claim ids (C3) inside brackets.
 Put "(judgment)" at the end of the sentence on the same line (never on its own line).

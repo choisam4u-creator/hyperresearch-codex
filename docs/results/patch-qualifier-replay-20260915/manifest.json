@@ -1,0 +1,10 @@
+{
+  "files": {
+    "bundle.json": "f7cc44574853adfda559cb1c0a4fca304e0703fe52ba80501dc9b47720f2f312",
+    "verify.py": "10e93175d7eb7226e2c2b498c071d5b2b1124e592b54470bb45ff5c32479774a",
+    "core.py": "f73608a3f7059f0537ce62bc036fbdbb6be23b05461c767863f3bb65388bc636",
+    "gates.py": "3e2f6cc34b6591b329527e1f1c941204cd2f697bda6e982d06aab3f49b4cefd4",
+    "patcher-only.patch": "b370f6e1c8a97f0256d2b6f3a5472f7d522cdd6d6bb79bf36acde52b1f23c950",
+    "reproduction.json": "cd781498bf8c7596cdf2588592e3e77a3828ea4eef91c898cf674673c9bfa7b1"
+  }
+}

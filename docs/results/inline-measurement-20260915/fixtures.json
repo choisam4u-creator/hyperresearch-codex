@@ -1,0 +1,78 @@
+{
+  "benchmark_version": "quality-holdout-synthetic-v1",
+  "frozen_at": "2026-09-15T00:00:00Z",
+  "cases": [
+    {
+      "id": "holdout-ko-leak-alert",
+      "split": "holdout",
+      "category": "number_unit_scope",
+      "lang": "ko",
+      "prompt": "제시된 누수 경보 시범의 관측 결과를 수치·단위·처리 범위와 함께 요약하라.",
+      "baseline_time": "2026-08-01",
+      "sources": {
+        "S1": "시 주택관리과의 2026년 7월 점검표는 공동주택 9곳의 지하 공용 배관에 붙인 유량 경보기를 다룬다. 관찰 기간은 7월 1일부터 28일까지였고, 야간 0시부터 4시까지의 시간당 유량을 설치 전 7일과 설치 후 7일로 비교했다. 수리 완료가 확인된 6곳에서 중앙 야간 유량은 시간당 0.42 m³에서 0.31 m³로 기록됐다. 이 값은 각 건물의 전체 월 사용량이나 요금 청구액이 아니다.\n\n점검표에는 의심 경보 31건이 접수됐고, 현장 확인 뒤 실제 배관 누수로 분류된 것은 18건이라고 적혀 있다. 폭우로 배수 펌프가 작동한 밤 3일은 비교에서 제외했다. 같은 기간에 경보기가 없는 비슷한 건물을 함께 관찰하지 않았으므로, 감소가 경보기 자체 때문에 생겼다고 판정할 수는 없다고 결론란에 적혀 있다.",
+        "S2": "운영업체의 장애 기록은 같은 31건의 의심 경보를 다루지만 수량 절감 효과를 계산하지 않는다. 기록상 24건은 접수 뒤 두 시간 안에 현장 담당자에게 전달됐고, 7건은 통신 불안정 또는 야간 출입 제한 때문에 다음 날 전달됐다. 전달 시간은 수리 완료 시간도, 누수량도 아니다.\n\n업체는 이번 기록으로 다른 단지나 연간 절수량을 추정하지 말라고 안내했다. 각 단지의 배관 연식, 상가 공용 사용, 계량기 종류가 달라 단순 합계가 비교 가능한 절수량이 되지 않는다고 설명한다."
+      }
+    },
+    {
+      "id": "holdout-ko-transfer-board",
+      "split": "holdout",
+      "category": "conditional_observation",
+      "lang": "ko",
+      "prompt": "환승 안내판 관찰의 연결 결과와 접근성 관찰을 조건·표본 차이와 함께 설명하라.",
+      "baseline_time": "2026-08-18",
+      "sources": {
+        "S1": "광역교통센터의 8주 관찰은 동부·서부·남부·북부 터미널 네 곳에서 환승 안내판을 시험한 기록이다. 6월 23일부터 8월 17일까지, 첫 버스에서 내린 뒤 두 번째 버스의 개찰 확인이 남은 3,240건을 분석했다. 그중 2,657건(82.0%)은 안내판에 표시된 15분 연결 구간 안에 두 번째 버스에 탑승했다. 터미널별 비율은 78.1%에서 85.4%였다. 이 비율은 모든 환승객이 안내를 읽었거나 모든 연결이 성공했다는 뜻은 아니다.\n\n첫 버스가 20분 이상 지연된 날, 개찰기 오류가 난 날, 그리고 종이 승차권이라 두 번째 개찰 확인이 없는 승객은 분모에서 제외했다. 기록은 안내판 도입 전의 같은 기간을 비교하지 않았고, 이용객 수나 노선 배차가 달라진 영향을 보정하지 않았다. 따라서 82.0%만으로 안내판이 환승 성공률을 높였다고 인과적으로 말할 수는 없다.\n\n장애인 이동지원팀은 안내판 화면과 같은 정보를 매표소 직원이 말로도 제공했다고 적었다. 그러나 이 제공이 얼마나 자주 요청됐는지, 대기시간을 줄였는지는 기록하지 않았다.",
+        "S2": "접근성 자문단은 7월에 자원 참여자 16명과 현장 동선을 한 번씩 점검했다. 13명은 화면 낭독기로 연결 구간을 들을 수 있었고, 2명은 개인 단말기의 고대비 설정 때문에 안내판 연결 버튼을 찾지 못했으며, 1명은 임시 변경된 승강장 이름의 음성 표기가 없다고 보고했다. 이 16회는 실제 전체 이용자의 접근성 비율을 계산한 표본이 아니다.\n\n자문단은 음성 표기를 보완하고 직원 안내를 유지하라고 권고했다. 권고는 관찰된 장벽에 대한 예방 조치이며, 안내판이 모든 환경에서 접근 불가능하다는 결론도 직원 안내가 특정 비율의 실패를 막는다는 측정 결과도 아니다.\n\n운영팀의 주간 집계에는 남부 터미널의 연결 비율이 85.4%로 가장 높았다고 적혀 있다. 자문단은 그 터미널이 승강장을 임시로 옮긴 이틀을 별도로 관찰했지만, 해당 이틀의 탑승 건수를 3,240건 집계와 같은 방식으로 계산하지 않았다. 두 기록은 서로 모순된 성공률이 아니라 대상과 분모가 다른 관찰이다."
+      }
+    },
+    {
+      "id": "holdout-ko-forest-survival",
+      "split": "holdout",
+      "category": "conflicting_scope",
+      "lang": "ko",
+      "prompt": "산림 복원 식재 조사에서 확인된 생존 관찰과 상충·미확정 범위를 분리해 정리하라.",
+      "baseline_time": "2026-09-05",
+      "sources": {
+        "S1": "도 산림연구소의 현장 조사 보고서는 2026년 4월 식재한 18개 소구획을 6월 30일부터 7월 12일까지 다시 방문한 결과다. 식재 대장은 소구획마다 묘목 600주, 합계 10,800주를 기록한다. 조사원은 각 소구획에서 사전 지정한 60주를 세고, 줄기가 살아 있고 새 잎이 확인된 묘목을 생존으로 표기했다. 이 표본 1,080주 가운데 950주가 생존으로 기록되어 관찰 생존 비율은 88.0%였다. 이 수치는 60~90일 사이의 표본 관찰이며, 향후 몇 년의 정착률이나 탄소 흡수량이 아니다.\n\n북사면 6개 소구획은 관찰 생존 비율 91.7%, 남사면 6개는 84.2%, 계곡 가장자리 6개는 88.1%였다. 보고서는 사면별 토양 수분과 야생동물 피해를 같은 날 한 번 기록했지만, 구획 배정은 무작위가 아니고 사면별 관리 인력도 달랐다고 적었다. 따라서 북사면 비율이 높은 이유를 햇빛, 토양, 보호망 또는 작업 방식 중 하나로 단정할 수 없다.\n\n세 소구획은 폭우 뒤 접근로가 무너져 원래 예정일보다 5일 늦게 조사했다. 늦은 조사 표본은 삭제하지 않았지만, 그 180주가 같은 생존 기간을 가졌다고 보기 어렵다는 표시를 달았다. 또 두 소구획에서는 식재 위치표가 흐려 조사원이 인접 줄에서 시작했을 수 있다. 보고서는 이 절차 문제가 88.0%를 어느 방향으로 바꾸는지 계산하지 않았다.\n\n조사 용지는 고사 묘목과 줄기는 있으나 새 잎이 보이지 않는 묘목을 구분한다. 후자는 '재확인'으로 남겼고, 1,080주 표본의 분모에는 넣지 않았다. 재확인 표본 37주는 이 보고서의 생존/고사 비율에 합치지 않았다. 그래서 88.0%를 모든 식재 묘목의 확정 생존률 또는 재식재가 필요 없는 비율로 읽지 말라고 방법 절에 적었다.\n\n부록 A — 표본 위치 확인. 조사 용지는 각 소구획의 동쪽 경계에서 북쪽으로 세 번째 줄을 시작점으로 적고, 이후 열두 줄마다 한 주를 기록했다. 하지만 우기 전에 설치한 나무 표지가 두 구획에서 쓰러져 현장팀이 종이 도면과 주변 바위 위치를 함께 대조했다. 같은 위치를 두 명이 독립적으로 세었는지, 표지가 바뀐 구획의 위치 오차가 얼마인지는 적혀 있지 않다. 이 메모는 표본을 무작위 표본으로 다시 만들지 않으며, 위치 확인 문제가 결과를 어느 방향으로 바꿨는지도 알려 주지 않는다.\n\n부록 B — 관찰 시점. 연구소는 식재 뒤 첫 두 주에는 관수 일지를, 6월 말에는 새 잎과 줄기 상태를, 7월에는 보호망 손상 여부를 보도록 안내했다. 현장팀은 방문일의 날씨와 전날 강수량을 적었지만, 연속 토양수분 측정기나 구획별 일조량 기록은 갖고 있지 않았다. 따라서 특정 주의 강수량을 보았다는 사실만으로 사면별 생존 차이를 기후 효과로 설명할 수 없다.\n\n부록 C — 고사와 재확인 기준. 조사원은 줄기가 완전히 마르고 껍질 아래 조직이 갈색인 경우만 고사로 분류했다. 새 잎이 없지만 줄기가 유연한 묘목은 재확인으로 남겨 다음 계절 관찰을 기다리기로 했다. 이 기준은 성급한 고사 판정을 줄이려는 실무 규칙이지만, 재확인 37주가 최종적으로 생존하거나 고사할 확률을 제공하지 않는다. 재확인 수를 임의로 88.0%의 분자나 분모에 더해 장기 생존률을 계산하는 것은 허용되지 않는다.\n\n부록 D — 보고 범위. 소구획은 기존 훼손지의 일부만 포함하며 인근 자연림이나 사유림은 조사하지 않았다. 연구소는 표본 조사 결과를 식재 방법의 보증, 도 전체 복원률, 또는 다른 수종의 성과로 옮기지 말라고 표시했다. 다음 봄 재방문 제안은 동일 표본의 계절 변화를 보기 위한 것이며, 사업 전체 완료나 탄소 인증의 승인 일정을 뜻하지 않는다.\n\n보고서의 비용 표는 묘목 운반과 식재 인건비만 임시 합계로 남기며, 18개 소구획의 관수·보호망 교체·추가 식재 비용은 다음 회계 파일로 넘겼다. 연구소는 관찰 생존 수를 금액 절감, 산림 탄소 크레딧, 또는 복원 사업의 투자 회수 기간으로 환산하지 않았다. 다음 봄에 같은 표본 위치를 다시 확인하자는 계획은 있으나, 예산과 담당 구획은 승인되지 않았다고 적혀 있다.",
+        "S2": "시공업체의 준공 확인서는 4월 말에 10,800주를 모두 심었다고 보고하며, 납품 당시 포트별 불량률은 1.5% 미만이었다고 적는다. 이 문서는 납품과 식재 완료를 확인하는 기록이지, 6월 이후 생존을 직접 세는 조사표가 아니다. 업체는 납품 불량률을 현장 생존률과 합치지 말라고 각주에 적었다.\n\n업체의 7월 순회 메모는 18개 소구획 중 15곳에서 '육안상 활착 양호'라고 썼다. 세 곳은 진입로 문제로 멀리서만 보았고, 묘목 수를 세거나 새 잎 기준을 적용하지 않았다. 따라서 이 메모는 연구소의 1,080주 표본 88.0%를 확인하거나 반박하는 독립 표본이 아니다. 두 문서의 공통 사실은 18개 소구획에 식재가 이뤄졌고 일부 현장 점검이 있었다는 점이다.\n\n보호단체의 회의록에는 남사면에서 멧돼지 흔적이 많았다는 주민 제보가 들어 있다. 사진과 날짜가 붙은 제보는 네 건이지만, 피해 묘목 수나 다른 사면의 같은 조사 기록은 없다. 회의록은 보호망을 늘리자는 제안만 남겼으며, 멧돼지가 84.2% 관찰값의 원인이거나 보호망이 생존률을 몇 퍼센트 올린다는 계산을 제시하지 않는다.\n\n회계 담당자는 관수 비용과 추가 식재 계약이 아직 확정되지 않았다고 답했다. 그는 88.0% 관찰값을 장기 탄소량이나 사업 경제성으로 외부 발표하지 말라고 기록했다. 이 보류는 현장 표본의 관찰을 부정하는 뜻이 아니라, 표본 기간과 회계 범위를 넘는 결론에 추가 자료가 필요하다는 뜻이다."
+      }
+    },
+    {
+      "id": "holdout-en-lab-blank",
+      "split": "holdout",
+      "category": "number_unit_scope",
+      "lang": "en",
+      "prompt": "Summarize the laboratory blank-check observation with its units, exclusions, and unresolved scope.",
+      "baseline_time": "2026-07-22",
+      "sources": {
+        "S1": "A food-testing laboratory ran a blank-check exercise on six benchtop instruments from 2026-07-08 through 2026-07-19. Each morning, the operator placed one distilled-water blank in each instrument before production samples. Of 72 scheduled blanks, 68 returned a reading below 0.05 mg/L nitrate. The four remaining blanks were not counted: two were spilled before loading and two had a logged pump fault. This is an observation about scheduled blank readings, not a result for customer samples or all analytes.\n\nThe exercise did not randomize operators or compare the instruments with another laboratory. The protocol says it cannot establish an annual contamination rate or prove that a particular instrument caused a later production result.",
+        "S2": "The maintenance log lists the same two pump faults and says both were repaired within one business day. It also records three temperature alarms during production shifts, but it does not connect those alarms to nitrate readings. Repair time is not a measure of blank concentration. The log asks for a later proficiency test before any claim about inter-laboratory accuracy."
+      }
+    },
+    {
+      "id": "holdout-en-ferry-route",
+      "split": "holdout",
+      "category": "conditional_comparison",
+      "lang": "en",
+      "prompt": "Compare the two ferry boarding routes while preserving their measured conditions and limits.",
+      "baseline_time": "2026-08-27",
+      "sources": {
+        "S1": "Route Slate used a staffed ramp at Pier A during the first three weeks of August. The operator timed 42 vehicle boardings after the vehicle had reached the ramp line; the median time from that line to deck entry was 54 seconds. The record excluded emergency vehicles, wheelchair-loading events, and periods when the tide required a second ramp adjustment. It did not include the time vehicles spent approaching the pier or waiting in the ticket queue.\n\nThe route log records that staff gave a hand signal before each vehicle moved. It does not measure whether that signal reduced collisions, passenger stress, or fuel use. The pier manager notes that the result is a local operating observation, not a guaranteed boarding time for another pier.",
+        "S2": "Route Ember used a marked self-guided lane at Pier C on 38 boardings in late August. Its median time from the marked lane to deck entry was 47 seconds. The pier had smaller vans only during the observation window, while Slate included cars and delivery trucks. Ember's log excluded one rain closure and did not use a staffed ramp.\n\nThe two logs use the same start and end labels but do not use matched vehicle mixes, tides, or dates. They support the two reported local medians; they do not provide a controlled seven-second performance advantage for Ember. Ember cannot be used when a vehicle needs the private-access ramp at Pier A, and Slate was not tested with the smaller-van-only condition."
+      }
+    },
+    {
+      "id": "holdout-en-permit-ledger",
+      "split": "holdout",
+      "category": "fact_check_limits",
+      "lang": "en",
+      "prompt": "Produce a cautious evidence-backed briefing on the permit-ledger pilot's measured outcomes and unresolved limits.",
+      "baseline_time": "2026-09-10",
+      "sources": {
+        "S1": "A county planning office piloted a digital permit ledger in five districts from 2026-05-04 through 2026-08-28. Clerks recorded whether a submitted application received a visible ledger reference before the first completeness review. Of 2,140 applications that reached that review, 1,755 (82.0%) had a visible reference. District results ranged from 76.4% to 86.9%. The pilot did not treat a visible reference as proof that the application was complete, legally valid, or approved.\n\nThe protocol excluded withdrawn applications, emergency declarations, and days when the scanner queue was unavailable. It also excluded an application when its first review was performed outside the five participating districts. The office did not retain a matched pre-ledger period and did not measure whether applicants made fewer follow-up calls. The reported 82.0% is therefore a pilot process observation, not evidence of a causal reduction in review time or applicant burden.\n\nClerks logged 73 reference corrections. Thirty-one followed a duplicate upload, 24 followed an address normalization, and 18 had a free-text explanation. These tags were entered after the correction and were not independently audited. A correction records a change to the visible reference; it does not establish fraud, a denied permit, or software failure.\n\nThe pilot report gives aggregate counts only. It does not retain applicant names, disability status, primary language, or the reason an applicant chose a paper submission. The report therefore cannot establish that the ledger worked equally well for all applicant groups. It explicitly says the five-district findings should not be treated as a countywide deployment estimate.\n\nAppendix A — review timing. A clerk began the first completeness review after a submitted file appeared in the queue. The ledger reference could appear before that review, but the protocol did not require a clerk to act faster when it appeared. The files contain a date but not a continuous timestamp for each review. They cannot calculate minutes saved per application or a median review-duration change.\n\nAppendix B — scanner interruption. On six weekdays, a scanner backlog prevented new document images from entering the ledger for part of the afternoon. Those days were excluded from the visible-reference percentage, while applications already in the queue remained in operational logs. The report does not state how many potential applications would have met the reference condition during the interruption. It does not infer that including those days would raise or lower 82.0%.\n\nAppendix C — district differences. District 2 used a local address validator for the entire pilot. District 4 began using it halfway through, and District 5 accepted more paper submissions than the other districts. The district range is not adjusted for application type, staffing level, or document complexity. A higher district percentage is an observed local result, not evidence that one validator or district practice caused better ledger performance.\n\nAppendix D — correction review. Of the 73 corrections, staff later sampled 12 duplicate-upload labels and found 10 matched the original queue history. The sample was selected for training, not randomly. No equivalent check was made for the 24 address-normalization labels or the 18 free-text labels. The appendix does not turn the correction categories into an audited error rate.\n\nAppendix E — future decision. The steering note proposes a limited follow-up with multilingual instructions, retained paper intake, and a pre-specified scanner-outage log. It leaves the number of additional districts, the outcome threshold, the budget source, and the deployment decision open. No procurement request, vendor award, countywide rollout date, or projected cost saving is approved in the materials.",
+        "S2": "An accessibility walkthrough observed 20 volunteer sessions in July. In 16 sessions, a participant found the visible ledger reference without staff help. In three sessions, the keyboard focus skipped the reference after an address field error; in one session, the participant selected a translated help page whose example did not match the local form. The walkthrough documents the observed sessions but does not calculate a population usability rate.\n\nReviewers recommend correcting focus order, testing the translated example, and retaining a staffed paper option during any follow-up. They do not conclude that the ledger is unusable in every setting. The volunteers used a test application and a reviewer was present, so the observation does not establish how unassisted applicants would behave.\n\nA procurement worksheet lists possible subscription tiers and migration labor estimates. It marks each amount as planning information and identifies no selected supplier. The worksheet says a countywide purchase would require a separate budget decision after an accessibility and operations review. It does not authorize a contract, predict countywide savings, or set a deployment date."
+      }
+    }
+  ]
+}

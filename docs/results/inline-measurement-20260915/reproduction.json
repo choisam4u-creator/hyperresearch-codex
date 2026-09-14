@@ -1,0 +1,3336 @@
+{
+  "base_commit": "fa6b32fd0a5f6d2cf6b7ce57aa9b2666d3e0aa07",
+  "patch": "candidate.patch",
+  "runtime": {
+    "ko": {
+      "prompt_hash": "ea6f5d6b8ae54bdffb59b03bea68353a19eda479b51a09f1de68cd3f52685f1e",
+      "code_hash": "534b37782a6e0acfa60b77d5f086b5a8a89ad43a19cbe2d617a6bac6458ab8c2"
+    },
+    "en": {
+      "prompt_hash": "812e615f372987609751475002f3fec7e09899f749998a6b5a9746d492c0897e",
+      "code_hash": "534b37782a6e0acfa60b77d5f086b5a8a89ad43a19cbe2d617a6bac6458ab8c2"
+    }
+  },
+  "cli_version": "codex-cli 0.154.0-alpha.6.2",
+  "scope": "C original same-fork file/inline experiment, before later provenance repair. Applying patch and plan-json make no model calls. Actual replay uses user account tokens; results are stochastic.",
+  "cases": [
+    {
+      "id": "holdout-ko-leak-alert-before",
+      "case_id": "holdout-ko-leak-alert",
+      "arm": "before",
+      "frozen_input_hash": "083a7f7d8269a152e4d0f5daaa1b7d56142e8e50d78fc632c40b6945b0f76af5",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-ko-leak-alert-after",
+      "case_id": "holdout-ko-leak-alert",
+      "arm": "after",
+      "frozen_input_hash": "083a7f7d8269a152e4d0f5daaa1b7d56142e8e50d78fc632c40b6945b0f76af5",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-ko-transfer-board-after",
+      "case_id": "holdout-ko-transfer-board",
+      "arm": "after",
+      "frozen_input_hash": "7f6a73f5b6e0b1defb90eb52f2ba1cc11506cdd3c22493498d365e0fdd347383",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-ko-transfer-board-before",
+      "case_id": "holdout-ko-transfer-board",
+      "arm": "before",
+      "frozen_input_hash": "7f6a73f5b6e0b1defb90eb52f2ba1cc11506cdd3c22493498d365e0fdd347383",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-ko-forest-survival-before",
+      "case_id": "holdout-ko-forest-survival",
+      "arm": "before",
+      "frozen_input_hash": "f6fc333fb71a88aac574b26d13b9f77b1a9327467296d6e89e29eae8a3bddeb7",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-ko-forest-survival-after",
+      "case_id": "holdout-ko-forest-survival",
+      "arm": "after",
+      "frozen_input_hash": "f6fc333fb71a88aac574b26d13b9f77b1a9327467296d6e89e29eae8a3bddeb7",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "ko",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-lab-blank-after",
+      "case_id": "holdout-en-lab-blank",
+      "arm": "after",
+      "frozen_input_hash": "07f76670ed6e06dac10ee8cd32d4a6143126412b765b7ca320aa1c326c5e1be2",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-lab-blank-before",
+      "case_id": "holdout-en-lab-blank",
+      "arm": "before",
+      "frozen_input_hash": "07f76670ed6e06dac10ee8cd32d4a6143126412b765b7ca320aa1c326c5e1be2",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-ferry-route-before",
+      "case_id": "holdout-en-ferry-route",
+      "arm": "before",
+      "frozen_input_hash": "451613b338f7c3313d5b5c8c1a9f7a565913a5cfee0a509a3321488030e06316",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-ferry-route-after",
+      "case_id": "holdout-en-ferry-route",
+      "arm": "after",
+      "frozen_input_hash": "451613b338f7c3313d5b5c8c1a9f7a565913a5cfee0a509a3321488030e06316",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-permit-ledger-after",
+      "case_id": "holdout-en-permit-ledger",
+      "arm": "after",
+      "frozen_input_hash": "5a5bc2c504958d59142de51d59f49e38c3a9c0972cfb26d1a2aacb729eb06f10",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": true
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holdout-en-permit-ledger-before",
+      "case_id": "holdout-en-permit-ledger",
+      "arm": "before",
+      "frozen_input_hash": "5a5bc2c504958d59142de51d59f49e38c3a9c0972cfb26d1a2aacb729eb06f10",
+      "config": {
+        "default_model": "gpt-6-astra",
+        "report_format": "facts",
+        "lang": "en",
+        "preset": "lean",
+        "presets": {
+          "lean": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "synth": {
+                "effort": "medium"
+              },
+              "critic": {
+                "effort": "low"
+              },
+              "writer": {
+                "effort": "medium"
+              }
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "economy": {
+            "light": {
+              "max_sources": 8,
+              "critics": [
+                "dialectic",
+                "instruction"
+              ],
+              "cite_sample": 5,
+              "target_words": 700
+            },
+            "full": {
+              "max_sources": 12,
+              "loci_max": 2,
+              "drafts": 2,
+              "critics": [
+                "dialectic",
+                "depth",
+                "instruction"
+              ],
+              "cite_sample": 6,
+              "target_words": 1600
+            },
+            "models": {
+              "scout": {
+                "model": "gpt-5.6-luna"
+              },
+              "analyst": {
+                "model": "gpt-5.6-terra"
+              },
+              "loci": {
+                "model": "gpt-5.6-sol"
+              },
+              "investigator": {
+                "model": "gpt-5.6-sol"
+              },
+              "writer": {
+                "model": "gpt-5.6-sol"
+              },
+              "synth": {
+                "model": "gpt-5.6-sol",
+                "effort": "medium"
+              },
+              "critic": {
+                "model": "gpt-5.6-terra"
+              },
+              "patcher": {
+                "model": "gpt-5.6-terra"
+              },
+              "citecheck": {
+                "model": "gpt-6-astra"
+              },
+              "polish": {
+                "model": "gpt-5.6-luna"
+              }
+            },
+            "routing": {
+              "enabled": true
+            },
+            "budget": {
+              "reserve_input": true,
+              "stop_on_unknown": true,
+              "max_retries": 0,
+              "max_model_calls": 24
+            },
+            "note_max_chars": 8000,
+            "draft_note_chars": 5000,
+            "excerpt_chars": 1800,
+            "scout_max_searches": 4
+          },
+          "standard": {}
+        },
+        "models": {
+          "scout": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          },
+          "analyst": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "loci": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "investigator": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "writer": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "synth": {
+            "model": "gpt-5.6-sol",
+            "effort": "medium"
+          },
+          "critic": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "patcher": {
+            "model": "gpt-5.6-terra",
+            "effort": "low"
+          },
+          "citecheck": {
+            "model": "gpt-6-astra",
+            "effort": "low"
+          },
+          "polish": {
+            "model": "gpt-5.6-luna",
+            "effort": "low"
+          }
+        },
+        "search": {
+          "providers": [
+            "codex_scout",
+            "duckduckgo"
+          ],
+          "preferred_domains": [],
+          "query_variants": true,
+          "searxng_endpoint": null
+        },
+        "efficiency": {
+          "packet_inputs": false,
+          "evidence_selection": false,
+          "reuse_analysis": false,
+          "strategy": "standard",
+          "inline_inputs": false
+        },
+        "critic_policy": {
+          "compact_inputs": true,
+          "combine_light": false
+        },
+        "routing": {
+          "enabled": false,
+          "escalation_model": "gpt-6-astra",
+          "escalation_effort": "high",
+          "max_escalations": 1
+        },
+        "verification": {
+          "recheck_changed": false,
+          "require_traceability": false,
+          "semantic": false
+        },
+        "reuse": {
+          "enabled": false,
+          "max_age_days": 30,
+          "limit": 3
+        },
+        "gap_fetch": {
+          "enabled": false,
+          "max_gaps": 2,
+          "max_sources": 3
+        },
+        "light": {
+          "search_results": 12,
+          "max_sources": 8,
+          "critics": [
+            "dialectic",
+            "instruction"
+          ],
+          "cite_sample": 5,
+          "target_words": 700,
+          "parallel": 2
+        },
+        "full": {
+          "search_results": 24,
+          "max_sources": 12,
+          "loci_max": 2,
+          "drafts": 2,
+          "critics": [
+            "dialectic",
+            "depth",
+            "instruction"
+          ],
+          "cite_sample": 6,
+          "target_words": 1600,
+          "parallel": 2,
+          "polish": true
+        },
+        "gates": {
+          "patch_max_ratio": 0.3,
+          "polish_max_ratio": 0.15,
+          "hunk_max_chars": 1200,
+          "min_note_chars": 400,
+          "dup_jaccard": 0.6
+        },
+        "fetch": {
+          "allow_private_hosts": [],
+          "max_redirects": 5,
+          "timeout": 20,
+          "max_bytes": 2000000,
+          "parallel": 4,
+          "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        },
+        "note_max_chars": 8000,
+        "draft_note_chars": 5000,
+        "excerpt_chars": 1800,
+        "cite_note_chars": 6000,
+        "scout_max_searches": 4,
+        "budget": {
+          "max_total_tokens": 0,
+          "output_reservation": 4096,
+          "max_model_calls": 8,
+          "max_retries": 0,
+          "reserve_input": true,
+          "stop_on_unknown": true,
+          "max_input_tokens": 0,
+          "default_by_tier": {
+            "light": 0,
+            "full": 3500000
+          },
+          "price_input_per_m": 10.0,
+          "price_output_per_m": 50.0,
+          "price_cached_per_m": null
+        },
+        "domain_skew_warn": 0.6,
+        "codex": {
+          "timeout": 900,
+          "ignore_user_config": true,
+          "extra_args": [
+            "--skip-git-repo-check",
+            "--ephemeral"
+          ]
+        }
+      }
+    }
+  ],
+  "reproduce": [
+    "Check out base_commit in a separate checkout and apply candidate.patch.",
+    "Write the selected config to a fresh HPR_HOME/research/config.json.",
+    "Run python hpr.py run <case prompt> --tier light --preset lean --lang <case lang> --format facts --max-calls 8 --replay <absolute fixtures.json> --case <case_id> --run-id trial --plan-json to inspect without a model call.",
+    "Remove --plan-json only to run the actual, token-consuming replay. Never reuse a previous run directory."
+  ]
+}

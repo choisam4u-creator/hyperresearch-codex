@@ -54,9 +54,14 @@ def main() -> None:
          mock.patch.object(search.httpx, "get", side_effect=no_network), \
          mock.patch.object(scholar.httpx, "get", side_effect=no_network):
         final = pipeline.run(preserved, "합성 출처에서 확인할 수 있는 내용은?", "light",
-                             urls_file=str(urls), run_id=run_id, no_search=True, quiet=True)
+                             urls_file=str(urls), run_id=run_id, no_search=True, quiet=True,
+                             efficiency={"inline_inputs": True})
         assert final.is_file(), final
         manifest = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text(encoding="utf-8"))
+        assert manifest["effective_config_snapshot"]["efficiency"]["inline_inputs"] is True
+        profiles = json.loads((preserved / "research/runs" / run_id / "input_profiles.json").read_text(encoding="utf-8"))
+        eligible = [p for p in profiles if p["step"] == "writer" or p["step"].startswith(("draft_", "critic_"))]
+        assert eligible and all(p.get("delivery") == "inline_prompt_stdin" for p in eligible)
         calls_before = len(manifest["usage"])
         resumed = pipeline.run(preserved, "합성 출처에서 확인할 수 있는 내용은?", "light",
                                run_id=run_id, no_search=True, quiet=True)

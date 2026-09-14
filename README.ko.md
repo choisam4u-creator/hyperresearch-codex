@@ -58,7 +58,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 `hpr install-skill --yes`는 소스 체크아웃의 skill 또는 wheel에 포함된 package resource에서 스킬을 복사한다. 실제 쓰기는 `--yes`를 명시한 경우에만 한다.
 
-결과: `research/runs/<run_id>/final_report.md`. 첫 주석 줄에 출처 수(독립 묶음)·지적 수·인용 미지지 수·린트·호출 수·토큰이 있고, 끝에 "출처 상세(자동 생성)" 표(제목·도메인·게시일·조회일·독립 묶음·경로·1차 여부)가 붙는다.
+결과: `research/runs/<run_id>/final_report.md`. 첫 주석 줄에 출처 수(관계 묶음)·지적 수·인용 미지지 수·린트·호출 수·토큰이 있고, 끝에 "출처 상세(자동 생성)" 표(제목·도메인·게시일·조회일·관계 묶음·경로·1차 여부)가 붙는다.
 
 ## 실행 화면
 
@@ -80,7 +80,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 |---|---|---|---|
 | 정찰 검색 (`codex --search`) → 1차 출처 URL | ○ | ○ | Codex(웹 검색) |
 | DuckDuckGo 변형 검색 3종, 학술(`--scholar`) | ○ | ○ | 파이썬 |
-| 가져오기·본문 추출·게시일·정본 URL·독립성 묶기 | ○ | ○ | 파이썬 |
+| 가져오기·본문 추출·게시일·정본 URL·관계·중복 후보 묶기 | ○ | ○ | 파이썬 |
 | 분석(주장·모순·빈틈) | ○ | ○ | Codex |
 | 깊이 지점 선정 → 지점별 조사(병렬 2) → interim 노트 | – | ○ | Codex |
 | 초안 | 1개 | 3개 관점(병렬 2) → 종합(2회 읽기) | Codex |
@@ -147,7 +147,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 | 검사 | 결과 |
 |---|---|
-| mock 백엔드 + 로컬 HTTP 고정 페이지: Light 8단계, Full 11단계(깊이·초안 3·종합·폭 비평·다듬기), resume 무호출, 게시일 우선순위, 독립성 묶기, 우선순위·중복 제거, 토큰 파싱·명령 조립, MCP 핸드셰이크·경로 거부 | `tests/`의 unittest discover 전체 통과 여부로 검증한다(실패 경로 포함: 네트워크 차단·잘못된 URL·사용량 한도·로그인 만료·codex 없음·시간 초과). 테스트 수는 고정하지 않으며 실행 결과를 기준으로 한다. |
+| mock 백엔드 + 로컬 HTTP 고정 페이지: Light 8단계, Full 11단계(깊이·초안 3·종합·폭 비평·다듬기), resume 무호출, 게시일 우선순위, 관계·중복 후보 묶기, 우선순위·중복 제거, 토큰 파싱·명령 조립, MCP 핸드셰이크·경로 거부 | `tests/`의 unittest discover 전체 통과 여부로 검증한다(실패 경로 포함: 네트워크 차단·잘못된 URL·사용량 한도·로그인 만료·codex 없음·시간 초과). 테스트 수는 고정하지 않으며 실행 결과를 기준으로 한다. |
 | 실제 `codex exec` 최소 호출(읽기전용·스키마) | PASS 12.4s |
 | 실제 `codex exec --json --ignore-user-config` 토큰 비교 | 18,781 vs 119,520 |
 | 실제 `codex --search exec` 정찰 | 공식 문서 3건(developers.openai.com/codex/noninteractive 등) |
@@ -177,7 +177,7 @@ hprc/gates.py           게이트
 hprc/search.py          DuckDuckGo·URL 목록·우선순위·정규화 중복 제거
 hprc/scholar.py         arXiv Atom·OpenAlex
 hprc/fetch.py           httpx·html.parser·게시일·정본 URL (+pypdf 선택)
-hprc/cluster.py         출처 독립성(정본 URL·8단어 조각 Jaccard)
+hprc/cluster.py         출처 관계·중복 후보(정본 URL·8단어 조각 Jaccard)
 hprc/vault.py           노트·FTS5
 hprc/mcp_server.py      창고 MCP(stdio)
 hprc/prompts/ko/*.md    한국어 프롬프트 14개
@@ -197,3 +197,6 @@ docs/                   테스트 계획(TEST-PLAN.md)·원본 비교(COMPARISON
 후속으로 입력+출력 `--total-budget`, `--format facts|comparison|analysis`, 모델이 제안한 세부 근거를 발췌·원문에 묶는 선택적 `verification.semantic`을 추가했다. 실제 정확도 향상은 미측정이다. [남은 작업 Goal](docs/REMAINING-GOAL.md)을 참고한다.
 
 입력 효율·정확 조건 재사용·변경분 분석·근거 비교표·계산 검산의 선택 기능과 검증 한계는 [효율 기능 안내](docs/EFFICIENCY.md)를 참고한다.
+
+
+선택 기능 `--inline-inputs`는 작성·비평 입력을 UTF-8 stdin으로 직접 전달하며 **기본 OFF**다. 합성 질문 6쌍에서 연구 토큰은 **16.0% 감소**했지만 전체 본문 통과는 **5/6→4/6**이었다. 품질을 유지한 효율 향상으로 해석하지 않는다. [전체 측정·실패 비용·후속 수정 검증](docs/INLINE-MEASUREMENT-20260915.md)을 함께 공개한다. `hpr run "질문" --tier light --inline-inputs --plan-json`으로 모델 호출 없이 설정을 확인할 수 있고, `--packet-inputs`와 함께 쓰지 않는다.

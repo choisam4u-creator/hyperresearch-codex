@@ -431,6 +431,45 @@ exit 0
             self.assertEqual(1, len(second))
             self.assertNotEqual(first[0], second[0])
 
+    def test_run_step_sends_large_prompt_to_stdin_without_argv_payload(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d); marker = root / 'stdin.txt'
+            script = root / 'codex'
+            script.write_text("""#!/bin/sh
+out=""; prev=""
+for a in "$@"; do
+  if [ "$prev" = "-o" ]; then out="$a"; fi
+  prev="$a"
+done
+cat > "$FAKE_CODEX_STDIN"
+echo '{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}'
+printf '%s' '{"ok":true}' > "$out"
+""", encoding='utf-8')
+            script.chmod(0o755)
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex", "PATH": f"{root}:{os.environ.get('PATH', '')}", "FAKE_CODEX_STDIN": str(marker)}):
+                result, _ = codex_runner.run_step('inline', 'x' * 200_000, {}, {}, {"model": "gpt"}, {"timeout": 5}, root / 'logs', prompt_stdin=True)
+            self.assertEqual({"ok": True}, result)
+            self.assertEqual('x' * 200_000, marker.read_text(encoding='utf-8'))
+
+
+class InlineStdinTests(unittest.TestCase):
+    def test_nonreading_child_still_times_out(self):
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex"}), mock.patch.object(codex_runner, "build_cmd", return_value=[sys.executable, "-c", "import time; time.sleep(1.5)"]):
+                with self.assertRaisesRegex(codex_runner.CodexError, "시간 초과"):
+                    codex_runner.run_step('inline', 'x' * 1_000_000, {}, {}, {}, {"timeout": .05}, Path(d), prompt_stdin=True)
+
+    def test_stdin_preserves_utf8_bytes(self):
+        with tempfile.TemporaryDirectory() as d:
+            marker = Path(d) / 'input.bin'
+            payload = '한글 조건 ≤ 25% 🧪\n' * 15000
+            def command(work, schema, output, role, config, search):
+                code = "import sys,pathlib; pathlib.Path(sys.argv[1]).write_bytes(sys.stdin.buffer.read()); pathlib.Path(sys.argv[2]).write_text('{}'); print('{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}')"
+                return [sys.executable, '-c', code, str(marker), str(output)]
+            with mock.patch.dict(os.environ, {"HPR_BACKEND": "codex"}), mock.patch.object(codex_runner, 'build_cmd', side_effect=command):
+                codex_runner.run_step('inline', payload, {}, {}, {}, {"timeout": 5}, Path(d) / 'logs', prompt_stdin=True)
+            self.assertEqual(payload.encode('utf-8'), marker.read_bytes())
+
 
 class PipelineAttemptTests(unittest.TestCase):
     def setUp(self):

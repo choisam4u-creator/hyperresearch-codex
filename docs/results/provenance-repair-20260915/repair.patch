@@ -1,0 +1,178 @@
+--- a/hprc/cluster.py
++++ b/hprc/cluster.py
+@@ -1,4 +1,4 @@
+-"""출처 독립성: 같은 정본 URL 이거나 본문이 거의 같은(8단어 조각 Jaccard) 출처를 한 묶음으로 본다. 다섯 번 퍼 나른 보도자료는 하나로 센다."""
++"""출처 관계 휴리스틱: 같은 정본 URL 또는 본문 유사도(8단어 조각 Jaccard)로 중복 후보를 묶어 근거 수를 보수적으로 센다. 발행자·원문 계보·독립성은 확정하지 않는다."""
+ import re
+ 
+ 
+--- a/hprc/pipeline.py
++++ b/hprc/pipeline.py
+@@ -74,7 +74,7 @@
+         raise Blocked(str(error)) from error
+ 
+ 
+-UI = {"ko": {"provenance": "## 출처 상세(자동 생성)", "cols": "| id | 제목 | 도메인 | 게시일 | 조회일 | 독립 묶음 | 경로 | 인용됨 |",
++UI = {"ko": {"provenance": "## 출처 상세(자동 생성)", "cols": "| id | 제목 | 도메인 | 게시일 | 조회일 | 관계 묶음 | 경로 | 인용됨 |",
+              "yes": "예", "no": "아니오", "primary": " (1차)", "unknown": "미표기", "lm_note": "\\* 게시일이 서버 Last-Modified 헤더에서 온 값(원문 게시일이 아닐 수 있음)",
+              "failed": "## 인용 검사에서 걸린 문장"},
+       "en": {"provenance": "## Source details (auto-generated)", "cols": "| id | title | domain | published | fetched | cluster | route | cited |",
+@@ -547,12 +547,12 @@
+         for s in self.sources:
+             groups.setdefault(s.get("cluster", s["id"]), []).append(s["id"])
+         top, share = searchmod.domain_skew(self.sources)
+-        lines = ["# 출처 독립성", "", f"독립 근거 묶음 {len(groups)}개 / 출처 {len(self.sources)}개. 같은 묶음은 근거 하나로 센다."]
++        lines = ["# 출처 관계와 중복 후보", "", f"관계 묶음 {len(groups)}개 / 출처 {len(self.sources)}개. 같은 묶음은 URL 정본 일치 또는 본문 유사도로 찾은 중복 후보이므로 근거 수를 보수적으로 셀 때 하나로 취급한다. 이 묶음은 발행자·원문 계보·독립성을 확정하지 않는다."]
+         if share >= self.cfg["domain_skew_warn"]:
+-            lines.append(f"경고: 출처의 {share:.0%}가 {top} 한 곳이다. 다른 관점의 출처가 부족할 수 있다.")
++            lines.append(f"URL host 분포 경고: 출처의 {share:.0%}가 {top}이다. 이 분포만으로 동일 발행자·원문, 독립/외부 검증 부족, 또는 원문 게시일 부재를 판정할 수 없다.")
+         lines.append("")
+         for cid, ids in groups.items():
+-            lines.append(f"- 묶음 {cid}: {', '.join(ids)}" + ("" if len(ids) == 1 else "  ← 같은 원문/복사본"))
++            lines.append(f"- 묶음 {cid}: {', '.join(ids)}" + ("" if len(ids) == 1 else "  ← URL 정본 일치 또는 본문 유사"))
+         return "\n".join(lines) + "\n"
+ 
+     def load_sources(self):
+@@ -657,7 +657,7 @@
+                 pending.append({"url": candidate["url"], "via": "vault_refresh"} if candidate.get("via") == "vault" else candidate)
+         pages += fetch_all(pending, self.cfg["fetch"]) if pending else []
+         kept, log, warn, assign = self._save_source_pages(pages, [], self.T["max_sources"])
+-        self.end("fetch", "ok" if kept else "blocked", f"{len(kept)}개 노트({len(set(assign.values()))} 독립 묶음), {len(log)}개 건너뜀" + (f", {warn[0]}" if warn else ""))
++        self.end("fetch", "ok" if kept else "blocked", f"{len(kept)}개 노트({len(set(assign.values()))} 관계 묶음), {len(log)}개 건너뜀" + (f", {warn[0]}" if warn else ""))
+         if not kept:
+             raise Blocked("읽을 수 있는 출처가 0개. sources.json 의 skipped 확인")
+ 
+@@ -1253,7 +1253,7 @@
+         price = (f"요금 상한 미확정 (측정분 ≈${cost['usd_upper']}) · 미측정 {cost['unknown_calls']}회"
+                  if cost["unknown_calls"] else f"요금 상한 ≈${cost['usd_upper']}")
+         header = ["<!-- hyperresearch-codex " + self.tier + " -->",
+-                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(독립 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
++                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(관계 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
+         U = self.U
+         prov = ["", U["provenance"], "", U["cols"], "|---|---|---|---|---|---|---|---|"]
+         for s in self.sources:
+--- a/hprc/prompts/en/critic_width.md
++++ b/hprc/prompts/en/critic_width.md
+@@ -1,4 +1,4 @@
+ You are the critic who checks breadth. Read draft.md, question.txt, _digest.md, _independence.md and the source excerpts S*-excerpt.md.
+-Task: find topic corners the sources support but the draft never covers, and places where sources from the same cluster are cited as if they were independent evidence.
++Task: find topic corners the sources support but the draft never covers, and places where sources from the same cluster are cited as if they were separate corroborating evidence.
+ Rules: `quote` is a verbatim draft sentence (if a topic is missing entirely, quote the "## Evidence" line). Sentence-level suggestions only. Empty array if nothing is wrong.
+ Read every file in one command (e.g. `cat *.md *.json`). Return exactly one JSON object matching _schema.json.
+--- a/hprc/prompts/en/draft.md
++++ b/hprc/prompts/en/draft.md
+@@ -3,6 +3,7 @@
+ Rules:
+ - Append "(judgment)" only to recommendation / priority / ordering sentences that the sources do not state themselves. Never on factual, source-description or limitation sentences. At most 8 in the whole draft.
+ - The angle changes emphasis, never facts. Sources in the same cluster (_independence.md) count as one piece of evidence and must be described that way. Sentences without a source get "(no source)".
++- `_independence.md` and note-header domain, date and cluster fields are processing/relationship metadata. A shared host/cluster or an unstated date alone does not establish a common publisher/original, insufficient independent or external verification, or that the original source lacks a date. State such a limit only when a source directly says it, with [S#].
+ Read every file in one command (e.g. `cat *.md *.json`). Return exactly one JSON object matching _schema.json (field `markdown`).
+ Cite only [S#]. Never cite _digest.md, interim/*.md or claim ids (C3) inside brackets.
+ Put "(judgment)" at the end of the sentence on the same line (never on its own line).
+--- a/hprc/prompts/en/synth.md
++++ b/hprc/prompts/en/synth.md
+@@ -4,6 +4,7 @@
+ Rules:
+ - Append "(judgment)" only to recommendation / priority / ordering sentences that the sources do not state themselves. At most 8 in the whole report.
+ - Drop claims that appear only in a draft but not in the notes. Record settled disagreements under "## Counter-evidence and limits".
++- `_independence.md` and note-header domain, date and cluster fields are processing/relationship metadata. A shared host/cluster or an unstated date alone does not establish a common publisher/original, insufficient independent or external verification, or that the original source lacks a date. State such a limit only when a source directly says it, with [S#].
+ Read every file in one command (e.g. `cat *.md *.json`). Return exactly one JSON object matching _schema.json (field `markdown`).
+ Cite only [S#]. Never cite _digest.md, interim/*.md or claim ids (C3) inside brackets.
+ Put "(judgment)" at the end of the sentence on the same line (never on its own line).
+--- a/hprc/prompts/en/writer.md
++++ b/hprc/prompts/en/writer.md
+@@ -12,6 +12,7 @@
+ - Append "(judgment)" only to recommendation / priority / ordering sentences that the sources do not state themselves. Never on factual, source-description or limitation sentences. At most 8 "(judgment)" markers in the whole report.
+ - Sentences without a source get "(no source)". Never invent a source.
+ - Do not invent numbers, dates or names that are not in the notes.
++- `_independence.md` and note-header domain, date and cluster fields are processing/relationship metadata. A shared host/cluster or an unstated date alone does not establish a common publisher/original, insufficient independent or external verification, or that the original source lacks a date. State such a limit only when a source directly says it, with [S#].
+ - Put the Markdown in the `markdown` field. Read every file in one command (e.g. `cat *.md *.json`).
+ Return exactly one JSON object matching _schema.json.
+ Cite only [S#]. Never cite _digest.md, interim/*.md or claim ids (C3) inside brackets.
+--- a/hprc/prompts/ko/critic_width.md
++++ b/hprc/prompts/ko/critic_width.md
+@@ -1,4 +1,4 @@
+ 너는 폭을 보는 비평가다. 현재 폴더의 draft.md, question.txt, _independence.md, 출처 노트 S*.md 를 읽는다.
+-할 일: 노트에는 근거가 있는데 초안이 아예 다루지 않은 주제 구석을 찾는다. 또한 같은 묶음 출처를 독립 근거처럼 여러 개 인용한 곳을 찾는다.
++할 일: 노트에는 근거가 있는데 초안이 아예 다루지 않은 주제 구석을 찾는다. 또한 같은 묶음 출처를 서로 별개로 뒷받침하는 근거처럼 여러 개 인용한 곳을 찾는다.
+ 규칙: quote 는 초안의 실제 문장 그대로(주제가 통째로 빠졌으면 quote 는 "## 근거" 줄). 문장 단위 제안만. 문제가 없으면 빈 배열. 파일은 한 번의 명령으로 모두 읽어라(예: `cat *.md *.json`). 필요 없는 파일은 다시 읽지 않는다.
+ 최종 답은 _schema.json 형식의 JSON 하나만.
+--- a/hprc/prompts/ko/draft.md
++++ b/hprc/prompts/ko/draft.md
+@@ -2,6 +2,7 @@
+ 형식(마크다운, 한국어, 목표 {target_words}단어): 첫 줄 "# 질문: " + question.txt 원문 그대로 / "## 답" / "## 근거"(문장마다 [S번호]) / "## 반대 근거와 한계" / "## 다음 행동" / "## 출처"(S id 와 제목만).
+ 규칙:
+ - 출처가 사실을 말할 뿐 "무엇을 먼저 하라"고 하지 않는 추천·우선순위·순서 제안 문장 끝에만 "(판단)" 을 붙인다. 사실 문장·출처 설명·한계 서술에는 붙이지 않는다. 보고서 전체에서 "(판단)" 은 8개를 넘기지 않는다(가장 중요한 제안에만). 관점은 강조점일 뿐 사실을 바꾸지 않는다. 같은 묶음(_independence.md)의 출처를 여러 개 인용해도 근거 하나로 취급하고 그렇게 쓴다. 출처 없는 문장엔 "(출처 없음)". 파일은 한 번의 명령으로 모두 읽어라(예: `cat *.md *.json`). 필요 없는 파일은 다시 읽지 않는다.
++- _independence.md와 노트 머리말의 domain·날짜·cluster는 처리·관계 정보다. 같은 host·묶음 또는 날짜 미표기만으로 동일 발행자·원문, 독립/외부 검증 부족, 원문 날짜 부재를 사실로 쓰지 않는다. 그런 한계는 원문이 직접 말할 때만 [S번호]로 쓴다.
+ 최종 답은 _schema.json 형식의 JSON 하나만(markdown 필드).
+ 출처 표시는 [S번호] 만 쓴다. _digest.md, interim/*.md, 주장 id(C3) 를 대괄호 안에 인용하지 않는다.
+ "(판단)" 은 문장 끝 같은 줄에 붙인다(따로 줄을 만들지 않는다).
+--- a/hprc/prompts/ko/synth.md
++++ b/hprc/prompts/ko/synth.md
+@@ -3,6 +3,7 @@
+ 형식은 초안과 같다(첫 줄 "# 질문: " 원문, ## 답, ## 근거, ## 반대 근거와 한계, ## 다음 행동, ## 출처). 목표 {target_words}단어.
+ 규칙:
+ - 출처가 사실을 말할 뿐 "무엇을 먼저 하라"고 하지 않는 추천·우선순위·순서 제안 문장 끝에만 "(판단)" 을 붙인다. 사실 문장·출처 설명·한계 서술에는 붙이지 않는다. 보고서 전체에서 "(판단)" 은 8개를 넘기지 않는다(가장 중요한 제안에만). 초안에만 있고 노트에 없는 주장은 버린다. 어긋난 판정은 "## 반대 근거와 한계"에 남긴다. 파일은 한 번의 명령으로 모두 읽어라(예: `cat *.md *.json`). 필요 없는 파일은 다시 읽지 않는다.
++- _independence.md와 노트 머리말의 domain·날짜·cluster는 처리·관계 정보다. 같은 host·묶음 또는 날짜 미표기만으로 동일 발행자·원문, 독립/외부 검증 부족, 원문 날짜 부재를 사실로 쓰지 않는다. 그런 한계는 원문이 직접 말할 때만 [S번호]로 쓴다.
+ 최종 답은 _schema.json 형식의 JSON 하나만(markdown 필드).
+ 출처 표시는 [S번호] 만 쓴다. _digest.md, interim/*.md, 주장 id(C3) 를 대괄호 안에 인용하지 않는다.
+ "(판단)" 은 문장 끝 같은 줄에 붙인다(따로 줄을 만들지 않는다).
+--- a/hprc/prompts/ko/writer.md
++++ b/hprc/prompts/ko/writer.md
+@@ -12,6 +12,7 @@
+ - 출처가 사실을 말할 뿐 "무엇을 먼저 하라"고 하지 않는 추천·우선순위·순서 제안 문장 끝에만 "(판단)" 을 붙인다. 사실 문장·출처 설명·한계 서술에는 붙이지 않는다. 보고서 전체에서 "(판단)" 은 8개를 넘기지 않는다(가장 중요한 제안에만).
+ - 출처 없는 문장에는 "(출처 없음)" 을 붙인다. 없는 출처를 만들지 않는다.
+ - 노트에 없는 숫자·날짜·이름을 만들지 않는다.
++- _independence.md와 노트 머리말의 domain·날짜·cluster는 처리·관계 정보다. 같은 host·묶음 또는 날짜 미표기만으로 동일 발행자·원문, 독립/외부 검증 부족, 원문 날짜 부재를 사실로 쓰지 않는다. 그런 한계는 원문이 직접 말할 때만 [S번호]로 쓴다.
+ - 마크다운 본문은 JSON 의 markdown 필드에 넣는다. 파일은 한 번의 명령으로 모두 읽어라(예: `cat *.md *.json`). 필요 없는 파일은 다시 읽지 않는다.
+ 최종 답은 _schema.json 형식의 JSON 하나만.
+ 출처 표시는 [S번호] 만 쓴다. _digest.md, interim/*.md, 주장 id(C3) 를 대괄호 안에 인용하지 않는다.
+--- /dev/null
++++ b/tests/test_provenance_boundary.py
+@@ -0,0 +1,46 @@
++"""Regression guards for provenance wording; no model backend is invoked."""
++import sys
++import unittest
++from pathlib import Path
++
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT))
++
++from hprc import cluster, pipeline  # noqa: E402
++
++
++class ProvenanceBoundaryTests(unittest.TestCase):
++    def test_host_skew_and_cluster_are_not_independence_or_publisher_decisions(self):
++        sources = [
++            {"id": "S1", "domain": "fixture.invalid", "canonical": "https://fixture.invalid/a", "cluster": "S1"},
++            {"id": "S2", "domain": "fixture.invalid", "canonical": "https://fixture.invalid/b", "cluster": "S2"},
++        ]
++        assigned = cluster.cluster(sources, {"S1": "alpha " * 30, "S2": "beta " * 30})
++        self.assertEqual({"S1": "S1", "S2": "S2"}, assigned)  # shared host remains two relationship groups
++
++        run = pipeline.Run.__new__(pipeline.Run)
++        run.sources = sources
++        run.cfg = {"domain_skew_warn": 0.6}
++        note = run.independence_md()
++        self.assertIn("# 출처 관계와 중복 후보", note)
++        self.assertIn("URL host 분포 경고", note)
++        self.assertIn("동일 발행자·원문", note)
++        self.assertIn("원문 게시일 부재를 판정할 수 없다", note)
++        self.assertIn("URL 정본 일치 또는 본문 유사", note)
++        self.assertNotIn("독립 근거 묶음", note)
++        self.assertNotIn("다른 관점의 출처가 부족할 수 있다", note)
++
++    def test_all_report_writers_receive_the_metadata_boundary(self):
++        prompts = ROOT / "hprc" / "prompts"
++        for name in ("writer.md", "draft.md", "synth.md"):
++            ko = (prompts / "ko" / name).read_text(encoding="utf-8")
++            en = (prompts / "en" / name).read_text(encoding="utf-8")
++            self.assertIn("처리·관계 정보", ko, name)
++            self.assertIn("원문이 직접 말할 때만 [S번호]", ko, name)
++            self.assertIn("processing/relationship metadata", en, name)
++            self.assertIn("only when a source directly says it, with [S#]", en, name)
++
++
++if __name__ == "__main__":
++    unittest.main()

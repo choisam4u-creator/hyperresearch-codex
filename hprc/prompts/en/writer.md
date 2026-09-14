@@ -12,6 +12,7 @@ Rules:
 - Append "(judgment)" only to recommendation / priority / ordering sentences that the sources do not state themselves. Never on factual, source-description or limitation sentences. At most 8 "(judgment)" markers in the whole report.
 - Sentences without a source get "(no source)". Never invent a source.
 - Do not invent numbers, dates or names that are not in the notes.
+- `_independence.md` and note-header domain, date and cluster fields are processing/relationship metadata. A shared host/cluster or an unstated date alone does not establish a common publisher/original, insufficient independent or external verification, or that the original source lacks a date. State such a limit only when a source directly says it, with [S#].
 - Put the Markdown in the `markdown` field. Read every file in one command (e.g. `cat *.md *.json`).
 Return exactly one JSON object matching _schema.json.
 Cite only [S#]. Never cite _digest.md, interim/*.md or claim ids (C3) inside brackets.

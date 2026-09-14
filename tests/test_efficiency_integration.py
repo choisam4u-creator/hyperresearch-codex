@@ -42,6 +42,33 @@ class EfficiencyIntegrationTests(unittest.TestCase):
         profiles=self.data('packet')['input_profiles']
         self.assertTrue(all(x['before']['scope']=='prepared_not_actual_tokens' for x in profiles))
         self.assertTrue(self.data('packet')['evidence_selections'])
+
+    def test_default_keeps_file_delivery(self):
+        actual=pipeline.run_step;seen=[]
+        def recording(name,prompt,schema,inputs,*args,**kwargs):
+            if name == 'writer': seen.append((inputs,prompt,kwargs))
+            return actual(name,prompt,schema,inputs,*args,**kwargs)
+        with patch.object(pipeline,'run_step',side_effect=recording):
+            self.run_case('default-files')
+        self.assertEqual(1,len(seen))
+        self.assertTrue(seen[0][0])
+        self.assertNotIn('INLINE INPUT CONTRACT',seen[0][1])
+        self.assertNotIn('prompt_stdin',seen[0][2])
+
+    def test_inline_inputs_reach_writer_and_critics_via_prompt_stdin_without_input_files(self):
+        actual=pipeline.run_step;seen=[]
+        def recording(name,prompt,schema,inputs,*args,**kwargs):
+            seen.append((name,inputs,prompt,kwargs.get('prompt_stdin')));return actual(name,prompt,schema,inputs,*args,**kwargs)
+        with patch.object(pipeline,'run_step',side_effect=recording):
+            self.run_case('inline',efficiency={'inline_inputs':True,'evidence_selection':True})
+        targeted=[row for row in seen if row[0] == 'writer' or row[0].startswith('critic_') or row[0].startswith('draft_')]
+        self.assertTrue(targeted)
+        self.assertTrue(all(row[1] == {} and row[3] is True for row in targeted))
+        writer=next(row for row in targeted if row[0] == 'writer')
+        self.assertIn('INLINE INPUT CONTRACT',writer[2]);self.assertIn('claims.json',writer[2]);self.assertIn('## Virtual file: _digest.md',writer[2])
+        profiles=self.data('inline')['input_profiles']
+        inline_profiles=[row for row in profiles if row['step'] == 'writer' or row['step'].startswith('critic_') or row['step'].startswith('draft_')]
+        self.assertTrue(all(row['delivery'] == 'inline_prompt_stdin' and row['prepared']['files'] for row in inline_profiles))
     def test_changed_source_invalidates_cache(self):
         self.run_case('first',efficiency={'reuse_analysis':True})
         fixture=json.loads(FIXTURE.read_text())

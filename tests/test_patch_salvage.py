@@ -7,6 +7,17 @@ from hprc.pipeline import Run
 
 
 class PatchSalvageTests(unittest.TestCase):
+    def test_patcher_prompts_require_minimal_condition_preservation_without_case_text(self):
+        prompts = Path(__file__).resolve().parents[1] / 'hprc' / 'prompts'
+        ko = (prompts / 'ko' / 'patcher.md').read_text(encoding='utf-8')
+        en = (prompts / 'en' / 'patcher.md').read_text(encoding='utf-8')
+        self.assertIn('기존 사실·분모·제외 집단·적용 조건은 보존', ko)
+        self.assertIn('필요한 가장 짧은 구절만 고친다', ko)
+        self.assertIn('fact, denominator, excluded group and applicability condition', en)
+        self.assertIn('smallest needed substring', en)
+        for forbidden in ('37', '1,080', 'forest'):
+            self.assertNotIn(forbidden, (ko + en).lower())
+
     def apply(self, hunks, ratio=0.5):
         draft = '# Question: test\n\nOld detail [S1].\n\n(judgment) Keep the staffed alternative.\n' + 'Background evidence. ' * 30
         with tempfile.TemporaryDirectory() as tmp:

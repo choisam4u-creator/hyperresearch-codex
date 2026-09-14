@@ -1,0 +1,21 @@
+{
+  "baseline": "../inline-measurement-20260915/reproduction.json",
+  "patch": "repair.patch",
+  "runtime": {
+    "ko": {
+      "prompt_hash": "230ef1754fdfdfa5adc21ceba191f33ac016ce3185421adc94719972094c92f0",
+      "code_hash": "77d983bb109272a4aed74c89a1dc6254ce3ba030863c9fca427dcb6bf5ed11b2"
+    },
+    "en": {
+      "prompt_hash": "630ce6640fd56bb13f3d6fec87e7dd46507fb9dcf1a07f398e90b6fdfd758dbc",
+      "code_hash": "77d983bb109272a4aed74c89a1dc6254ce3ba030863c9fca427dcb6bf5ed11b2"
+    }
+  },
+  "cli_version": "codex-cli 0.154.0-alpha.6.2",
+  "cases": [
+    "holdout-ko-leak-alert",
+    "holdout-ko-forest-survival",
+    "holdout-en-permit-ledger"
+  ],
+  "instructions": "Reconstruct the indicated baseline source version, apply repair.patch, and use the supplement configurations and original C fixtures. Inspect with --plan-json; removing it consumes real model tokens. Use a fresh HPR_HOME for every run. These are known-case repair checks, not new holdouts."
+}

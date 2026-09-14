@@ -1,0 +1,151 @@
+{
+  "schema_version": "source-bound-gold-v1",
+  "purpose": "Private, synthetic, post-freeze holdout rubric. It is for a later held-out evaluation only, must not be supplied to implementation or tuning work, and cannot establish general model accuracy.",
+  "frozen_input": {
+    "path": "docs/internal/maintenance/quality-validation-20260914/new-holdout/realistic_inputs.json",
+    "benchmark_version": "quality-holdout-synthetic-v1",
+    "frozen_at": "2026-09-15T00:00:00Z",
+    "sha256": "ec987a2b41515dd75378b62fbe9624e9e2651fa8e517df723ccf8477732bd1aa"
+  },
+  "disposition_rules": {
+    "pass": "The full candidate report has been reviewed; all required facts and required uncertainty/abstention items are present with their stated scope; there are no factual or conclusion errors, including unlisted errors; and no material judgment remains unresolved.",
+    "fail": "A required item is omitted, a listed or unlisted factual/conclusion error is established, or the report turns a documented limit into a factual conclusion. A cautious statement that matches a correct-abstention item is not an unsupported claim.",
+    "eval_unavailable": "Use only when there is no readable candidate report, its case identity cannot be bound to this frozen input, the evaluator cannot inspect the relevant statement, or a material semantic ambiguity remains unresolved after prescribed review. Record the reason; do not automatically convert it to pass or fail."
+  },
+  "cases": [
+    {
+      "case_id": "holdout-ko-leak-alert",
+      "prompt": "제시된 누수 경보 시범의 관측 결과를 수치·단위·처리 범위와 함께 요약하라.",
+      "language": "ko",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-ko-leak-alert]",
+      "required_facts": [
+        {"id": "leak.scope", "expectation": "9개 공동주택, 7월 1~28일, 야간 0~4시 관찰이라는 범위를 제시한다.", "evidence": [{"source_id": "S1", "quote": "공동주택 9곳의 지하 공용 배관에 붙인 유량 경보기를 다룬다. 관찰 기간은 7월 1일부터 28일까지였고, 야간 0시부터 4시까지"}]},
+        {"id": "leak.flow-observation", "expectation": "수리 완료가 확인된 6곳에서 중앙 야간 유량이 시간당 0.42 m³에서 0.31 m³로 기록됐다고 단위와 함께 제시한다.", "evidence": [{"source_id": "S1", "quote": "수리 완료가 확인된 6곳에서 중앙 야간 유량은 시간당 0.42 m³에서 0.31 m³로 기록됐다."}]},
+        {"id": "leak.alert-classification", "expectation": "의심 경보 31건 중 현장 확인 후 실제 배관 누수 분류 18건을 구분한다.", "evidence": [{"source_id": "S1", "quote": "의심 경보 31건이 접수됐고, 현장 확인 뒤 실제 배관 누수로 분류된 것은 18건"}]}
+      ],
+      "required_qualifiers": [
+        {"id": "leak.rain-exclusion-and-no-control", "expectation": "폭우·배수 펌프 밤 3일 제외와 비슷한 무경보기 대조 건물이 없었다는 조건을 보존한다.", "evidence": [{"source_id": "S1", "quote": "폭우로 배수 펌프가 작동한 밤 3일은 비교에서 제외했다. 같은 기간에 경보기가 없는 비슷한 건물을 함께 관찰하지 않았으므로"}]}
+      ],
+      "correct_abstentions": [
+        {"id": "leak.no-annual-citywide-causal-claim", "expectation": "연간 절수량·다른 단지 일반화·경보기의 인과 효과를 주장하지 않는다.", "evidence": [{"source_id": "S1", "quote": "감소가 경보기 자체 때문에 생겼다고 판정할 수는 없다고"}, {"source_id": "S2", "quote": "이번 기록으로 다른 단지나 연간 절수량을 추정하지 말라고 안내했다."}]}
+      ],
+      "critical_errors": [
+        {"id": "leak.flow-is-monthly-billing", "error": "시간당 야간 유량을 건물 전체 월 사용량이나 요금 청구액으로 말한다.", "evidence": [{"source_id": "S1", "quote": "이 값은 각 건물의 전체 월 사용량이나 요금 청구액이 아니다."}]},
+        {"id": "leak.alerts-are-leak-volume", "error": "경보 전달 또는 경보 건수를 누수량·절수량으로 바꿔 말한다.", "evidence": [{"source_id": "S2", "quote": "전달 시간은 수리 완료 시간도, 누수량도 아니다."}]}
+      ],
+      "calibration_examples": []
+    },
+    {
+      "case_id": "holdout-ko-transfer-board",
+      "prompt": "환승 안내판 관찰의 연결 결과와 접근성 관찰을 조건·표본 차이와 함께 설명하라.",
+      "language": "ko",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-ko-transfer-board]",
+      "required_facts": [
+        {"id": "transfer.connection-observation", "expectation": "4개 터미널 3,240건 중 2,657건(82.0%)이 표시된 15분 연결 구간 안에 탑승했고 터미널 범위가 78.1~85.4%였다고 제시한다.", "evidence": [{"source_id": "S1", "quote": "두 번째 버스의 개찰 확인이 남은 3,240건을 분석했다. 그중 2,657건(82.0%)은 안내판에 표시된 15분 연결 구간 안에 두 번째 버스에 탑승했다. 터미널별 비율은 78.1%에서 85.4%였다."}]},
+        {"id": "transfer.accessibility-observation", "expectation": "16명 현장 점검에서 13명이 화면 낭독기로 연결 구간을 들었다는 관찰과 세 가지 장벽을 제시한다.", "evidence": [{"source_id": "S2", "quote": "자원 참여자 16명과 현장 동선을 한 번씩 점검했다. 13명은 화면 낭독기로 연결 구간을 들을 수 있었고, 2명은 개인 단말기의 고대비 설정 때문에 안내판 연결 버튼을 찾지 못했으며, 1명은 임시 변경된 승강장 이름의 음성 표기가 없다고 보고했다."}]}
+      ],
+      "required_qualifiers": [
+        {"id": "transfer.exclusion-and-no-before", "expectation": "지연·개찰기 오류·종이 승차권 조건의 제외와 도입 전 비교 부재를 보존한다.", "evidence": [{"source_id": "S1", "quote": "첫 버스가 20분 이상 지연된 날, 개찰기 오류가 난 날, 그리고 종이 승차권이라 두 번째 개찰 확인이 없는 승객은 분모에서 제외했다. 기록은 안내판 도입 전의 같은 기간을 비교하지 않았고"}]},
+        {"id": "transfer.denominator-difference", "expectation": "접근성 16회와 3,240건 연결 집계가 대상·분모가 다른 관찰임을 구분한다.", "evidence": [{"source_id": "S2", "quote": "두 기록은 서로 모순된 성공률이 아니라 대상과 분모가 다른 관찰이다."}]}
+      ],
+      "correct_abstentions": [
+        {"id": "transfer.no-causal-or-population-claim", "expectation": "안내판이 환승 성공률을 높였다는 인과 결론이나 전체 이용자 접근성 비율을 주장하지 않는다.", "evidence": [{"source_id": "S1", "quote": "82.0%만으로 안내판이 환승 성공률을 높였다고 인과적으로 말할 수는 없다."}, {"source_id": "S2", "quote": "이 16회는 실제 전체 이용자의 접근성 비율을 계산한 표본이 아니다."}]}
+      ],
+      "critical_errors": [
+        {"id": "transfer.all-riders-read-board", "error": "82.0%를 모든 환승객이 안내를 읽었거나 모든 연결이 성공했다는 뜻으로 말한다.", "evidence": [{"source_id": "S1", "quote": "이 비율은 모든 환승객이 안내를 읽었거나 모든 연결이 성공했다는 뜻은 아니다."}]},
+        {"id": "transfer.staff-guidance-measured-effect", "error": "직원 안내가 특정 비율의 실패를 줄였다고 말한다.", "evidence": [{"source_id": "S2", "quote": "직원 안내가 특정 비율의 실패를 막는다는 측정 결과도 아니다."}]}
+      ],
+      "calibration_examples": []
+    },
+    {
+      "case_id": "holdout-ko-forest-survival",
+      "prompt": "산림 복원 식재 조사에서 확인된 생존 관찰과 상충·미확정 범위를 분리해 정리하라.",
+      "language": "ko",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-ko-forest-survival]",
+      "required_facts": [
+        {"id": "forest.sample-and-observation", "expectation": "18개 소구획 총 10,800주 중 사전 지정 표본 1,080주에서 950주 생존, 관찰 비율 88.0%라는 표본 결과를 제시한다.", "evidence": [{"source_id": "S1", "quote": "소구획마다 묘목 600주, 합계 10,800주를 기록한다."}, {"source_id": "S1", "quote": "이 표본 1,080주 가운데 950주가 생존으로 기록되어 관찰 생존 비율은 88.0%였다."}]},
+        {"id": "forest.slope-observation", "expectation": "북사면 91.7%, 남사면 84.2%, 계곡 가장자리 88.1%라는 관찰 차이를 제시한다.", "evidence": [{"source_id": "S1", "quote": "북사면 6개 소구획은 관찰 생존 비율 91.7%, 남사면 6개는 84.2%, 계곡 가장자리 6개는 88.1%였다."}]}
+      ],
+      "required_qualifiers": [
+        {"id": "forest.duration-and-recheck", "expectation": "88.0%가 60~90일 사이 표본 관찰이고 재확인 37주는 분모에 넣지 않았다는 범위를 보존한다.", "evidence": [{"source_id": "S1", "quote": "이 수치는 60~90일 사이의 표본 관찰이며, 향후 몇 년의 정착률이나 탄소 흡수량이 아니다."}, {"source_id": "S1", "quote": "재확인 표본 37주는 이 보고서의 생존/고사 비율에 합치지 않았다."}]},
+        {"id": "forest.non-random-and-procedural-uncertainty", "expectation": "사면 구획 무작위 배정 부재와 늦은 조사·위치표 문제의 방향 미확정을 포함한다.", "evidence": [{"source_id": "S1", "quote": "구획 배정은 무작위가 아니고 사면별 관리 인력도 달랐다고 적었다."}, {"source_id": "S1", "quote": "이 절차 문제가 88.0%를 어느 방향으로 바꾸는지 계산하지 않았다."}]}
+      ],
+      "correct_abstentions": [
+        {"id": "forest.no-independent-conflict-or-economic-claim", "expectation": "업체 메모를 88.0%의 독립 확인·반박으로 읽거나 장기 탄소·경제성 결론을 내리지 않는다.", "evidence": [{"source_id": "S2", "quote": "이 메모는 연구소의 1,080주 표본 88.0%를 확인하거나 반박하는 독립 표본이 아니다."}, {"source_id": "S2", "quote": "88.0% 관찰값을 장기 탄소량이나 사업 경제성으로 외부 발표하지 말라고 기록했다."}]}
+      ],
+      "critical_errors": [
+        {"id": "forest.all-seedlings-confirmed", "error": "88.0%를 모든 식재 묘목의 확정 생존률 또는 재식재 불필요 비율로 말한다.", "evidence": [{"source_id": "S1", "quote": "88.0%를 모든 식재 묘목의 확정 생존률 또는 재식재가 필요 없는 비율로 읽지 말라고"}]},
+        {"id": "forest.slope-cause-proved", "error": "사면별 차이의 원인이 햇빛·토양·보호망·작업 방식 중 하나로 입증됐다고 말한다.", "evidence": [{"source_id": "S1", "quote": "북사면 비율이 높은 이유를 햇빛, 토양, 보호망 또는 작업 방식 중 하나로 단정할 수 없다."}]}
+      ],
+      "calibration_examples": []
+    },
+    {
+      "case_id": "holdout-en-lab-blank",
+      "prompt": "Summarize the laboratory blank-check observation with its units, exclusions, and unresolved scope.",
+      "language": "en",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-en-lab-blank]",
+      "required_facts": [
+        {"id": "lab.scope", "expectation": "State that the exercise covered six benchtop instruments from 2026-07-08 through 2026-07-19.", "evidence": [{"source_id": "S1", "quote": "A food-testing laboratory ran a blank-check exercise on six benchtop instruments from 2026-07-08 through 2026-07-19."}]},
+        {"id": "lab.blank-reading", "expectation": "State that 68 of 72 scheduled blanks were below 0.05 mg/L nitrate.", "evidence": [{"source_id": "S1", "quote": "Of 72 scheduled blanks, 68 returned a reading below 0.05 mg/L nitrate."}]}
+      ],
+      "required_qualifiers": [
+        {"id": "lab.excluded-blanks", "expectation": "Preserve that four blanks were not counted, with two spills and two logged pump faults.", "evidence": [{"source_id": "S1", "quote": "The four remaining blanks were not counted: two were spilled before loading and two had a logged pump fault."}]},
+        {"id": "lab.blank-not-customer-result", "expectation": "Keep the distinction between scheduled blank readings and customer samples or all analytes.", "evidence": [{"source_id": "S1", "quote": "This is an observation about scheduled blank readings, not a result for customer samples or all analytes."}]}
+      ],
+      "correct_abstentions": [
+        {"id": "lab.no-annual-causal-accuracy-claim", "expectation": "Do not claim an annual contamination rate, a causal instrument result, or inter-laboratory accuracy.", "evidence": [{"source_id": "S1", "quote": "it cannot establish an annual contamination rate or prove that a particular instrument caused a later production result."}, {"source_id": "S2", "quote": "The log asks for a later proficiency test before any claim about inter-laboratory accuracy."}]}
+      ],
+      "critical_errors": [
+        {"id": "lab.pump-repair-is-concentration", "error": "Treat one-business-day pump repair as a blank concentration result.", "evidence": [{"source_id": "S2", "quote": "Repair time is not a measure of blank concentration."}]},
+        {"id": "lab.68-of-72-all-samples", "error": "Convert the blank result into a result for all customer samples or analytes.", "evidence": [{"source_id": "S1", "quote": "not a result for customer samples or all analytes."}]}
+      ],
+      "calibration_examples": []
+    },
+    {
+      "case_id": "holdout-en-ferry-route",
+      "prompt": "Compare the two ferry boarding routes while preserving their measured conditions and limits.",
+      "language": "en",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-en-ferry-route]",
+      "required_facts": [
+        {"id": "ferry.slate-observation", "expectation": "State Slate's 42 vehicle boardings and 54-second median from ramp line to deck entry.", "evidence": [{"source_id": "S1", "quote": "The operator timed 42 vehicle boardings after the vehicle had reached the ramp line; the median time from that line to deck entry was 54 seconds."}]},
+        {"id": "ferry.ember-observation", "expectation": "State Ember's 38 boardings and 47-second median from marked lane to deck entry.", "evidence": [{"source_id": "S2", "quote": "Route Ember used a marked self-guided lane at Pier C on 38 boardings in late August. Its median time from the marked lane to deck entry was 47 seconds."}]}
+      ],
+      "required_qualifiers": [
+        {"id": "ferry.slate-conditions", "expectation": "Keep Slate's start point and exclusions: emergency vehicles, wheelchair loading, and second ramp adjustment periods.", "evidence": [{"source_id": "S1", "quote": "The record excluded emergency vehicles, wheelchair-loading events, and periods when the tide required a second ramp adjustment. It did not include the time vehicles spent approaching the pier or waiting in the ticket queue."}]},
+        {"id": "ferry.ember-conditions", "expectation": "Keep Ember's smaller-van-only window and its rain-closure exclusion.", "evidence": [{"source_id": "S2", "quote": "The pier had smaller vans only during the observation window, while Slate included cars and delivery trucks. Ember's log excluded one rain closure"}]}
+      ],
+      "correct_abstentions": [
+        {"id": "ferry.no-controlled-winner", "expectation": "Do not call Ember a controlled seven-second winner or generalize either median to unmatched conditions.", "evidence": [{"source_id": "S2", "quote": "They support the two reported local medians; they do not provide a controlled seven-second performance advantage for Ember."}]}
+      ],
+      "critical_errors": [
+        {"id": "ferry.end-to-end-time", "error": "State that Slate's 54 seconds includes approach or ticket-queue time.", "evidence": [{"source_id": "S1", "quote": "It did not include the time vehicles spent approaching the pier or waiting in the ticket queue."}]},
+        {"id": "ferry.hand-signal-safety-effect", "error": "Claim that Slate's hand signal reduced collisions, stress, or fuel use.", "evidence": [{"source_id": "S1", "quote": "It does not measure whether that signal reduced collisions, passenger stress, or fuel use."}]}
+      ],
+      "calibration_examples": []
+    },
+    {
+      "case_id": "holdout-en-permit-ledger",
+      "prompt": "Produce a cautious evidence-backed briefing on the permit-ledger pilot's measured outcomes and unresolved limits.",
+      "language": "en",
+      "source_ref": "realistic_inputs.json#cases[id=holdout-en-permit-ledger]",
+      "required_facts": [
+        {"id": "permit.scope", "expectation": "State that the pilot covered five districts from 2026-05-04 through 2026-08-28.", "evidence": [{"source_id": "S1", "quote": "A county planning office piloted a digital permit ledger in five districts from 2026-05-04 through 2026-08-28."}]},
+        {"id": "permit.visible-reference-observation", "expectation": "State that 1,755 of 2,140 applications (82.0%) had a visible reference, with a 76.4% to 86.9% district range.", "evidence": [{"source_id": "S1", "quote": "Of 2,140 applications that reached that review, 1,755 (82.0%) had a visible reference. District results ranged from 76.4% to 86.9%."}]},
+        {"id": "permit.accessibility-observation", "expectation": "State the 20-session walkthrough result: 16 found the reference without staff help, with three focus-order and one translated-example barrier.", "evidence": [{"source_id": "S2", "quote": "An accessibility walkthrough observed 20 volunteer sessions in July. In 16 sessions, a participant found the visible ledger reference without staff help. In three sessions, the keyboard focus skipped the reference after an address field error; in one session, the participant selected a translated help page whose example did not match the local form."}]}
+      ],
+      "required_qualifiers": [
+        {"id": "permit.exclusions-and-no-before", "expectation": "Preserve exclusions and the absence of a matched pre-ledger period or follow-up-call measure.", "evidence": [{"source_id": "S1", "quote": "The protocol excluded withdrawn applications, emergency declarations, and days when the scanner queue was unavailable."}, {"source_id": "S1", "quote": "The office did not retain a matched pre-ledger period and did not measure whether applicants made fewer follow-up calls."}]},
+        {"id": "permit.reference-not-approval", "expectation": "Keep the distinction between a visible reference and application completeness, legal validity, or approval.", "evidence": [{"source_id": "S1", "quote": "The pilot did not treat a visible reference as proof that the application was complete, legally valid, or approved."}]}
+      ],
+      "correct_abstentions": [
+        {"id": "permit.no-causal-population-rollout-claim", "expectation": "Do not claim causal lower review time or burden, population usability/equity, or an approved countywide procurement/rollout.", "evidence": [{"source_id": "S1", "quote": "not evidence of a causal reduction in review time or applicant burden."}, {"source_id": "S2", "quote": "The walkthrough documents the observed sessions but does not calculate a population usability rate."}, {"source_id": "S2", "quote": "It does not authorize a contract, predict countywide savings, or set a deployment date."}]}
+      ],
+      "critical_errors": [
+        {"id": "permit.reference-is-approval", "error": "Treat a visible ledger reference as proof of completeness, legal validity, or approval.", "evidence": [{"source_id": "S1", "quote": "The pilot did not treat a visible reference as proof that the application was complete, legally valid, or approved."}]},
+        {"id": "permit.corrections-are-fraud-or-failure", "error": "Treat the 73 corrections as fraud, denied permits, or software failure.", "evidence": [{"source_id": "S1", "quote": "A correction records a change to the visible reference; it does not establish fraud, a denied permit, or software failure."}]},
+        {"id": "permit.procurement-approved", "error": "Say a supplier, contract, countywide purchase, or rollout date is approved.", "evidence": [{"source_id": "S2", "quote": "It marks each amount as planning information and identifies no selected supplier."}, {"source_id": "S2", "quote": "It does not authorize a contract, predict countywide savings, or set a deployment date."}]}
+      ],
+      "calibration_examples": []
+    }
+  ]
+}

@@ -105,14 +105,14 @@ python3 hpr.py search "keyword"                       # search the vault
 python3 hpr.py mcp-config                             # TOML to register the read-only vault MCP server in Codex
 ```
 
-Output: `research/runs/<run_id>/final_report.md`. The first comment line carries sources (independent groups), findings, unsupported citation samples, lint, calls and tokens. A provenance table (title, domain, published, fetched, cluster, route) is appended.
+Output: `research/runs/<run_id>/final_report.md`. The first comment line carries sources (relationship groups), findings, unsupported citation samples, lint, calls and tokens. A provenance table (title, domain, published, fetched, cluster, route) is appended.
 
 ## How it works
 
 ```
 question ─┐
           ├─ scout (codex --search) + DuckDuckGo + optional arXiv/OpenAlex ─ candidates
-          └─ fetch → notes (markdown + FTS5 vault) → independence clustering
+          └─ fetch → notes (markdown + FTS5 vault) → relationship/duplicate grouping
 notes ──── analyst (all notes) ──── claims + which sources were really cited
 claims ─── draft(s) (cited notes only) ── synthesis (drafts + digest, no raw notes)
 draft ──── critics ×3–4 (digest + relevant excerpts) ── findings
@@ -128,7 +128,7 @@ When a note is longer than its cap, the paragraphs most related to the question 
 |---|---|---|---|
 | scout (`codex --search`) for primary sources | ✓ | ✓ | Codex web search |
 | DuckDuckGo variants, scholar APIs | ✓ | ✓ | Python |
-| fetch, extract text, published date, canonical URL, independence clustering | ✓ | ✓ | Python |
+| fetch, extract text, published date, canonical URL, relationship/duplicate grouping | ✓ | ✓ | Python |
 | analyst (claims, contradictions, gaps) | ✓ | ✓ | Codex |
 | depth loci → parallel investigators → interim notes | – | ✓ | Codex |
 | drafts | 1 | 3 angles → synthesis | Codex |
@@ -203,4 +203,6 @@ Follow-up: `--total-budget` counts input plus output, `--format facts|comparison
 
 [6회 정책 실측 결과](docs/POLICY-MEASUREMENT-20260914.md): 총 1,426,492토큰. 비평 통합은 호출을 줄였지만 합계 토큰이 약 1% 늘어 절감을 입증하지 못했습니다. 자동 검사와 전체 본문 검토 결과를 함께 공개합니다.
 
-Optional input packets, exact analysis reuse, incremental analysis, evidence tables and source-bound arithmetic are documented in [Efficiency and updates](docs/EFFICIENCY.md). Live token savings and quality gains are not established; execution-changing options remain off by default.
+Optional input packets, exact analysis reuse, incremental analysis, evidence tables and source-bound arithmetic are documented in [Efficiency and updates](docs/EFFICIENCY.md). These options do not establish general savings or quality gains.
+
+Experimental `--inline-inputs` sends prepared writer/draft/critic inputs through UTF-8 stdin and remains **off by default**. A six-pair synthetic study observed **16.0% fewer total research tokens**, but whole-report passes fell from **5/6 to 4/6**. This is not quality-preserving efficiency evidence. See the [complete measurements, failure costs and follow-up repair validation](docs/INLINE-MEASUREMENT-20260915.md). Preview without model calls: `hpr run "Question" --tier light --inline-inputs --plan-json`. Do not combine it with `--packet-inputs`.

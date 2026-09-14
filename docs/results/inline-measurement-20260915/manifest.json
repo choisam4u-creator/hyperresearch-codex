@@ -1,0 +1,13 @@
+{
+  "files": {
+    "bundle.json": "abf8d5c00fc8a5e7c2a3e1300b6747ccf0edf426fccfc8fe58ce9ec55f701321",
+    "calibration-key.json": "83cce065a26a75f58ea7108e23818c2117abce307187c70a6c3745975aa3ef8a",
+    "candidate.patch": "df71679ee37265be88bd35844cc06dabdcfc4d1cad65d2cd4f1c43cd66cc2fa9",
+    "evaluation-protocol.json": "a516c2c65f9d97dba8f8ecf03d57c6bc029b3fb425a4a11f472d8f23d0e18e10",
+    "fixtures.json": "ec987a2b41515dd75378b62fbe9624e9e2651fa8e517df723ccf8477732bd1aa",
+    "gold.json": "0d7dc6e71506382355f904d5793244d1f2ea7b6cef79b0b3da5a7b7193c43e0b",
+    "reference-evaluator.py": "76daa21cb666850e44312e0d2e32272d1f953944d68e9e262736f1594c52493e",
+    "reproduction.json": "b403d2fd37bb2ee074fbc5dc793afe238adf52915dfdd88f43cfdd258dea88ca",
+    "verify.py": "f73608a3f7059f0537ce62bc036fbdbb6be23b05461c767863f3bb65388bc636"
+  }
+}

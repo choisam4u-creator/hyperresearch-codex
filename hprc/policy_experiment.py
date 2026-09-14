@@ -3,7 +3,7 @@ import copy
 from .token_policy import fingerprint
 
 ALLOWED = {'verification.semantic', 'critic_policy.combine_light', 'critic_policy.compact_inputs',
-           'efficiency.packet_inputs', 'efficiency.evidence_selection'}
+           'efficiency.packet_inputs', 'efficiency.inline_inputs', 'efficiency.evidence_selection'}
 
 
 def compare_policy(left, right, changed_paths):
