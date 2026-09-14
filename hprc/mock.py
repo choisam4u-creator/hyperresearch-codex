@@ -28,7 +28,7 @@ def _report(question: str, claims: list[dict], notes: dict, tag: str = "", en: b
 
 
 def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
-    notes = {k[:k.index("-")]: v for k, v in inputs.items() if k.startswith("S") and k.endswith(".md")}
+    notes = {re.match(r"S[0-9]+", k).group(0): v for k, v in inputs.items() if k.startswith("S") and k.endswith(".md")}
     question = inputs.get("question.txt", "").strip()
     if step == "scout":
         return {"results": []}   # 테스트에서는 URL 목록을 쓴다
@@ -68,7 +68,11 @@ def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
     if step == "polish":
         report = inputs["report.md"]
         return {"hunks": [{"find": "모의 한계: ", "replace": "한계: ", "finding_ids": []}] if "모의 한계: " in report else [], "skipped": []}
-    if step == "citecheck":
+    if step in ("citecheck", "citecheck_changed"):
         samples = json.loads(inputs["samples.json"])
+        if "SEMANTIC_EVIDENCE_V1" in prompt:
+            return {"checks": [{"sentence": s["sentence"], "cites": s["cites"], "supported": False,
+                               "reason": "mock: no semantic judgment", "atoms": [{"quote": s["sentence"],
+                               "verdict": "insufficient", "evidence": [], "conditions": "unknown", "limitations": "mock"}]} for s in samples]}
         return {"checks": [{"sentence": s["sentence"], "cites": s["cites"], "supported": True, "reason": "모의 검사"} for s in samples]}
     raise ValueError(f"mock: 모르는 단계 {step}")

@@ -36,7 +36,7 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 - Codex CLI 로그인 상태(`codex login`). 비용·실측은 Codex CLI 0.153.4와 `gpt-6-astra`로 수행했다. 다른 버전은 프롬프트 손질이 필요할 수 있다.
 - `hpr doctor`는 `codex --version`과 `codex login status`를 timeout 제한으로 검사한다. 실측 기준 0.153.4와 다르면 비차단 경고를 띄우고, 버전·로그인 조회 실패는 실패 사유를 명확히 표시한다.
 - Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
-- macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows help/doctor·잠금·wheel smoke는 CI 설정에 포함했지만, Windows run/resume 지원은 CI 결과 검토 전까지 보류한다.
+- macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows 3.12도 [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 설치·help·잠금·mock 실행/재개·wheel smoke를 통과했다(`PYTHONUTF8=1`). POSIX 셸 fixture 4개는 Windows에서 제외하며 실제 Codex 리서치 실행은 미검증이다.
 
 ## 사용
 
@@ -105,7 +105,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 출처 수집은 scheme·redirect·DNS·연결된 peer를 검사한다. 사설 목적지는 `fetch.allow_private_hosts`에 호스트명이 정확히 적힌 경우만 허용하며, 인증정보·애매한 호스트 표기·허용하지 않은 사설 목적지는 거부한다. `gap_fetch.enabled`와 `reuse.enabled`는 기본 OFF다. Full 누락 근거 보충은 명시적으로 켠 경우에도 gap 최대 2개·출처 최대 3개로 제한한다. vault 재사용은 신선하고 불변이며 hash가 맞는 노트만 쓰고, 없는 색인을 다시 만들지 않는다.
 
-실행마다 `quality.json`을 쓴다. 보고서가 생성돼도 `review_required`면 검토 필요 상태이며, 기록된 품질 상태가 `passed`가 아니면 CLI는 종료 코드 3을 반환한다. 오프라인 evaluator는 제공된 fixture와 실행 메타데이터를 비교할 뿐 사실성·진실 판정기가 아니다. Windows run/resume과 최종 CI 결과는 아직 대기 중이다.
+실행마다 `quality.json`을 쓴다. 보고서가 생성돼도 `review_required`면 검토 필요 상태이며, 기록된 품질 상태가 `passed`가 아니면 CLI는 종료 코드 3을 반환한다. 오프라인 evaluator는 제공된 fixture와 실행 메타데이터를 비교할 뿐 사실성·진실 판정기가 아니다. Windows mock 실행/재개와 wheel smoke도 CI를 통과했다. Windows의 실제 Codex 리서치 실행은 별도 검증이 필요하다.
 
 | 단계 | 받는 입력 |
 |---|---|
@@ -157,7 +157,7 @@ python3 hpr.py install-skill --yes                   # ~/.codex/skills 에 스�
 
 ## 개선 예정
 
-`ROADMAP.md` 참고. 남은 것: Windows 확인, PyPI 배포.
+`ROADMAP.md` 참고. 남은 것: Windows 실제 Codex 리서치 검증, PyPI 배포.
 
 ## 한계
 
@@ -186,3 +186,11 @@ hprc/mock.py            테스트용 가짜 모델
 skill/hyperresearch-codex/SKILL.md   Codex 스킬 후보
 docs/                   테스트 계획(TEST-PLAN.md)·원본 비교(COMPARISON-drb67.html). docs/internal/ 은 미추적
 ```
+
+## 토큰 우선 후속 개선
+
+실험 후보 `--preset economy`, 실패를 포함한 `--max-calls`, 호출 없는 `--plan-json`, 고정 출처 `--replay FILE --case ID`, 근거·사용량 원장과 짧은 `review.md`를 추가했다. 기본값은 standard를 유지한다. 입력 예약은 추정이며 결제 상한을 보장하지 않는다. 고정 입력 2개를 이용한 역할 배정 실측에서는 총 토큰이 6.3% 늘었다. 일반 품질과 절감 효과를 입증한 것은 아니다. [실측 결과](docs/PILOT-20260914.md)를 참고한다. [페이즈별 구현 범위와 남은 작업](docs/TOKEN-FIRST-PHASES.md), [오프라인 평가](docs/EVALUATION.md)를 참고한다.
+
+재개는 초기 설정을 유지하며 예산은 `resume --budget N --max-calls N`으로 변경한다. 시작 이후 코드·프롬프트 파일이 바뀌었으면 추가 모델 호출을 막는다.
+
+후속으로 입력+출력 `--total-budget`, `--format facts|comparison|analysis`, 모델이 제안한 세부 근거를 발췌·원문에 묶는 선택적 `verification.semantic`을 추가했다. 실제 정확도 향상은 미측정이다. [남은 작업 Goal](docs/REMAINING-GOAL.md)을 참고한다.

@@ -1,9 +1,14 @@
 # Changelog
 
 ## Unreleased
+- 승인된 고정 합성 입력 실측 4회 완료: 808,255토큰, 실패·재시도·미측정 0회. 역할별 배정은 Astra 대비 총 토큰이 6.3% 늘어 절감 목표를 달성하지 못했다. 기본값을 유지하며 [판정 범위와 결과](docs/PILOT-20260914.md)를 기록했다.
+- 남은 작업 Goal: 선택적 세부 의미 인용 계약을 같은 검사 호출에 연결하고 발췌·원문 이중 결속과 스냅샷별 원장 연결을 추가했다. 기본 OFF이며 실제 의미 정확도는 미검증이다.
+- `--total-budget` 입력+출력 중단·예약·미측정 중단, `--format` 사실/비교/분석 형식, 독립 판정과 엄격 비교를 받는 benchmark 평가 CLI를 추가했다. [후속 범위와 실측 계획](docs/REMAINING-GOAL.md)을 참고한다.
+- Phase 8–13 로컬 기반: 정답 분리 고정 입력 replay·엄격한 구성 비교·품질 통과 보고서당 전체 토큰 평가, 문장/출처/발췌 해시 원장, 날짜·단위·표 문맥 보존, 선택적 변경 인용 재검사, vault 우선 gap 순위, 호출 예약·총 시도 상한·실험 economy 역할 배정, 호출 없는 review.md를 추가했다. [완료 범위와 남은 작업](docs/TOKEN-FIRST-PHASES.md)을 구분하며 실제 품질·절감률과 원본 우위는 미측정이다.
+- 재개 호출의 코드·프롬프트 변경을 차단하고 유효 예산 설정 및 호출별 구성 해시를 남긴다. 오래된 인용 판정은 최종 통과 근거로 인정하지 않는다.
 - Phase 2–7 최종 로컬 회귀 166개와 격리 wheel mock 실행·재개를 통과했다. Astra 검수 지적을 수정하고 관련 회귀를 추가했다.
 - Phase 2–7 구현 범위를 문서화했다: 안전한 source wrapping과 정확한 private-host allowlist, `quality.json`과 검토 필요 시 CLI exit 3, 기본 OFF인 Full gap 보충(최대 2 gaps/3 sources)과 immutable vault reuse, 오프라인 evaluator, wheel package resource 기반 `install-skill`을 포함한다. 실제 모델 benchmark·외부 설치 피드백·릴리스는 아직 보류다.
-- Windows 3.12 CI와 wheel smoke 단계를 추가했다. Windows run/resume 지원은 CI 실행·검토 전까지 미검증이며, 이 변경만으로 지원 완료를 선언하지 않는다.
+- Windows 3.12 CI와 wheel smoke 단계를 추가했다. 구현 커밋 `346a82d`의 [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13과 Windows 3.12가 모두 통과했다. Windows는 POSIX fixture 4개를 제외한 회귀·설치·mock 실행/재개·wheel 범위이며 실제 Codex 리서치는 미검증이다.
 - 2026-09-14 Phase 1 후속 검증: 전체 회귀 112개 통과, 임시 wheel 설치·mock 실행·재개 확인. 이전 96개 기록은 앞선 구현 시점이다.
 - 출처 노트를 영구 ID 기반 불변 스냅샷으로 저장해 실행 간 S번호·제목 충돌을 방지한다. 실행별 인용 별칭은 유지하고 구형 노트는 다시 쓰지 않는다.
 - 게시일·수정일과 근거 메타를 노트와 모델 입력까지 전달한다. 구형 노트의 빠진 날짜는 해당 실행의 출처 메타로 보충한다.
@@ -54,3 +59,16 @@
 
 ## 0.1.0 - 2026-09-13
 - Light tier MVP: search → fetch → analyst → writer → 3 critics → patch → cite-check → lint. Mock backend tests.
+
+## 2026-09-14 후속 1–7
+
+- 알려진 형식 오지적과 중복 비평을 줄이고 Light 비평 통합을 선택 기능으로 추가.
+- 원자 주장 범위, 블라인드 검토 자료와 전체 주장 수동 판정 경계, 현실형 합성 입력 6건 추가.
+- 허용한 정책만 바꾼 비교 검증과 실행별 단계 비용·중단 이유 표시 추가.
+- 실제 정확도 및 토큰 절감률은 후속 통제 실험 결과와 구분.
+
+## 2026-09-14 정책 실측 후속
+
+- 승인된 정책 실측 6회 결과·비용·블라인드 모델 검토 한계 공개.
+- 인용 뒤 판단 표식과 같은 줄 후속 사실 보존, 여러 공백 분리 회귀 수정.
+- 통합 비평 일괄 파일 읽기, 세부 주장 범위 안내와 누락 사유 표시 보완. 수정 후 실제 절감률은 미측정.

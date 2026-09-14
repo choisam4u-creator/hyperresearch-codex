@@ -10,7 +10,7 @@
 
 ### Phase 2–7 범위 정정
 
-현재 구현·fixture 검증에는 safe source wrapping과 정확한 private-host allowlist, `quality.json` 및 검토 필요 시 CLI 종료 코드 3, 기본 OFF인 Full gap 보충(최대 2 gaps·3 sources), 기본 OFF인 immutable vault reuse, 오프라인 evaluator, package resource 기반 `install-skill`이 포함된다. evaluator는 진실성·사실 정확도를 판정하지 않는다. Windows wheel smoke와 run/resume은 CI 실행·검토가 남아 있고, 실제 연구 benchmark·외부 2~3명 설치 피드백·릴리스도 pending이다. 따라서 Phase 2–7 전체 완료로 해석하지 않는다.
+현재 구현·fixture 검증에는 safe source wrapping과 정확한 private-host allowlist, `quality.json` 및 검토 필요 시 CLI 종료 코드 3, 기본 OFF인 Full gap 보충(최대 2 gaps·3 sources), 기본 OFF인 immutable vault reuse, 오프라인 evaluator, package resource 기반 `install-skill`이 포함된다. evaluator는 진실성·사실 정확도를 판정하지 않는다. Windows wheel smoke와 mock 실행/재개는 아래 최종 원격 CI에서 통과했으며, 실제 연구 benchmark·외부 2~3명 설치 피드백·릴리스도 pending이다. 따라서 Phase 2–7 전체 완료로 해석하지 않는다.
 
 2026-09-14 Phase 1 후속은 전체 **112개 통과(9.456초)**. 불변 노트·날짜 전달·CLI/MCP 실행 경계를 추가 검증하고, 최종 wheel을 임시 환경에 설치해 mock 완주·재개를 확인했다. 아래 96개는 앞선 유지보수 시점의 결과다. [페이즈 계획](DEVELOPMENT-PHASES.md) 참조.
 
@@ -82,4 +82,36 @@ Light 2회(v0.1, v0.3), Full 3회(v0.2 ×2, v0.3 ×1). mock 테스트 18개.
 
 ### 2026-09-14 Phase 2–7 최종 로컬 검증
 
-전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 Windows 결과는 원격 CI에서 별도 확인한다.
+전체 회귀 166개 통과(10.762초). Astra 재검토 후 보충 분석 재개·조회일 보존·평가 입력 일치·검색 정책·재수집 메타데이터·남은 gap 상태 회귀를 확인했다. 최종 wheel을 macOS 임시 venv에 설치해 저장소 밖 mock Light 실행과 재개 시 추가 호출 0을 확인했다. 실제 연구 모델 호출은 없었으며 구현 커밋 `346a82d`의 [원격 CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 Linux 3.11–3.13 및 Windows 3.12 설치·회귀·wheel smoke를 확인했다. Windows는 166개 중 POSIX 셸 fixture 4개를 제외한 162개 통과이며 UTF-8 모드를 사용한다. 최초 Windows 설치 테스트의 HOME 격리 오류를 Path.home 대역으로 수정했다. 실제 Windows Codex 모델 호출은 검증 범위 밖이다.
+
+
+## 2026-09-14 Phase 8–13 로컬 구현 검증
+
+- macOS Python 3.14.7: `python3 -m unittest discover -s tests -q` **230개 통과**. SQLite 연결 ResourceWarning은 관찰됐으며 테스트 실패는 없다.
+- `compileall`, `git diff --check` 통과. 임시 환경에서 wheel 빌드·재설치 후 저장소 밖 `tests/wheel_smoke.py` 통과: 실제 모델 0회, 재개 추가 호출 0회. 새 모듈과 언어별 프롬프트 14개 포함, 비공개 폴더 제외 확인.
+- Astra는 변경 코드와 대상 테스트를 검수했고, 오래된 인용 context, 재개 구성 해시, 통제 비교 조건 누락, 수치 오경고/긴 표 문맥 손실 지적의 수정 재검사 **61개 통과**를 확인했다. 전체 저장소의 모든 파일을 검수했다는 뜻은 아니다.
+- 24개 질문과 정상/오류 각 100개 자료는 평가 기반이다. 실제 모델을 통한 품질·토큰 실측은 하지 않았다. 기계 검사만의 변형 자료 점검은 정상 오경고 0/100, 오류 경고 0/100으로 의미 오류 탐지 성능을 입증하지 못한다. 모델과 결합한 최종 검증 성능과 혼동하지 않는다.
+- 실제 토큰 절감률, 의미 지지·질문 충족·오류 탐지 목표는 미측정이다. [페이즈별 범위](TOKEN-FIRST-PHASES.md)를 따른다.
+
+
+## 2026-09-14 남은 작업 Goal 검증
+
+- `python3 -m unittest discover -s tests -q`: **262개 통과**(10.039초). 실제 리서치 모델 호출 없음.
+- 전체 토큰 합산·출력 예약·미측정 중단·재개, 작성 형식과 계획 CLI, 독립 판정 CLI, 세부 근거 위조·중복·원문 결속 및 같은 호출 통합을 검증했다.
+- `compileall`, `git diff --check`, 임시 wheel 빌드·재설치 후 저장소 밖 mock 실행·추가 호출 없는 재개 통과. 새 모듈 포함·비공개 폴더 제외 확인.
+- Astra가 요청한 변경 범위를 검수했다. 의미 검사 전체 정확도·실제 토큰 절감은 이 테스트의 측정 대상이 아니다. [후속 실측 계획](REMAINING-GOAL.md).
+
+
+## 2026-09-14 승인된 고정 입력 실제 4회
+
+코드9efb48e에서 실제 Codex 호출 21회, 합계 입력+출력808,255토큰으로 4개 실행 완료. 자동 검사4/4 passed, 사례별 필수 항목2개 대조8/8 보존(비블라인드·전체 정확도 평가 아님). 실패·재시도·미측정0회. 역할별 배정의 총 토큰+6.3%, 시간+11.2%; 기본값 유지. [상세 결과](PILOT-20260914.md). 기존 mock 검증과 구분한다.
+
+## 후속 1–7 내부 회귀
+
+`tests/test_critique_policy.py`, `test_critic_integration.py`, `test_semantic.py`, `test_blind_eval.py`, `test_policy_experiment.py`, `test_cost_guidance.py`에서 비평 필터·출처 없는 지시 검사·원자 주장 범위·전체 주장 판정 경계·통제 실험·미측정/병렬 비용을 확인한다. [실측 조건](SEVEN-STEP-GOAL.md)은 오프라인 통과와 별개다.
+
+## 2026-09-14 승인된 6회 정책 실측 및 후속 회귀
+
+총 1,426,492 입력+출력 토큰, 32회 파이프라인 호출. 실패·재시도·미측정 0회. [전체 결과](POLICY-MEASUREMENT-20260914.md)에 설정별 비용·자동 검사·전체 본문 블라인드 모델 판정과 한계를 분리했다.
+
+실측 후 판단 표식의 문장 분리 및 여러 공백·같은 줄 후속 사실 회귀를 추가했고, 통합 비평 입력 읽기와 세부 근거 범위 설명을 보완했다. 전체 오프라인 테스트 302개(11.440초), 저장소 밖 임시 venv wheel 설치·mock 완주·추가 호출 없는 resume 통과. Astra가 문장 분리에서 발견한 두 경계 문제도 수정 후 관련 34개 테스트로 재검증했다. 수정 버전으로 실제 리서치를 추가 실행한 것은 아니다.

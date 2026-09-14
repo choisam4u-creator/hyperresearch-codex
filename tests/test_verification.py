@@ -64,3 +64,61 @@ class VerificationTests(unittest.TestCase):
         result = verify_report("새 설명\n근거 문장 [S1]\n", {"S1": "근거 문장"}, [],
                                {"selected_count": 0, "checked_count": 0}, "근거 문장 [S1]\n", [], [])
         self.assertFalse(any(issue["kind"] == "cited_claim_changed_after_check" for issue in result["issues"]))
+
+    def test_equivalent_time_units_pass_when_context_matches(self):
+        report = "Measured latency was 2 seconds. [S1]\n"
+        result = verify_report(report, {"S1": "Measured latency was 2000 ms."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_same_number_in_different_context_requires_review(self):
+        report = "Revenue increased by 20%. [S1]\n"
+        result = verify_report(report, {"S1": "Network latency increased by 20%."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_context_unclear" for issue in result["issues"]))
+
+    def test_opposite_direction_with_same_number_requires_review(self):
+        report = "Measured cost decreased by 20%. [S1]\n"
+        result = verify_report(report, {"S1": "Measured cost increased by 20%."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_context_unclear" for issue in result["issues"]))
+
+    def test_equivalent_date_formats_pass_and_wrong_date_does_not(self):
+        report = "The release date was September 14, 2026. [S1]\n"
+        good = verify_report(report, {"S1": "The release date was 2026-09-14."}, [],
+                             {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("date_") for issue in good["issues"]))
+        bad = verify_report(report, {"S1": "The release date was 2026-09-15."}, [],
+                            {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in bad["issues"]))
+
+    def test_quote_normalization_accepts_unicode_apostrophe_and_space_variants(self):
+        quote = "The model’s result is source backed"
+        report = f'“{quote}” [S1]\n'
+        source = "The model's   result is source backed"
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("direct_quote") for issue in result["issues"]))
+
+    def test_words_containing_no_or_fall_are_not_treated_as_negation_or_direction(self):
+        report = "Notebook fallback latency was 2 seconds. [S1]\n"
+        source = "Notebook fallback latency was 2000 ms."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_unrelated_attribution_negation_does_not_conflict_with_quantity(self):
+        report = "Registry latency was 2 seconds. [S1]\n"
+        source = "The registry, not the vendor, published the result. Registry latency was 2000 ms."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"] == "numeric_context_unclear" for issue in result["issues"]))
+
+    def test_korean_claim_and_english_equivalent_quantity_do_not_fail_lexical_context(self):
+        report = "지연 시간은 2초다. [S1]\n"
+        source = "Latency is 2000 ms."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_negation_bound_to_the_quantity_still_requires_review(self):
+        report = "Latency was 2 seconds. [S1]\n"
+        source = "Latency was not 2000 ms."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_context_unclear" for issue in result["issues"]))

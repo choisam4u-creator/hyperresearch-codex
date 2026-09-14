@@ -1,0 +1,19 @@
+import copy
+import unittest
+from hprc.policy_experiment import compare_policy
+from hprc.token_policy import fingerprint
+class PolicyExperimentTests(unittest.TestCase):
+    def pair(self):
+        cfg={'verification':{'semantic':False},'light':{'target_words':700}}
+        meta={k:'fixed' for k in ('code_revision','prompt_hashes','benchmark_version','frozen_at','frozen_input_hash','as_of')}
+        meta.update(role_assignments={'writer':{'model':'fixed'}},runtime_consistent=True,config_snapshot=cfg,config_hash=fingerprint(cfg))
+        a={'case_id':'case','input_hash':'same','runtime_metadata':meta,'reported_total_tokens':100,'unknowncalls':0,'quality_qualified':True}
+        b=copy.deepcopy(a);b['runtime_metadata']['config_snapshot']['verification']['semantic']=True;b['runtime_metadata']['config_hash']=fingerprint(b['runtime_metadata']['config_snapshot']);b['reported_total_tokens']=120
+        return a,b
+    def test_explicit_toggle_only(self):
+        a,b=self.pair();self.assertEqual(20,compare_policy(a,b,['verification.semantic'])['total_token_delta'])
+    def test_length_change_rejected(self):
+        a,b=self.pair();b['runtime_metadata']['config_snapshot']['light']['target_words']=50;b['runtime_metadata']['config_hash']=fingerprint(b['runtime_metadata']['config_snapshot'])
+        with self.assertRaises(ValueError):compare_policy(a,b,['verification.semantic'])
+    def test_unknown_cost_has_no_complete_delta(self):
+        a,b=self.pair();b['unknowncalls']=1;self.assertIsNone(compare_policy(a,b,['verification.semantic'])['total_token_delta'])
