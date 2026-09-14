@@ -24,8 +24,10 @@ _KOREAN_YEAR_RANGE = re.compile(
 _KOREAN_DATE_LIKE = re.compile(
     r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?:\s*일)?(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
 )
+_KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
+_PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 _UNITS = ("milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
-          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "년", "월", "일", "명", "건", "개", "배",
+          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 _QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
                        "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
@@ -45,6 +47,8 @@ _UNIT_SCALE = {
     "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")),
     "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
+    "개": ("count_item", Decimal("1")), "곳": ("count_place", Decimal("1")), "개소": ("count_place", Decimal("1")),
+    "대": ("count_vehicle", Decimal("1")), "회": ("count_occurrence", Decimal("1")), "종": ("count_type", Decimal("1")),
     "%": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
     "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
@@ -73,6 +77,7 @@ def _quote_text(value: str) -> str:
 
 def _date_values(text: str) -> list[dict]:
     values = []
+    year_anchors = []
     ranges = list(_KOREAN_YEAR_RANGE.finditer(text))
     for pattern_index, pattern in enumerate(_DATE_PATTERNS):
         for match in pattern.finditer(text):
@@ -87,6 +92,7 @@ def _date_values(text: str) -> list[dict]:
             except (ValueError, KeyError):
                 continue
             values.append({"raw": match.group(0), "value": value, "start": match.start(), "end": match.end()})
+            year_anchors.append((year, match.end()))
     for match in ranges:
         try:
             year, month, first_day, last_day = map(int, match.groups())
@@ -100,6 +106,31 @@ def _date_values(text: str) -> list[dict]:
             {"raw": match.group(0), "value": first, "start": match.start(), "end": match.end()},
             {"raw": match.group(0), "value": last, "start": match.start(), "end": match.end()},
         ))
+        year_anchors.append((year, match.end()))
+    # 생략 연도는 같은 줄에서 명시 연도 뒤를 와/과/및/,로 병렬 연결한 경우에만
+    # 복원한다. 출처 사이 줄바꿈, 현재 연도, 메타데이터는 근거가 아니다.
+    for match in _KOREAN_PARTIAL_DATE.finditer(text):
+        if re.match(r"\s*(?:부터|[~–—-])", text[match.end():]):
+            continue
+        if any(value["start"] <= match.start() < value["end"] for value in values):
+            continue
+        # 범위의 첫 날짜처럼 더 긴 날짜 표기 안에 든 부분값은 독립 날짜가 아니다.
+        # 예: "8월 6일부터 2일"은 잘못된 범위이며 8월 6일만 상속해 통과시키지 않는다.
+        if any(span.start() <= match.start() and match.end() <= span.end()
+               and (span.start(), span.end()) != (match.start(), match.end())
+               for span in _KOREAN_DATE_LIKE.finditer(text)):
+            continue
+        candidates = [(year, end) for year, end in year_anchors if end <= match.start()
+                      and "\n" not in text[end:match.start()]
+                      and _PARALLEL_DATE_CONNECTOR.fullmatch(text[end:match.start()])]
+        if not candidates:
+            continue
+        year, _ = candidates[-1]
+        try:
+            value = dt.date(year, int(match.group(1)), int(match.group(2))).isoformat()
+        except ValueError:
+            continue
+        values.append({"raw": match.group(0), "value": value, "start": match.start(), "end": match.end()})
     return sorted(values, key=lambda item: item["start"])
 
 
@@ -237,8 +268,16 @@ def _check_structured_values(claim: dict, cited_text: str, issues: list[dict]) -
                    if not candidate.get("unsupported_unit")
                    and candidate["dimension"] == value["dimension"] and candidate["value"] == value["value"]]
         if not matches:
-            issues.append(_issue("numeric_evidence_unclear", "medium", claim["line"],
-                                 f"수치·단위 {value['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
+            signed = [candidate for candidate in source_quantities
+                      if not candidate.get("unsupported_unit")
+                      and candidate["dimension"] == value["dimension"]
+                      and candidate["value"] == -value["value"]]
+            if signed:
+                issues.append(_issue("numeric_sign_context_unclear", "medium", claim["line"],
+                                     f"수치·단위 {value['raw']}와 원문의 부호가 반대인 값이 있어 감소량 표현과의 관계를 의미 검토해야 합니다."))
+            else:
+                issues.append(_issue("numeric_evidence_unclear", "medium", claim["line"],
+                                     f"수치·단위 {value['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
         elif not any(_context_compatible(claim["sentence"], value, cited_text, candidate) for candidate in matches):
             issues.append(_issue("numeric_context_unclear", "medium", claim["line"],
                                  f"수치·단위 {value['raw']}가 원문과 다른 문맥일 수 있어 검토가 필요합니다."))

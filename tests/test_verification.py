@@ -114,6 +114,69 @@ class VerificationTests(unittest.TestCase):
             self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
             self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
 
+    def test_same_sentence_parallel_korean_dates_can_inherit_the_explicit_year(self):
+        report = "일정은 2026년 7월 22일과 8월 6일이다. [S1]\n"
+        result = verify_report(report, {"S1": "일정은 2026년 7월 22일과 8월 6일이다."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("date_") for issue in result["issues"]))
+
+    def test_year_is_not_inherited_across_lines_or_from_a_different_source(self):
+        report = "일정은 2026년 7월 22일이다.\n8월 6일에도 점검했다. [S1]\n"
+        newline = verify_report(report, {"S1": "일정은 2026년 7월 22일이다.\n8월 6일에도 점검했다."}, [],
+                                {"selected_count": 0, "checked_count": 0}, report, [], [])
+        other_source = verify_report("일정은 2026년 7월 22일과 8월 6일이다. [S1]\n",
+                                     {"S1": "일정은 7월 22일과 8월 6일이다.", "S2": "2026년 일정이다."}, [],
+                                     {"selected_count": 0, "checked_count": 0}, "일정은 2026년 7월 22일과 8월 6일이다. [S1]\n", [], [])
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in newline["issues"]))
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in other_source["issues"]))
+
+    def test_later_explicit_year_is_not_replaced_by_the_previous_year(self):
+        report = "일정은 2026년 7월 22일과 8월 6일이다. [S1]\n"
+        source = "일정은 2026년 7월 22일과 2027년 8월 6일이다."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+
+    def test_malformed_range_cannot_supply_an_inherited_partial_date(self):
+        report = "2026년 8월 6일에 점검했다. [S1]\n"
+        source = "2026년 7월 22일과 8월 6일부터 2일에 점검했다."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+
+    def test_cross_month_range_start_cannot_be_inherited_as_a_single_date(self):
+        report = "2026년 8월 6일에 점검했다. [S1]\n"
+        for tail in ("부터 7월 2일까지", "~7월 2일", "- 7월 2일", "–7월 2일", "—7월 2일"):
+            source = "2026년 7월 22일과 8월 6일" + tail + "에 점검했다."
+            result = verify_report(report, {"S1": source}, [],
+                                   {"selected_count": 0, "checked_count": 0}, report, [], [])
+            self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+
+    def test_signed_change_requires_explicit_semantic_review(self):
+        report = "피크 전력 변화는 18.4 kW 감소했다. [S1]\n"
+        source = "피크 전력 변화는 -18.4 kW였고, 음수는 감소를 뜻한다."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_sign_context_unclear" for issue in result["issues"]))
+
+    def test_signed_values_without_change_context_or_with_opposite_direction_stay_review_required(self):
+        no_change = verify_report("온도는 18.4 kW였다. [S1]\n", {"S1": "온도는 -18.4 kW였다."}, [],
+                                  {"selected_count": 0, "checked_count": 0}, "온도는 18.4 kW였다. [S1]\n", [], [])
+        opposite = verify_report("피크 전력 변화는 18.4 kW 증가했다. [S1]\n", {"S1": "피크 전력 변화는 -18.4 kW였고, 음수는 감소를 뜻한다."}, [],
+                                 {"selected_count": 0, "checked_count": 0}, "피크 전력 변화는 18.4 kW 증가했다. [S1]\n", [], [])
+        negated = verify_report("피크 전력 변화는 18.4 kW 감소하지 않았다. [S1]\n", {"S1": "피크 전력 변화는 -18.4 kW였고, 음수는 감소를 뜻한다."}, [],
+                                {"selected_count": 0, "checked_count": 0}, "피크 전력 변화는 18.4 kW 감소하지 않았다. [S1]\n", [], [])
+        for result in (no_change, opposite, negated):
+            self.assertTrue(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_korean_place_alias_is_limited_to_place_count_and_other_counts_do_not_mix(self):
+        alias = verify_report("공공건물 12곳을 점검했다. [S1]\n", {"S1": "공공건물 12개소를 점검했다."}, [],
+                              {"selected_count": 0, "checked_count": 0}, "공공건물 12곳을 점검했다. [S1]\n", [], [])
+        item = verify_report("공공건물 12곳을 점검했다. [S1]\n", {"S1": "공공건물 12개를 점검했다."}, [],
+                             {"selected_count": 0, "checked_count": 0}, "공공건물 12곳을 점검했다. [S1]\n", [], [])
+        different_unit = verify_report("공공건물 12대를 점검했다. [S1]\n", {"S1": "공공건물 12회를 점검했다."}, [],
+                                       {"selected_count": 0, "checked_count": 0}, "공공건물 12대를 점검했다. [S1]\n", [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in alias["issues"]))
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in item["issues"]))
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in different_unit["issues"]))
+
     def test_unknown_source_power_unit_cannot_support_unitless_value(self):
         report = "Measured value was 12. [S1]\n"
         result = verify_report(report, {"S1": "Measured value was 12 MW."}, [],
