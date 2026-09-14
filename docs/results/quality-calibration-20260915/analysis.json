@@ -1,0 +1,105 @@
+{
+  "status": "STOPPED_NO_RESEARCH",
+  "checks_computed_offline_after_stop": true,
+  "research_runs": 0,
+  "evaluator_calls": 1,
+  "usage": {
+    "known": true,
+    "input_tokens": 80016,
+    "cached_input_tokens": 45568,
+    "output_tokens": 6017,
+    "total_tokens": 86033
+  },
+  "per_call_stop": 60000,
+  "overshoot_tokens": 26033,
+  "budget_fraction_percent": 5.736,
+  "checks": [
+    {
+      "opaque_id": "ed5c9cd42c2f24262def95be",
+      "expected": "fail",
+      "actual": "fail",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": true,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    },
+    {
+      "opaque_id": "eab45e147738e1a47a2389bb",
+      "expected": "pass",
+      "actual": "eval_unavailable",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": false,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    },
+    {
+      "opaque_id": "8434c5801a3ed988f5a78877",
+      "expected": "fail",
+      "actual": "fail",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": true,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    },
+    {
+      "opaque_id": "bfc0514330544a5e3a77178f",
+      "expected": "fail",
+      "actual": "fail",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": true,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    },
+    {
+      "opaque_id": "75d0165fcb0a36b467f19392",
+      "expected": "fail",
+      "actual": "fail",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": true,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    },
+    {
+      "opaque_id": "f1b99c6078a3c542f2595bec",
+      "expected": "pass",
+      "actual": "eval_unavailable",
+      "full_report_reviewed": false,
+      "expected_errors_detected": true,
+      "disposition_matches": false,
+      "unresolved": [
+        "Packet reader output was truncated; a full packet review cannot be claimed."
+      ]
+    }
+  ],
+  "calibration_gate_pass": false,
+  "expected_bad_examples_detected": 4,
+  "expected_good_examples_passed": 0,
+  "full_reviews": 0,
+  "recorded_reader_commands": [
+    {
+      "command": "/bin/zsh -lc \"wc -c packets.json _schema.json && sed -n '1,240p' _schema.json && sed -n '1,99999p' packets.json\"",
+      "exit_code": 0,
+      "output_characters": 29479,
+      "output_sha256": "dd9b224190fcc873f03fee9faa8c6e306f17f4be5b32d2afad8f324e3508e79a",
+      "complete_compact_input_present_in_recorded_output": true
+    },
+    {
+      "command": "/bin/zsh -lc \"jq '{contexts: (.contexts | with_entries(.value |= {rubric})), reports}' packets.json\"",
+      "exit_code": 0,
+      "output_characters": 15551,
+      "output_sha256": "7aaff83f05712e93b72fb1fb140023cfa3987f9396a088720edc7de82cfb7cee",
+      "complete_compact_input_present_in_recorded_output": false
+    }
+  ],
+  "conclusion": "Evaluator reported truncated input for all six assessments. Logs record two reader commands, but do not establish the exact model-visible tool-output truncation boundary. Duplicate reading is observed; causal per-command token attribution is unavailable. Full packet correctness and product quality remain unestablished. No new live retry."
+}

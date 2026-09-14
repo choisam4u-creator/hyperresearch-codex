@@ -1,0 +1,85 @@
+{
+  "task_id": "oss-quality-validation-20260914",
+  "status": "stopped",
+  "reason": "Token pool exceeded after call",
+  "plan_sha256": "a89591179f478d51723bdcc91cccf1eb19041d4c58d71c723226fe005a15c3bf",
+  "research": [],
+  "evaluation": [
+    {
+      "id": "calibration-terra",
+      "status": "failed",
+      "role": {
+        "model": "gpt-5.6-terra",
+        "effort": "low"
+      },
+      "reserved_tokens": 60000,
+      "usage": {
+        "known": true,
+        "input_tokens": 80016,
+        "cached_input_tokens": 45568,
+        "output_tokens": 6017,
+        "total_tokens": 86033
+      },
+      "seconds": 115.6
+    }
+  ],
+  "calibration_pass": false,
+  "budget": {
+    "research_stop": 1200000,
+    "evaluation_stop": 300000,
+    "combined_stop": 1500000,
+    "hard_billing_cap": false
+  },
+  "versions": {
+    "before": "a890162d98d09d5f5f8c049ca4f683211707bdb4",
+    "after": "5f5e41a21409c53a026d49218ed56dd4d00ba7b7"
+  },
+  "runtime": {
+    "runner_sha256": "cdb204566872a9e296064523d41c4b3e02d2d27c2891b578c5850167b26921e4",
+    "prompt_sha256": "4472b4de9220fe4ee7315dfc719345cbef04193c0fef016ef4a17a5092c9fd28",
+    "schema_sha256": "3dfc514fdcb65e88b3a449bb31d02907b4bb52de0b5f6e8759ec88a4997d8a90",
+    "roles": {
+      "terra": {
+        "model": "gpt-5.6-terra",
+        "effort": "low"
+      },
+      "astra": {
+        "model": "gpt-6-astra",
+        "effort": "low"
+      }
+    },
+    "codex": {
+      "timeout": 900,
+      "ignore_user_config": true,
+      "extra_args": [
+        "--skip-git-repo-check",
+        "--ephemeral"
+      ]
+    },
+    "cli_version": "codex-cli 0.154.0-alpha.6.2",
+    "research_runtime": {
+      "before": {
+        "ko": {
+          "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+          "code_hash": "9be62d7fc393758f33ed9ba89502d9b2a8f02c173552210d5e46a05cd530dc0e"
+        },
+        "en": {
+          "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+          "code_hash": "9be62d7fc393758f33ed9ba89502d9b2a8f02c173552210d5e46a05cd530dc0e"
+        }
+      },
+      "after": {
+        "ko": {
+          "prompt_hash": "ea6f5d6b8ae54bdffb59b03bea68353a19eda479b51a09f1de68cd3f52685f1e",
+          "code_hash": "17c5efff8cbce17f3133a9fd5a022f2ee2bd32f325ee129dda91a877ed444068"
+        },
+        "en": {
+          "prompt_hash": "812e615f372987609751475002f3fec7e09899f749998a6b5a9746d492c0897e",
+          "code_hash": "17c5efff8cbce17f3133a9fd5a022f2ee2bd32f325ee129dda91a877ed444068"
+        }
+      }
+    }
+  },
+  "scope": "Two known synthetic diagnostic cases; not independent holdout, external validation, or general quality proof",
+  "maintenance_conversation_tokens": "not_metered"
+}

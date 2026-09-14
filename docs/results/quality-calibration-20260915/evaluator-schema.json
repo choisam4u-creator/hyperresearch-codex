@@ -1,0 +1,150 @@
+{
+  "type": "object",
+  "properties": {
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "opaque_id": {
+            "type": "string"
+          },
+          "full_report_reviewed": {
+            "type": "boolean"
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "met",
+                    "missing",
+                    "incorrect",
+                    "unresolved"
+                  ]
+                },
+                "report_quote": {
+                  "type": "string"
+                },
+                "source_evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source_id": {
+                        "type": "string"
+                      },
+                      "quote": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source_id",
+                      "quote"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "status",
+                "report_quote",
+                "source_evidence",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "critical",
+                    "minor"
+                  ]
+                },
+                "report_quote": {
+                  "type": "string"
+                },
+                "source_evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source_id": {
+                        "type": "string"
+                      },
+                      "quote": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source_id",
+                      "quote"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "severity",
+                "report_quote",
+                "source_evidence",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "unresolved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "overall": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail",
+              "eval_unavailable"
+            ]
+          }
+        },
+        "required": [
+          "opaque_id",
+          "full_report_reviewed",
+          "requirements",
+          "issues",
+          "unresolved",
+          "overall"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "reports"
+  ],
+  "additionalProperties": false
+}

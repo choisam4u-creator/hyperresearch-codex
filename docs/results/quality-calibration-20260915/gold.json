@@ -1,0 +1,380 @@
+{
+  "schema_version": "source-bound-gold-v1",
+  "purpose": "Two known diagnostic cases for human or harness calibration. This is a source-bound rubric, not a model-quality threshold or a substitute for full-report review.",
+  "frozen_input": {
+    "path": "tests/fixtures/realistic_inputs.json",
+    "benchmark_version": "realistic-synthetic-v1",
+    "frozen_at": "2026-09-14T00:00:00Z",
+    "sha256": "f0d00b47696b4fde9b562c82a8b7b72f7f7993f0bda3c3de8021f501d4dcf9ab"
+  },
+  "disposition_rules": {
+    "pass": "The full candidate report has been reviewed; all required facts and required uncertainty/abstention items are present with their stated scope; there are no factual or conclusion errors, including unlisted errors; and no material judgment remains unresolved.",
+    "fail": "A required item is omitted, a listed or unlisted factual/conclusion error is established, or the report turns a documented limit into a factual conclusion. A cautious statement that matches a correct-abstention item is not an unsupported claim.",
+    "eval_unavailable": "Use only when there is no readable candidate report, its case identity cannot be bound to this frozen input, the evaluator cannot inspect the relevant statement, or a material semantic ambiguity remains unresolved after the prescribed review. Record the reason as input_missing, review_incomplete, reviewer_disagreement, or semantic_insufficiency; do not convert it automatically to pass or fail. Do not use this label to hide a missing required item in an otherwise readable report; that is fail."
+  },
+  "cases": [
+    {
+      "case_id": "real-ko-table",
+      "prompt": "제시된 지역 냉방 시범사업의 성과를 수치·단위·조건과 함께 요약하라.",
+      "language": "ko",
+      "source_ref": "tests/fixtures/realistic_inputs.json#cases[id=real-ko-table]",
+      "required_facts": [
+        {
+          "id": "ko.scope",
+          "expectation": "성과가 2026년 5월부터 8월까지 12개 공공건물에서 관찰된 시범사업이라는 범위를 밝힌다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다."
+            }
+          ]
+        },
+        {
+          "id": "ko.measurement-window",
+          "expectation": "비교가 설치 전·후 각각 4주의 평일 오후 1시부터 5시까지 계량기 값이라는 조건을 밝힌다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다."
+            }
+          ]
+        },
+        {
+          "id": "ko.peak-observations",
+          "expectation": "도서관 -18.4 kW와 구청 별관 -11.2 kW를 피크 전력 변화로, 음수 부호가 감소를 뜻한다는 단위·방향과 함께 제시한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다. 부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻"
+            }
+          ]
+        },
+        {
+          "id": "ko.complaint-unit",
+          "expectation": "불만 수치를 총 민원 수나 백분율이 아니라 1,000 이용시간당 냉방 관련 접수로 설명한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다."
+            },
+            {
+              "source_id": "S1",
+              "quote": "두 번째 열은 총 민원 건수가 아니다."
+            }
+          ]
+        }
+      ],
+      "required_qualifiers": [
+        {
+          "id": "ko.no-control",
+          "expectation": "대조군이 없었다는 해석 한계를 포함한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "담당자는 기온, 점유 인원, 냉방 설정온도를 함께 기록했지만 대조군은 두지 않았다."
+            }
+          ]
+        },
+        {
+          "id": "ko.exclusions",
+          "expectation": "결측·제외가 있었고 그것이 추정을 어느 방향으로 움직였는지는 알려지지 않았음을 보존한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다."
+            }
+          ]
+        }
+      ],
+      "correct_abstentions": [
+        {
+          "id": "ko.no-annual-or-all-season-inference",
+          "expectation": "이 자료만으로 연간 전력 절감이나 모든 계절의 효과를 말할 수 없다고 보류한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "따라서 이 자료만으로 연간 전력 절감이나 모든 계절의 효과를 말할 수는 없다."
+            }
+          ]
+        },
+        {
+          "id": "ko.no-heatwave-counterfactual",
+          "expectation": "폭염 제외 구간에서 효과가 있었거나 없었다는 어느 쪽의 결론도 내리지 않는다.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "그 자료로 폭염일에도 같은 피크 감소가 있었다고 추정하지 않는다. 반대로 효과가 없었다고 결론내리지도 않는다."
+            }
+          ]
+        }
+      ],
+      "critical_errors": [
+        {
+          "id": "ko.flip-peak-direction-or-unit",
+          "error": "-18.4 kW 또는 -11.2 kW를 증가, 절감률(%), 또는 연간 전력량으로 바꿔 말한다.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻"
+            },
+            {
+              "source_id": "S2",
+              "quote": "표에는 각 시설별로 설치 전 평균 피크와 설치 후 평균 피크를 별도로 보여 주지 않고, 그 차이만 kW 단위로 적었다."
+            }
+          ]
+        },
+        {
+          "id": "ko.complaint-is-satisfaction-or-total",
+          "error": "0.7 또는 1.1을 전체 민원 수, 만족도 점수, 또는 70%/110%로 말한다.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "0.7과 1.1을 각각 70%나 110%로 읽어서는 안 된다고 적혀 있다."
+            },
+            {
+              "source_id": "S2",
+              "quote": "그러므로 불만 접수 수치가 이용자 만족도 전체를 대표한다고 해석할 근거는 없다."
+            }
+          ]
+        },
+        {
+          "id": "ko.generalize-or-claim-cost",
+          "error": "도시 전체, 다른 건물, 비용 절감 또는 투자 회수 기간이 입증됐다고 말한다.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "도시 전체의 비용·탄소·민원 효과는 추가 자료 없이는 판단하지 않는다고 적었다."
+            },
+            {
+              "source_id": "S2",
+              "quote": "-18.4 kW와 -11.2 kW 관측을 금액 절감 또는 투자 회수 기간으로 환산하는 것은 이 파일의 직접 결과가 아니다."
+            }
+          ]
+        }
+      ],
+      "calibration_examples": [
+        {
+          "label": "positive_correct_uncertainty",
+          "report": "이 시범사업은 2026년 5~8월 12개 공공건물을 대상으로, 설치 전·후 각각 4주의 평일 오후 1~5시 계량기 값을 비교했다. 도서관은 피크 전력이 -18.4 kW, 구청 별관은 -11.2 kW였으며 음수는 피크 감소를 뜻한다. 냉방 관련 불만 접수는 각각 1,000 이용시간당 0.7건과 1.1건이었다. 대조군이 없고 결측 제외의 방향도 알 수 없으므로, 연간 절감이나 모든 계절의 효과, 폭염일 효과는 이 자료로 판단할 수 없다.",
+          "expected_disposition": "pass"
+        },
+        {
+          "label": "mutation_missing_measurement_condition",
+          "mutation_of": "positive_correct_uncertainty",
+          "report": "이 시범사업은 2026년 5~8월 12개 공공건물을 대상으로 했다. 도서관은 피크 전력이 -18.4 kW, 구청 별관은 -11.2 kW였으며 음수는 피크 감소를 뜻한다. 냉방 관련 불만 접수는 각각 1,000 이용시간당 0.7건과 1.1건이었다. 대조군이 없고 결측 제외의 방향도 알 수 없으므로, 연간 절감이나 모든 계절의 효과, 폭염일 효과는 이 자료로 판단할 수 없다.",
+          "expected_disposition": "fail",
+          "expected_failure_ids": [
+            "ko.measurement-window"
+          ]
+        },
+        {
+          "label": "mutation_wrong_peak_number_unit",
+          "mutation_of": "positive_correct_uncertainty",
+          "report": "이 시범사업은 2026년 5~8월 12개 공공건물을 대상으로, 설치 전·후 각각 4주의 평일 오후 1~5시 계량기 값을 비교했다. 도서관은 피크 전력이 18.4%, 구청 별관은 -11.2 kW였으며 음수는 피크 감소를 뜻한다. 냉방 관련 불만 접수는 각각 1,000 이용시간당 0.7건과 1.1건이었다. 대조군이 없고 결측 제외의 방향도 알 수 없으므로, 연간 절감이나 모든 계절의 효과, 폭염일 효과는 이 자료로 판단할 수 없다.",
+          "expected_disposition": "fail",
+          "expected_failure_ids": [
+            "ko.flip-peak-direction-or-unit"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "real-en-long",
+      "prompt": "Produce a cautious evidence-backed briefing on the pilot's measured outcomes and its unresolved limits.",
+      "language": "en",
+      "source_ref": "tests/fixtures/realistic_inputs.json#cases[id=real-en-long]",
+      "required_facts": [
+        {
+          "id": "en.scope",
+          "expectation": "State that the pilot covered three library branches from 2026-06-01 through 2026-08-15.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "A municipal library pilot tested a queue display in three branches from 2026-06-01 through 2026-08-15."
+            }
+          ]
+        },
+        {
+          "id": "en.match-rate-and-range",
+          "expectation": "State the observed 4,860 included visits, 71% within the displayed band, and the 66% to 75% branch range without turning the rate into an exact-estimate claim.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%."
+            },
+            {
+              "source_id": "S1",
+              "quote": "A 71% match rate is not a claim that every estimate was correct."
+            }
+          ]
+        },
+        {
+          "id": "en.inclusion-boundary",
+          "expectation": "State that appointments, school groups, and ticket-printer-offline days were excluded from the protocol.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "The protocol excluded appointments, school groups, and days when the ticket printer was offline."
+            }
+          ]
+        },
+        {
+          "id": "en.accessibility-observation",
+          "expectation": "State the observed screen-reader result as 15 announcements in 18 volunteer sessions and retain the three observed barrier conditions.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "Reviewers found that the wait band was announced by the screen reader in 15 sessions. In two sessions the volunteer used a browser extension that suppressed the live update, and in one session the display language had been changed without a translated label."
+            }
+          ]
+        }
+      ],
+      "required_qualifiers": [
+        {
+          "id": "en.no-before-comparison",
+          "expectation": "Preserve that the material has no period before the display and no measure of reduced abandonment.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often."
+            }
+          ]
+        },
+        {
+          "id": "en.accessibility-scope",
+          "expectation": "Describe the accessibility result as a small volunteer observation, not a population accessibility rate.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "The review documents those sessions but does not calculate a population error rate."
+            },
+            {
+              "source_id": "S2",
+              "quote": "Their finding is evidence of specific barriers and successful announcements in this small review, not a population accessibility rate."
+            }
+          ]
+        }
+      ],
+      "correct_abstentions": [
+        {
+          "id": "en.no-causal-abandonment-claim",
+          "expectation": "Do not claim that the display reduced abandonment or caused the observed matching rate.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "the absence of a before period prevents a causal comparison with no display."
+            },
+            {
+              "source_id": "S2",
+              "quote": "It follows that the materials cannot support a claim about reduced abandonment."
+            }
+          ]
+        },
+        {
+          "id": "en.no-citywide-authorization",
+          "expectation": "Do not say that a citywide rollout, procurement, vendor, or date has been approved.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "No contract, rollout date, or citywide benefit estimate is approved in the materials."
+            },
+            {
+              "source_id": "S2",
+              "quote": "The final note contains no approval for a citywide rollout or a date on which one will occur."
+            }
+          ]
+        }
+      ],
+      "critical_errors": [
+        {
+          "id": "en.match-rate-means-all-exact",
+          "error": "State or imply that every wait estimate was correct, or that 71% is a universal accuracy rate.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "A 71% match rate is not a claim that every estimate was correct."
+            },
+            {
+              "source_id": "S1",
+              "quote": "It also says that results from these three branches should not be treated as a citywide deployment estimate."
+            }
+          ]
+        },
+        {
+          "id": "en.causal-abandonment-claim",
+          "error": "Claim that the display reduced abandonment or causally improved queue outcomes.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often."
+            }
+          ]
+        },
+        {
+          "id": "en.population-accessibility-claim",
+          "error": "Convert 15 of 18 volunteer sessions into a population accessibility/error rate or claim that the display is inaccessible in every setting.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "The reviewers recommend retaining a staffed alternative and testing translated labels before expansion. They do not conclude that the display is inaccessible in every setting."
+            },
+            {
+              "source_id": "S2",
+              "quote": "The observers did not sample all devices, languages, assistive technologies, or unassisted visitors."
+            }
+          ]
+        },
+        {
+          "id": "en.approved-citywide-rollout",
+          "error": "Say that procurement, vendor selection, a rollout date, or a citywide deployment has been approved.",
+          "evidence": [
+            {
+              "source_id": "S2",
+              "quote": "No contract, rollout date, or citywide benefit estimate is approved in the materials."
+            },
+            {
+              "source_id": "S2",
+              "quote": "The final note contains no approval for a citywide rollout or a date on which one will occur."
+            }
+          ]
+        },
+        {
+          "id": "en.false-absence-of-exclusions",
+          "error": "State that no visits or days were excluded from the pilot matching calculation.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "The protocol excluded appointments, school groups, and days when the ticket printer was offline."
+            }
+          ]
+        }
+      ],
+      "calibration_examples": [
+        {
+          "label": "positive_correct_uncertainty",
+          "report": "The pilot ran in three library branches from 2026-06-01 to 2026-08-15. Among 4,860 included visits, 71% reached a desk within the displayed wait band, with branch results from 66% to 75%; this does not mean every estimate was correct. Appointments, school groups, and printer-offline days were excluded. In 18 volunteer accessibility sessions, the band was announced in 15; two sessions involved an extension that suppressed updates and one had an untranslated label. There is no before-display comparison or abandonment measure, so the materials do not establish causal effects or a population accessibility rate. They also contain no approved citywide procurement or rollout.",
+          "expected_disposition": "pass"
+        },
+        {
+          "label": "mutation_false_absence_of_exclusions",
+          "mutation_of": "positive_correct_uncertainty",
+          "report": "The pilot ran in three library branches from 2026-06-01 to 2026-08-15. Among 4,860 included visits, 71% reached a desk within the displayed wait band, with branch results from 66% to 75%; this does not mean every estimate was correct. No visits or days were excluded. In 18 volunteer accessibility sessions, the band was announced in 15; two sessions involved an extension that suppressed updates and one had an untranslated label. There is no before-display comparison or abandonment measure, so the materials do not establish causal effects or a population accessibility rate. They also contain no approved citywide procurement or rollout.",
+          "expected_disposition": "fail",
+          "expected_failure_ids": [
+            "en.false-absence-of-exclusions"
+          ]
+        },
+        {
+          "label": "mutation_causal_abandonment_claim",
+          "mutation_of": "positive_correct_uncertainty",
+          "report": "The pilot ran in three library branches from 2026-06-01 to 2026-08-15. Among 4,860 included visits, 71% reached a desk within the displayed wait band, with branch results from 66% to 75%; this does not mean every estimate was correct. Appointments, school groups, and printer-offline days were excluded. In 18 volunteer accessibility sessions, the band was announced in 15; two sessions involved an extension that suppressed updates and one had an untranslated label. The results establish that the display reduced abandonment and caused better queue outcomes, although they are not a population accessibility rate. They also contain no approved citywide procurement or rollout.",
+          "expected_disposition": "fail",
+          "expected_failure_ids": [
+            "en.causal-abandonment-claim",
+            "en.no-causal-abandonment-claim"
+          ]
+        }
+      ]
+    }
+  ]
+}

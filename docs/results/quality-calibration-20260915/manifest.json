@@ -1,0 +1,13 @@
+{
+  "sha256": {
+    "analysis.json": "0a95c82ef96883e9ad286987be2e80ef694eb15c5461ca3e34c9ddbf8e9d05df",
+    "calibration-input.json": "98088ea74d5ff3b5e01e0f5ada2c56a6470752ce738a9546e3bf4363bf7f016b",
+    "calibration-key.json": "83cce065a26a75f58ea7108e23818c2117abce307187c70a6c3745975aa3ef8a",
+    "calibration-terra.response.json": "5ef51f361e629def3a7873a21540e314ea99c44e2a1c231daf5b458e406f785e",
+    "evaluator-prompt.txt": "35c46f754d7ca7a0557f3a06db3f801bfb63b6729d6f5b54e44f7ed35c4a9656",
+    "evaluator-schema.json": "5dc0e6a2a4f4a25382516dc83a5edf1ef3652013959ad721e32237de086e2f81",
+    "gold.json": "dfdfc26ddbecef23a6d41e5f01356706d077221853d87d271b9672eeafac630c",
+    "study.json": "e7af1c9070e1bd7e1abba45b3a6c474167861a6859fc24d78ecd20c66275c43e",
+    "verify.py": "54f8fdd303b675b261f1cb4a1ca9ed7e7d0f7f80bfd596af1b4cd7c15d47ea8a"
+  }
+}
