@@ -1,0 +1,3090 @@
+{
+  "schema_version": "blind_atomic_review_v1",
+  "opaque_id": "7910aaa22102ac45f931319e",
+  "question": "Produce a cautious evidence-backed briefing on the pilot's measured outcomes and its unresolved limits.",
+  "lang": "en",
+  "report_sha256": "54e7ad76e2dd01f321f3bfb607ec4d04839c0695ffdd2c137f1180d447706022",
+  "report_character_length": 4902,
+  "source_sha256": {
+    "S1": "0b6c12491f7d4108da62016474cc764884c2eb047239eeefa9aba7a52a4c22b4",
+    "S2": "b28aae936dddc9f205cef05672d697fe1e22aaec9bedbcc49587da7f8af29949"
+  },
+  "reviewer": "Single Astra independent blind source-grounded judgment",
+  "blind_scope": "Only this batch6 question/sources/report packet was read. No identities, model/experiment labels, other answers, ledgers, external web/API/model calls or subagents.",
+  "status_definitions": {
+    "supported": "The source supports the fact or clearly limited inference.",
+    "contradicted": "The source explicitly conflicts with the claim.",
+    "insufficient": "A claim is unestablished, without assuming the opposite is proven.",
+    "unchecked": "Process/provenance outside source-body scope and not externally checked."
+  },
+  "critical_definition": "A materially false or unsupported measured result, population/causal conclusion or deployment authorization. Missing denominator detail without falsely expanding inclusion is noted separately as noncritical incomplete reporting.",
+  "quality_rule": "통과: supported content with required conditions preserved. 실패: critical contradiction/unsupported claim. 미확정: noncritical unsupported provenance or incomplete required-condition reporting. Not an accuracy statistic.",
+  "quality": "미확정",
+  "quality_basis": "Core measurements and causal/accessibility/equity/procurement limits are supported. S2 truncation is unestablished, and review of alleged omissions is unchecked. The report omits the pre-first-desk specialist-transfer matching exclusion while correctly retaining included visits and other exclusions.",
+  "counts": {
+    "factual_atoms": 70,
+    "factual_status_counts": {
+      "supported": 69,
+      "insufficient": 1
+    },
+    "all_entries": 82,
+    "all_status_counts": {
+      "supported": 80,
+      "insufficient": 1,
+      "unchecked": 1
+    },
+    "kind_counts": {
+      "fact": 70,
+      "inference": 7,
+      "judgment": 4,
+      "process_claim": 1
+    },
+    "critical_findings": 0,
+    "required_condition_omissions": 1
+  },
+  "entries": [
+    {
+      "entry_id": "7910aa-001",
+      "unit_id": 1,
+      "catalog_key": "match",
+      "claim_text": "The pilot established that 71% of 4,860 included visits reached a desk within the displayed wait band, with results ranging from 66% to 75% across three branches [S1][S2].",
+      "atomic_claim": "71% of 4,860 included visits reached a desk within the displayed wait band.",
+      "report_start": 128,
+      "report_end": 299,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-002",
+      "unit_id": 1,
+      "catalog_key": "range",
+      "claim_text": "The pilot established that 71% of 4,860 included visits reached a desk within the displayed wait band, with results ranging from 66% to 75% across three branches [S1][S2].",
+      "atomic_claim": "Branch matching ranged from 66% to 75%.",
+      "report_start": 128,
+      "report_end": 299,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-003",
+      "unit_id": 1,
+      "catalog_key": "three",
+      "claim_text": "The pilot established that 71% of 4,860 included visits reached a desk within the displayed wait band, with results ranging from 66% to 75% across three branches [S1][S2].",
+      "atomic_claim": "The pilot covered three branches.",
+      "report_start": 128,
+      "report_end": 299,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "A municipal library pilot tested a queue display in three branches from 2026-06-01 through 2026-08-15.",
+          "source_start": 0,
+          "source_end": 102
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-004",
+      "unit_id": 2,
+      "catalog_key": "nocausal",
+      "claim_text": "It did not establish that the display improved service relative to no display, reduced abandonment, worked equally well for all groups, or would produce similar citywide results [S1][S2].",
+      "atomic_claim": "The pilot does not establish an improvement caused by the display relative to no display.",
+      "report_start": 300,
+      "report_end": 487,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-005",
+      "unit_id": 2,
+      "catalog_key": "noabandon",
+      "claim_text": "It did not establish that the display improved service relative to no display, reduced abandonment, worked equally well for all groups, or would produce similar citywide results [S1][S2].",
+      "atomic_claim": "The materials do not measure/establish a decline in queue abandonment.",
+      "report_start": 300,
+      "report_end": 487,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The report does not say how many visitors left without tickets, whether that count changed over the pilot, or why a particular visitor chose to leave. It follows that the materials cannot support a claim about reduced abandonment.",
+          "source_start": 1994,
+          "source_end": 2224
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-006",
+      "unit_id": 2,
+      "catalog_key": "noequity",
+      "claim_text": "It did not establish that the display improved service relative to no display, reduced abandonment, worked equally well for all groups, or would produce similar citywide results [S1][S2].",
+      "atomic_claim": "The materials cannot establish equal usefulness across visitor groups.",
+      "report_start": 300,
+      "report_end": 487,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The report's appendix lists the protocol and anonymized counts, but not individual visitor demographics. It therefore cannot establish whether the display was equally useful for all visitor groups. It also says that results from these three branches should not be treated as a citywide deployment estimate.",
+          "source_start": 1076,
+          "source_end": 1382
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-007",
+      "unit_id": 2,
+      "catalog_key": "nocityestimate",
+      "claim_text": "It did not establish that the display improved service relative to no display, reduced abandonment, worked equally well for all groups, or would produce similar citywide results [S1][S2].",
+      "atomic_claim": "The three-branch result does not establish similar citywide outcomes.",
+      "report_start": 300,
+      "report_end": 487,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The report's appendix lists the protocol and anonymized counts, but not individual visitor demographics. It therefore cannot establish whether the display was equally useful for all visitor groups. It also says that results from these three branches should not be treated as a citywide deployment estimate.",
+          "source_start": 1076,
+          "source_end": 1382
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-008",
+      "unit_id": 3,
+      "catalog_key": "jfurther",
+      "claim_text": "The evidence supports further controlled and accessibility testing, but not citywide procurement or deployment at this stage [S1][S2]. (judgment)",
+      "atomic_claim": "Do further controlled/accessibility testing before citywide procurement or deployment.",
+      "report_start": 488,
+      "report_end": 633,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The pilot steering note proposes a limited follow-up with translated labels, a retained staffed alternative, and a pre-specified record of ticket-printer outages. It leaves the number of branches, outcome threshold, budget source, and deployment decision open.",
+          "source_start": 5910,
+          "source_end": 6170
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-009",
+      "unit_id": 6,
+      "catalog_key": "match",
+      "claim_text": "| Wait-band matching | 71% overall; branch range 66%–75% [S1][S2] | Included visits only; the supplied excerpts do not establish why branch match rates differed. |",
+      "atomic_claim": "71% of 4,860 included visits reached a desk within the displayed wait band.",
+      "report_start": 727,
+      "report_end": 890,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. The table abbreviates the 4,860 denominator, which the opening and Evidence supply.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-010",
+      "unit_id": 6,
+      "catalog_key": "range",
+      "claim_text": "| Wait-band matching | 71% overall; branch range 66%–75% [S1][S2] | Included visits only; the supplied excerpts do not establish why branch match rates differed. |",
+      "atomic_claim": "Branch matching ranged from 66% to 75%.",
+      "report_start": 727,
+      "report_end": 890,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-011",
+      "unit_id": 6,
+      "catalog_key": "unknownbranchcause",
+      "claim_text": "| Wait-band matching | 71% overall; branch range 66%–75% [S1][S2] | Included visits only; the supplied excerpts do not establish why branch match rates differed. |",
+      "atomic_claim": "The materials do not establish why branch match rates differed.",
+      "report_start": 727,
+      "report_end": 890,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Their 66% to 75% range is reported without adjustment for hour, service type, or staff roster. The appendix provides weekly totals rather than visitor-level characteristics. A higher matching percentage at one branch is therefore an observed local result, not evidence that its display configuration caused better performance.",
+          "source_start": 2403,
+          "source_end": 2729
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action. Source descriptions of operating differences do not quantify or establish their causal contributions; this negative causal statement is supported.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-012",
+      "unit_id": 7,
+      "catalog_key": "corrections",
+      "claim_text": "| Operational stability | 58 staff-recorded corrections [S1][S2] | Correction labels were not independently audited [S2] |",
+      "atomic_claim": "Staff recorded 58 display corrections.",
+      "report_start": 891,
+      "report_end": 1013,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. Operational stability is a table category for the correction count, not proof of software reliability, a failure rate or wrong visitor service. Category totals 21 + 17 + 12 + 8 = 58.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-013",
+      "unit_id": 7,
+      "catalog_key": "noaudit",
+      "claim_text": "| Operational stability | 58 staff-recorded corrections [S1][S2] | Correction labels were not independently audited [S2] |",
+      "atomic_claim": "The correction classifications were not independently audited.",
+      "report_start": 891,
+      "report_end": 1013,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-014",
+      "unit_id": 8,
+      "catalog_key": "accessresult",
+      "claim_text": "| Accessibility | 15 of 18 volunteer sessions announced the band [S2] | Small simulated review; population performance across devices, languages, and assistive technologies is unknown [S2] |",
+      "atomic_claim": "15 of 18 volunteer sessions announced the band via the configured screen reader.",
+      "report_start": 1014,
+      "report_end": 1204,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "A separate accessibility review observed 18 volunteer sessions during July. Reviewers found that the wait band was announced by the screen reader in 15 sessions.",
+          "source_start": 0,
+          "source_end": 161
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-015",
+      "unit_id": 8,
+      "catalog_key": "simulated",
+      "claim_text": "| Accessibility | 15 of 18 volunteer sessions announced the band [S2] | Small simulated review; population performance across devices, languages, and assistive technologies is unknown [S2] |",
+      "atomic_claim": "The accessibility sessions were simulated arrivals.",
+      "report_start": 1014,
+      "report_end": 1204,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-016",
+      "unit_id": 8,
+      "catalog_key": "nopopulation",
+      "claim_text": "| Accessibility | 15 of 18 volunteer sessions announced the band [S2] | Small simulated review; population performance across devices, languages, and assistive technologies is unknown [S2] |",
+      "atomic_claim": "These volunteer observations do not establish population performance across devices/languages/assistive technologies.",
+      "report_start": 1014,
+      "report_end": 1204,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The observers did not sample all devices, languages, assistive technologies, or unassisted visitors. Their finding is evidence of specific barriers and successful announcements in this small review, not a population accessibility rate.",
+          "source_start": 3889,
+          "source_end": 4124
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-017",
+      "unit_id": 9,
+      "catalog_key": "nocausal",
+      "claim_text": "| Causal benefit | Unknown [S1][S2] | No before-period comparison, randomization, or alternative-display comparison [S1][S2] |",
+      "atomic_claim": "The pilot does not establish an improvement caused by the display relative to no display.",
+      "report_start": 1205,
+      "report_end": 1331,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-018",
+      "unit_id": 9,
+      "catalog_key": "nobefore",
+      "claim_text": "| Causal benefit | Unknown [S1][S2] | No before-period comparison, randomization, or alternative-display comparison [S1][S2] |",
+      "atomic_claim": "The materials contain no pre-display period comparison.",
+      "report_start": 1205,
+      "report_end": 1331,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-019",
+      "unit_id": 9,
+      "catalog_key": "norandom",
+      "claim_text": "| Causal benefit | Unknown [S1][S2] | No before-period comparison, randomization, or alternative-display comparison [S1][S2] |",
+      "atomic_claim": "The protocol did not randomize visitors.",
+      "report_start": 1205,
+      "report_end": 1331,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-020",
+      "unit_id": 9,
+      "catalog_key": "noalternativecompare",
+      "claim_text": "| Causal benefit | Unknown [S1][S2] | No before-period comparison, randomization, or alternative-display comparison [S1][S2] |",
+      "atomic_claim": "The protocol did not compare alternative displays.",
+      "report_start": 1205,
+      "report_end": 1331,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-021",
+      "unit_id": 10,
+      "catalog_key": "nocityapproval",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "The materials do not authorize/approve citywide deployment or procurement.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-022",
+      "unit_id": 10,
+      "catalog_key": "budgetopen",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "The budget source/approved citywide budget remains open.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The pilot steering note proposes a limited follow-up with translated labels, a retained staffed alternative, and a pre-specified record of ticket-printer outages. It leaves the number of branches, outcome threshold, budget source, and deployment decision open.",
+          "source_start": 5910,
+          "source_end": 6170
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-023",
+      "unit_id": 10,
+      "catalog_key": "novendor",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "There is no signed vendor selection.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-024",
+      "unit_id": 10,
+      "catalog_key": "nopurchase",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "There is no purchase order.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-025",
+      "unit_id": 10,
+      "catalog_key": "norolloutdate",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "There is no approved rollout calendar/date.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-026",
+      "unit_id": 10,
+      "catalog_key": "nobenefit",
+      "claim_text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+      "atomic_claim": "There is no approved/projected citywide benefit calculation.",
+      "report_start": 1332,
+      "report_end": 1492,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "No contract, rollout date, or citywide benefit estimate is approved in the materials. The pilot results can inform a decision but do not themselves authorize deployment.",
+          "source_start": 881,
+          "source_end": 1050
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-027",
+      "unit_id": 11,
+      "catalog_key": "scope",
+      "claim_text": "The pilot ran from 2026-06-01 through 2026-08-15 in three municipal library branches [S1].",
+      "atomic_claim": "The pilot ran in three municipal library branches from 2026-06-01 through 2026-08-15.",
+      "report_start": 1507,
+      "report_end": 1597,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "A municipal library pilot tested a queue display in three branches from 2026-06-01 through 2026-08-15.",
+          "source_start": 0,
+          "source_end": 102
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-028",
+      "unit_id": 12,
+      "catalog_key": "appointments",
+      "claim_text": "Its 4,860 included visits excluded appointments, school groups, and days when the ticket printer was offline [S1][S2].",
+      "atomic_claim": "Appointments were excluded from the included-visit matching calculation.",
+      "report_start": 1598,
+      "report_end": 1716,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The protocol excluded appointments, school groups, and days when the ticket printer was offline.",
+          "source_start": 272,
+          "source_end": 368
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-029",
+      "unit_id": 12,
+      "catalog_key": "school",
+      "claim_text": "Its 4,860 included visits excluded appointments, school groups, and days when the ticket printer was offline [S1][S2].",
+      "atomic_claim": "School groups were excluded from the included-visit matching calculation.",
+      "report_start": 1598,
+      "report_end": 1716,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The protocol excluded appointments, school groups, and days when the ticket printer was offline.",
+          "source_start": 272,
+          "source_end": 368
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-030",
+      "unit_id": 12,
+      "catalog_key": "printer",
+      "claim_text": "Its 4,860 included visits excluded appointments, school groups, and days when the ticket printer was offline [S1][S2].",
+      "atomic_claim": "Ticket-printer-offline days were excluded from the calculation.",
+      "report_start": 1598,
+      "report_end": 1716,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The protocol excluded appointments, school groups, and days when the ticket printer was offline.",
+          "source_start": 272,
+          "source_end": 368
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-031",
+      "unit_id": 13,
+      "catalog_key": "match",
+      "claim_text": "Across those visits, 71% reached a desk within the displayed wait band, and the reported branch range was 66% to 75% [S1][S2].",
+      "atomic_claim": "71% of 4,860 included visits reached a desk within the displayed wait band.",
+      "report_start": 1718,
+      "report_end": 1844,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-032",
+      "unit_id": 13,
+      "catalog_key": "range",
+      "claim_text": "Across those visits, 71% reached a desk within the displayed wait band, and the reported branch range was 66% to 75% [S1][S2].",
+      "atomic_claim": "Branch matching ranged from 66% to 75%.",
+      "report_start": 1718,
+      "report_end": 1844,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-033",
+      "unit_id": 14,
+      "catalog_key": "band",
+      "claim_text": "The display communicated a band rather than an exact wait in minutes [S1].",
+      "atomic_claim": "The display gave wait bands rather than exact-minute waits.",
+      "report_start": 1845,
+      "report_end": 1919,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The display showed an estimated wait band rather than an exact minute. Branch staff recorded the band selected at check-in and the time when the visitor reached a desk.",
+          "source_start": 103,
+          "source_end": 271
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-034",
+      "unit_id": 15,
+      "catalog_key": "metric",
+      "claim_text": "The 71% result describes agreement between the displayed band and recorded desk time, not universal accuracy or improvement caused by the display [S1][S2].",
+      "atomic_claim": "The matching result compares displayed bands with recorded desk time.",
+      "report_start": 1921,
+      "report_end": 2076,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The display showed an estimated wait band rather than an exact minute. Branch staff recorded the band selected at check-in and the time when the visitor reached a desk.",
+          "source_start": 103,
+          "source_end": 271
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-035",
+      "unit_id": 15,
+      "catalog_key": "notall",
+      "claim_text": "The 71% result describes agreement between the displayed band and recorded desk time, not universal accuracy or improvement caused by the display [S1][S2].",
+      "atomic_claim": "71% agreement is not universal correctness of all estimates.",
+      "report_start": 1921,
+      "report_end": 2076,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-036",
+      "unit_id": 15,
+      "catalog_key": "nocausal",
+      "claim_text": "The 71% result describes agreement between the displayed band and recorded desk time, not universal accuracy or improvement caused by the display [S1][S2].",
+      "atomic_claim": "The pilot does not establish an improvement caused by the display relative to no display.",
+      "report_start": 1921,
+      "report_end": 2076,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-037",
+      "unit_id": 16,
+      "catalog_key": "nocausalconfig",
+      "claim_text": "Differences among branch configurations likewise cannot be interpreted causally because the results were unadjusted and no causal experiment was conducted [S1][S2].",
+      "atomic_claim": "Branch matching differences do not establish causal superiority of a display configuration.",
+      "report_start": 2077,
+      "report_end": 2241,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Their 66% to 75% range is reported without adjustment for hour, service type, or staff roster. The appendix provides weekly totals rather than visitor-level characteristics. A higher matching percentage at one branch is therefore an observed local result, not evidence that its display configuration caused better performance.",
+          "source_start": 2403,
+          "source_end": 2729
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-038",
+      "unit_id": 16,
+      "catalog_key": "unadjusted",
+      "claim_text": "Differences among branch configurations likewise cannot be interpreted causally because the results were unadjusted and no causal experiment was conducted [S1][S2].",
+      "atomic_claim": "Branch results were not adjusted for hour, service type or staff roster.",
+      "report_start": 2077,
+      "report_end": 2241,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Their 66% to 75% range is reported without adjustment for hour, service type, or staff roster. The appendix provides weekly totals rather than visitor-level characteristics. A higher matching percentage at one branch is therefore an observed local result, not evidence that its display configuration caused better performance.",
+          "source_start": 2403,
+          "source_end": 2729
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-039",
+      "unit_id": 16,
+      "catalog_key": "norandom",
+      "claim_text": "Differences among branch configurations likewise cannot be interpreted causally because the results were unadjusted and no causal experiment was conducted [S1][S2].",
+      "atomic_claim": "The protocol did not randomize visitors.",
+      "report_start": 2077,
+      "report_end": 2241,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-040",
+      "unit_id": 16,
+      "catalog_key": "noalternativecompare",
+      "claim_text": "Differences among branch configurations likewise cannot be interpreted causally because the results were unadjusted and no causal experiment was conducted [S1][S2].",
+      "atomic_claim": "The protocol did not compare alternative displays.",
+      "report_start": 2077,
+      "report_end": 2241,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-041",
+      "unit_id": 17,
+      "catalog_key": "corrections",
+      "claim_text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+      "atomic_claim": "Staff recorded 58 display corrections.",
+      "report_start": 2243,
+      "report_end": 2427,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. Operational stability is a table category for the correction count, not proof of software reliability, a failure rate or wrong visitor service. Category totals 21 + 17 + 12 + 8 = 58.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-042",
+      "unit_id": 17,
+      "catalog_key": "sick21",
+      "claim_text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+      "atomic_claim": "21 corrections followed a sick call.",
+      "report_start": 2243,
+      "report_end": 2427,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. These are post-correction staff labels, not independently established causes.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-043",
+      "unit_id": 17,
+      "catalog_key": "late17",
+      "claim_text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+      "atomic_claim": "17 corrections followed a late-opening program.",
+      "report_start": 2243,
+      "report_end": 2427,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. These are post-correction staff labels, not independently established causes.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-044",
+      "unit_id": 17,
+      "catalog_key": "restart12",
+      "claim_text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+      "atomic_claim": "12 corrections followed a ticket-printer restart.",
+      "report_start": 2243,
+      "report_end": 2427,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. These are post-correction staff labels, not independently established causes.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-045",
+      "unit_id": 17,
+      "catalog_key": "free8",
+      "claim_text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+      "atomic_claim": "8 corrections had a short free-text description only.",
+      "report_start": 2243,
+      "report_end": 2427,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope. These are post-correction staff labels, not independently established causes.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-046",
+      "unit_id": 18,
+      "catalog_key": "stafflabels",
+      "claim_text": "These staff-entered classifications were not independently audited [S2].",
+      "atomic_claim": "Staff entered the correction classifications.",
+      "report_start": 2428,
+      "report_end": 2500,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-047",
+      "unit_id": 18,
+      "catalog_key": "noaudit",
+      "claim_text": "These staff-entered classifications were not independently audited [S2].",
+      "atomic_claim": "The correction classifications were not independently audited.",
+      "report_start": 2428,
+      "report_end": 2500,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-048",
+      "unit_id": 19,
+      "catalog_key": "accessresult",
+      "claim_text": "An accessibility review of 18 volunteer sessions found that 15 announced the band through the configured screen reader [S2].",
+      "atomic_claim": "15 of 18 volunteer sessions announced the band via the configured screen reader.",
+      "report_start": 2502,
+      "report_end": 2626,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "A separate accessibility review observed 18 volunteer sessions during July. Reviewers found that the wait band was announced by the screen reader in 15 sessions.",
+          "source_start": 0,
+          "source_end": 161
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-049",
+      "unit_id": 20,
+      "catalog_key": "extension2",
+      "claim_text": "Two sessions involved browser-extension conditions, and one involved a changed display language without a translated label [S2].",
+      "atomic_claim": "Two sessions involved browser-extension conditions.",
+      "report_start": 2627,
+      "report_end": 2755,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "In two sessions the volunteer used a browser extension that suppressed the live update, and in one session the display language had been changed without a translated label. The review documents those sessions but does not calculate a population error rate.",
+          "source_start": 162,
+          "source_end": 418
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-050",
+      "unit_id": 20,
+      "catalog_key": "language1",
+      "claim_text": "Two sessions involved browser-extension conditions, and one involved a changed display language without a translated label [S2].",
+      "atomic_claim": "One session involved a changed display language without a translated label.",
+      "report_start": 2627,
+      "report_end": 2755,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "In two sessions the volunteer used a browser extension that suppressed the live update, and in one session the display language had been changed without a translated label. The review documents those sessions but does not calculate a population error rate.",
+          "source_start": 162,
+          "source_end": 418
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-051",
+      "unit_id": 21,
+      "catalog_key": "nobefore",
+      "claim_text": "The materials contain no pre-display comparison, visitor randomization, comparison of alternative displays, or estimate of staffing-demand effects [S1][S2].",
+      "atomic_claim": "The materials contain no pre-display period comparison.",
+      "report_start": 2757,
+      "report_end": 2913,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-052",
+      "unit_id": 21,
+      "catalog_key": "norandom",
+      "claim_text": "The materials contain no pre-display comparison, visitor randomization, comparison of alternative displays, or estimate of staffing-demand effects [S1][S2].",
+      "atomic_claim": "The protocol did not randomize visitors.",
+      "report_start": 2757,
+      "report_end": 2913,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-053",
+      "unit_id": 21,
+      "catalog_key": "noalternativecompare",
+      "claim_text": "The materials contain no pre-display comparison, visitor randomization, comparison of alternative displays, or estimate of staffing-demand effects [S1][S2].",
+      "atomic_claim": "The protocol did not compare alternative displays.",
+      "report_start": 2757,
+      "report_end": 2913,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-054",
+      "unit_id": 21,
+      "catalog_key": "nostaffing",
+      "claim_text": "The materials contain no pre-display comparison, visitor randomization, comparison of alternative displays, or estimate of staffing-demand effects [S1][S2].",
+      "atomic_claim": "The protocol did not estimate staffing-demand effects.",
+      "report_start": 2757,
+      "report_end": 2913,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-055",
+      "unit_id": 22,
+      "catalog_key": "noabandon",
+      "claim_text": "They also do not establish that queue abandonment declined [S1][S2].",
+      "atomic_claim": "The materials do not measure/establish a decline in queue abandonment.",
+      "report_start": 2914,
+      "report_end": 2982,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The report does not say how many visitors left without tickets, whether that count changed over the pilot, or why a particular visitor chose to leave. It follows that the materials cannot support a claim about reduced abandonment.",
+          "source_start": 1994,
+          "source_end": 2224
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-056",
+      "unit_id": 23,
+      "catalog_key": "anonymouscounts",
+      "claim_text": "The appendix provides anonymized counts but not individual visitor demographics [S1].",
+      "atomic_claim": "The appendix provides anonymized counts.",
+      "report_start": 2984,
+      "report_end": 3069,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The report's appendix lists the protocol and anonymized counts, but not individual visitor demographics. It therefore cannot establish whether the display was equally useful for all visitor groups. It also says that results from these three branches should not be treated as a citywide deployment estimate.",
+          "source_start": 1076,
+          "source_end": 1382
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-057",
+      "unit_id": 23,
+      "catalog_key": "nodemographics",
+      "claim_text": "The appendix provides anonymized counts but not individual visitor demographics [S1].",
+      "atomic_claim": "The appendix does not provide individual visitor demographics.",
+      "report_start": 2984,
+      "report_end": 3069,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The report's appendix lists the protocol and anonymized counts, but not individual visitor demographics. It therefore cannot establish whether the display was equally useful for all visitor groups. It also says that results from these three branches should not be treated as a citywide deployment estimate.",
+          "source_start": 1076,
+          "source_end": 1382
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-058",
+      "unit_id": 24,
+      "catalog_key": "noequity",
+      "claim_text": "Consequently, the evidence cannot establish equal usefulness across visitor groups [S1][S2].",
+      "atomic_claim": "The materials cannot establish equal usefulness across visitor groups.",
+      "report_start": 3070,
+      "report_end": 3162,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The report's appendix lists the protocol and anonymized counts, but not individual visitor demographics. It therefore cannot establish whether the display was equally useful for all visitor groups. It also says that results from these three branches should not be treated as a citywide deployment estimate.",
+          "source_start": 1076,
+          "source_end": 1382
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-059",
+      "unit_id": 25,
+      "catalog_key": "budgetdecision",
+      "claim_text": "Citywide replacement would require a separate budget decision [S2].",
+      "atomic_claim": "Citywide replacement needs a separate budget decision.",
+      "report_start": 3164,
+      "report_end": 3231,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-060",
+      "unit_id": 26,
+      "catalog_key": "nocontract",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "No contract is approved in the materials.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "No contract, rollout date, or citywide benefit estimate is approved in the materials. The pilot results can inform a decision but do not themselves authorize deployment.",
+          "source_start": 881,
+          "source_end": 1050
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-061",
+      "unit_id": 26,
+      "catalog_key": "novendor",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "There is no signed vendor selection.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-062",
+      "unit_id": 26,
+      "catalog_key": "nopurchase",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "There is no purchase order.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-063",
+      "unit_id": 26,
+      "catalog_key": "norolloutdate",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "There is no approved rollout calendar/date.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-064",
+      "unit_id": 26,
+      "catalog_key": "nobenefit",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "There is no approved/projected citywide benefit calculation.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "No contract, rollout date, or citywide benefit estimate is approved in the materials. The pilot results can inform a decision but do not themselves authorize deployment.",
+          "source_start": 881,
+          "source_end": 1050
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-065",
+      "unit_id": 26,
+      "catalog_key": "nocityapproval",
+      "claim_text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+      "atomic_claim": "The materials do not authorize/approve citywide deployment or procurement.",
+      "report_start": 3232,
+      "report_end": 3395,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-066",
+      "unit_id": 27,
+      "catalog_key": "inform",
+      "claim_text": "The pilot can inform later deliberation, but its match rate neither predicts citywide savings nor authorizes procurement [S1][S2].",
+      "atomic_claim": "The pilot may inform later deliberation without authorizing procurement.",
+      "report_start": 3397,
+      "report_end": 3527,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-067",
+      "unit_id": 27,
+      "catalog_key": "nosavings",
+      "claim_text": "The pilot can inform later deliberation, but its match rate neither predicts citywide savings nor authorizes procurement [S1][S2].",
+      "atomic_claim": "The measured match rate does not predict citywide savings.",
+      "report_start": 3397,
+      "report_end": 3527,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-068",
+      "unit_id": 27,
+      "catalog_key": "nocityapproval",
+      "claim_text": "The pilot can inform later deliberation, but its match rate neither predicts citywide savings nor authorizes procurement [S1][S2].",
+      "atomic_claim": "The materials do not authorize/approve citywide deployment or procurement.",
+      "report_start": 3397,
+      "report_end": 3527,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-069",
+      "unit_id": 28,
+      "catalog_key": "norolloutdate",
+      "claim_text": "The supplied materials do not approve a rollout date or citywide deployment [S2].",
+      "atomic_claim": "There is no approved rollout calendar/date.",
+      "report_start": 3528,
+      "report_end": 3609,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-070",
+      "unit_id": 28,
+      "catalog_key": "nocityapproval",
+      "claim_text": "The supplied materials do not approve a rollout date or citywide deployment [S2].",
+      "atomic_claim": "The materials do not authorize/approve citywide deployment or procurement.",
+      "report_start": 3528,
+      "report_end": 3609,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-071",
+      "unit_id": 29,
+      "catalog_key": "noconflict",
+      "claim_text": "No source in the supplied record directly contradicts the reported pilot measurements [S1][S2].",
+      "atomic_claim": "The source bodies do not directly conflict with the reported pilot measurements.",
+      "report_start": 3643,
+      "report_end": 3738,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Across 4,860 included visits, 71% reached a desk within the displayed band. The report gives a branch range of 66% to 75%.",
+          "source_start": 370,
+          "source_end": 492
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Of the 58 corrections, 21 followed a sick call, 17 followed a late-opening program, 12 followed a ticket-printer restart, and 8 had a short free-text description only. These labels were entered by staff after the correction and were not independently audited.",
+          "source_start": 2854,
+          "source_end": 3113
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A separate accessibility review observed 18 volunteer sessions during July. Reviewers found that the wait band was announced by the screen reader in 15 sessions.",
+          "source_start": 0,
+          "source_end": 161
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-072",
+      "unit_id": 30,
+      "catalog_key": "truncated",
+      "claim_text": "However, S2 is truncated, so omitted portions could not be reviewed here [S2].",
+      "atomic_claim": "S2 is truncated.",
+      "report_start": 3739,
+      "report_end": 3817,
+      "kind": "fact",
+      "status": "insufficient",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "source_body_does_not_establish_extension",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The meeting chair changed the wording to say that the evidence informs a decision and needs additional testing. The final note contains no approval for a citywide rollout or a date on which one will occur.",
+          "source_start": 6267,
+          "source_end": 6472
+        }
+      ],
+      "reason": "The supplied source includes Appendices A–I and a closing decision note but no truncation indication. The claim is not grounded in the provided body. This does not establish that an unavailable original is complete; no contrary provenance is invented.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-073",
+      "unit_id": 30,
+      "catalog_key": "notreviewedomitted",
+      "claim_text": "However, S2 is truncated, so omitted portions could not be reviewed here [S2].",
+      "atomic_claim": "Omitted portions of S2 could not be reviewed here.",
+      "report_start": 3739,
+      "report_end": 3817,
+      "kind": "process_claim",
+      "status": "unchecked",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "not_verifiable_from_source_body",
+      "evidence": [],
+      "reason": "No omitted original portions or author review history are provided. The truncation premise is unestablished, and outside records were not read.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-074",
+      "unit_id": 31,
+      "catalog_key": "simulated",
+      "claim_text": "The accessibility sessions were simulated, reviewer-observed, and recruited through a local advisory group rather than designed as representative population testing [S2].",
+      "atomic_claim": "The accessibility sessions were simulated arrivals.",
+      "report_start": 3818,
+      "report_end": 3988,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-075",
+      "unit_id": 31,
+      "catalog_key": "reviewer",
+      "claim_text": "The accessibility sessions were simulated, reviewer-observed, and recruited through a local advisory group rather than designed as representative population testing [S2].",
+      "atomic_claim": "A reviewer was present for the volunteer sessions.",
+      "report_start": 3818,
+      "report_end": 3988,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-076",
+      "unit_id": 31,
+      "catalog_key": "advisory",
+      "claim_text": "The accessibility sessions were simulated, reviewer-observed, and recruited through a local advisory group rather than designed as representative population testing [S2].",
+      "atomic_claim": "Volunteers were recruited through a local advisory group.",
+      "report_start": 3818,
+      "report_end": 3988,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The accessibility review used 18 volunteer sessions recruited through a local advisory group. Each volunteer performed one simulated arrival with a reviewer present. Fifteen sessions announced the band through the configured screen reader.",
+          "source_start": 3481,
+          "source_end": 3720
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-077",
+      "unit_id": 31,
+      "catalog_key": "nopopulation",
+      "claim_text": "The accessibility sessions were simulated, reviewer-observed, and recruited through a local advisory group rather than designed as representative population testing [S2].",
+      "atomic_claim": "These volunteer observations do not establish population performance across devices/languages/assistive technologies.",
+      "report_start": 3818,
+      "report_end": 3988,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The observers did not sample all devices, languages, assistive technologies, or unassisted visitors. Their finding is evidence of specific barriers and successful announcements in this small review, not a population accessibility rate.",
+          "source_start": 3889,
+          "source_end": 4124
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-078",
+      "unit_id": 32,
+      "catalog_key": "noabandon",
+      "claim_text": "The supplied excerpts do not measure whether visitors abandoned the queue less often [S1].",
+      "atomic_claim": "The materials do not measure/establish a decline in queue abandonment.",
+      "report_start": 3989,
+      "report_end": 4079,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The report does not say how many visitors left without tickets, whether that count changed over the pilot, or why a particular visitor chose to leave. It follows that the materials cannot support a claim about reduced abandonment.",
+          "source_start": 1994,
+          "source_end": 2224
+        }
+      ],
+      "reason": "The source supports the stated observation, quantity, unit, denominator, condition, timing and negative scope.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-079",
+      "unit_id": 33,
+      "catalog_key": "limitations",
+      "claim_text": "These omissions limit causal, equity, accessibility, and economic conclusions without negating the observed match rate [S1][S2].",
+      "atomic_claim": "The recorded omissions restrict causal/equity/accessibility/economic interpretation without erasing observed matching.",
+      "report_start": 4080,
+      "report_end": 4208,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The absence of demographic information prevents an equality claim across visitor groups, while the absence of a before period prevents a causal comparison with no display. These limits are recorded alongside the observed 71% match rate; they do not erase the observation, but they restrict what the observation can establish.",
+          "source_start": 5552,
+          "source_end": 5877
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The observers did not sample all devices, languages, assistive technologies, or unassisted visitors. Their finding is evidence of specific barriers and successful announcements in this small review, not a population accessibility rate.",
+          "source_start": 3889,
+          "source_end": 4124
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-080",
+      "unit_id": 34,
+      "catalog_key": "jfollowup",
+      "claim_text": "1. Run a pre-specified follow-up that includes a comparison condition and measures abandonment, staffing demand, and visitor understanding [S1][S2]. (judgment)",
+      "atomic_claim": "Run a prespecified comparison follow-up measuring abandonment, staffing demand and visitor understanding.",
+      "report_start": 4227,
+      "report_end": 4386,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The pilot steering note proposes a limited follow-up with translated labels, a retained staffed alternative, and a pre-specified record of ticket-printer outages. It leaves the number of branches, outcome threshold, budget source, and deployment decision open.",
+          "source_start": 5910,
+          "source_end": 6170
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "It does not compare these visits with a period before the display existed, and it does not measure whether visitors abandoned the queue less often. A 71% match rate is not a claim that every estimate was correct.",
+          "source_start": 493,
+          "source_end": 705
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The protocol was intended to document the pilot's own display behavior. It did not randomize visitors, compare alternative displays, or estimate an effect on staffing demand.",
+          "source_start": 1468,
+          "source_end": 1642
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The records also do not show whether visitors understood the band before joining the queue.",
+          "source_start": 2730,
+          "source_end": 2821
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-081",
+      "unit_id": 35,
+      "catalog_key": "jaccess",
+      "claim_text": "2. Test translated labels across representative devices, languages, browser settings, and assistive technologies while retaining a staffed alternative during evaluation [S2]. (judgment)",
+      "atomic_claim": "Test translated labels across more representative device/language/browser/assistive setups while retaining a staffed alternative.",
+      "report_start": 4387,
+      "report_end": 4572,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The reviewers recommend retaining a staffed alternative and testing translated labels before expansion. They do not conclude that the display is inaccessible in every setting. The recommendation follows observed barriers and is scoped to the tested interface and volunteer setup.",
+          "source_start": 420,
+          "source_end": 699
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The observers did not sample all devices, languages, assistive technologies, or unassisted visitors. Their finding is evidence of specific barriers and successful announcements in this small review, not a population accessibility rate.",
+          "source_start": 3889,
+          "source_end": 4124
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The pilot steering note proposes a limited follow-up with translated labels, a retained staffed alternative, and a pre-specified record of ticket-printer outages. It leaves the number of branches, outcome threshold, budget source, and deployment decision open.",
+          "source_start": 5910,
+          "source_end": 6170
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    },
+    {
+      "entry_id": "7910aa-082",
+      "unit_id": 36,
+      "catalog_key": "jprocurement",
+      "claim_text": "3. Define an outcome threshold and require accessibility, operations, budget, and projected-benefit reviews before any procurement decision [S2]. (judgment)",
+      "atomic_claim": "Define an outcome threshold and require accessibility/operations/budget/projected-benefit review before procurement.",
+      "report_start": 4573,
+      "report_end": 4729,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The pilot steering note proposes a limited follow-up with translated labels, a retained staffed alternative, and a pre-specified record of ticket-printer outages. It leaves the number of branches, outcome threshold, budget source, and deployment decision open.",
+          "source_start": 5910,
+          "source_end": 6170
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "It says a citywide replacement would need a separate budget decision after accessibility and operations review. None of the listed prices is a contract award, and the file contains no signed vendor selection, purchase order, rollout calendar, or projected benefit calculation. The pilot's measured match rate may be relevant to later deliberation, but it neither authorizes procurement nor predicts citywide savings.",
+          "source_start": 4867,
+          "source_end": 5283
+        }
+      ],
+      "reason": "A bounded inference or recommendation grounded in the cited limitations, not proof of an effect or completed action.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for atomic propositions."
+    }
+  ],
+  "question_requirements": [
+    {
+      "requirement": "Pilot scope/date and band metric",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-027",
+        "7910aa-033",
+        "7910aa-034"
+      ]
+    },
+    {
+      "requirement": "71% / 4,860 and 66%–75% branch range",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-001",
+        "7910aa-002",
+        "7910aa-009",
+        "7910aa-010",
+        "7910aa-031",
+        "7910aa-032"
+      ]
+    },
+    {
+      "requirement": "Appointments/school/printer exclusions",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-028",
+        "7910aa-029",
+        "7910aa-030"
+      ]
+    },
+    {
+      "requirement": "Pre-first-desk specialist-transfer exclusion",
+      "covered": false,
+      "entry_ids": []
+    },
+    {
+      "requirement": "58 corrections and 21/17/12/8 label limitations",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-012",
+        "7910aa-013",
+        "7910aa-041",
+        "7910aa-042",
+        "7910aa-043",
+        "7910aa-044",
+        "7910aa-045",
+        "7910aa-047"
+      ]
+    },
+    {
+      "requirement": "18/15 accessibility observation and two extension/one language conditions",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-014",
+        "7910aa-048",
+        "7910aa-049",
+        "7910aa-050"
+      ]
+    },
+    {
+      "requirement": "Simulated/reviewer/advisory sample and no population rate",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-015",
+        "7910aa-016",
+        "7910aa-074",
+        "7910aa-075",
+        "7910aa-076",
+        "7910aa-077"
+      ]
+    },
+    {
+      "requirement": "No causal/abandonment/equity/citywide result inference",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-004",
+        "7910aa-005",
+        "7910aa-006",
+        "7910aa-007",
+        "7910aa-017",
+        "7910aa-036",
+        "7910aa-055",
+        "7910aa-058",
+        "7910aa-078"
+      ]
+    },
+    {
+      "requirement": "Budget/procurement/deployment authorization boundary",
+      "covered": true,
+      "entry_ids": [
+        "7910aa-021",
+        "7910aa-023",
+        "7910aa-024",
+        "7910aa-025",
+        "7910aa-026",
+        "7910aa-059",
+        "7910aa-060",
+        "7910aa-061",
+        "7910aa-062",
+        "7910aa-063",
+        "7910aa-064",
+        "7910aa-065",
+        "7910aa-068",
+        "7910aa-069",
+        "7910aa-070"
+      ]
+    }
+  ],
+  "missing_questions_or_required_conditions": [
+    "Pre-first-desk specialist-transfer exclusion"
+  ],
+  "omission_details": [
+    {
+      "requirement": "Pre-first-desk specialist-transfer exclusion",
+      "kind": "missing_condition",
+      "critical": false,
+      "reason": "The reported denominator is included visits and the report enumerates appointments, school groups and printer-offline days, but omits the additional matching exclusion for specialist-desk transfers before first interaction. This is incomplete denominator documentation, not a claim that those visits were included or an incorrect 4,860 value.",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "A ticket transferred to a specialist desk retained its original band but was excluded from the matching calculation if the transfer happened before the first desk interaction.",
+          "source_start": 1292,
+          "source_end": 1467
+        }
+      ],
+      "relevant_report_spans": [
+        {
+          "start": 1598,
+          "end": 1716,
+          "text": "Its 4,860 included visits excluded appointments, school groups, and days when the ticket printer was offline [S1][S2]."
+        }
+      ]
+    }
+  ],
+  "optional_details_not_required_by_question": [
+    "The accessibility observation being in July is not repeated, but the pilot date range and 18-session scope are supplied.",
+    "The browser extension suppression mechanism and early two-week/two-branch correction cluster are shortened/omitted; exact 2/1 barrier counts and staff-label limitations remain.",
+    "These optional details are distinct from the matching-denominator exclusion recorded above."
+  ],
+  "coverage": {
+    "method": "Read every prose sentence, table row/cell meaning and next-action item. Separate checkable quantities/conditions, interpretations and recommendations. Repeated claims retain separate locations. Independently inspect essential source conditions not repeated in report.",
+    "unit_count": 34,
+    "unit_ledger": [
+      {
+        "unit_id": 1,
+        "start": 128,
+        "end": 299,
+        "text": "The pilot established that 71% of 4,860 included visits reached a desk within the displayed wait band, with results ranging from 66% to 75% across three branches [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-001",
+          "7910aa-002",
+          "7910aa-003"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 2,
+        "start": 300,
+        "end": 487,
+        "text": "It did not establish that the display improved service relative to no display, reduced abandonment, worked equally well for all groups, or would produce similar citywide results [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-004",
+          "7910aa-005",
+          "7910aa-006",
+          "7910aa-007"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 3,
+        "start": 488,
+        "end": 633,
+        "text": "The evidence supports further controlled and accessibility testing, but not citywide procurement or deployment at this stage [S1][S2]. (judgment)",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-008"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 6,
+        "start": 727,
+        "end": 890,
+        "text": "| Wait-band matching | 71% overall; branch range 66%–75% [S1][S2] | Included visits only; the supplied excerpts do not establish why branch match rates differed. |",
+        "format": "table_row",
+        "entry_ids": [
+          "7910aa-009",
+          "7910aa-010",
+          "7910aa-011"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 7,
+        "start": 891,
+        "end": 1013,
+        "text": "| Operational stability | 58 staff-recorded corrections [S1][S2] | Correction labels were not independently audited [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "7910aa-012",
+          "7910aa-013"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 8,
+        "start": 1014,
+        "end": 1204,
+        "text": "| Accessibility | 15 of 18 volunteer sessions announced the band [S2] | Small simulated review; population performance across devices, languages, and assistive technologies is unknown [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "7910aa-014",
+          "7910aa-015",
+          "7910aa-016"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 9,
+        "start": 1205,
+        "end": 1331,
+        "text": "| Causal benefit | Unknown [S1][S2] | No before-period comparison, randomization, or alternative-display comparison [S1][S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "7910aa-017",
+          "7910aa-018",
+          "7910aa-019",
+          "7910aa-020"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 10,
+        "start": 1332,
+        "end": 1492,
+        "text": "| Citywide readiness | Unknown and unapproved [S2] | No approved budget, vendor selection, purchase order, rollout date, or projected benefit calculation [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "7910aa-021",
+          "7910aa-022",
+          "7910aa-023",
+          "7910aa-024",
+          "7910aa-025",
+          "7910aa-026"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 11,
+        "start": 1507,
+        "end": 1597,
+        "text": "The pilot ran from 2026-06-01 through 2026-08-15 in three municipal library branches [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-027"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 12,
+        "start": 1598,
+        "end": 1716,
+        "text": "Its 4,860 included visits excluded appointments, school groups, and days when the ticket printer was offline [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-028",
+          "7910aa-029",
+          "7910aa-030"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 13,
+        "start": 1718,
+        "end": 1844,
+        "text": "Across those visits, 71% reached a desk within the displayed wait band, and the reported branch range was 66% to 75% [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-031",
+          "7910aa-032"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 14,
+        "start": 1845,
+        "end": 1919,
+        "text": "The display communicated a band rather than an exact wait in minutes [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-033"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 15,
+        "start": 1921,
+        "end": 2076,
+        "text": "The 71% result describes agreement between the displayed band and recorded desk time, not universal accuracy or improvement caused by the display [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-034",
+          "7910aa-035",
+          "7910aa-036"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 16,
+        "start": 2077,
+        "end": 2241,
+        "text": "Differences among branch configurations likewise cannot be interpreted causally because the results were unadjusted and no causal experiment was conducted [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-037",
+          "7910aa-038",
+          "7910aa-039",
+          "7910aa-040"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 17,
+        "start": 2243,
+        "end": 2427,
+        "text": "Staff recorded 58 display corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 with only a short free-text description [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-041",
+          "7910aa-042",
+          "7910aa-043",
+          "7910aa-044",
+          "7910aa-045"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 18,
+        "start": 2428,
+        "end": 2500,
+        "text": "These staff-entered classifications were not independently audited [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-046",
+          "7910aa-047"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 19,
+        "start": 2502,
+        "end": 2626,
+        "text": "An accessibility review of 18 volunteer sessions found that 15 announced the band through the configured screen reader [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-048"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 20,
+        "start": 2627,
+        "end": 2755,
+        "text": "Two sessions involved browser-extension conditions, and one involved a changed display language without a translated label [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-049",
+          "7910aa-050"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 21,
+        "start": 2757,
+        "end": 2913,
+        "text": "The materials contain no pre-display comparison, visitor randomization, comparison of alternative displays, or estimate of staffing-demand effects [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-051",
+          "7910aa-052",
+          "7910aa-053",
+          "7910aa-054"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 22,
+        "start": 2914,
+        "end": 2982,
+        "text": "They also do not establish that queue abandonment declined [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-055"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 23,
+        "start": 2984,
+        "end": 3069,
+        "text": "The appendix provides anonymized counts but not individual visitor demographics [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-056",
+          "7910aa-057"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 24,
+        "start": 3070,
+        "end": 3162,
+        "text": "Consequently, the evidence cannot establish equal usefulness across visitor groups [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-058"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 25,
+        "start": 3164,
+        "end": 3231,
+        "text": "Citywide replacement would require a separate budget decision [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-059"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 26,
+        "start": 3232,
+        "end": 3395,
+        "text": "The materials contain no contract, signed vendor selection, purchase order, rollout calendar, approved citywide benefit estimate, or deployment authorization [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-060",
+          "7910aa-061",
+          "7910aa-062",
+          "7910aa-063",
+          "7910aa-064",
+          "7910aa-065"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 27,
+        "start": 3397,
+        "end": 3527,
+        "text": "The pilot can inform later deliberation, but its match rate neither predicts citywide savings nor authorizes procurement [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-066",
+          "7910aa-067",
+          "7910aa-068"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 28,
+        "start": 3528,
+        "end": 3609,
+        "text": "The supplied materials do not approve a rollout date or citywide deployment [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-069",
+          "7910aa-070"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 29,
+        "start": 3643,
+        "end": 3738,
+        "text": "No source in the supplied record directly contradicts the reported pilot measurements [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-071"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 30,
+        "start": 3739,
+        "end": 3817,
+        "text": "However, S2 is truncated, so omitted portions could not be reviewed here [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-072",
+          "7910aa-073"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 31,
+        "start": 3818,
+        "end": 3988,
+        "text": "The accessibility sessions were simulated, reviewer-observed, and recruited through a local advisory group rather than designed as representative population testing [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-074",
+          "7910aa-075",
+          "7910aa-076",
+          "7910aa-077"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 32,
+        "start": 3989,
+        "end": 4079,
+        "text": "The supplied excerpts do not measure whether visitors abandoned the queue less often [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-078"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 33,
+        "start": 4080,
+        "end": 4208,
+        "text": "These omissions limit causal, equity, accessibility, and economic conclusions without negating the observed match rate [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "7910aa-079"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 34,
+        "start": 4227,
+        "end": 4386,
+        "text": "1. Run a pre-specified follow-up that includes a comparison condition and measures abandonment, staffing demand, and visitor understanding [S1][S2]. (judgment)",
+        "format": "list_item",
+        "entry_ids": [
+          "7910aa-080"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 35,
+        "start": 4387,
+        "end": 4572,
+        "text": "2. Test translated labels across representative devices, languages, browser settings, and assistive technologies while retaining a staffed alternative during evaluation [S2]. (judgment)",
+        "format": "list_item",
+        "entry_ids": [
+          "7910aa-081"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 36,
+        "start": 4573,
+        "end": 4729,
+        "text": "3. Define an outcome threshold and require accessibility, operations, budget, and projected-benefit reviews before any procurement decision [S2]. (judgment)",
+        "format": "list_item",
+        "entry_ids": [
+          "7910aa-082"
+        ],
+        "manually_reviewed": true
+      }
+    ],
+    "nonclaim_segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "text": "# Question: Produce a cautious evidence-backed briefing on the pilot's measured outcomes and its unresolved limits.",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 117,
+        "end": 126,
+        "text": "## Answer",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 1494,
+        "end": 1505,
+        "text": "## Evidence",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 3611,
+        "end": 3641,
+        "text": "## Counter-evidence and limits",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 4210,
+        "end": 4225,
+        "text": "## Next actions",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 4731,
+        "end": 4741,
+        "text": "## Sources",
+        "type": "heading/question",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 4743,
+        "end": 4822,
+        "text": "- S1 — *replay real-en-long S1*: https://fixture.invalid/replay/real-en-long/S1",
+        "type": "bibliography",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 4823,
+        "end": 4902,
+        "text": "- S2 — *replay real-en-long S2*: https://fixture.invalid/replay/real-en-long/S2",
+        "type": "bibliography",
+        "note": "Not an independent outcome claim. IDs match input; URL hosting is not established by source bodies."
+      },
+      {
+        "start": 635,
+        "end": 712,
+        "text": "| Decision area | Measured or documented result | Conditions and exceptions |",
+        "format": "table_row",
+        "type": "table_header/separator",
+        "note": "No factual assertion."
+      },
+      {
+        "start": 713,
+        "end": 726,
+        "text": "|---|---|---|",
+        "format": "table_row",
+        "type": "table_header/separator",
+        "note": "No factual assertion."
+      }
+    ],
+    "self_assessed_full_body_coverage": true,
+    "not_an_automatic_proof": "Exact report/source spans, quotes, SHA and non-whitespace text coverage are mechanically checked. Semantic completeness remains one reviewers judgment, not automated proof or independent second review."
+  },
+  "limitations": [
+    "Single Astra judgment; not a scientific general accuracy estimate or model comparison.",
+    "Only provided source bodies ground factual claims. The original source completeness and external product/deployment state were not verified.",
+    "Atom counts depend on grouping and repeat occurrences; they are not independent statistical samples.",
+    "Compatible cautious inference and explicit judgment are not invented errors."
+  ]
+}

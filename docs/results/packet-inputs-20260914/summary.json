@@ -1,0 +1,65 @@
+{
+  "study": "efficiency_packet_inputs_pilot_v1",
+  "scope": "fixed_input_dev_pilot_not_general_performance_claim",
+  "planned_run_count": 8,
+  "submitted_run_count": 8,
+  "missing_run_ids": [],
+  "control_errors": {},
+  "totals": {
+    "reported_total_tokens": 1934270,
+    "unknowncalls": 0,
+    "attempt_count": 47,
+    "retry_attempt_count": 0,
+    "failure_attempt_count": 0
+  },
+  "pairs": [
+    {
+      "case_id": "real-ko-table",
+      "repetition": 1,
+      "baseline_run_id": "real-ko-table-r1-baseline",
+      "packet_run_id": "real-ko-table-r1-packet",
+      "complete": true,
+      "paired_token_percent": -5.425126274148815,
+      "quality_preserved": null,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-ko-table",
+      "repetition": 2,
+      "baseline_run_id": "real-ko-table-r2-baseline",
+      "packet_run_id": "real-ko-table-r2-packet",
+      "complete": true,
+      "paired_token_percent": 17.191685756352328,
+      "quality_preserved": null,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-en-boundary",
+      "repetition": 1,
+      "baseline_run_id": "real-en-boundary-r1-baseline",
+      "packet_run_id": "real-en-boundary-r1-packet",
+      "complete": true,
+      "paired_token_percent": 19.529826565685415,
+      "quality_preserved": null,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-en-boundary",
+      "repetition": 2,
+      "baseline_run_id": "real-en-boundary-r2-baseline",
+      "packet_run_id": "real-en-boundary-r2-packet",
+      "complete": true,
+      "paired_token_percent": 0.7986337628448316,
+      "quality_preserved": null,
+      "reason": "complete"
+    }
+  ],
+  "all_pairs_qualify": false,
+  "unknown_usage": false,
+  "report_claim_permitted": false,
+  "automatic_eligibility": false,
+  "manual_review_required": true,
+  "general_performance_claim_permitted": false,
+  "quality_default": "unknown_external_judgment_required",
+  "claim_note": "Pilot-only result. No general performance claim is permitted."
+}

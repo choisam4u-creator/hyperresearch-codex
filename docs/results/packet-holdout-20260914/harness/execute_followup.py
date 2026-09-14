@@ -1,4 +1,4 @@
-"""Explicit, sequential efficiency pilot runner; default command only prints a plan."""
+"""Private sequential follow-up executor. Default prints plan; exact approval required for live."""
 from __future__ import annotations
 
 import argparse
@@ -11,10 +11,26 @@ import subprocess
 import sys
 import time
 
-from .blind_eval import prepare_blind_packet
-from .efficiency_study import build_plan, validate_results
-from .evaluation import runtime_metadata_from_manifest, case_input_hash
-from .token_policy import usage_summary
+REPO = next(parent for parent in Path(__file__).resolve().parents
+            if (parent / 'hpr.py').is_file() and (parent / 'hprc').is_dir())
+sys.path.insert(0, str(REPO))
+
+from hprc.blind_eval import prepare_blind_packet
+from followup_runner import build_followup_plan, validate_followup_results
+
+validate_results = validate_followup_results
+from hprc.evaluation import runtime_metadata_from_manifest, case_input_hash
+from hprc.token_policy import usage_summary
+
+
+def make_plan(inputs, code_sha, study):
+    from hprc.token_policy import fingerprint
+    plan = build_followup_plan(inputs, code_sha, study)
+    plan.pop('plan_sha256')
+    plan['harness_hashes'] = {name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+                             for name in ('execute_followup.py', 'followup_runner.py')}
+    plan['plan_sha256'] = fingerprint(plan)
+    return plan
 
 
 def write_json(path, value):
@@ -32,7 +48,7 @@ def assert_frozen(repo, inputs, plan, backend):
         raise ValueError('Code revision or frozen inputs changed; stop without rerunning')
     if backend == 'codex' and subprocess.check_output(['git', 'status', '--porcelain'], cwd=repo, text=True).strip():
         raise ValueError('Live measurement requires a clean committed checkout')
-    current = build_plan(inputs, plan['code_sha'], plan['policy']['repetitions_per_case'])
+    current = make_plan(inputs, plan['code_sha'], plan['study'])
     if current != plan:
         raise ValueError('Runtime/configuration changed after preregistration')
 
@@ -99,7 +115,7 @@ def execute(repo, inputs, output, plan, *, backend, approved_total_tokens=None):
     output.mkdir(parents=True, exist_ok=False)
     write_json(output / 'plan.json', plan)
     fixture = json.loads(inputs.read_text(encoding='utf-8'))
-    cases = {case['id']: case for case in fixture['cases'] if case.get('split') == 'dev'}
+    cases = {case['id']: case for case in fixture['cases']}
     state = {'status': 'running', 'backend': backend, 'records': [], 'known_tokens': 0,
              'quality': 'unjudged', 'total_stop_is_hard_cap': False}
     write_json(output / 'experiment.json', state)
@@ -188,7 +204,7 @@ def execute(repo, inputs, output, plan, *, backend, approved_total_tokens=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--inputs', type=Path, default=Path('tests/fixtures/realistic_inputs.json'))
-    parser.add_argument('--repetitions', type=int, choices=(1, 2), default=2)
+    parser.add_argument('--study', required=True, choices=('phase3_holdout_packet','phase4_dev_evidence'))
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--mock', action='store_true')
     mode.add_argument('--execute', action='store_true', help='Requires explicit user budget approval; never inferred')
@@ -196,13 +212,13 @@ def main(argv=None):
     parser.add_argument('--plan', type=Path, help='Previously frozen plan JSON; required for live execution')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args(argv)
-    repo = Path(__file__).resolve().parents[1]
+    repo = REPO
     inputs = args.inputs.resolve()
     if args.execute and args.plan is None:
         parser.error('--execute requires a previously frozen --plan file')
-    plan = json.loads(args.plan.read_text(encoding='utf-8')) if args.plan else build_plan(inputs, revision(repo), args.repetitions)
-    if plan['policy']['repetitions_per_case'] != args.repetitions:
-        parser.error('--repetitions differs from frozen plan')
+    plan = json.loads(args.plan.read_text(encoding='utf-8')) if args.plan else make_plan(inputs, revision(repo), args.study)
+    if plan.get('study') != args.study:
+        parser.error('--study differs from frozen plan')
     assert_frozen(repo, inputs, plan, 'codex' if args.execute else 'mock')
     if not (args.mock or args.execute):
         print(json.dumps(plan, ensure_ascii=False, indent=2))

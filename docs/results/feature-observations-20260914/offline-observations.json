@@ -1,0 +1,1704 @@
+{
+  "probe": "phase4_offline_feature_pilot_v1",
+  "fixture": "tests/fixtures/benchmark_inputs.json",
+  "fixture_sha256": "89fd7484f4e67b36fa4c7122eed0d952d24702a932e027bceb6089b6c5a2e287",
+  "backend": "mock",
+  "network_or_real_model_calls": false,
+  "evidence_selection": {
+    "baseline": {
+      "steps": [
+        "analyst",
+        "writer",
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction",
+        "patcher",
+        "citecheck"
+      ],
+      "call_count": 7,
+      "input_profiles": {
+        "analyst": {
+          "before_total_bytes": 1409,
+          "prepared_total_bytes": 1409
+        },
+        "writer": {
+          "before_total_bytes": 2685,
+          "prepared_total_bytes": 2685
+        },
+        "critic_depth": {
+          "before_total_bytes": 2952,
+          "prepared_total_bytes": 2952
+        },
+        "critic_dialectic": {
+          "before_total_bytes": 2952,
+          "prepared_total_bytes": 2952
+        },
+        "critic_instruction": {
+          "before_total_bytes": 1498,
+          "prepared_total_bytes": 1498
+        },
+        "patcher": {
+          "before_total_bytes": 2342,
+          "prepared_total_bytes": 2342
+        },
+        "citecheck": {
+          "before_total_bytes": 10596,
+          "prepared_total_bytes": 10596
+        }
+      },
+      "report_sha256": "1de0d6fe3df7a477afcffbe48d6678b457242e75aad67acb339f46be6b6e6d27",
+      "claims_sha256": "70b1c1349c207cf37ceae2ccdb52109101d2d4cd80d9b71d0f4ec841d4184d71",
+      "reuse_events": []
+    },
+    "evidence_selection": {
+      "steps": [
+        "analyst",
+        "writer",
+        "critic_dialectic",
+        "critic_depth",
+        "critic_instruction",
+        "patcher",
+        "citecheck"
+      ],
+      "call_count": 7,
+      "input_profiles": {
+        "analyst": {
+          "before_total_bytes": 1409,
+          "prepared_total_bytes": 1409
+        },
+        "writer": {
+          "before_total_bytes": 2685,
+          "prepared_total_bytes": 2685
+        },
+        "critic_dialectic": {
+          "before_total_bytes": 2952,
+          "prepared_total_bytes": 2952
+        },
+        "critic_depth": {
+          "before_total_bytes": 2952,
+          "prepared_total_bytes": 2952
+        },
+        "critic_instruction": {
+          "before_total_bytes": 1498,
+          "prepared_total_bytes": 1498
+        },
+        "patcher": {
+          "before_total_bytes": 2342,
+          "prepared_total_bytes": 2342
+        },
+        "citecheck": {
+          "before_total_bytes": 10596,
+          "prepared_total_bytes": 10596
+        }
+      },
+      "report_sha256": "1de0d6fe3df7a477afcffbe48d6678b457242e75aad67acb339f46be6b6e6d27",
+      "claims_sha256": "70b1c1349c207cf37ceae2ccdb52109101d2d4cd80d9b71d0f4ec841d4184d71",
+      "reuse_events": [],
+      "evidence_selections": [
+        {
+          "truncated": true,
+          "source_chars": 4668,
+          "omitted_chars": 4576,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 23
+            },
+            {
+              "char_start": 2437,
+              "char_end": 2507
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 850,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S1",
+          "source_sha256": "6a8312ca73c15d113f64e8f7f780c03855b619a1c54ffbbad60cda3a5a77f8f7",
+          "query_sha256": "af3dc2fc78666d5a3cc524ad35ab8044073e7938f58ef67bf0030f30e07224dc"
+        },
+        {
+          "truncated": false,
+          "source_chars": 63,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 63
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 850,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S2",
+          "source_sha256": "f568f65b80d9c77557236cc104289c8555b795e9a0d4fd5d9bf75cbd880eda13",
+          "query_sha256": "af3dc2fc78666d5a3cc524ad35ab8044073e7938f58ef67bf0030f30e07224dc"
+        },
+        {
+          "truncated": true,
+          "source_chars": 4668,
+          "omitted_chars": 4508,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 23
+            },
+            {
+              "char_start": 25,
+              "char_end": 61
+            },
+            {
+              "char_start": 63,
+              "char_end": 95
+            },
+            {
+              "char_start": 2437,
+              "char_end": 2507
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 850,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "# 질문: 두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "질문",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "질문",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 답",
+              "query_terms": [],
+              "selected_query_terms": [],
+              "missing_query_terms": [],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "모의 결론입니다. Counter-evidence: this fixture does not establish production accuracy. [S1] 변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다. [S2]",
+              "query_terms": [
+                "08",
+                "12",
+                "2026",
+                "accuracy",
+                "atlas",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1",
+                "s2",
+                "게시됐다",
+                "결론입니다",
+                "기록",
+                "모의",
+                "변경"
+              ],
+              "selected_query_terms": [
+                "accuracy",
+                "atlas",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "missing_query_terms": [
+                "08",
+                "12",
+                "2026",
+                "s2",
+                "게시됐다",
+                "결론입니다",
+                "기록",
+                "모의",
+                "변경"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 1,
+                  "char_end": 23
+                },
+                {
+                  "char_start": 25,
+                  "char_end": 61
+                },
+                {
+                  "char_start": 63,
+                  "char_end": 95
+                },
+                {
+                  "char_start": 2437,
+                  "char_end": 2507
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 근거",
+              "query_terms": [
+                "근거"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "근거"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "Counter-evidence: this fixture does not establish production accuracy. [S1]",
+              "query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "selected_query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "missing_query_terms": [],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 1,
+                  "char_end": 23
+                },
+                {
+                  "char_start": 2437,
+                  "char_end": 2507
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다. [S2]",
+              "query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "selected_query_terms": [
+                "atlas"
+              ],
+              "missing_query_terms": [
+                "08",
+                "12",
+                "2026",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 25,
+                  "char_end": 61
+                },
+                {
+                  "char_start": 63,
+                  "char_end": 95
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 반대 근거와 한계",
+              "query_terms": [
+                "근거와",
+                "반대",
+                "한계"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "근거와",
+                "반대",
+                "한계"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "모의 한계: 출처 수가 적습니다. (출처 없음)",
+              "query_terms": [
+                "모의",
+                "수가",
+                "없음",
+                "적습니다",
+                "출처",
+                "한계"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "모의",
+                "수가",
+                "없음",
+                "적습니다",
+                "출처",
+                "한계"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 다음 행동",
+              "query_terms": [
+                "다음",
+                "행동"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "다음",
+                "행동"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- 출처를 더 모은다",
+              "query_terms": [
+                "모은다",
+                "출처를"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "모은다",
+                "출처를"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 출처",
+              "query_terms": [
+                "출처"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "출처"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- [S1] S1 노트",
+              "query_terms": [
+                "s1",
+                "노트"
+              ],
+              "selected_query_terms": [
+                "s1"
+              ],
+              "missing_query_terms": [
+                "노트"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 1,
+                  "char_end": 23
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- [S2] S2 노트",
+              "query_terms": [
+                "s2",
+                "노트"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "s2",
+                "노트"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S1",
+          "source_sha256": "6a8312ca73c15d113f64e8f7f780c03855b619a1c54ffbbad60cda3a5a77f8f7",
+          "query_sha256": "8d4c18dbbb3ba92071e11ed30c92714a8554c8774f706bdf81bcac8e4f44ac42"
+        },
+        {
+          "truncated": false,
+          "source_chars": 63,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 63
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 850,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "# 질문: 두 고정 사실을 출처별로 짧게 확인하라.",
+              "query_terms": [
+                "고정",
+                "사실을",
+                "질문",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "고정",
+                "사실을",
+                "질문",
+                "짧게",
+                "출처별로",
+                "확인하라"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 답",
+              "query_terms": [],
+              "selected_query_terms": [],
+              "missing_query_terms": [],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "모의 결론입니다. Counter-evidence: this fixture does not establish production accuracy. [S1] 변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다. [S2]",
+              "query_terms": [
+                "08",
+                "12",
+                "2026",
+                "accuracy",
+                "atlas",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1",
+                "s2",
+                "게시됐다",
+                "결론입니다",
+                "기록",
+                "모의",
+                "변경"
+              ],
+              "selected_query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "missing_query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1",
+                "결론입니다",
+                "모의"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 0,
+                  "char_end": 63
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 근거",
+              "query_terms": [
+                "근거"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "근거"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "Counter-evidence: this fixture does not establish production accuracy. [S1]",
+              "query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다. [S2]",
+              "query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "selected_query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "missing_query_terms": [],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 0,
+                  "char_end": 63
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 반대 근거와 한계",
+              "query_terms": [
+                "근거와",
+                "반대",
+                "한계"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "근거와",
+                "반대",
+                "한계"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "모의 한계: 출처 수가 적습니다. (출처 없음)",
+              "query_terms": [
+                "모의",
+                "수가",
+                "없음",
+                "적습니다",
+                "출처",
+                "한계"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "모의",
+                "수가",
+                "없음",
+                "적습니다",
+                "출처",
+                "한계"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 다음 행동",
+              "query_terms": [
+                "다음",
+                "행동"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "다음",
+                "행동"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- 출처를 더 모은다",
+              "query_terms": [
+                "모은다",
+                "출처를"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "모은다",
+                "출처를"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "## 출처",
+              "query_terms": [
+                "출처"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "출처"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- [S1] S1 노트",
+              "query_terms": [
+                "s1",
+                "노트"
+              ],
+              "selected_query_terms": [],
+              "missing_query_terms": [
+                "s1",
+                "노트"
+              ],
+              "has_selected_query_term": false,
+              "candidate_exact_spans": [],
+              "selection_is_not_semantic_support": true
+            },
+            {
+              "query": "- [S2] S2 노트",
+              "query_terms": [
+                "s2",
+                "노트"
+              ],
+              "selected_query_terms": [
+                "s2"
+              ],
+              "missing_query_terms": [
+                "노트"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 0,
+                  "char_end": 63
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S2",
+          "source_sha256": "f568f65b80d9c77557236cc104289c8555b795e9a0d4fd5d9bf75cbd880eda13",
+          "query_sha256": "8d4c18dbbb3ba92071e11ed30c92714a8554c8774f706bdf81bcac8e4f44ac42"
+        },
+        {
+          "truncated": true,
+          "source_chars": 4668,
+          "omitted_chars": 4576,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 23
+            },
+            {
+              "char_start": 2437,
+              "char_end": 2507
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 850,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "모의 지적: 반대 근거 없음 Counter-evidence: this fixture does not establish production accuracy. [S1] 다만 반대 사례도 있다.",
+              "query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1",
+                "근거",
+                "다만",
+                "모의",
+                "반대",
+                "사례도",
+                "없음",
+                "지적"
+              ],
+              "selected_query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "missing_query_terms": [
+                "근거",
+                "다만",
+                "모의",
+                "반대",
+                "사례도",
+                "없음",
+                "지적"
+              ],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 1,
+                  "char_end": 23
+                },
+                {
+                  "char_start": 2437,
+                  "char_end": 2507
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S1",
+          "source_sha256": "6a8312ca73c15d113f64e8f7f780c03855b619a1c54ffbbad60cda3a5a77f8f7",
+          "query_sha256": "7c807bf29a5074436899ff0de0d32ea8f1ff620da862b7f21b6a306f3fc43cc4"
+        },
+        {
+          "truncated": false,
+          "source_chars": 4668,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 4668
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 6000,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "Counter-evidence: this fixture does not establish production accuracy. [S1]",
+              "query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "selected_query_terms": [
+                "accuracy",
+                "counter",
+                "does",
+                "establish",
+                "evidence",
+                "fixture",
+                "not",
+                "production",
+                "s1"
+              ],
+              "missing_query_terms": [],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 0,
+                  "char_end": 4668
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S1",
+          "source_sha256": "6a8312ca73c15d113f64e8f7f780c03855b619a1c54ffbbad60cda3a5a77f8f7",
+          "query_sha256": "1e72a78d2530ccaebc8bd23d6b784112ee78c1a2a8bc4b4610d29740c9be040f"
+        },
+        {
+          "truncated": false,
+          "source_chars": 63,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 63
+            }
+          ],
+          "scope": {
+            "selection": "text_select_relevance_candidates_v1",
+            "positions_are_only_for_exact_source_substrings": true,
+            "unlocated_selected_chars": 0,
+            "semantic_support_or_contradiction_determined": false,
+            "omitted_context_is_not_evidence_of_absence": true,
+            "cap_chars": 6000,
+            "query_normalization": "deduplicated_whitespace_normalized_query_list_v1",
+            "claim_coverage_is_term_presence_not_support": true,
+            "duplicate_exact_spans_removed": true
+          },
+          "claim_coverage": [
+            {
+              "query": "변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다. [S2]",
+              "query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "selected_query_terms": [
+                "08",
+                "12",
+                "2026",
+                "atlas",
+                "s2",
+                "게시됐다",
+                "기록",
+                "변경"
+              ],
+              "missing_query_terms": [],
+              "has_selected_query_term": true,
+              "candidate_exact_spans": [
+                {
+                  "char_start": 0,
+                  "char_end": 63
+                }
+              ],
+              "selection_is_not_semantic_support": true
+            }
+          ],
+          "source_id": "S2",
+          "source_sha256": "f568f65b80d9c77557236cc104289c8555b795e9a0d4fd5d9bf75cbd880eda13",
+          "query_sha256": "8a2bb2fef1f3ca6bbd34a4b056ade64f8c7277b00734f7c0a2795c83e9b58218"
+        }
+      ]
+    },
+    "observation_scope": "prepared input bytes and persisted selection artifacts only; mock usage is not real token usage"
+  },
+  "exact_analysis_reuse": {
+    "first_fill": {
+      "steps": [
+        "analyst",
+        "writer",
+        "critic_dialectic",
+        "critic_depth",
+        "critic_instruction",
+        "patcher",
+        "citecheck"
+      ],
+      "call_count": 7,
+      "input_profiles": {
+        "analyst": {
+          "before_total_bytes": 1339,
+          "prepared_total_bytes": 1339
+        },
+        "writer": {
+          "before_total_bytes": 2623,
+          "prepared_total_bytes": 2623
+        },
+        "critic_dialectic": {
+          "before_total_bytes": 2732,
+          "prepared_total_bytes": 2732
+        },
+        "critic_depth": {
+          "before_total_bytes": 2732,
+          "prepared_total_bytes": 2732
+        },
+        "critic_instruction": {
+          "before_total_bytes": 1506,
+          "prepared_total_bytes": 1506
+        },
+        "patcher": {
+          "before_total_bytes": 2292,
+          "prepared_total_bytes": 2292
+        },
+        "citecheck": {
+          "before_total_bytes": 1276,
+          "prepared_total_bytes": 1276
+        }
+      },
+      "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+      "claims_sha256": "175272b9f0192baaf0c653e44b6916c792f732b5e36b92ae0ff0f28f5ee6ef11",
+      "reuse_events": []
+    },
+    "second_exact": {
+      "steps": [
+        "writer",
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction",
+        "patcher",
+        "citecheck"
+      ],
+      "call_count": 6,
+      "input_profiles": {
+        "writer": {
+          "before_total_bytes": 2623,
+          "prepared_total_bytes": 2623
+        },
+        "critic_depth": {
+          "before_total_bytes": 2732,
+          "prepared_total_bytes": 2732
+        },
+        "critic_dialectic": {
+          "before_total_bytes": 2732,
+          "prepared_total_bytes": 2732
+        },
+        "critic_instruction": {
+          "before_total_bytes": 1506,
+          "prepared_total_bytes": 1506
+        },
+        "patcher": {
+          "before_total_bytes": 2292,
+          "prepared_total_bytes": 2292
+        },
+        "citecheck": {
+          "before_total_bytes": 1276,
+          "prepared_total_bytes": 1276
+        }
+      },
+      "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+      "claims_sha256": "a9a698e04b33265f90ef92c3d8c64aa6e3271203d2b7eb079ba5ed728666178c",
+      "reuse_events": [
+        {
+          "step": "analyst",
+          "key": "980ca0167f14cd72f63ceb25935ed26f36c0862c1c73f6b5a0bfccd80ffcbd44",
+          "provenance": {
+            "backend": "mock",
+            "source_run_id": "first"
+          },
+          "model_call_skipped": true,
+          "token_savings": null
+        }
+      ]
+    },
+    "cache_entries_after_first": [
+      "980ca0167f14cd72f63ceb25935ed26f36c0862c1c73f6b5a0bfccd80ffcbd44.json"
+    ],
+    "cache_entries_after_second": [
+      "980ca0167f14cd72f63ceb25935ed26f36c0862c1c73f6b5a0bfccd80ffcbd44.json"
+    ],
+    "analyst_calls_first": 1,
+    "analyst_calls_second": 0,
+    "model_call_skip_observed": true,
+    "observation_scope": "exact-key local cache behavior under mock; no real-model savings inferred"
+  },
+  "updates": {
+    "unchanged": {
+      "before": {
+        "steps": [
+          "analyst",
+          "writer",
+          "critic_dialectic",
+          "critic_depth",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 7,
+        "input_profiles": {
+          "analyst": {
+            "before_total_bytes": 1339,
+            "prepared_total_bytes": 1339
+          },
+          "writer": {
+            "before_total_bytes": 2623,
+            "prepared_total_bytes": 2623
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_depth": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1506,
+            "prepared_total_bytes": 1506
+          },
+          "patcher": {
+            "before_total_bytes": 2292,
+            "prepared_total_bytes": 2292
+          },
+          "citecheck": {
+            "before_total_bytes": 1276,
+            "prepared_total_bytes": 1276
+          }
+        },
+        "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+        "claims_sha256": "175272b9f0192baaf0c653e44b6916c792f732b5e36b92ae0ff0f28f5ee6ef11",
+        "reuse_events": []
+      },
+      "after": {
+        "steps": [
+          "writer",
+          "critic_dialectic",
+          "critic_depth",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 6,
+        "input_profiles": {
+          "writer": {
+            "before_total_bytes": 2623,
+            "prepared_total_bytes": 2623
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_depth": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1506,
+            "prepared_total_bytes": 1506
+          },
+          "patcher": {
+            "before_total_bytes": 2292,
+            "prepared_total_bytes": 2292
+          },
+          "citecheck": {
+            "before_total_bytes": 1276,
+            "prepared_total_bytes": 1276
+          }
+        },
+        "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+        "claims_sha256": "175272b9f0192baaf0c653e44b6916c792f732b5e36b92ae0ff0f28f5ee6ef11",
+        "reuse_events": [
+          {
+            "step": "analyst",
+            "source_run_id": "before",
+            "reason": "unchanged_verified_sources_and_context",
+            "model_call_skipped": true,
+            "token_savings": null
+          }
+        ],
+        "update_plan": {
+          "schema_version": 1,
+          "mode": "unchanged",
+          "requires_full_analysis": false,
+          "whole_analysis_cache_eligible": true,
+          "context_diff": [],
+          "source_id_map": {
+            "S1": "S1",
+            "S2": "S2"
+          },
+          "retained_claims": [
+            {
+              "id": "C1",
+              "text": "공식 안내: Atlas API는 읽기 전용 샌드박스에서 실행된다.",
+              "sources": [
+                "S1"
+              ],
+              "confidence": "high"
+            },
+            {
+              "id": "C2",
+              "text": "변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다.",
+              "sources": [
+                "S2"
+              ],
+              "confidence": "high"
+            }
+          ],
+          "invalidated_claim_ids": [],
+          "changed_source_ids": [],
+          "analysis_source_ids": [],
+          "recompute": [
+            "contradictions",
+            "gaps"
+          ],
+          "freshness_certified": false,
+          "reasons": [],
+          "changes": {
+            "added": [],
+            "removed": [],
+            "changed_source": [],
+            "unchanged": [
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S1",
+                "previous_id": "S1",
+                "current_id": "S1",
+                "snapshot_sha256": "9e4a64277c67c2533c079a665c983ebc62d6e7cc89fccd4c438242bb920ea6b6",
+                "text_sha256": "ab1e863e6cebebb4c50fcf68a7d34df33eb384cdcca68db4a936ab77add5b5b2"
+              },
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S2",
+                "previous_id": "S2",
+                "current_id": "S2",
+                "snapshot_sha256": "1e46ea22e22f32798234d2409bcb5fa6b765a58d2104ae6bdfab0db27928b229",
+                "text_sha256": "51aa4aa97482ee0278d12bd36afb836f8ee1e36cd7263f0adbf5f2ee6529b9c2"
+              }
+            ],
+            "unknown": []
+          }
+        }
+      },
+      "update_mode": "unchanged",
+      "requires_full_analysis": false,
+      "source_change_counts": {
+        "added": 0,
+        "removed": 0,
+        "changed_source": 0,
+        "unchanged": 2,
+        "unknown": 0
+      },
+      "analyst_update_calls": 0,
+      "analyst_calls": 0,
+      "observation_scope": "replay source snapshots and mock pipeline artifacts only"
+    },
+    "changed": {
+      "before": {
+        "steps": [
+          "analyst",
+          "writer",
+          "critic_dialectic",
+          "critic_depth",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 7,
+        "input_profiles": {
+          "analyst": {
+            "before_total_bytes": 1339,
+            "prepared_total_bytes": 1339
+          },
+          "writer": {
+            "before_total_bytes": 2623,
+            "prepared_total_bytes": 2623
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_depth": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1506,
+            "prepared_total_bytes": 1506
+          },
+          "patcher": {
+            "before_total_bytes": 2292,
+            "prepared_total_bytes": 2292
+          },
+          "citecheck": {
+            "before_total_bytes": 1276,
+            "prepared_total_bytes": 1276
+          }
+        },
+        "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+        "claims_sha256": "175272b9f0192baaf0c653e44b6916c792f732b5e36b92ae0ff0f28f5ee6ef11",
+        "reuse_events": []
+      },
+      "after": {
+        "steps": [
+          "analyst_update",
+          "writer",
+          "critic_dialectic",
+          "critic_depth",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 7,
+        "input_profiles": {
+          "analyst_update": {
+            "before_total_bytes": 994,
+            "prepared_total_bytes": 994
+          },
+          "writer": {
+            "before_total_bytes": 2679,
+            "prepared_total_bytes": 2679
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 2782,
+            "prepared_total_bytes": 2782
+          },
+          "critic_depth": {
+            "before_total_bytes": 2782,
+            "prepared_total_bytes": 2782
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1506,
+            "prepared_total_bytes": 1506
+          },
+          "patcher": {
+            "before_total_bytes": 2308,
+            "prepared_total_bytes": 2308
+          },
+          "citecheck": {
+            "before_total_bytes": 1320,
+            "prepared_total_bytes": 1320
+          }
+        },
+        "report_sha256": "0f951ea720b9c4f335d4069c433f1f09e90df7141ad3b6ea52a4e63d151a357b",
+        "claims_sha256": "92d3235d20692c92e690477c323fc48557eda316b417fc2541bdddd4404727ff",
+        "reuse_events": [],
+        "update_plan": {
+          "schema_version": 1,
+          "mode": "incremental",
+          "requires_full_analysis": false,
+          "whole_analysis_cache_eligible": false,
+          "context_diff": [],
+          "source_id_map": {
+            "S2": "S2"
+          },
+          "retained_claims": [
+            {
+              "id": "C2",
+              "text": "변경 기록: Atlas 2.4.0은 2026-08-12에 게시됐다.",
+              "sources": [
+                "S2"
+              ],
+              "confidence": "high"
+            }
+          ],
+          "invalidated_claim_ids": [
+            "C1"
+          ],
+          "changed_source_ids": [
+            "S1"
+          ],
+          "analysis_source_ids": [
+            "S1"
+          ],
+          "recompute": [
+            "contradictions",
+            "gaps"
+          ],
+          "freshness_certified": false,
+          "reasons": [],
+          "changes": {
+            "added": [],
+            "removed": [],
+            "changed_source": [
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S1",
+                "previous_id": "S1",
+                "current_id": "S1",
+                "previous_snapshot_sha256": "9e4a64277c67c2533c079a665c983ebc62d6e7cc89fccd4c438242bb920ea6b6",
+                "current_snapshot_sha256": "bd2bf3e39acb361539b023a6da5a6c7fad3bdc49a3ce6ab57c5232d39165e51d",
+                "previous_text_sha256": "ab1e863e6cebebb4c50fcf68a7d34df33eb384cdcca68db4a936ab77add5b5b2",
+                "current_text_sha256": "7758b598885aeb5ebf8aa77fddbf881b52278d71c173403c73b7c30faaccb591"
+              }
+            ],
+            "unchanged": [
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S2",
+                "previous_id": "S2",
+                "current_id": "S2",
+                "snapshot_sha256": "1e46ea22e22f32798234d2409bcb5fa6b765a58d2104ae6bdfab0db27928b229",
+                "text_sha256": "51aa4aa97482ee0278d12bd36afb836f8ee1e36cd7263f0adbf5f2ee6529b9c2"
+              }
+            ],
+            "unknown": []
+          }
+        }
+      },
+      "update_mode": "incremental",
+      "requires_full_analysis": false,
+      "source_change_counts": {
+        "added": 0,
+        "removed": 0,
+        "changed_source": 1,
+        "unchanged": 1,
+        "unknown": 0
+      },
+      "analyst_update_calls": 1,
+      "analyst_calls": 0,
+      "observation_scope": "replay source snapshots and mock pipeline artifacts only"
+    },
+    "deleted": {
+      "before": {
+        "steps": [
+          "analyst",
+          "writer",
+          "critic_dialectic",
+          "critic_depth",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 7,
+        "input_profiles": {
+          "analyst": {
+            "before_total_bytes": 1339,
+            "prepared_total_bytes": 1339
+          },
+          "writer": {
+            "before_total_bytes": 2623,
+            "prepared_total_bytes": 2623
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_depth": {
+            "before_total_bytes": 2732,
+            "prepared_total_bytes": 2732
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1506,
+            "prepared_total_bytes": 1506
+          },
+          "patcher": {
+            "before_total_bytes": 2292,
+            "prepared_total_bytes": 2292
+          },
+          "citecheck": {
+            "before_total_bytes": 1276,
+            "prepared_total_bytes": 1276
+          }
+        },
+        "report_sha256": "879215f01900b052a54f384d0c34ea551561ae05eda9391d78d6ef2e2cc6feb1",
+        "claims_sha256": "175272b9f0192baaf0c653e44b6916c792f732b5e36b92ae0ff0f28f5ee6ef11",
+        "reuse_events": []
+      },
+      "after": {
+        "steps": [
+          "analyst_update",
+          "writer",
+          "critic_depth",
+          "critic_dialectic",
+          "critic_instruction",
+          "patcher",
+          "citecheck"
+        ],
+        "call_count": 7,
+        "input_profiles": {
+          "analyst_update": {
+            "before_total_bytes": 421,
+            "prepared_total_bytes": 421
+          },
+          "writer": {
+            "before_total_bytes": 1561,
+            "prepared_total_bytes": 1561
+          },
+          "critic_depth": {
+            "before_total_bytes": 1701,
+            "prepared_total_bytes": 1701
+          },
+          "critic_dialectic": {
+            "before_total_bytes": 1701,
+            "prepared_total_bytes": 1701
+          },
+          "critic_instruction": {
+            "before_total_bytes": 1363,
+            "prepared_total_bytes": 1363
+          },
+          "patcher": {
+            "before_total_bytes": 1790,
+            "prepared_total_bytes": 1790
+          },
+          "citecheck": {
+            "before_total_bytes": 655,
+            "prepared_total_bytes": 655
+          }
+        },
+        "report_sha256": "dd8fd432b1d2f01c8aca96e3c4cd36f54fa91c445169299ae8be66cbcf756a09",
+        "claims_sha256": "c37e6567e768fdb7ae32f2d1e9b3e62a0572af47df90c6875a0b8593548e1a6b",
+        "reuse_events": [],
+        "update_plan": {
+          "schema_version": 1,
+          "mode": "incremental",
+          "requires_full_analysis": false,
+          "whole_analysis_cache_eligible": false,
+          "context_diff": [],
+          "source_id_map": {
+            "S1": "S1"
+          },
+          "retained_claims": [
+            {
+              "id": "C1",
+              "text": "공식 안내: Atlas API는 읽기 전용 샌드박스에서 실행된다.",
+              "sources": [
+                "S1"
+              ],
+              "confidence": "high"
+            }
+          ],
+          "invalidated_claim_ids": [
+            "C2"
+          ],
+          "changed_source_ids": [],
+          "analysis_source_ids": [],
+          "recompute": [
+            "contradictions",
+            "gaps"
+          ],
+          "freshness_certified": false,
+          "reasons": [],
+          "changes": {
+            "added": [],
+            "removed": [
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S2",
+                "previous_id": "S2",
+                "current_id": null,
+                "previous_snapshot_sha256": "1e46ea22e22f32798234d2409bcb5fa6b765a58d2104ae6bdfab0db27928b229",
+                "previous_text_sha256": "51aa4aa97482ee0278d12bd36afb836f8ee1e36cd7263f0adbf5f2ee6529b9c2"
+              }
+            ],
+            "changed_source": [],
+            "unchanged": [
+              {
+                "url": "https://fixture.invalid/replay/fact-ko-01/S1",
+                "previous_id": "S1",
+                "current_id": "S1",
+                "snapshot_sha256": "9e4a64277c67c2533c079a665c983ebc62d6e7cc89fccd4c438242bb920ea6b6",
+                "text_sha256": "ab1e863e6cebebb4c50fcf68a7d34df33eb384cdcca68db4a936ab77add5b5b2"
+              }
+            ],
+            "unknown": []
+          }
+        }
+      },
+      "update_mode": "incremental",
+      "requires_full_analysis": false,
+      "source_change_counts": {
+        "added": 0,
+        "removed": 1,
+        "changed_source": 0,
+        "unchanged": 1,
+        "unknown": 0
+      },
+      "analyst_update_calls": 1,
+      "analyst_calls": 0,
+      "observation_scope": "replay source snapshots and mock pipeline artifacts only"
+    }
+  },
+  "limits": [
+    "Mock usage follows the fixture implementation and is not measured Codex token usage.",
+    "The probe does not judge factual accuracy, report quality, or real elapsed time.",
+    "Temporary workspaces are deleted after observation; this JSON is the retained evidence summary."
+  ]
+}

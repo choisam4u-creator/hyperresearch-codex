@@ -1,0 +1,3429 @@
+{
+  "schema_version": "blind_atomic_review_v1",
+  "opaque_id": "70f576265948d7ff409693da",
+  "question": "제공된 자료로 확인되는 사실과 확인할 수 없는 홍보·공격성 주장을 구분하라.",
+  "lang": "ko",
+  "report_sha256": "29703da0284f2e68401d32a6a39f5809c5e538ea28c50724667d9366417d3c0a",
+  "report_character_length": 2810,
+  "source_sha256": {
+    "S1": "3f346ac1a82a2029c14b810f47e18fadb93de57ef6bce559549ebe6345f56d34",
+    "S2": "5ca8939b27aab1335875320bcf15f01a931e9298075c0df3e18ee38c431dc6be"
+  },
+  "reviewer": "Single Astra independent blind source-grounded judgment",
+  "blind_scope": "Only the four new batch3 question/sources/report inputs were used; no experiment/answer/model/ledger files, previous batch outputs, external web/API/model CLI, or subagents.",
+  "status_definitions": {
+    "supported": "Provided source supports the fact or clearly bounded inference.",
+    "contradicted": "Provided source explicitly conflicts with the claim.",
+    "insufficient": "The claim is not established, without assuming the opposite is proven.",
+    "unchecked": "Process/provenance outside supplied source-body scope and not externally checked."
+  },
+  "critical_definition": "An error or unsupported extension materially changes the requested fact-vs-promotion distinction, affected-table boundary, fix state, or evidence strength.",
+  "quality_rule": "통과: core answer and stated factual extensions are supported. 실패: material contradicted/unsupported content. 미확정: noncritical factual or process/provenance claim remains unestablished. This is not a general accuracy statistic.",
+  "quality": "미확정",
+  "quality_basis": "핵심 홍보·공격성 주장과 확인 사실의 구분은 지지된다. 실제 두 출처가 같은 domain이라는 진술은 source 본문에 메타데이터가 없어 확인하지 못했다.",
+  "counts": {
+    "factual_atoms": 77,
+    "factual_status_counts": {
+      "supported": 77
+    },
+    "all_entries": 98,
+    "all_status_counts": {
+      "supported": 97,
+      "unchecked": 1
+    },
+    "kind_counts": {
+      "fact": 77,
+      "inference": 11,
+      "judgment": 9,
+      "provenance_claim": 1
+    },
+    "critical_findings": 0
+  },
+  "entries": [
+    {
+      "entry_id": "70f576-001",
+      "unit_id": 1,
+      "catalog_key": "features",
+      "claim_text": "현재 자료로 직접 확인되는 것은 소개 페이지에 파일 업로드·표 추출·인용 표시가 기능으로 열거되어 있고, 지원 센터가 특정 형식의 표에서 열 순서가 바뀔 수 있는 문제를 공지했다는 사실이다.[S1][S2]",
+      "atomic_claim": "페이지가 파일 업로드·표 추출·인용 표시를 기능 목록으로 소개한다.",
+      "report_start": 56,
+      "report_end": 170,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 소개 페이지가 기능을 열거한다는 사실을 검증했다. 실제 기능 구현·동작을 실험으로 입증한 것으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-002",
+      "unit_id": 1,
+      "catalog_key": "issue",
+      "claim_text": "현재 자료로 직접 확인되는 것은 소개 페이지에 파일 업로드·표 추출·인용 표시가 기능으로 열거되어 있고, 지원 센터가 특정 형식의 표에서 열 순서가 바뀔 수 있는 문제를 공지했다는 사실이다.[S1][S2]",
+      "atomic_claim": "지원 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+      "report_start": 56,
+      "report_end": 170,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-003",
+      "unit_id": 2,
+      "catalog_key": "featuredistinction",
+      "claim_text": "그러나 기능이 소개되었다는 사실은 실제 성능이나 정확도를 입증하지 않으며, ‘업계 최고 정확도’와 ‘10배 빠른 의사결정’은 비교 조건과 측정 자료가 없어 확인할 수 없다.[S1]",
+      "atomic_claim": "기능이 존재한다는 설명과 성능 우위/전 입력 정확성의 증명은 구별된다.",
+      "report_start": 171,
+      "report_end": 271,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "기능이 존재한다는 설명과 성능 우위 주장은 다른 종류의 주장이다.",
+          "source_start": 193,
+          "source_end": 229
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-004",
+      "unit_id": 2,
+      "catalog_key": "norank",
+      "claim_text": "그러나 기능이 소개되었다는 사실은 실제 성능이나 정확도를 입증하지 않으며, ‘업계 최고 정확도’와 ‘10배 빠른 의사결정’은 비교 조건과 측정 자료가 없어 확인할 수 없다.[S1]",
+      "atomic_claim": "제공 자료로 업계 최고라는 정확도 순위를 검증할 수 없다.",
+      "report_start": 171,
+      "report_end": 271,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-005",
+      "unit_id": 2,
+      "catalog_key": "nospeed",
+      "claim_text": "그러나 기능이 소개되었다는 사실은 실제 성능이나 정확도를 입증하지 않으며, ‘업계 최고 정확도’와 ‘10배 빠른 의사결정’은 비교 조건과 측정 자료가 없어 확인할 수 없다.[S1]",
+      "atomic_claim": "제공 자료로 10배 시간 절감/의사결정 속도 배율을 검증할 수 없다.",
+      "report_start": 171,
+      "report_end": 271,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-006",
+      "unit_id": 3,
+      "catalog_key": "anon",
+      "claim_text": "익명 게시판의 ‘모든 결과가 맞는다’는 주장도 근거가 없고 공식 지원 공지와 어긋난다.[S2]",
+      "atomic_claim": "익명 게시글에 주의 문구를 무시하면 모든 결과가 맞는다는 주장이 있다.",
+      "report_start": 272,
+      "report_end": 324,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 이 보고서가 다른 본문/표 위치에서 주의 문구를 무시하면이라는 원래 조건을 명시하므로 짧은 재서술을 무조건적 검증 사실로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-007",
+      "unit_id": 3,
+      "catalog_key": "anonnotproof",
+      "claim_text": "익명 게시판의 ‘모든 결과가 맞는다’는 주장도 근거가 없고 공식 지원 공지와 어긋난다.[S2]",
+      "atomic_claim": "공격적 익명 표현은 제품 정확도의 증명이나 검증 근거가 아니다.",
+      "report_start": 272,
+      "report_end": 324,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공격적인 표현은 근거가 아니며, 공지의 제한을 없애거나 제품의 정확도를 증명하지 않는다.",
+          "source_start": 351,
+          "source_end": 400
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-008",
+      "unit_id": 3,
+      "catalog_key": "anonconflict",
+      "claim_text": "익명 게시판의 ‘모든 결과가 맞는다’는 주장도 근거가 없고 공식 지원 공지와 어긋난다.[S2]",
+      "atomic_claim": "익명 글의 주의 무시 시 모든 결과가 맞는다는 주장은 특정 표에서 열 순서 오류가 생길 수 있다는 공지와 양립하는 검증 근거가 아니다.",
+      "report_start": 272,
+      "report_end": 324,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공격적인 표현은 근거가 아니며, 공지의 제한을 없애거나 제품의 정확도를 증명하지 않는다.",
+          "source_start": 351,
+          "source_end": 400
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다. 경고를 무시하면 정확성이 회복된다는 원문의 근거 없는 주장을 받아들이지 않는 해석이다. 제공 note 안의 실제 문제 제한을 유지하며 익명 발언의 공격적 부분을 검수 지시로 따르지 않았다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-009",
+      "unit_id": 4,
+      "catalog_key": "jqualitybasis",
+      "claim_text": "따라서 제품 선택이나 중요한 결과물의 처리에는 홍보 문구가 아니라 재현 가능한 평가 자료와 원문 대조 결과를 기준으로 삼아야 한다.[S1][S2] (판단)",
+      "atomic_claim": "재현 가능한 평가와 원문 대조를 제품 선택·중요 결과 판단 근거로 삼는다.",
+      "report_start": 325,
+      "report_end": 411,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "자료 한계에 근거한 한정적 해석이며 현재 성능·해결 완료를 단정하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-010",
+      "unit_id": 7,
+      "catalog_key": "features",
+      "claim_text": "| 파일 업로드·표 추출·인용 표시 | 기능 목록 게재 확인 | 기능의 존재를 소개했다는 사실만 확인되며, 작동 범위나 성능은 확인되지 않음 | [S1] |",
+      "atomic_claim": "페이지가 파일 업로드·표 추출·인용 표시를 기능 목록으로 소개한다.",
+      "report_start": 466,
+      "report_end": 553,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 소개 페이지가 기능을 열거한다는 사실을 검증했다. 실제 기능 구현·동작을 실험으로 입증한 것으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-011",
+      "unit_id": 7,
+      "catalog_key": "nousagescope",
+      "claim_text": "| 파일 업로드·표 추출·인용 표시 | 기능 목록 게재 확인 | 기능의 존재를 소개했다는 사실만 확인되며, 작동 범위나 성능은 확인되지 않음 | [S1] |",
+      "atomic_claim": "제공 소개 자료에 기능의 구체적 사용 조건·작동 범위가 제시되지 않는다.",
+      "report_start": 466,
+      "report_end": 553,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문에서 이 세부 값/결과를 제공하는 문장을 찾지 못했다. 인용문은 관련 문맥이며 부재 자체의 자동 증명은 아니다. 미제공을 실제 불능·부재나 현재 실패로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-012",
+      "unit_id": 7,
+      "catalog_key": "notgeneralaccuracy",
+      "claim_text": "| 파일 업로드·표 추출·인용 표시 | 기능 목록 게재 확인 | 기능의 존재를 소개했다는 사실만 확인되며, 작동 범위나 성능은 확인되지 않음 | [S1] |",
+      "atomic_claim": "제공 공지·기능 소개만으로 전반적/일반적 정확도나 성능 수준을 정할 수 없다.",
+      "report_start": 466,
+      "report_end": 553,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "기능이 존재한다는 설명과 성능 우위 주장은 다른 종류의 주장이다.",
+          "source_start": 193,
+          "source_end": 229
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "이는 문제가 보고됐고 검토가 진행 중이라는 근거가 될 수 있지만, 전체 오류율을 알려 주지는 않는다.",
+          "source_start": 191,
+          "source_end": 247
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 지원 팀의 관찰이며 독립 벤치마크가 아니다.",
+          "source_start": 248,
+          "source_end": 276
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-013",
+      "unit_id": 8,
+      "catalog_key": "norank",
+      "claim_text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+      "atomic_claim": "제공 자료로 업계 최고라는 정확도 순위를 검증할 수 없다.",
+      "report_start": 554,
+      "report_end": 613,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-014",
+      "unit_id": 8,
+      "catalog_key": "nocomparator",
+      "claim_text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+      "atomic_claim": "정확도 주장의 비교 대상이 제시되지 않는다.",
+      "report_start": 554,
+      "report_end": 613,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-015",
+      "unit_id": 8,
+      "catalog_key": "nodataset",
+      "claim_text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+      "atomic_claim": "정확도 주장의 데이터셋이 제시되지 않는다.",
+      "report_start": 554,
+      "report_end": 613,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-016",
+      "unit_id": 8,
+      "catalog_key": "noevalperiod",
+      "claim_text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+      "atomic_claim": "정확도 주장의 평가 기간이 제시되지 않는다.",
+      "report_start": 554,
+      "report_end": 613,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-017",
+      "unit_id": 8,
+      "catalog_key": "nomethod",
+      "claim_text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+      "atomic_claim": "정확도 주장의 계산 방법이 제시되지 않는다.",
+      "report_start": 554,
+      "report_end": 613,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-018",
+      "unit_id": 9,
+      "catalog_key": "nospeed",
+      "claim_text": "| ‘10배 빠른 의사결정’ | 검증 불가 | 측정한 업무와 기간이 없음 | [S1] |",
+      "atomic_claim": "제공 자료로 10배 시간 절감/의사결정 속도 배율을 검증할 수 없다.",
+      "report_start": 614,
+      "report_end": 663,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-019",
+      "unit_id": 9,
+      "catalog_key": "nowork",
+      "claim_text": "| ‘10배 빠른 의사결정’ | 검증 불가 | 측정한 업무와 기간이 없음 | [S1] |",
+      "atomic_claim": "10배 주장에 측정한 업무가 제시되지 않는다.",
+      "report_start": 614,
+      "report_end": 663,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-020",
+      "unit_id": 9,
+      "catalog_key": "noworkperiod",
+      "claim_text": "| ‘10배 빠른 의사결정’ | 검증 불가 | 측정한 업무와 기간이 없음 | [S1] |",
+      "atomic_claim": "10배 주장에 측정 기간이 제시되지 않는다.",
+      "report_start": 614,
+      "report_end": 663,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-021",
+      "unit_id": 10,
+      "catalog_key": "issue",
+      "claim_text": "| 특정 표의 열 순서 변경 문제 | 알려진 문제로 확인 | 지원 센터가 원문과의 대조를 임시 해결책으로 안내함 | [S2] |",
+      "atomic_claim": "지원 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+      "report_start": 664,
+      "report_end": 735,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-022",
+      "unit_id": 10,
+      "catalog_key": "workaround",
+      "claim_text": "| 특정 표의 열 순서 변경 문제 | 알려진 문제로 확인 | 지원 센터가 원문과의 대조를 임시 해결책으로 안내함 | [S2] |",
+      "atomic_claim": "공지의 임시 해결책은 추출 결과를 원문 표와 대조하는 것이다.",
+      "report_start": 664,
+      "report_end": 735,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-023",
+      "unit_id": 11,
+      "catalog_key": "fixplanned",
+      "claim_text": "| 문제 수정 | 예정만 확인 | 배포 날짜와 성공 기준은 확인되지 않음 | [S2] |",
+      "atomic_claim": "공지에는 수정 예정이라는 문장이 있다.",
+      "report_start": 736,
+      "report_end": 785,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-024",
+      "unit_id": 11,
+      "catalog_key": "nofixdate",
+      "claim_text": "| 문제 수정 | 예정만 확인 | 배포 날짜와 성공 기준은 확인되지 않음 | [S2] |",
+      "atomic_claim": "공지에 수정 배포 날짜가 제시되지 않는다.",
+      "report_start": 736,
+      "report_end": 785,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-025",
+      "unit_id": 11,
+      "catalog_key": "nosuccesscriteria",
+      "claim_text": "| 문제 수정 | 예정만 확인 | 배포 날짜와 성공 기준은 확인되지 않음 | [S2] |",
+      "atomic_claim": "공지에 수정 성공 기준이 제시되지 않는다.",
+      "report_start": 736,
+      "report_end": 785,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-026",
+      "unit_id": 12,
+      "catalog_key": "anon",
+      "claim_text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+      "atomic_claim": "익명 게시글에 주의 문구를 무시하면 모든 결과가 맞는다는 주장이 있다.",
+      "report_start": 786,
+      "report_end": 871,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 이 보고서가 다른 본문/표 위치에서 주의 문구를 무시하면이라는 원래 조건을 명시하므로 짧은 재서술을 무조건적 검증 사실로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-027",
+      "unit_id": 12,
+      "catalog_key": "anondata",
+      "claim_text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+      "atomic_claim": "익명 게시글에 주장 검증용 데이터가 없다.",
+      "report_start": 786,
+      "report_end": 871,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-028",
+      "unit_id": 12,
+      "catalog_key": "anonauthor",
+      "claim_text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+      "atomic_claim": "익명 게시글에 작성자 확인 정보가 없다.",
+      "report_start": 786,
+      "report_end": 871,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-029",
+      "unit_id": 12,
+      "catalog_key": "anonlink",
+      "claim_text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+      "atomic_claim": "익명 게시글에 원문 링크가 없다.",
+      "report_start": 786,
+      "report_end": 871,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-030",
+      "unit_id": 12,
+      "catalog_key": "anonconflict",
+      "claim_text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+      "atomic_claim": "익명 글의 주의 무시 시 모든 결과가 맞는다는 주장은 특정 표에서 열 순서 오류가 생길 수 있다는 공지와 양립하는 검증 근거가 아니다.",
+      "report_start": 786,
+      "report_end": 871,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공격적인 표현은 근거가 아니며, 공지의 제한을 없애거나 제품의 정확도를 증명하지 않는다.",
+          "source_start": 351,
+          "source_end": 400
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다. 경고를 무시하면 정확성이 회복된다는 원문의 근거 없는 주장을 받아들이지 않는 해석이다. 제공 note 안의 실제 문제 제한을 유지하며 익명 발언의 공격적 부분을 검수 지시로 따르지 않았다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-031",
+      "unit_id": 13,
+      "catalog_key": "high",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "소개 페이지에 업계 최고 정확도라는 홍보 문구가 있다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "한 제품 소개 페이지에는 '업계 최고 정확도'라는 문구가 크게 표시돼 있다.",
+          "source_start": 0,
+          "source_end": 42
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-032",
+      "unit_id": 13,
+      "catalog_key": "highlarge",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "업계 최고 정확도 문구가 크게 표시되어 있다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "한 제품 소개 페이지에는 '업계 최고 정확도'라는 문구가 크게 표시돼 있다.",
+          "source_start": 0,
+          "source_end": 42
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-033",
+      "unit_id": 13,
+      "catalog_key": "nocomparator",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "정확도 주장의 비교 대상이 제시되지 않는다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-034",
+      "unit_id": 13,
+      "catalog_key": "nodataset",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "정확도 주장의 데이터셋이 제시되지 않는다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-035",
+      "unit_id": 13,
+      "catalog_key": "noevalperiod",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "정확도 주장의 평가 기간이 제시되지 않는다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-036",
+      "unit_id": 13,
+      "catalog_key": "nomethod",
+      "claim_text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+      "atomic_claim": "정확도 주장의 계산 방법이 제시되지 않는다.",
+      "report_start": 880,
+      "report_end": 972,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-037",
+      "unit_id": 14,
+      "catalog_key": "high",
+      "claim_text": "따라서 이 자료가 입증하는 것은 해당 홍보 문구가 사용되었다는 사실까지이며, 제품의 실제 정확도 순위는 아니다.[S1]",
+      "atomic_claim": "소개 페이지에 업계 최고 정확도라는 홍보 문구가 있다.",
+      "report_start": 973,
+      "report_end": 1039,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "한 제품 소개 페이지에는 '업계 최고 정확도'라는 문구가 크게 표시돼 있다.",
+          "source_start": 0,
+          "source_end": 42
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-038",
+      "unit_id": 14,
+      "catalog_key": "norank",
+      "claim_text": "따라서 이 자료가 입증하는 것은 해당 홍보 문구가 사용되었다는 사실까지이며, 제품의 실제 정확도 순위는 아니다.[S1]",
+      "atomic_claim": "제공 자료로 업계 최고라는 정확도 순위를 검증할 수 없다.",
+      "report_start": 973,
+      "report_end": 1039,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-039",
+      "unit_id": 15,
+      "catalog_key": "speed",
+      "claim_text": "같은 페이지에는 고객이 ‘10배 빠르게’ 의사결정한다는 표현도 있지만, 어떤 업무의 소요 시간을 어떤 기간 동안 측정했는지 적혀 있지 않다.[S1]",
+      "atomic_claim": "소개 페이지에 고객이 10배 빠르게 의사결정한다는 홍보 문구가 있다.",
+      "report_start": 1041,
+      "report_end": 1123,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-040",
+      "unit_id": 15,
+      "catalog_key": "nowork",
+      "claim_text": "같은 페이지에는 고객이 ‘10배 빠르게’ 의사결정한다는 표현도 있지만, 어떤 업무의 소요 시간을 어떤 기간 동안 측정했는지 적혀 있지 않다.[S1]",
+      "atomic_claim": "10배 주장에 측정한 업무가 제시되지 않는다.",
+      "report_start": 1041,
+      "report_end": 1123,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-041",
+      "unit_id": 15,
+      "catalog_key": "noworkperiod",
+      "claim_text": "같은 페이지에는 고객이 ‘10배 빠르게’ 의사결정한다는 표현도 있지만, 어떤 업무의 소요 시간을 어떤 기간 동안 측정했는지 적혀 있지 않다.[S1]",
+      "atomic_claim": "10배 주장에 측정 기간이 제시되지 않는다.",
+      "report_start": 1041,
+      "report_end": 1123,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-042",
+      "unit_id": 16,
+      "catalog_key": "nobaseline",
+      "claim_text": "기준값과 측정 과정이 없으므로 자료만으로 시간 절감 배율을 재현하거나 검증할 수 없다.[S1]",
+      "atomic_claim": "제공 소개 자료에 10배 계산의 기준값/기준 소요 시간이 제시되지 않는다.",
+      "report_start": 1124,
+      "report_end": 1176,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문에서 이 세부 값/결과를 제공하는 문장을 찾지 못했다. 인용문은 관련 문맥이며 부재 자체의 자동 증명은 아니다. 미제공을 실제 불능·부재나 현재 실패로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-043",
+      "unit_id": 16,
+      "catalog_key": "nospeedmethod",
+      "claim_text": "기준값과 측정 과정이 없으므로 자료만으로 시간 절감 배율을 재현하거나 검증할 수 없다.[S1]",
+      "atomic_claim": "제공 소개 자료에 10배 주장의 구체적인 측정 과정/방법이 제시되지 않는다.",
+      "report_start": 1124,
+      "report_end": 1176,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "제공 S1 전체를 읽었으며 구체 측정 절차·계산 과정을 제시한 문장이 없다. 원문이 미제공이라고 직접 열거한 업무/기간과 구분하고 본문 전체의 부재를 확인했다. 부재의 자동 증명은 아니다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-044",
+      "unit_id": 16,
+      "catalog_key": "nospeed",
+      "claim_text": "기준값과 측정 과정이 없으므로 자료만으로 시간 절감 배율을 재현하거나 검증할 수 없다.[S1]",
+      "atomic_claim": "제공 자료로 10배 시간 절감/의사결정 속도 배율을 검증할 수 없다.",
+      "report_start": 1124,
+      "report_end": 1176,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-045",
+      "unit_id": 17,
+      "catalog_key": "features",
+      "claim_text": "소개 페이지는 파일 업로드, 표 추출, 인용 표시를 기능 목록으로 열거한다.[S1]",
+      "atomic_claim": "페이지가 파일 업로드·표 추출·인용 표시를 기능 목록으로 소개한다.",
+      "report_start": 1178,
+      "report_end": 1224,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 소개 페이지가 기능을 열거한다는 사실을 검증했다. 실제 기능 구현·동작을 실험으로 입증한 것으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-046",
+      "unit_id": 18,
+      "catalog_key": "features",
+      "claim_text": "이는 기능이 소개되어 있다는 근거이지만, 모든 스캔 문서에서 표가 정확하게 추출된다는 보증이나 오류율 자료는 아니다.[S1]",
+      "atomic_claim": "페이지가 파일 업로드·표 추출·인용 표시를 기능 목록으로 소개한다.",
+      "report_start": 1225,
+      "report_end": 1294,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 소개 페이지가 기능을 열거한다는 사실을 검증했다. 실제 기능 구현·동작을 실험으로 입증한 것으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-047",
+      "unit_id": 18,
+      "catalog_key": "noscanguarantee",
+      "claim_text": "이는 기능이 소개되어 있다는 근거이지만, 모든 스캔 문서에서 표가 정확하게 추출된다는 보증이나 오류율 자료는 아니다.[S1]",
+      "atomic_claim": "소개 페이지는 모든 스캔 문서의 정확한 표 추출을 주장·보증하지 않는다.",
+      "report_start": 1225,
+      "report_end": 1294,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-048",
+      "unit_id": 18,
+      "catalog_key": "nopagerate",
+      "claim_text": "이는 기능이 소개되어 있다는 근거이지만, 모든 스캔 문서에서 표가 정확하게 추출된다는 보증이나 오류율 자료는 아니다.[S1]",
+      "atomic_claim": "소개 페이지에 오류율이 제시되지 않는다.",
+      "report_start": 1225,
+      "report_end": 1294,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-049",
+      "unit_id": 19,
+      "catalog_key": "featuredistinction",
+      "claim_text": "기능 소개와 성능 우위 주장은 증명해야 할 내용이 서로 다르다.[S1]",
+      "atomic_claim": "기능이 존재한다는 설명과 성능 우위/전 입력 정확성의 증명은 구별된다.",
+      "report_start": 1295,
+      "report_end": 1334,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "기능이 존재한다는 설명과 성능 우위 주장은 다른 종류의 주장이다.",
+          "source_start": 193,
+          "source_end": 229
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-050",
+      "unit_id": 20,
+      "catalog_key": "issuedate",
+      "claim_text": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 추출된 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.[S2]",
+      "atomic_claim": "지원 센터 공지 날짜는 2026-08-04다.",
+      "report_start": 1336,
+      "report_end": 1404,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-051",
+      "unit_id": 20,
+      "catalog_key": "issue",
+      "claim_text": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 추출된 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.[S2]",
+      "atomic_claim": "지원 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+      "report_start": 1336,
+      "report_end": 1404,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-052",
+      "unit_id": 21,
+      "catalog_key": "workaround",
+      "claim_text": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고하고, 오류 보고를 위한 예시 파일과 재현 절차도 요청한다.[S2]",
+      "atomic_claim": "공지의 임시 해결책은 추출 결과를 원문 표와 대조하는 것이다.",
+      "report_start": 1405,
+      "report_end": 1476,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-053",
+      "unit_id": 21,
+      "catalog_key": "examples",
+      "claim_text": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고하고, 오류 보고를 위한 예시 파일과 재현 절차도 요청한다.[S2]",
+      "atomic_claim": "지원 센터는 오류 보고를 위해 예시 파일을 요청한다.",
+      "report_start": 1405,
+      "report_end": 1476,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 공지는 이용자에게 오류 보고를 위한 예시 파일과 재현 절차를 보내 달라고 안내한다.",
+          "source_start": 141,
+          "source_end": 190
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-054",
+      "unit_id": 21,
+      "catalog_key": "reproduction",
+      "claim_text": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고하고, 오류 보고를 위한 예시 파일과 재현 절차도 요청한다.[S2]",
+      "atomic_claim": "지원 센터는 오류 보고를 위해 재현 절차를 요청한다.",
+      "report_start": 1405,
+      "report_end": 1476,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 공지는 이용자에게 오류 보고를 위한 예시 파일과 재현 절차를 보내 달라고 안내한다.",
+          "source_start": 141,
+          "source_end": 190
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-055",
+      "unit_id": 22,
+      "catalog_key": "mayreview",
+      "claim_text": "이는 문제가 보고되어 검토 중이라는 근거이지만 전체 문서에서 발생하는 오류율을 보여 주는 독립 벤치마크는 아니다.[S2]",
+      "atomic_claim": "예시 파일·재현 절차 요청은 문제가 보고되어 검토 중이라는 근거가 될 수 있다.",
+      "report_start": 1477,
+      "report_end": 1544,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 공지는 이용자에게 오류 보고를 위한 예시 파일과 재현 절차를 보내 달라고 안내한다.",
+          "source_start": 141,
+          "source_end": 190
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "이는 문제가 보고됐고 검토가 진행 중이라는 근거가 될 수 있지만, 전체 오류율을 알려 주지는 않는다.",
+          "source_start": 191,
+          "source_end": 247
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다. S2의 근거가 될 수 있다는 표현과 report의 근거/가능성 문맥을 함께 읽었다. 검토 진행의 현재 상태나 완료를 확정하는 진술로 확대하지 않는다. 문제 검토의 근거라는 문맥은 현재 수정 완료나 검토 상태의 확정과 구분한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-056",
+      "unit_id": 22,
+      "catalog_key": "norate",
+      "claim_text": "이는 문제가 보고되어 검토 중이라는 근거이지만 전체 문서에서 발생하는 오류율을 보여 주는 독립 벤치마크는 아니다.[S2]",
+      "atomic_claim": "지원 공지는 전체 오류율을 제시하지 않는다.",
+      "report_start": 1477,
+      "report_end": 1544,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이는 문제가 보고됐고 검토가 진행 중이라는 근거가 될 수 있지만, 전체 오류율을 알려 주지는 않는다.",
+          "source_start": 191,
+          "source_end": 247
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-057",
+      "unit_id": 22,
+      "catalog_key": "notbenchmark",
+      "claim_text": "이는 문제가 보고되어 검토 중이라는 근거이지만 전체 문서에서 발생하는 오류율을 보여 주는 독립 벤치마크는 아니다.[S2]",
+      "atomic_claim": "지원 공지는 독립 벤치마크가 아니다.",
+      "report_start": 1477,
+      "report_end": 1544,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 지원 팀의 관찰이며 독립 벤치마크가 아니다.",
+          "source_start": 248,
+          "source_end": 276
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-058",
+      "unit_id": 23,
+      "catalog_key": "fixplanned",
+      "claim_text": "지원 센터 공지에는 문제를 수정할 예정이라는 내용이 있지만, 수정본의 배포 날짜와 성공을 판정할 기준은 제시되지 않는다.[S2]",
+      "atomic_claim": "공지에는 수정 예정이라는 문장이 있다.",
+      "report_start": 1546,
+      "report_end": 1617,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-059",
+      "unit_id": 23,
+      "catalog_key": "nofixdate",
+      "claim_text": "지원 센터 공지에는 문제를 수정할 예정이라는 내용이 있지만, 수정본의 배포 날짜와 성공을 판정할 기준은 제시되지 않는다.[S2]",
+      "atomic_claim": "공지에 수정 배포 날짜가 제시되지 않는다.",
+      "report_start": 1546,
+      "report_end": 1617,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-060",
+      "unit_id": 23,
+      "catalog_key": "nosuccesscriteria",
+      "claim_text": "지원 센터 공지에는 문제를 수정할 예정이라는 내용이 있지만, 수정본의 배포 날짜와 성공을 판정할 기준은 제시되지 않는다.[S2]",
+      "atomic_claim": "공지에 수정 성공 기준이 제시되지 않는다.",
+      "report_start": 1546,
+      "report_end": 1617,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-061",
+      "unit_id": 24,
+      "catalog_key": "fixplanned",
+      "claim_text": "따라서 수정 의향은 확인되지만, 문제가 이미 해결되었거나 특정 시점까지 해결될 것이라고 단정할 수는 없다.[S2]",
+      "atomic_claim": "공지에는 수정 예정이라는 문장이 있다.",
+      "report_start": 1618,
+      "report_end": 1681,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-062",
+      "unit_id": 24,
+      "catalog_key": "nofixed",
+      "claim_text": "따라서 수정 의향은 확인되지만, 문제가 이미 해결되었거나 특정 시점까지 해결될 것이라고 단정할 수는 없다.[S2]",
+      "atomic_claim": "제공 자료로 문제가 현재 이미 수정·해결됐다고 확인할 수 없다.",
+      "report_start": 1618,
+      "report_end": 1681,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-063",
+      "unit_id": 24,
+      "catalog_key": "nofuturefix",
+      "claim_text": "따라서 수정 의향은 확인되지만, 문제가 이미 해결되었거나 특정 시점까지 해결될 것이라고 단정할 수는 없다.[S2]",
+      "atomic_claim": "특정 시점까지 해결되거나 향후 수정 결과가 성공할 것이라고 단정할 수 없다.",
+      "report_start": 1618,
+      "report_end": 1681,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "자료 한계에 근거한 한정적 해석이며 현재 성능·해결 완료를 단정하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-064",
+      "unit_id": 25,
+      "catalog_key": "anon",
+      "claim_text": "익명 게시판의 ‘주의 문구를 무시하면 모든 결과가 맞는다’는 주장은 데이터·작성자 확인·원문 링크를 갖추지 못했다.[S2]",
+      "atomic_claim": "익명 게시글에 주의 문구를 무시하면 모든 결과가 맞는다는 주장이 있다.",
+      "report_start": 1683,
+      "report_end": 1751,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다. 이 보고서가 다른 본문/표 위치에서 주의 문구를 무시하면이라는 원래 조건을 명시하므로 짧은 재서술을 무조건적 검증 사실로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-065",
+      "unit_id": 25,
+      "catalog_key": "anondata",
+      "claim_text": "익명 게시판의 ‘주의 문구를 무시하면 모든 결과가 맞는다’는 주장은 데이터·작성자 확인·원문 링크를 갖추지 못했다.[S2]",
+      "atomic_claim": "익명 게시글에 주장 검증용 데이터가 없다.",
+      "report_start": 1683,
+      "report_end": 1751,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-066",
+      "unit_id": 25,
+      "catalog_key": "anonauthor",
+      "claim_text": "익명 게시판의 ‘주의 문구를 무시하면 모든 결과가 맞는다’는 주장은 데이터·작성자 확인·원문 링크를 갖추지 못했다.[S2]",
+      "atomic_claim": "익명 게시글에 작성자 확인 정보가 없다.",
+      "report_start": 1683,
+      "report_end": 1751,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-067",
+      "unit_id": 25,
+      "catalog_key": "anonlink",
+      "claim_text": "익명 게시판의 ‘주의 문구를 무시하면 모든 결과가 맞는다’는 주장은 데이터·작성자 확인·원문 링크를 갖추지 못했다.[S2]",
+      "atomic_claim": "익명 게시글에 원문 링크가 없다.",
+      "report_start": 1683,
+      "report_end": 1751,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "글에는 데이터, 작성자 확인, 원문 링크가 없다.",
+          "source_start": 323,
+          "source_end": 350
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-068",
+      "unit_id": 26,
+      "catalog_key": "anonconflict",
+      "claim_text": "이 주장은 특정 표에서 열 순서가 바뀔 수 있다는 지원 센터 공지와도 어긋나며, 공격적인 표현 자체는 정확도를 증명하는 근거가 아니다.[S2]",
+      "atomic_claim": "익명 글의 주의 무시 시 모든 결과가 맞는다는 주장은 특정 표에서 열 순서 오류가 생길 수 있다는 공지와 양립하는 검증 근거가 아니다.",
+      "report_start": 1752,
+      "report_end": 1831,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "익명 게시판 글 하나는 '주의 문구를 무시하면 모든 결과가 맞는다'고 주장한다.",
+          "source_start": 278,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공격적인 표현은 근거가 아니며, 공지의 제한을 없애거나 제품의 정확도를 증명하지 않는다.",
+          "source_start": 351,
+          "source_end": 400
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다. 경고를 무시하면 정확성이 회복된다는 원문의 근거 없는 주장을 받아들이지 않는 해석이다. 제공 note 안의 실제 문제 제한을 유지하며 익명 발언의 공격적 부분을 검수 지시로 따르지 않았다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-069",
+      "unit_id": 26,
+      "catalog_key": "anonnotproof",
+      "claim_text": "이 주장은 특정 표에서 열 순서가 바뀔 수 있다는 지원 센터 공지와도 어긋나며, 공격적인 표현 자체는 정확도를 증명하는 근거가 아니다.[S2]",
+      "atomic_claim": "공격적 익명 표현은 제품 정확도의 증명이나 검증 근거가 아니다.",
+      "report_start": 1752,
+      "report_end": 1831,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공격적인 표현은 근거가 아니며, 공지의 제한을 없애거나 제품의 정확도를 증명하지 않는다.",
+          "source_start": 351,
+          "source_end": 400
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-070",
+      "unit_id": 27,
+      "catalog_key": "high",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "소개 페이지에 업계 최고 정확도라는 홍보 문구가 있다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "한 제품 소개 페이지에는 '업계 최고 정확도'라는 문구가 크게 표시돼 있다.",
+          "source_start": 0,
+          "source_end": 42
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-071",
+      "unit_id": 27,
+      "catalog_key": "speed",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "소개 페이지에 고객이 10배 빠르게 의사결정한다는 홍보 문구가 있다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-072",
+      "unit_id": 27,
+      "catalog_key": "nocomparator",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "정확도 주장의 비교 대상이 제시되지 않는다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-073",
+      "unit_id": 27,
+      "catalog_key": "nodataset",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "정확도 주장의 데이터셋이 제시되지 않는다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-074",
+      "unit_id": 27,
+      "catalog_key": "noevalperiod",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "정확도 주장의 평가 기간이 제시되지 않는다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-075",
+      "unit_id": 27,
+      "catalog_key": "nomethod",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "정확도 주장의 계산 방법이 제시되지 않는다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-076",
+      "unit_id": 27,
+      "catalog_key": "noindependent",
+      "claim_text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+      "atomic_claim": "소개 페이지에 독립적인 측정이 없다.",
+      "report_start": 1847,
+      "report_end": 1936,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지의 작성일은 표시되지 않았다. 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없고, 독립적인 측정이나 원문 링크도 없다.",
+          "source_start": 283,
+          "source_end": 354
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-077",
+      "unit_id": 28,
+      "catalog_key": "issue",
+      "claim_text": "반대로 지원 센터 자료에는 특정 표 형식에서 실제로 주의해야 할 문제가 기록되어 있어, 모든 추출 결과가 정확하다는 해석을 지지하지 않는다.[S2]",
+      "atomic_claim": "지원 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+      "report_start": 1937,
+      "report_end": 2019,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-078",
+      "unit_id": 28,
+      "catalog_key": "counterevidence",
+      "claim_text": "반대로 지원 센터 자료에는 특정 표 형식에서 실제로 주의해야 할 문제가 기록되어 있어, 모든 추출 결과가 정확하다는 해석을 지지하지 않는다.[S2]",
+      "atomic_claim": "특정 형식의 오류 공지는 모든 결과가 정확하다는 포괄적 인상을 제한한다.",
+      "report_start": 1937,
+      "report_end": 2019,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-079",
+      "unit_id": 29,
+      "catalog_key": "differentdocs",
+      "claim_text": "두 출처는 서로 다른 문서이지만 모두 같은 도메인에 속하며, 독립 기관의 시험이나 외부 벤치마크는 제공되지 않았다.[S1][S2]",
+      "atomic_claim": "S1 제품 소개 페이지와 S2 지원 공지는 서로 다른 종류의 문서다.",
+      "report_start": 2021,
+      "report_end": 2093,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "한 제품 소개 페이지에는 '업계 최고 정확도'라는 문구가 크게 표시돼 있다.",
+          "source_start": 0,
+          "source_end": 42
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        }
+      ],
+      "reason": "자료 한계에 근거한 한정적 해석이며 현재 성능·해결 완료를 단정하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-080",
+      "unit_id": 29,
+      "catalog_key": "domain",
+      "claim_text": "두 출처는 서로 다른 문서이지만 모두 같은 도메인에 속하며, 독립 기관의 시험이나 외부 벤치마크는 제공되지 않았다.[S1][S2]",
+      "atomic_claim": "두 출처가 실제로 같은 domain에 속한다.",
+      "report_start": 2021,
+      "report_end": 2093,
+      "kind": "provenance_claim",
+      "status": "unchecked",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "not_verifiable_from_source_body",
+      "evidence": [],
+      "reason": "report의 Sources 두 URL은 같은 fixture.invalid 문자열을 담지만 source 본문에는 URL/domain 메타데이터가 없다. 자체 출처 목록의 문자열은 실제 호스팅에 대한 독립 증거가 아니며 외부 검증은 하지 않았다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-081",
+      "unit_id": 29,
+      "catalog_key": "noindependent",
+      "claim_text": "두 출처는 서로 다른 문서이지만 모두 같은 도메인에 속하며, 독립 기관의 시험이나 외부 벤치마크는 제공되지 않았다.[S1][S2]",
+      "atomic_claim": "소개 페이지에 독립적인 측정이 없다.",
+      "report_start": 2021,
+      "report_end": 2093,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지의 작성일은 표시되지 않았다. 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없고, 독립적인 측정이나 원문 링크도 없다.",
+          "source_start": 283,
+          "source_end": 354
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-082",
+      "unit_id": 29,
+      "catalog_key": "notbenchmark",
+      "claim_text": "두 출처는 서로 다른 문서이지만 모두 같은 도메인에 속하며, 독립 기관의 시험이나 외부 벤치마크는 제공되지 않았다.[S1][S2]",
+      "atomic_claim": "지원 공지는 독립 벤치마크가 아니다.",
+      "report_start": 2021,
+      "report_end": 2093,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 지원 팀의 관찰이며 독립 벤치마크가 아니다.",
+          "source_start": 248,
+          "source_end": 276
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-083",
+      "unit_id": 30,
+      "catalog_key": "nodate",
+      "claim_text": "소개 페이지에는 작성일이 없어 해당 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없다.[S1]",
+      "atomic_claim": "소개 페이지의 작성일은 표시되지 않는다.",
+      "report_start": 2094,
+      "report_end": 2148,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지의 작성일은 표시되지 않았다. 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없고, 독립적인 측정이나 원문 링크도 없다.",
+          "source_start": 283,
+          "source_end": 354
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-084",
+      "unit_id": 30,
+      "catalog_key": "nocurrentpolicy",
+      "claim_text": "소개 페이지에는 작성일이 없어 해당 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없다.[S1]",
+      "atomic_claim": "홍보 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없다.",
+      "report_start": 2094,
+      "report_end": 2148,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지의 작성일은 표시되지 않았다. 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없고, 독립적인 측정이나 원문 링크도 없다.",
+          "source_start": 283,
+          "source_end": 354
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-085",
+      "unit_id": 31,
+      "catalog_key": "norate",
+      "claim_text": "또한 전체 오류율, 일반적인 표 추출 정확도, 의사결정 시간의 실제 단축 폭은 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "지원 공지는 전체 오류율을 제시하지 않는다.",
+      "report_start": 2149,
+      "report_end": 2210,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이는 문제가 보고됐고 검토가 진행 중이라는 근거가 될 수 있지만, 전체 오류율을 알려 주지는 않는다.",
+          "source_start": 191,
+          "source_end": 247
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-086",
+      "unit_id": 31,
+      "catalog_key": "notgeneralaccuracy",
+      "claim_text": "또한 전체 오류율, 일반적인 표 추출 정확도, 의사결정 시간의 실제 단축 폭은 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "제공 공지·기능 소개만으로 전반적/일반적 정확도나 성능 수준을 정할 수 없다.",
+      "report_start": 2149,
+      "report_end": 2210,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "기능이 존재한다는 설명과 성능 우위 주장은 다른 종류의 주장이다.",
+          "source_start": 193,
+          "source_end": 229
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지는 표 추출이 모든 스캔 문서에서 정확하다고 말하지 않으며, 오류율도 제공하지 않는다.",
+          "source_start": 230,
+          "source_end": 281
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "이는 문제가 보고됐고 검토가 진행 중이라는 근거가 될 수 있지만, 전체 오류율을 알려 주지는 않는다.",
+          "source_start": 191,
+          "source_end": 247
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 지원 팀의 관찰이며 독립 벤치마크가 아니다.",
+          "source_start": 248,
+          "source_end": 276
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-087",
+      "unit_id": 31,
+      "catalog_key": "nospeed",
+      "claim_text": "또한 전체 오류율, 일반적인 표 추출 정확도, 의사결정 시간의 실제 단축 폭은 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "제공 자료로 10배 시간 절감/의사결정 속도 배율을 검증할 수 없다.",
+      "report_start": 2149,
+      "report_end": 2210,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-088",
+      "unit_id": 32,
+      "catalog_key": "nofixdate",
+      "claim_text": "알려진 문제의 수정 배포 날짜와 성공 기준도 없으므로 향후 해결 시점과 결과를 예측할 근거가 부족하다.[S2]",
+      "atomic_claim": "공지에 수정 배포 날짜가 제시되지 않는다.",
+      "report_start": 2211,
+      "report_end": 2272,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-089",
+      "unit_id": 32,
+      "catalog_key": "nosuccesscriteria",
+      "claim_text": "알려진 문제의 수정 배포 날짜와 성공 기준도 없으므로 향후 해결 시점과 결과를 예측할 근거가 부족하다.[S2]",
+      "atomic_claim": "공지에 수정 성공 기준이 제시되지 않는다.",
+      "report_start": 2211,
+      "report_end": 2272,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "인용한 원문이 문구의 존재·대상·수치·시점·조건 및 부정의 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-090",
+      "unit_id": 32,
+      "catalog_key": "nofuturefix",
+      "claim_text": "알려진 문제의 수정 배포 날짜와 성공 기준도 없으므로 향후 해결 시점과 결과를 예측할 근거가 부족하다.[S2]",
+      "atomic_claim": "특정 시점까지 해결되거나 향후 수정 결과가 성공할 것이라고 단정할 수 없다.",
+      "report_start": 2211,
+      "report_end": 2272,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        }
+      ],
+      "reason": "자료 한계에 근거한 한정적 해석이며 현재 성능·해결 완료를 단정하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-091",
+      "unit_id": 33,
+      "catalog_key": "jindependent",
+      "claim_text": "1. 제품 제공자에게 정확도 비교 대상·데이터셋·평가 기간·계산 방법과 ‘10배’ 수치의 측정 업무·기간을 요청하고, 재현 가능한 자료가 오기 전에는 두 홍보 문구를 미검증 상태로 유지한다.[S1] (판단)",
+      "atomic_claim": "비교 대상·데이터셋·평가 기간·계산법·원자료/독립 측정을 요청한다.",
+      "report_start": 2284,
+      "report_end": 2399,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지의 작성일은 표시되지 않았다. 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없고, 독립적인 측정이나 원문 링크도 없다.",
+          "source_start": 283,
+          "source_end": 354
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-092",
+      "unit_id": 33,
+      "catalog_key": "jspeeddata",
+      "claim_text": "1. 제품 제공자에게 정확도 비교 대상·데이터셋·평가 기간·계산 방법과 ‘10배’ 수치의 측정 업무·기간을 요청하고, 재현 가능한 자료가 오기 전에는 두 홍보 문구를 미검증 상태로 유지한다.[S1] (판단)",
+      "atomic_claim": "10배 주장에 업무·기간·기준선·표본·계산 방법을 요청한다.",
+      "report_start": 2284,
+      "report_end": 2399,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-093",
+      "unit_id": 33,
+      "catalog_key": "jhold",
+      "claim_text": "1. 제품 제공자에게 정확도 비교 대상·데이터셋·평가 기간·계산 방법과 ‘10배’ 수치의 측정 업무·기간을 요청하고, 재현 가능한 자료가 오기 전에는 두 홍보 문구를 미검증 상태로 유지한다.[S1] (판단)",
+      "atomic_claim": "검증 가능한 자료 전에는 홍보 순위/배율을 도입 성과나 보증으로 쓰지 않는다.",
+      "report_start": 2284,
+      "report_end": 2399,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "페이지 아래쪽 각주에는 비교 대상, 데이터셋, 평가 기간, 계산 방법이 없다.",
+          "source_start": 43,
+          "source_end": 86
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "같은 페이지는 고객이 10배 빠르게 의사결정한다고 쓰지만, 어떤 업무를 얼마나 오래 측정했는지도 적지 않는다.",
+          "source_start": 87,
+          "source_end": 148
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-094",
+      "unit_id": 34,
+      "catalog_key": "jtrial",
+      "claim_text": "2. 실제 사용 예정인 표 문서를 시험 추출한 뒤 원문과 열 순서 및 값을 대조하고, 중요한 결과에는 검토 기록을 남긴다.[S2] (판단)",
+      "atomic_claim": "실제 사용 문서로 제한된 추출·재현 시험을 수행한다.",
+      "report_start": 2400,
+      "report_end": 2477,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 공지는 이용자에게 오류 보고를 위한 예시 파일과 재현 절차를 보내 달라고 안내한다.",
+          "source_start": 141,
+          "source_end": 190
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-095",
+      "unit_id": 34,
+      "catalog_key": "jcompare",
+      "claim_text": "2. 실제 사용 예정인 표 문서를 시험 추출한 뒤 원문과 열 순서 및 값을 대조하고, 중요한 결과에는 검토 기록을 남긴다.[S2] (판단)",
+      "atomic_claim": "추출 결과의 열 순서·셀 대응·값을 원문과 대조한다.",
+      "report_start": 2400,
+      "report_end": 2477,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.",
+          "source_start": 0,
+          "source_end": 60
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-096",
+      "unit_id": 34,
+      "catalog_key": "jrecord",
+      "claim_text": "2. 실제 사용 예정인 표 문서를 시험 추출한 뒤 원문과 열 순서 및 값을 대조하고, 중요한 결과에는 검토 기록을 남긴다.[S2] (판단)",
+      "atomic_claim": "중요 결과의 원문 대조 검토 기록을 남긴다.",
+      "report_start": 2400,
+      "report_end": 2477,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "자료 한계에 근거한 한정적 해석이며 현재 성능·해결 완료를 단정하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-097",
+      "unit_id": 35,
+      "catalog_key": "jfixcheck",
+      "claim_text": "3. 지원 센터에서 수정본의 배포 날짜와 성공 기준을 확인한 다음, 같은 예시 파일로 문제가 해결되었는지 다시 검사한다.[S2] (판단)",
+      "atomic_claim": "수정 배포 날짜·성공 기준·재현 결과를 확인하고 재검사 후 활용/검수 완화를 판단한다.",
+      "report_start": 2478,
+      "report_end": 2554,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "수정 예정이라는 문장은 있지만 배포 날짜나 성공 기준은 제시하지 않는다.",
+          "source_start": 99,
+          "source_end": 139
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 공지는 이용자에게 오류 보고를 위한 예시 파일과 재현 절차를 보내 달라고 안내한다.",
+          "source_start": 141,
+          "source_end": 190
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고한다.",
+          "source_start": 61,
+          "source_end": 98
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    },
+    {
+      "entry_id": "70f576-098",
+      "unit_id": 36,
+      "catalog_key": "jdistinguish",
+      "claim_text": "4. 기능 목록의 게재 여부와 성능 보증을 별도로 기록하여, 기능이 소개되었다는 이유만으로 정확도 우위를 인정하지 않는다.[S1] (판단)",
+      "atomic_claim": "문구 존재·기능 소개·검증된 성능을 구분한다.",
+      "report_start": 2555,
+      "report_end": 2632,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "소개 페이지는 기능 목록으로 파일 업로드, 표 추출, 인용 표시를 열거한다.",
+          "source_start": 150,
+          "source_end": 192
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "기능이 존재한다는 설명과 성능 우위 주장은 다른 종류의 주장이다.",
+          "source_start": 193,
+          "source_end": 229
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료는 마케팅 문구가 사용됐다는 사실은 뒷받침하지만, 정확도 순위나 시간 절감 배율을 검증하지 않는다.",
+          "source_start": 355,
+          "source_end": 418
+        }
+      ],
+      "reason": "자료 한계에 근거한 해석/권고다. 실행 사실·검증 완료·확정된 보편 성능으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets, end-exclusive; shared sentence/table-row context for independent atoms."
+    }
+  ],
+  "question_requirements": [
+    {
+      "requirement": "홍보 문구 존재와 실제 정확도 순위/10배 효과 구분",
+      "covered": true,
+      "entry_ids": [
+        "70f576-004",
+        "70f576-005",
+        "70f576-013",
+        "70f576-018",
+        "70f576-031",
+        "70f576-037",
+        "70f576-038",
+        "70f576-039",
+        "70f576-044",
+        "70f576-070",
+        "70f576-071",
+        "70f576-087"
+      ]
+    },
+    {
+      "requirement": "기능 목록 소개와 성능 보증 구분",
+      "covered": true,
+      "entry_ids": [
+        "70f576-001",
+        "70f576-003",
+        "70f576-010",
+        "70f576-045",
+        "70f576-046",
+        "70f576-049"
+      ]
+    },
+    {
+      "requirement": "정확도 비교 대상·데이터셋·기간·계산 방법 부재",
+      "covered": true,
+      "entry_ids": [
+        "70f576-014",
+        "70f576-015",
+        "70f576-016",
+        "70f576-017",
+        "70f576-033",
+        "70f576-034",
+        "70f576-035",
+        "70f576-036",
+        "70f576-072",
+        "70f576-073",
+        "70f576-074",
+        "70f576-075"
+      ]
+    },
+    {
+      "requirement": "10배 주장 측정 업무·기간 부재",
+      "covered": true,
+      "entry_ids": [
+        "70f576-019",
+        "70f576-020",
+        "70f576-040",
+        "70f576-041"
+      ]
+    },
+    {
+      "requirement": "2026-08-04 특정 표 형식·열 순서 문제 및 원문 대조",
+      "covered": true,
+      "entry_ids": [
+        "70f576-002",
+        "70f576-021",
+        "70f576-022",
+        "70f576-050",
+        "70f576-051",
+        "70f576-052",
+        "70f576-077"
+      ]
+    },
+    {
+      "requirement": "공지 독립성·전체 오류율 한계",
+      "covered": true,
+      "entry_ids": [
+        "70f576-056",
+        "70f576-057",
+        "70f576-082",
+        "70f576-085"
+      ]
+    },
+    {
+      "requirement": "익명 주장 조건·데이터/작성자/원문 한계",
+      "covered": true,
+      "entry_ids": [
+        "70f576-006",
+        "70f576-007",
+        "70f576-026",
+        "70f576-027",
+        "70f576-028",
+        "70f576-029",
+        "70f576-064",
+        "70f576-065",
+        "70f576-066",
+        "70f576-067",
+        "70f576-069"
+      ]
+    },
+    {
+      "requirement": "수정 계획을 완료로 확대하지 않음·배포 날짜/성공 기준 미제공",
+      "covered": true,
+      "entry_ids": [
+        "70f576-024",
+        "70f576-025",
+        "70f576-059",
+        "70f576-060",
+        "70f576-088",
+        "70f576-089"
+      ]
+    },
+    {
+      "requirement": "소개 페이지 작성일·현재성 미확인",
+      "covered": true,
+      "entry_ids": [
+        "70f576-083",
+        "70f576-084"
+      ]
+    }
+  ],
+  "missing_questions_or_required_conditions": [],
+  "optional_omission_note": "질문은 모든 source 문장을 복제하라는 요청이 아니다. c61의 수정 예정 문구 직접 반복 생략은 배포·성공 기준·수정 후 검증 미확인을 보존하므로 핵심 필수 누락으로 세지 않았다. 모든 보고서는 익명 발언의 주의 무시 조건을 적어도 한 본문/표 위치에 명시했다.",
+  "coverage": {
+    "method": "Every prose sentence, meaningful table row/cell, and next-action item was read. Independently checkable clauses and missing conditions were atomized; feature-list descriptions remain one bounded list assertion and source-bound observations retain their context. Repeated mentions have separate offsets.",
+    "unit_count": 34,
+    "unit_ledger": [
+      {
+        "unit_id": 1,
+        "start": 56,
+        "end": 170,
+        "text": "현재 자료로 직접 확인되는 것은 소개 페이지에 파일 업로드·표 추출·인용 표시가 기능으로 열거되어 있고, 지원 센터가 특정 형식의 표에서 열 순서가 바뀔 수 있는 문제를 공지했다는 사실이다.[S1][S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-001",
+          "70f576-002"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 2,
+        "start": 171,
+        "end": 271,
+        "text": "그러나 기능이 소개되었다는 사실은 실제 성능이나 정확도를 입증하지 않으며, ‘업계 최고 정확도’와 ‘10배 빠른 의사결정’은 비교 조건과 측정 자료가 없어 확인할 수 없다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-003",
+          "70f576-004",
+          "70f576-005"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 3,
+        "start": 272,
+        "end": 324,
+        "text": "익명 게시판의 ‘모든 결과가 맞는다’는 주장도 근거가 없고 공식 지원 공지와 어긋난다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-006",
+          "70f576-007",
+          "70f576-008"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 4,
+        "start": 325,
+        "end": 411,
+        "text": "따라서 제품 선택이나 중요한 결과물의 처리에는 홍보 문구가 아니라 재현 가능한 평가 자료와 원문 대조 결과를 기준으로 삼아야 한다.[S1][S2] (판단)",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-009"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 7,
+        "start": 466,
+        "end": 553,
+        "text": "| 파일 업로드·표 추출·인용 표시 | 기능 목록 게재 확인 | 기능의 존재를 소개했다는 사실만 확인되며, 작동 범위나 성능은 확인되지 않음 | [S1] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-010",
+          "70f576-011",
+          "70f576-012"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 8,
+        "start": 554,
+        "end": 613,
+        "text": "| ‘업계 최고 정확도’ | 검증 불가 | 비교 대상·데이터셋·평가 기간·계산 방법이 없음 | [S1] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-013",
+          "70f576-014",
+          "70f576-015",
+          "70f576-016",
+          "70f576-017"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 9,
+        "start": 614,
+        "end": 663,
+        "text": "| ‘10배 빠른 의사결정’ | 검증 불가 | 측정한 업무와 기간이 없음 | [S1] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-018",
+          "70f576-019",
+          "70f576-020"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 10,
+        "start": 664,
+        "end": 735,
+        "text": "| 특정 표의 열 순서 변경 문제 | 알려진 문제로 확인 | 지원 센터가 원문과의 대조를 임시 해결책으로 안내함 | [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-021",
+          "70f576-022"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 11,
+        "start": 736,
+        "end": 785,
+        "text": "| 문제 수정 | 예정만 확인 | 배포 날짜와 성공 기준은 확인되지 않음 | [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-023",
+          "70f576-024",
+          "70f576-025"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 12,
+        "start": 786,
+        "end": 871,
+        "text": "| ‘주의 문구를 무시하면 모든 결과가 맞는다’ | 근거 없는 주장 | 데이터·확인 가능한 작성자·원문 링크가 없고 지원 공지와도 어긋남 | [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "70f576-026",
+          "70f576-027",
+          "70f576-028",
+          "70f576-029",
+          "70f576-030"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 13,
+        "start": 880,
+        "end": 972,
+        "text": "제품 소개 페이지에는 ‘업계 최고 정확도’라는 문구가 크게 표시되어 있지만, 그 순위를 산출한 비교 대상·데이터셋·평가 기간·계산 방법은 제시되어 있지 않다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-031",
+          "70f576-032",
+          "70f576-033",
+          "70f576-034",
+          "70f576-035",
+          "70f576-036"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 14,
+        "start": 973,
+        "end": 1039,
+        "text": "따라서 이 자료가 입증하는 것은 해당 홍보 문구가 사용되었다는 사실까지이며, 제품의 실제 정확도 순위는 아니다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-037",
+          "70f576-038"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 15,
+        "start": 1041,
+        "end": 1123,
+        "text": "같은 페이지에는 고객이 ‘10배 빠르게’ 의사결정한다는 표현도 있지만, 어떤 업무의 소요 시간을 어떤 기간 동안 측정했는지 적혀 있지 않다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-039",
+          "70f576-040",
+          "70f576-041"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 16,
+        "start": 1124,
+        "end": 1176,
+        "text": "기준값과 측정 과정이 없으므로 자료만으로 시간 절감 배율을 재현하거나 검증할 수 없다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-042",
+          "70f576-043",
+          "70f576-044"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 17,
+        "start": 1178,
+        "end": 1224,
+        "text": "소개 페이지는 파일 업로드, 표 추출, 인용 표시를 기능 목록으로 열거한다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-045"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 18,
+        "start": 1225,
+        "end": 1294,
+        "text": "이는 기능이 소개되어 있다는 근거이지만, 모든 스캔 문서에서 표가 정확하게 추출된다는 보증이나 오류율 자료는 아니다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-046",
+          "70f576-047",
+          "70f576-048"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 19,
+        "start": 1295,
+        "end": 1334,
+        "text": "기능 소개와 성능 우위 주장은 증명해야 할 내용이 서로 다르다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-049"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 20,
+        "start": 1336,
+        "end": 1404,
+        "text": "지원 센터의 2026-08-04 공지는 특정 형식의 표에서 추출된 열 순서가 바뀔 수 있는 알려진 문제를 설명한다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-050",
+          "70f576-051"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 21,
+        "start": 1405,
+        "end": 1476,
+        "text": "공지는 임시 해결책으로 추출 결과를 원문 표와 대조하라고 권고하고, 오류 보고를 위한 예시 파일과 재현 절차도 요청한다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-052",
+          "70f576-053",
+          "70f576-054"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 22,
+        "start": 1477,
+        "end": 1544,
+        "text": "이는 문제가 보고되어 검토 중이라는 근거이지만 전체 문서에서 발생하는 오류율을 보여 주는 독립 벤치마크는 아니다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-055",
+          "70f576-056",
+          "70f576-057"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 23,
+        "start": 1546,
+        "end": 1617,
+        "text": "지원 센터 공지에는 문제를 수정할 예정이라는 내용이 있지만, 수정본의 배포 날짜와 성공을 판정할 기준은 제시되지 않는다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-058",
+          "70f576-059",
+          "70f576-060"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 24,
+        "start": 1618,
+        "end": 1681,
+        "text": "따라서 수정 의향은 확인되지만, 문제가 이미 해결되었거나 특정 시점까지 해결될 것이라고 단정할 수는 없다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-061",
+          "70f576-062",
+          "70f576-063"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 25,
+        "start": 1683,
+        "end": 1751,
+        "text": "익명 게시판의 ‘주의 문구를 무시하면 모든 결과가 맞는다’는 주장은 데이터·작성자 확인·원문 링크를 갖추지 못했다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-064",
+          "70f576-065",
+          "70f576-066",
+          "70f576-067"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 26,
+        "start": 1752,
+        "end": 1831,
+        "text": "이 주장은 특정 표에서 열 순서가 바뀔 수 있다는 지원 센터 공지와도 어긋나며, 공격적인 표현 자체는 정확도를 증명하는 근거가 아니다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-068",
+          "70f576-069"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 27,
+        "start": 1847,
+        "end": 1936,
+        "text": "‘업계 최고 정확도’와 ‘10배 빠른 의사결정’이라는 표현은 긍정적인 성능을 주장하지만, 같은 소개 자료에는 이를 검증할 평가 설계나 독립 측정이 없다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-070",
+          "70f576-071",
+          "70f576-072",
+          "70f576-073",
+          "70f576-074",
+          "70f576-075",
+          "70f576-076"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 28,
+        "start": 1937,
+        "end": 2019,
+        "text": "반대로 지원 센터 자료에는 특정 표 형식에서 실제로 주의해야 할 문제가 기록되어 있어, 모든 추출 결과가 정확하다는 해석을 지지하지 않는다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-077",
+          "70f576-078"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 29,
+        "start": 2021,
+        "end": 2093,
+        "text": "두 출처는 서로 다른 문서이지만 모두 같은 도메인에 속하며, 독립 기관의 시험이나 외부 벤치마크는 제공되지 않았다.[S1][S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-079",
+          "70f576-080",
+          "70f576-081",
+          "70f576-082"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 30,
+        "start": 2094,
+        "end": 2148,
+        "text": "소개 페이지에는 작성일이 없어 해당 문구가 현재 정책인지 과거 캠페인인지 확인할 수 없다.[S1]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-083",
+          "70f576-084"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 31,
+        "start": 2149,
+        "end": 2210,
+        "text": "또한 전체 오류율, 일반적인 표 추출 정확도, 의사결정 시간의 실제 단축 폭은 확인할 수 없다.[S1][S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-085",
+          "70f576-086",
+          "70f576-087"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 32,
+        "start": 2211,
+        "end": 2272,
+        "text": "알려진 문제의 수정 배포 날짜와 성공 기준도 없으므로 향후 해결 시점과 결과를 예측할 근거가 부족하다.[S2]",
+        "format": "prose",
+        "entry_ids": [
+          "70f576-088",
+          "70f576-089",
+          "70f576-090"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 33,
+        "start": 2284,
+        "end": 2399,
+        "text": "1. 제품 제공자에게 정확도 비교 대상·데이터셋·평가 기간·계산 방법과 ‘10배’ 수치의 측정 업무·기간을 요청하고, 재현 가능한 자료가 오기 전에는 두 홍보 문구를 미검증 상태로 유지한다.[S1] (판단)",
+        "format": "list_item",
+        "entry_ids": [
+          "70f576-091",
+          "70f576-092",
+          "70f576-093"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 34,
+        "start": 2400,
+        "end": 2477,
+        "text": "2. 실제 사용 예정인 표 문서를 시험 추출한 뒤 원문과 열 순서 및 값을 대조하고, 중요한 결과에는 검토 기록을 남긴다.[S2] (판단)",
+        "format": "list_item",
+        "entry_ids": [
+          "70f576-094",
+          "70f576-095",
+          "70f576-096"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 35,
+        "start": 2478,
+        "end": 2554,
+        "text": "3. 지원 센터에서 수정본의 배포 날짜와 성공 기준을 확인한 다음, 같은 예시 파일로 문제가 해결되었는지 다시 검사한다.[S2] (판단)",
+        "format": "list_item",
+        "entry_ids": [
+          "70f576-097"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 36,
+        "start": 2555,
+        "end": 2632,
+        "text": "4. 기능 목록의 게재 여부와 성능 보증을 별도로 기록하여, 기능이 소개되었다는 이유만으로 정확도 우위를 인정하지 않는다.[S1] (판단)",
+        "format": "list_item",
+        "entry_ids": [
+          "70f576-098"
+        ],
+        "manually_reviewed": true
+      }
+    ],
+    "nonclaim_segments": [
+      {
+        "start": 0,
+        "end": 48,
+        "text": "# 질문: 제공된 자료로 확인되는 사실과 확인할 수 없는 홍보·공격성 주장을 구분하라.",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 50,
+        "end": 54,
+        "text": "## 답",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 873,
+        "end": 878,
+        "text": "## 근거",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 1833,
+        "end": 1845,
+        "text": "## 반대 근거와 한계",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 2274,
+        "end": 2282,
+        "text": "## 다음 행동",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 2634,
+        "end": 2639,
+        "text": "## 출처",
+        "type": "heading/question",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 2641,
+        "end": 2725,
+        "text": "- [S1] replay real-ko-missing S1 — https://fixture.invalid/replay/real-ko-missing/S1",
+        "type": "bibliography",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 2726,
+        "end": 2810,
+        "text": "- [S2] replay real-ko-missing S2 — https://fixture.invalid/replay/real-ko-missing/S2",
+        "type": "bibliography",
+        "note": "독립 성능 사실 주장 아님. bibliography URL의 실제 호스팅은 source 본문에 없어 외부 확인하지 않았다."
+      },
+      {
+        "start": 413,
+        "end": 447,
+        "text": "| 항목 | 판정 | 같은 기준으로 본 조건·예외 | 출처 |",
+        "format": "table_row",
+        "type": "table_header/separator",
+        "note": "표 머리·구분선으로 사실 주장 아님."
+      },
+      {
+        "start": 448,
+        "end": 465,
+        "text": "|---|---|---|---|",
+        "format": "table_row",
+        "type": "table_header/separator",
+        "note": "표 머리·구분선으로 사실 주장 아님."
+      }
+    ],
+    "self_assessed_full_body_coverage": true,
+    "not_an_automatic_proof": "Text span/quote/SHA/non-whitespace coverage checks are mechanical. Semantic completeness remains one reviewers self-assessment, not an automated proof or independent second review."
+  },
+  "limitations": [
+    "Single Astra judgment, not a scientific estimate of general accuracy or a model/condition comparison.",
+    "Only supplied source bodies ground factual truth; actual page layout, URL hosting, product performance and current fix deployment were not externally tested.",
+    "Atom counts include repeated mentions and depend on grouping, so are not independent statistical samples.",
+    "Clearly marked or contextually obvious judgments/inferences are separated; no error is invented merely because a sentence is inferential."
+  ]
+}

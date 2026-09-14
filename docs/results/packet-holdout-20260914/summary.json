@@ -1,0 +1,87 @@
+{
+  "study": "phase3_holdout_packet",
+  "missing_run_ids": [],
+  "control_errors": {},
+  "totals": {
+    "reported_total_tokens": 2906338,
+    "input_tokens": 2839631,
+    "output_tokens": 66707,
+    "cached_input_tokens": 1946496,
+    "unknowncalls": 0,
+    "attempt_count": 71,
+    "retry_attempt_count": 0,
+    "failure_attempt_count": 0
+  },
+  "pairs": [
+    {
+      "case_id": "real-ko-missing",
+      "repetition": 1,
+      "run_ids": [
+        "real-ko-missing-r1-baseline",
+        "real-ko-missing-r1-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": 1.1201347847261527,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-ko-missing",
+      "repetition": 2,
+      "run_ids": [
+        "real-ko-missing-r2-baseline",
+        "real-ko-missing-r2-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": -6.871849648219913,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-ko-missing",
+      "repetition": 3,
+      "run_ids": [
+        "real-ko-missing-r3-baseline",
+        "real-ko-missing-r3-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": -19.364105082248955,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-en-long",
+      "repetition": 1,
+      "run_ids": [
+        "real-en-long-r1-baseline",
+        "real-en-long-r1-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": 0.9734065645200476,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-en-long",
+      "repetition": 2,
+      "run_ids": [
+        "real-en-long-r2-baseline",
+        "real-en-long-r2-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": 8.066961303252993,
+      "reason": "complete"
+    },
+    {
+      "case_id": "real-en-long",
+      "repetition": 3,
+      "run_ids": [
+        "real-en-long-r3-baseline",
+        "real-en-long-r3-packet"
+      ],
+      "complete": true,
+      "paired_token_percent": 0.012675827592899952,
+      "reason": "complete"
+    }
+  ],
+  "report_claim_permitted": false,
+  "manual_review_required": true,
+  "general_performance_claim_permitted": false,
+  "quality_default": "unknown_external_judgment_required"
+}

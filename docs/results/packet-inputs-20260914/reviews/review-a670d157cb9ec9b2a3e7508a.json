@@ -1,0 +1,3789 @@
+{
+  "schema_version": "blind_atomic_review_v1",
+  "opaque_id": "a670d157cb9ec9b2a3e7508a",
+  "question": "제시된 지역 냉방 시범사업의 성과를 수치·단위·조건과 함께 요약하라.",
+  "lang": "ko",
+  "report_sha256": "63d6048d77d1bbe2027f0517ac75841fbba191668845c2c8e5cfcbaf6fd911b8",
+  "report_character_length": 2547,
+  "source_sha256": {
+    "S1": "55603766f5273963c4d302100cd930d1ce244bd11498614f0180caafb851aa63",
+    "S2": "9f62e260c22ac184a8464a414062b30615d71f32c95846c4ea43a79c367ab79a"
+  },
+  "reviewer": "Single Astra independent source-grounded judgment",
+  "blind_scope": "Only the four supplied packet JSONs were read; no experiment conditions, model labels, execution records, web, external API, model CLI, or child agents were used. IDs are treated as opaque.",
+  "status_definitions": {
+    "supported": "提供된 source 본문이 직접 또는 명확히 한정된 추론으로 뒷받침함",
+    "contradicted": "source 본문과 명시적으로 충돌함",
+    "insufficient": "source 본문으로 입증할 근거가 부족하지만 명시적 모순으로 확정하지 않음",
+    "unchecked": "작성 이력·실제 호스팅 등 입력 범위 밖이거나 확인 불가하여 검증하지 못함"
+  },
+  "critical_definition": "시범사업 성과·적용 조건 또는 자료에서 확인 가능한 검증 절차에 대한 판단을 실질적으로 잘못 이끄는 명확한 오류. 단순 인용 누락·모호한 메타 설명은 별도 표시한다.",
+  "quality": "미확정",
+  "quality_basis": "핵심 성과·조건은 일치한다. S2가 잘린 노트라는 단정은 제공 본문으로 입증되지 않으며 작성자의 추가 검증 수행 여부는 확인 불가다. 실제 절단 여부를 외부 추정하여 오류로 확정하지 않았다.",
+  "counts": {
+    "factual_atoms": 98,
+    "factual_status_counts": {
+      "supported": 97,
+      "insufficient": 1
+    },
+    "all_entries": 112,
+    "all_status_counts": {
+      "supported": 110,
+      "insufficient": 1,
+      "unchecked": 1
+    },
+    "kind_counts": {
+      "fact": 98,
+      "inference": 5,
+      "process_claim": 1,
+      "judgment": 8
+    },
+    "critical_contradictions": 0,
+    "citation_detail_mismatches": 2
+  },
+  "entries": [
+    {
+      "entry_id": "a670d1-001",
+      "sentence_id": 1,
+      "catalog_key": "period",
+      "claim_text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+      "atomic_claim": "대상 설치·점검 기간은 2026년 5~8월이다.",
+      "report_start": 52,
+      "report_end": 164,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-002",
+      "sentence_id": 1,
+      "catalog_key": "sample12",
+      "claim_text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+      "atomic_claim": "대상은 냉방 제어기가 설치된 공공건물 12개다.",
+      "report_start": 52,
+      "report_end": 164,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-003",
+      "sentence_id": 1,
+      "catalog_key": "lib",
+      "claim_text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+      "atomic_claim": "도서관 피크 전력 변화는 기준 대비 -18.4 kW(18.4 kW 감소)다.",
+      "report_start": 52,
+      "report_end": 164,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-004",
+      "sentence_id": 1,
+      "catalog_key": "coldonly",
+      "claim_text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+      "atomic_claim": "불만 수치는 냉방 관련으로 확정된 신고다.",
+      "report_start": 52,
+      "report_end": 164,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "wrong_source_for_atomic_detail",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. 내용은 S2 부록 F가 뒷받침하지만 S1만 붙인 인용은 냉방 관련으로 확정됐다는 세부 내용을 직접 뒷받침하지 못한다."
+    },
+    {
+      "entry_id": "a670d1-005",
+      "sentence_id": 1,
+      "catalog_key": "libcompl",
+      "claim_text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+      "atomic_claim": "도서관 불만 접수는 0.7건/1,000 이용시간이다.",
+      "report_start": 52,
+      "report_end": 164,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-006",
+      "sentence_id": 2,
+      "catalog_key": "annex",
+      "claim_text": "구청 별관은 같은 기준에서 피크 전력이 11.2 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 1.1건이었다.[S1]",
+      "atomic_claim": "구청 별관 피크 전력 변화는 기준 대비 -11.2 kW(11.2 kW 감소)다.",
+      "report_start": 165,
+      "report_end": 234,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-007",
+      "sentence_id": 2,
+      "catalog_key": "coldonly",
+      "claim_text": "구청 별관은 같은 기준에서 피크 전력이 11.2 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 1.1건이었다.[S1]",
+      "atomic_claim": "불만 수치는 냉방 관련으로 확정된 신고다.",
+      "report_start": 165,
+      "report_end": 234,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "wrong_source_for_atomic_detail",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. 내용은 S2 부록 F가 뒷받침하지만 S1만 붙인 인용은 냉방 관련으로 확정됐다는 세부 내용을 직접 뒷받침하지 못한다."
+    },
+    {
+      "entry_id": "a670d1-008",
+      "sentence_id": 2,
+      "catalog_key": "annexcompl",
+      "claim_text": "구청 별관은 같은 기준에서 피크 전력이 11.2 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 1.1건이었다.[S1]",
+      "atomic_claim": "구청 별관 불만 접수는 1.1건/1,000 이용시간이다.",
+      "report_start": 165,
+      "report_end": 234,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-009",
+      "sentence_id": 3,
+      "catalog_key": "before",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "비교 기준 기간은 설치 전 4주다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-010",
+      "sentence_id": 3,
+      "catalog_key": "after",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "비교 대상 기간은 설치 후 4주다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-011",
+      "sentence_id": 3,
+      "catalog_key": "weekday",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "비교에는 평일 자료만 포함한다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-012",
+      "sentence_id": 3,
+      "catalog_key": "hours",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "비교 시간대는 오후 1~5시다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-013",
+      "sentence_id": 3,
+      "catalog_key": "noyoy",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "전년 동월 사용량은 비교 기준이 아니다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-014",
+      "sentence_id": 3,
+      "catalog_key": "noannualbase",
+      "claim_text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+      "atomic_claim": "연간 사용량 비교 결과가 아니다.",
+      "report_start": 235,
+      "report_end": 305,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료만으로 연간 전력 절감이나 모든 계절의 효과를 말할 수는 없다.",
+          "source_start": 156,
+          "source_end": 199
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-015",
+      "sentence_id": 4,
+      "catalog_key": "limited",
+      "claim_text": "따라서 확인된 성과는 특정 시설·시간대의 관측값과 운영 안정성에 한정되며, 연간 절감액이나 사업 전체의 인과적 효과는 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "확인 가능한 성과 범위는 특정 시설·지정 시간대 관측에 한정된다.",
+      "report_start": 306,
+      "report_end": 389,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "최종 회의록은 도서관과 구청 별관의 지정 시간대 관측값을 사실로 남기되, 도시 전체의 비용·탄소·민원 효과는 추가 자료 없이는 판단하지 않는다고 적었다.",
+          "source_start": 2832,
+          "source_end": 2917
+        }
+      ],
+      "reason": "보고서 문맥에서 한계 또는 해석으로 제시되며, 인용한 근거를 넘어 효과를 단정하지 않는다. 사실 오류로 세지 않는다."
+    },
+    {
+      "entry_id": "a670d1-016",
+      "sentence_id": 4,
+      "catalog_key": "operational",
+      "claim_text": "따라서 확인된 성과는 특정 시설·시간대의 관측값과 운영 안정성에 한정되며, 연간 절감액이나 사업 전체의 인과적 효과는 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "운영 안정성이라는 요약은 전달 성공률과 장애 대응에 한정한 해석이다.",
+      "report_start": 306,
+      "report_end": 389,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영 업체의 현장 기록은 같은 시범사업을 다루지만 측정 목적이 다르다. 기록은 제어기 명령이 실제 장비에 전달된 비율과 장애 대응 시간을 일별로 적는다.",
+          "source_start": 0,
+          "source_end": 85
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "기록의 결론은 장비 전달률이 높았다는 것뿐이며, 시범사업이 다른 건물이나 다른 도시에서도 같은 절감 효과를 낸다는 주장은 검토 범위를 벗어난다고 명시한다.",
+          "source_start": 421,
+          "source_end": 507
+        }
+      ],
+      "reason": "보고서 문맥에서 한계 또는 해석으로 제시되며, 인용한 근거를 넘어 효과를 단정하지 않는다. 사실 오류로 세지 않는다. 운영 안정성을 냉방 품질·경제성·무고장 보증으로 넓히면 근거가 없지만 이 보고서는 바로 뒤에서 성공률과 장애 시간을 제시하고 한계를 명시한다."
+    },
+    {
+      "entry_id": "a670d1-017",
+      "sentence_id": 4,
+      "catalog_key": "nocost",
+      "claim_text": "따라서 확인된 성과는 특정 시설·시간대의 관측값과 운영 안정성에 한정되며, 연간 절감액이나 사업 전체의 인과적 효과는 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "요금 절감액을 현재 자료만으로 산정할 수 없다.",
+      "report_start": 306,
+      "report_end": 389,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "따라서 -18.4 kW와 -11.2 kW 관측을 금액 절감 또는 투자 회수 기간으로 환산하는 것은 이 파일의 직접 결과가 아니다.",
+          "source_start": 4684,
+          "source_end": 4756
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-018",
+      "sentence_id": 4,
+      "catalog_key": "nocausal",
+      "claim_text": "따라서 확인된 성과는 특정 시설·시간대의 관측값과 운영 안정성에 한정되며, 연간 절감액이나 사업 전체의 인과적 효과는 확인할 수 없다.[S1][S2]",
+      "atomic_claim": "관측 차이를 제어기만의 인과효과로 확정할 수 없다.",
+      "report_start": 306,
+      "report_end": 389,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "담당자는 기온, 점유 인원, 냉방 설정온도를 함께 기록했지만 대조군은 두지 않았다.",
+          "source_start": 409,
+          "source_end": 455
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "보고서 문맥에서 한계 또는 해석으로 제시되며, 인용한 근거를 넘어 효과를 단정하지 않는다. 사실 오류로 세지 않는다."
+    },
+    {
+      "entry_id": "a670d1-019",
+      "sentence_id": 5,
+      "catalog_key": "author",
+      "claim_text": "시청 에너지과의 2026년 8월 내부 점검 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 다뤘다.[S1]",
+      "atomic_claim": "메모 작성 부서는 시청 에너지과다.",
+      "report_start": 409,
+      "report_end": 483,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-020",
+      "sentence_id": 5,
+      "catalog_key": "docdate",
+      "claim_text": "시청 에너지과의 2026년 8월 내부 점검 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 다뤘다.[S1]",
+      "atomic_claim": "메모 작성 시점은 2026년 8월이다.",
+      "report_start": 409,
+      "report_end": 483,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-021",
+      "sentence_id": 5,
+      "catalog_key": "period",
+      "claim_text": "시청 에너지과의 2026년 8월 내부 점검 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 다뤘다.[S1]",
+      "atomic_claim": "대상 설치·점검 기간은 2026년 5~8월이다.",
+      "report_start": 409,
+      "report_end": 483,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-022",
+      "sentence_id": 5,
+      "catalog_key": "sample12",
+      "claim_text": "시청 에너지과의 2026년 8월 내부 점검 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 다뤘다.[S1]",
+      "atomic_claim": "대상은 냉방 제어기가 설치된 공공건물 12개다.",
+      "report_start": 409,
+      "report_end": 483,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-023",
+      "sentence_id": 6,
+      "catalog_key": "before",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "비교 기준 기간은 설치 전 4주다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-024",
+      "sentence_id": 6,
+      "catalog_key": "after",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "비교 대상 기간은 설치 후 4주다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-025",
+      "sentence_id": 6,
+      "catalog_key": "weekday",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "비교에는 평일 자료만 포함한다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-026",
+      "sentence_id": 6,
+      "catalog_key": "hours",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "비교 시간대는 오후 1~5시다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-027",
+      "sentence_id": 6,
+      "catalog_key": "meter",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "비교 대상 수치는 계량기 값이다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "비교 기준은 같은 건물의 전년 동월 전력 사용량이 아니라, 설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값이다.",
+          "source_start": 80,
+          "source_end": 155
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-028",
+      "sentence_id": 6,
+      "catalog_key": "night",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "야간 전용 건물은 표본에서 제외했다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "표본에는 야간 전용 건물과 주말 휴관 시설을 넣지 않았다.",
+          "source_start": 375,
+          "source_end": 407
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-029",
+      "sentence_id": 6,
+      "catalog_key": "weekendclosed",
+      "claim_text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+      "atomic_claim": "주말 휴관 시설은 표본에서 제외했다.",
+      "report_start": 484,
+      "report_end": 566,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "표본에는 야간 전용 건물과 주말 휴관 시설을 넣지 않았다.",
+          "source_start": 375,
+          "source_end": 407
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-030",
+      "sentence_id": 7,
+      "catalog_key": "gymweekend",
+      "claim_text": "체육관도 주말 행사가 많지만 이번 비교에는 평일 자료만 포함됐다.[S2]",
+      "atomic_claim": "체육관에는 주말 행사가 많다.",
+      "report_start": 567,
+      "report_end": 607,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "체육관은 주말 행사가 많지만 이번 비교에서는 평일만 남겼다.",
+          "source_start": 1208,
+          "source_end": 1241
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-031",
+      "sentence_id": 7,
+      "catalog_key": "gymweekday",
+      "claim_text": "체육관도 주말 행사가 많지만 이번 비교에는 평일 자료만 포함됐다.[S2]",
+      "atomic_claim": "체육관 비교에는 평일 자료만 포함했다.",
+      "report_start": 567,
+      "report_end": 607,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "체육관은 주말 행사가 많지만 이번 비교에서는 평일만 남겼다.",
+          "source_start": 1208,
+          "source_end": 1241
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-032",
+      "sentence_id": 8,
+      "catalog_key": "lib",
+      "claim_text": "도서관의 ‘기준 대비 피크 전력 변화’는 -18.4 kW였고, 구청 별관은 -11.2 kW였다.[S1]",
+      "atomic_claim": "도서관 피크 전력 변화는 기준 대비 -18.4 kW(18.4 kW 감소)다.",
+      "report_start": 624,
+      "report_end": 681,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-033",
+      "sentence_id": 8,
+      "catalog_key": "annex",
+      "claim_text": "도서관의 ‘기준 대비 피크 전력 변화’는 -18.4 kW였고, 구청 별관은 -11.2 kW였다.[S1]",
+      "atomic_claim": "구청 별관 피크 전력 변화는 기준 대비 -11.2 kW(11.2 kW 감소)다.",
+      "report_start": 624,
+      "report_end": 681,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-034",
+      "sentence_id": 9,
+      "catalog_key": "negative",
+      "claim_text": "음수 부호는 피크 전력이 각각 18.4 kW와 11.2 kW 감소했다는 뜻이며, 절감률을 나타내는 백분율이 아니다.[S1][S2]",
+      "atomic_claim": "음수 부호는 피크 전력 감소를 의미한다.",
+      "report_start": 682,
+      "report_end": 754,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-035",
+      "sentence_id": 9,
+      "catalog_key": "lib",
+      "claim_text": "음수 부호는 피크 전력이 각각 18.4 kW와 11.2 kW 감소했다는 뜻이며, 절감률을 나타내는 백분율이 아니다.[S1][S2]",
+      "atomic_claim": "도서관 피크 전력 변화는 기준 대비 -18.4 kW(18.4 kW 감소)다.",
+      "report_start": 682,
+      "report_end": 754,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-036",
+      "sentence_id": 9,
+      "catalog_key": "annex",
+      "claim_text": "음수 부호는 피크 전력이 각각 18.4 kW와 11.2 kW 감소했다는 뜻이며, 절감률을 나타내는 백분율이 아니다.[S1][S2]",
+      "atomic_claim": "구청 별관 피크 전력 변화는 기준 대비 -11.2 kW(11.2 kW 감소)다.",
+      "report_start": 682,
+      "report_end": 754,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-037",
+      "sentence_id": 9,
+      "catalog_key": "kw",
+      "claim_text": "음수 부호는 피크 전력이 각각 18.4 kW와 11.2 kW 감소했다는 뜻이며, 절감률을 나타내는 백분율이 아니다.[S1][S2]",
+      "atomic_claim": "피크 변화는 kW 절대 변화이며 절감 백분율이 아니다.",
+      "report_start": 682,
+      "report_end": 754,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "표에는 각 시설별로 설치 전 평균 피크와 설치 후 평균 피크를 별도로 보여 주지 않고, 그 차이만 kW 단위로 적었다.",
+          "source_start": 3543,
+          "source_end": 3609
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-038",
+      "sentence_id": 10,
+      "catalog_key": "libcompl",
+      "claim_text": "도서관의 사용자 불만 접수는 0.7건/1,000 이용시간, 구청 별관은 1.1건/1,000 이용시간이었다.[S1]",
+      "atomic_claim": "도서관 불만 접수는 0.7건/1,000 이용시간이다.",
+      "report_start": 755,
+      "report_end": 818,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-039",
+      "sentence_id": 10,
+      "catalog_key": "annexcompl",
+      "claim_text": "도서관의 사용자 불만 접수는 0.7건/1,000 이용시간, 구청 별관은 1.1건/1,000 이용시간이었다.[S1]",
+      "atomic_claim": "구청 별관 불만 접수는 1.1건/1,000 이용시간이다.",
+      "report_start": 755,
+      "report_end": 818,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-040",
+      "sentence_id": 11,
+      "catalog_key": "notcounts",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "불만 수치는 총민원 건수가 아니다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "부호가 음수인 첫 열은 피크 전력이 줄었다는 뜻이며, 두 번째 열은 총 민원 건수가 아니다.",
+          "source_start": 323,
+          "source_end": 374
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-041",
+      "sentence_id": 11,
+      "catalog_key": "notscore",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "불만 수치는 이용자 만족도 점수가 아니다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그러므로 불만 접수 수치가 이용자 만족도 전체를 대표한다고 해석할 근거는 없다.",
+          "source_start": 2293,
+          "source_end": 2337
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-042",
+      "sentence_id": 11,
+      "catalog_key": "coldonly",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "불만 수치는 냉방 관련으로 확정된 신고다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-043",
+      "sentence_id": 11,
+      "catalog_key": "normalized",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "불만은 이용시간으로 표준화한 값이다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-044",
+      "sentence_id": 11,
+      "catalog_key": "repeat",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "같은 이용자의 반복 연락이 복수 건으로 남을 수 있다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 이용자가 두 번 연락하면 두 건으로 남을 수 있으며, 현장 직원이 구두로 해결한 요청은 입력되지 않았을 수 있다.",
+          "source_start": 2173,
+          "source_end": 2239
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. 반복 신고가 복수로 기록될 수 있다는 집계 규칙의 요약으로 읽는다. 실제 모든 반복 신고가 반드시 입력되었다는 전수 관측 주장으로 확대하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-045",
+      "sentence_id": 11,
+      "catalog_key": "oral",
+      "claim_text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+      "atomic_claim": "구두로 해결된 요청은 기록에서 누락됐을 수 있다.",
+      "report_start": 819,
+      "report_end": 933,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "같은 이용자가 두 번 연락하면 두 건으로 남을 수 있으며, 현장 직원이 구두로 해결한 요청은 입력되지 않았을 수 있다.",
+          "source_start": 2173,
+          "source_end": 2239
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-046",
+      "sentence_id": 12,
+      "catalog_key": "opperiod",
+      "claim_text": "5월 3일부터 8월 28일까지 제어 명령 성공률의 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다.[S2]",
+      "atomic_claim": "명령 성공률 측정 기간은 5월 3일~8월 28일이다(문맥상 2026년).",
+      "report_start": 947,
+      "report_end": 1021,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "운영 업체의 현장 기록은 같은 시범사업을 다루지만 측정 목적이 다르다. 기록은 제어기 명령이 실제 장비에 전달된 비율과 장애 대응 시간을 일별로 적는다.",
+          "source_start": 0,
+          "source_end": 85
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. S2 일자에 연도는 재기재되지 않지만 같은 시범사업이라는 문장과 S1의 2026년 범위를 연결한 문맥상 연도다."
+    },
+    {
+      "entry_id": "a670d1-047",
+      "sentence_id": 12,
+      "catalog_key": "opsuccess",
+      "claim_text": "5월 3일부터 8월 28일까지 제어 명령 성공률의 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다.[S2]",
+      "atomic_claim": "명령 성공률 중앙값은 99.2%다.",
+      "report_start": 947,
+      "report_end": 1021,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-048",
+      "sentence_id": 12,
+      "catalog_key": "opcount",
+      "claim_text": "5월 3일부터 8월 28일까지 제어 명령 성공률의 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다.[S2]",
+      "atomic_claim": "장애 티켓 표본은 37건이다.",
+      "report_start": 947,
+      "report_end": 1021,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-049",
+      "sentence_id": 12,
+      "catalog_key": "time46",
+      "claim_text": "5월 3일부터 8월 28일까지 제어 명령 성공률의 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다.[S2]",
+      "atomic_claim": "장애 처리 시간 중앙값은 46분이다.",
+      "report_start": 947,
+      "report_end": 1021,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-050",
+      "sentence_id": 13,
+      "catalog_key": "receipt",
+      "claim_text": "성공률은 장비가 수신 확인을 돌려준 명령의 비율로, 재전송 후 성공한 명령도 포함하고 통신 장비 교체 시간은 분모에서 제외했다.[S2]",
+      "atomic_claim": "명령 성공은 장비가 수신 확인을 반환한 것을 뜻한다.",
+      "report_start": 1022,
+      "report_end": 1097,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "성공률 99.2%는 명령이 장비에서 수신 확인을 돌려준 비율의 중앙값이다. 재전송 뒤 성공한 명령도 성공으로 분류됐고, 통신 장비를 교체하던 두 시간은 분모에서 빠졌다.",
+          "source_start": 1457,
+          "source_end": 1551
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-051",
+      "sentence_id": 13,
+      "catalog_key": "retry",
+      "claim_text": "성공률은 장비가 수신 확인을 돌려준 명령의 비율로, 재전송 후 성공한 명령도 포함하고 통신 장비 교체 시간은 분모에서 제외했다.[S2]",
+      "atomic_claim": "재전송 후 성공한 명령도 성공으로 포함한다.",
+      "report_start": 1022,
+      "report_end": 1097,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "성공률 99.2%는 명령이 장비에서 수신 확인을 돌려준 비율의 중앙값이다. 재전송 뒤 성공한 명령도 성공으로 분류됐고, 통신 장비를 교체하던 두 시간은 분모에서 빠졌다.",
+          "source_start": 1457,
+          "source_end": 1551
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-052",
+      "sentence_id": 13,
+      "catalog_key": "commexclude",
+      "claim_text": "성공률은 장비가 수신 확인을 돌려준 명령의 비율로, 재전송 후 성공한 명령도 포함하고 통신 장비 교체 시간은 분모에서 제외했다.[S2]",
+      "atomic_claim": "통신 장비 교체 시간은 성공률 분모에서 제외한다.",
+      "report_start": 1022,
+      "report_end": 1097,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "성공률 99.2%는 명령이 장비에서 수신 확인을 돌려준 비율의 중앙값이다. 재전송 뒤 성공한 명령도 성공으로 분류됐고, 통신 장비를 교체하던 두 시간은 분모에서 빠졌다.",
+          "source_start": 1457,
+          "source_end": 1551
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-053",
+      "sentence_id": 14,
+      "catalog_key": "screen",
+      "claim_text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+      "atomic_claim": "장애 티켓에는 화면 표시 오류가 포함된다.",
+      "report_start": 1098,
+      "report_end": 1183,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "장애 티켓 37건에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 들어 있다. 중앙 처리 시간 46분은 각 장애의 최초 접수부터 종료까지의 시간이며, 전력량계 값과 직접 연결된 결과가 아니다.",
+          "source_start": 1552,
+          "source_end": 1669
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-054",
+      "sentence_id": 14,
+      "catalog_key": "response",
+      "claim_text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+      "atomic_claim": "장애 티켓에는 실내기 응답 지연이 포함된다.",
+      "report_start": 1098,
+      "report_end": 1183,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "장애 티켓 37건에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 들어 있다. 중앙 처리 시간 46분은 각 장애의 최초 접수부터 종료까지의 시간이며, 전력량계 값과 직접 연결된 결과가 아니다.",
+          "source_start": 1552,
+          "source_end": 1669
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-055",
+      "sentence_id": 14,
+      "catalog_key": "account",
+      "claim_text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+      "atomic_claim": "장애 티켓에는 관리자 계정 잠김이 포함된다.",
+      "report_start": 1098,
+      "report_end": 1183,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "장애 티켓 37건에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 들어 있다. 중앙 처리 시간 46분은 각 장애의 최초 접수부터 종료까지의 시간이며, 전력량계 값과 직접 연결된 결과가 아니다.",
+          "source_start": 1552,
+          "source_end": 1669
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-056",
+      "sentence_id": 14,
+      "catalog_key": "timedfn",
+      "claim_text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+      "atomic_claim": "장애 처리 시간은 최초 접수부터 종료까지다.",
+      "report_start": 1098,
+      "report_end": 1183,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "장애 티켓 37건에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 들어 있다. 중앙 처리 시간 46분은 각 장애의 최초 접수부터 종료까지의 시간이며, 전력량계 값과 직접 연결된 결과가 아니다.",
+          "source_start": 1552,
+          "source_end": 1669
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-057",
+      "sentence_id": 14,
+      "catalog_key": "time46",
+      "claim_text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+      "atomic_claim": "장애 처리 시간 중앙값은 46분이다.",
+      "report_start": 1098,
+      "report_end": 1183,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-058",
+      "sentence_id": 15,
+      "catalog_key": "opnorepro",
+      "claim_text": "이 운영 지표들은 피크 전력 감소나 이용자 만족도를 재현하거나 검증한 수치가 아니다.[S2]",
+      "atomic_claim": "운영 지표는 두 시설 피크 감소값을 재현·검증하는 통계가 아니다.",
+      "report_start": 1184,
+      "report_end": 1235,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이 진단 지표는 전력 피크 표의 -18.4 kW 또는 -11.2 kW를 재현하거나 검증하기 위한 통계가 아니다.",
+          "source_start": 1670,
+          "source_end": 1732
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-059",
+      "sentence_id": 15,
+      "catalog_key": "opnoreprosat",
+      "claim_text": "이 운영 지표들은 피크 전력 감소나 이용자 만족도를 재현하거나 검증한 수치가 아니다.[S2]",
+      "atomic_claim": "운영 지표는 전체 이용자 만족도를 검증한 수치가 아니다.",
+      "report_start": 1184,
+      "report_end": 1235,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그러므로 불만 접수 수치가 이용자 만족도 전체를 대표한다고 해석할 근거는 없다.",
+          "source_start": 2293,
+          "source_end": 2337
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-060",
+      "sentence_id": 16,
+      "catalog_key": "heatjuly",
+      "claim_text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+      "atomic_claim": "폭염 경보 기간은 7월 22~24일이다(문맥상 2026년).",
+      "report_start": 1248,
+      "report_end": 1339,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "7월 22일부터 24일, 8월 6일부터 8일에는 시의 폭염 경보가 발령됐다.",
+          "source_start": 1751,
+          "source_end": 1793
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. 연도는 같은 사업의 S1 범위에서 문맥상 도출된다."
+    },
+    {
+      "entry_id": "a670d1-061",
+      "sentence_id": 16,
+      "catalog_key": "heataug",
+      "claim_text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+      "atomic_claim": "폭염 경보 기간은 8월 6~8일이다(문맥상 2026년).",
+      "report_start": 1248,
+      "report_end": 1339,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "시청 에너지과의 2026년 8월 내부 점검 메모다. 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 대상으로 한다.",
+          "source_start": 0,
+          "source_end": 79
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "7월 22일부터 24일, 8월 6일부터 8일에는 시의 폭염 경보가 발령됐다.",
+          "source_start": 1751,
+          "source_end": 1793
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다. 연도는 같은 사업의 S1 범위에서 문맥상 도출된다."
+    },
+    {
+      "entry_id": "a670d1-062",
+      "sentence_id": 16,
+      "catalog_key": "heatsafety",
+      "claim_text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+      "atomic_claim": "폭염 중 자동 설정온도 명령 중지는 안전 규칙에 따른 것이다.",
+      "report_start": 1248,
+      "report_end": 1339,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "그 기간에는 안전 규칙 때문에 설정온도를 자동으로 올리는 명령을 중단했고, 해당 시간의 피크 전력은 비교 표에 포함하지 않았다. 기록은 이를 '운영 제약에 따른 제외'라고만 설명하며, 제외 시간을 포함했을 때의 추정치를 제공하지 않는다.",
+          "source_start": 216,
+          "source_end": 348
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "안전 담당자는 시설별 설정온도를 낮추거나 높이는 자동 명령을 잠시 멈추고 현장 관리자가 수동으로 판단하도록 했다.",
+          "source_start": 1794,
+          "source_end": 1857
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-063",
+      "sentence_id": 16,
+      "catalog_key": "heatstop",
+      "claim_text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+      "atomic_claim": "폭염 경보 때 자동 설정온도 명령을 일시 중단했다.",
+      "report_start": 1248,
+      "report_end": 1339,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "안전 담당자는 시설별 설정온도를 낮추거나 높이는 자동 명령을 잠시 멈추고 현장 관리자가 수동으로 판단하도록 했다.",
+          "source_start": 1794,
+          "source_end": 1857
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-064",
+      "sentence_id": 16,
+      "catalog_key": "heatmanual",
+      "claim_text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+      "atomic_claim": "폭염 경보 때 현장 관리자가 수동 판단했다.",
+      "report_start": 1248,
+      "report_end": 1339,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "안전 담당자는 시설별 설정온도를 낮추거나 높이는 자동 명령을 잠시 멈추고 현장 관리자가 수동으로 판단하도록 했다.",
+          "source_start": 1794,
+          "source_end": 1857
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-065",
+      "sentence_id": 17,
+      "catalog_key": "heatwindow",
+      "claim_text": "일부 건물에서는 창문 개방과 추가 환기도 있었으며, 해당 시간대는 설치 전후 피크 전력 비교표에서 제외됐다.[S2]",
+      "atomic_claim": "폭염 경보 때 일부 건물에서 창문 개방이 있었다.",
+      "report_start": 1340,
+      "report_end": 1404,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이때 일부 건물에서는 창문 개방과 추가 환기가 있었고, 그 시간대는 설치 전후 비교 표에서 빠졌다.",
+          "source_start": 1858,
+          "source_end": 1913
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-066",
+      "sentence_id": 17,
+      "catalog_key": "heatvent",
+      "claim_text": "일부 건물에서는 창문 개방과 추가 환기도 있었으며, 해당 시간대는 설치 전후 피크 전력 비교표에서 제외됐다.[S2]",
+      "atomic_claim": "폭염 경보 때 일부 건물에서 추가 환기가 있었다.",
+      "report_start": 1340,
+      "report_end": 1404,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이때 일부 건물에서는 창문 개방과 추가 환기가 있었고, 그 시간대는 설치 전후 비교 표에서 빠졌다.",
+          "source_start": 1858,
+          "source_end": 1913
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-067",
+      "sentence_id": 17,
+      "catalog_key": "heatexclude",
+      "claim_text": "일부 건물에서는 창문 개방과 추가 환기도 있었으며, 해당 시간대는 설치 전후 피크 전력 비교표에서 제외됐다.[S2]",
+      "atomic_claim": "폭염 중 해당 시간대 피크는 설치 전후 비교표에서 제외됐다.",
+      "report_start": 1340,
+      "report_end": 1404,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "그 기간에는 안전 규칙 때문에 설정온도를 자동으로 올리는 명령을 중단했고, 해당 시간의 피크 전력은 비교 표에 포함하지 않았다. 기록은 이를 '운영 제약에 따른 제외'라고만 설명하며, 제외 시간을 포함했을 때의 추정치를 제공하지 않는다.",
+          "source_start": 216,
+          "source_end": 348
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "이때 일부 건물에서는 창문 개방과 추가 환기가 있었고, 그 시간대는 설치 전후 비교 표에서 빠졌다.",
+          "source_start": 1858,
+          "source_end": 1913
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-068",
+      "sentence_id": 18,
+      "catalog_key": "heatnosame",
+      "claim_text": "그러므로 이 결과를 폭염일에도 적용하거나, 반대로 폭염일에는 효과가 없었다고 해석할 수 없다.[S2]",
+      "atomic_claim": "폭염일에도 같은 피크 감소가 있었다고 확인할 수 없다.",
+      "report_start": 1405,
+      "report_end": 1461,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "기록은 제외 구간의 길이와 기온을 보관하지만, 그 자료로 폭염일에도 같은 피크 감소가 있었다고 추정하지 않는다. 반대로 효과가 없었다고 결론내리지도 않는다. 두 판단 모두 현재 자료가 제공하지 않는 반사실 비교를 요구한다.",
+          "source_start": 1914,
+          "source_end": 2038
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-069",
+      "sentence_id": 18,
+      "catalog_key": "heatnozero",
+      "claim_text": "그러므로 이 결과를 폭염일에도 적용하거나, 반대로 폭염일에는 효과가 없었다고 해석할 수 없다.[S2]",
+      "atomic_claim": "폭염일에는 효과가 없었다고 확인할 수도 없다.",
+      "report_start": 1405,
+      "report_end": 1461,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "기록은 제외 구간의 길이와 기온을 보관하지만, 그 자료로 폭염일에도 같은 피크 감소가 있었다고 추정하지 않는다. 반대로 효과가 없었다고 결론내리지도 않는다. 두 판단 모두 현재 자료가 제공하지 않는 반사실 비교를 요구한다.",
+          "source_start": 1914,
+          "source_end": 2038
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-070",
+      "sentence_id": 19,
+      "catalog_key": "nocontradiction",
+      "claim_text": "제공된 두 출처 사이에 수치상 명시적인 모순은 확인되지 않았다. (출처 없음)",
+      "atomic_claim": "제공된 두 출처의 핵심 수치 사이에서 명시적 모순은 확인되지 않았다.",
+      "report_start": 1477,
+      "report_end": 1520,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "5월 3일부터 8월 28일까지 명령 성공률 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다. 이 수치는 전력 절감률이나 만족도 점수가 아니다.",
+          "source_start": 86,
+          "source_end": 180
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "성공률 99.2%는 명령이 장비에서 수신 확인을 돌려준 비율의 중앙값이다. 재전송 뒤 성공한 명령도 성공으로 분류됐고, 통신 장비를 교체하던 두 시간은 분모에서 빠졌다.",
+          "source_start": 1457,
+          "source_end": 1551
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "S1의 두 시설 수치·분모와 S2 부록 D/F/K의 재서술을 대조했다. 검수자의 관찰 성격이며 오류가 없다는 자동 증명은 아니다."
+    },
+    {
+      "entry_id": "a670d1-071",
+      "sentence_id": 20,
+      "catalog_key": "nocontrol",
+      "claim_text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+      "atomic_claim": "미설치 대조군을 두지 않았다.",
+      "report_start": 1521,
+      "report_end": 1620,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "담당자는 기온, 점유 인원, 냉방 설정온도를 함께 기록했지만 대조군은 두지 않았다.",
+          "source_start": 409,
+          "source_end": 455
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-072",
+      "sentence_id": 20,
+      "catalog_key": "noregression",
+      "claim_text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+      "atomic_claim": "기록 변수를 사용한 회귀식은 제공되지 않는다.",
+      "report_start": 1521,
+      "report_end": 1620,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-073",
+      "sentence_id": 20,
+      "catalog_key": "noadjust",
+      "claim_text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+      "atomic_claim": "보정 전후 결과/보정 분석은 제공되지 않는다.",
+      "report_start": 1521,
+      "report_end": 1620,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-074",
+      "sentence_id": 20,
+      "catalog_key": "noplan",
+      "claim_text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+      "atomic_claim": "사전 분석 계획은 제공되지 않는다.",
+      "report_start": 1521,
+      "report_end": 1620,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-075",
+      "sentence_id": 20,
+      "catalog_key": "nocausal",
+      "claim_text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+      "atomic_claim": "관측 차이를 제어기만의 인과효과로 확정할 수 없다.",
+      "report_start": 1521,
+      "report_end": 1620,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "담당자는 기온, 점유 인원, 냉방 설정온도를 함께 기록했지만 대조군은 두지 않았다.",
+          "source_start": 409,
+          "source_end": 455
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "보고서 문맥에서 한계 또는 해석으로 제시되며, 인용한 근거를 넘어 효과를 단정하지 않는다. 사실 오류로 세지 않는다."
+    },
+    {
+      "entry_id": "a670d1-076",
+      "sentence_id": 21,
+      "catalog_key": "error",
+      "claim_text": "제어기 오류로 이틀간 계량값이 비었던 한 건물은 평균에서 제외됐으며, 이 제외가 효과를 과대 또는 과소 추정했는지는 알 수 없다.[S1]",
+      "atomic_claim": "제어기 오류 때문에 계량값이 누락됐다.",
+      "report_start": 1621,
+      "report_end": 1697,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다.",
+          "source_start": 456,
+          "source_end": 545
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-077",
+      "sentence_id": 21,
+      "catalog_key": "miss2",
+      "claim_text": "제어기 오류로 이틀간 계량값이 비었던 한 건물은 평균에서 제외됐으며, 이 제외가 효과를 과대 또는 과소 추정했는지는 알 수 없다.[S1]",
+      "atomic_claim": "해당 계량값 결측 기간은 이틀이다.",
+      "report_start": 1621,
+      "report_end": 1697,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다.",
+          "source_start": 456,
+          "source_end": 545
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-078",
+      "sentence_id": 21,
+      "catalog_key": "missbuilding",
+      "claim_text": "제어기 오류로 이틀간 계량값이 비었던 한 건물은 평균에서 제외됐으며, 이 제외가 효과를 과대 또는 과소 추정했는지는 알 수 없다.[S1]",
+      "atomic_claim": "이틀 결측이 있던 한 건물이 평균에서 제외됐다.",
+      "report_start": 1621,
+      "report_end": 1697,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다.",
+          "source_start": 456,
+          "source_end": 545
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-079",
+      "sentence_id": 21,
+      "catalog_key": "missdirection",
+      "claim_text": "제어기 오류로 이틀간 계량값이 비었던 한 건물은 평균에서 제외됐으며, 이 제외가 효과를 과대 또는 과소 추정했는지는 알 수 없다.[S1]",
+      "atomic_claim": "그 건물 제외가 효과를 과대 또는 과소 추정했는지 알 수 없다.",
+      "report_start": 1621,
+      "report_end": 1697,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다.",
+          "source_start": 456,
+          "source_end": 545
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-080",
+      "sentence_id": 22,
+      "catalog_key": "eventexclude",
+      "claim_text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+      "atomic_claim": "특수 행사 날짜 또는 해당 시간 구간이 평균에서 제외됐다.",
+      "report_start": 1698,
+      "report_end": 1771,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "첫 주에 도서관 지하 기계실의 통신이 두 시간 끊겼고, 6월 18일에는 구청 별관의 냉방기가 정비 모드였다. 7월 4일 체육관은 지역 행사가 있어 평소보다 긴 시간 문을 열었으며, 8월 12일 보건소는 예방접종 대기실을 임시로 확장했다. 메모 작성자는 이 네 날을 평균 계산에서 각각 제외하거나, 해당 시간 구간만 제외했다.",
+          "source_start": 795,
+          "source_end": 976
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-081",
+      "sentence_id": 22,
+      "catalog_key": "eventmaintenance",
+      "claim_text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+      "atomic_claim": "정비 날짜 또는 해당 시간 구간이 평균에서 제외됐다.",
+      "report_start": 1698,
+      "report_end": 1771,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "첫 주에 도서관 지하 기계실의 통신이 두 시간 끊겼고, 6월 18일에는 구청 별관의 냉방기가 정비 모드였다. 7월 4일 체육관은 지역 행사가 있어 평소보다 긴 시간 문을 열었으며, 8월 12일 보건소는 예방접종 대기실을 임시로 확장했다. 메모 작성자는 이 네 날을 평균 계산에서 각각 제외하거나, 해당 시간 구간만 제외했다.",
+          "source_start": 795,
+          "source_end": 976
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-082",
+      "sentence_id": 22,
+      "catalog_key": "eventcomm",
+      "claim_text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+      "atomic_claim": "통신 장애 날짜 또는 해당 시간 구간이 평균에서 제외됐다.",
+      "report_start": 1698,
+      "report_end": 1771,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "첫 주에 도서관 지하 기계실의 통신이 두 시간 끊겼고, 6월 18일에는 구청 별관의 냉방기가 정비 모드였다. 7월 4일 체육관은 지역 행사가 있어 평소보다 긴 시간 문을 열었으며, 8월 12일 보건소는 예방접종 대기실을 임시로 확장했다. 메모 작성자는 이 네 날을 평균 계산에서 각각 제외하거나, 해당 시간 구간만 제외했다.",
+          "source_start": 795,
+          "source_end": 976
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-083",
+      "sentence_id": 22,
+      "catalog_key": "eventdiff",
+      "claim_text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+      "atomic_claim": "사건 제외 전후의 평균 차이를 계산하지 않았다.",
+      "report_start": 1698,
+      "report_end": 1771,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이유와 처리 방식은 기록되어 있지만, 제외 전후 평균의 차이와 제외가 결론을 어느 방향으로 움직였는지는 계산하지 않았다. 따라서 이 목록을 근거로 결측이 무작위였다고 말할 수 없다.",
+          "source_start": 977,
+          "source_end": 1078
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-084",
+      "sentence_id": 22,
+      "catalog_key": "eventdirection",
+      "claim_text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+      "atomic_claim": "사건 제외가 결론을 움직인 방향을 계산하지 않았다.",
+      "report_start": 1698,
+      "report_end": 1771,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "이유와 처리 방식은 기록되어 있지만, 제외 전후 평균의 차이와 제외가 결론을 어느 방향으로 움직였는지는 계산하지 않았다. 따라서 이 목록을 근거로 결측이 무작위였다고 말할 수 없다.",
+          "source_start": 977,
+          "source_end": 1078
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-085",
+      "sentence_id": 23,
+      "catalog_key": "noall",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "12개 건물 모든 시설별 수치를 요약 자료가 제공하지 않는다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-086",
+      "sentence_id": 23,
+      "catalog_key": "noweight",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "전체 시설별 가중 평균은 제공되지 않는다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-087",
+      "sentence_id": 23,
+      "catalog_key": "nopre",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "각 시설 설치 전 평균 피크 값은 따로 제시되지 않는다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "표에는 각 시설별로 설치 전 평균 피크와 설치 후 평균 피크를 별도로 보여 주지 않고, 그 차이만 kW 단위로 적었다.",
+          "source_start": 3543,
+          "source_end": 3609
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-088",
+      "sentence_id": 23,
+      "catalog_key": "nopost",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "각 시설 설치 후 평균 피크 값은 따로 제시되지 않는다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "표에는 각 시설별로 설치 전 평균 피크와 설치 후 평균 피크를 별도로 보여 주지 않고, 그 차이만 kW 단위로 적었다.",
+          "source_start": 3543,
+          "source_end": 3609
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-089",
+      "sentence_id": 23,
+      "catalog_key": "noavg",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "두 공개값에서 전체 사업 평균 변화를 계산할 근거가 부족하다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-090",
+      "sentence_id": 23,
+      "catalog_key": "norate",
+      "claim_text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+      "atomic_claim": "전체 사업 절감률은 제시되지 않으며 두 공개값만으로 산출할 근거가 없다.",
+      "report_start": 1773,
+      "report_end": 1868,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-091",
+      "sentence_id": 24,
+      "catalog_key": "notariff",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "현재 자료에는 전기요금제·요금 단가가 없다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-092",
+      "sentence_id": 24,
+      "catalog_key": "nodemand",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "최대수요 산정 방식은 제공되지 않는다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-093",
+      "sentence_id": 24,
+      "catalog_key": "nocontract",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "건물별 계약전력은 제공되지 않는다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-094",
+      "sentence_id": 24,
+      "catalog_key": "noinstall",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "구입·설치 비용 합계는 현재 자료에 연결되어 있지 않다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-095",
+      "sentence_id": 24,
+      "catalog_key": "nooperating",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "통신·유지보수 등 운영 비용 합계는 현재 자료에 연결되어 있지 않다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-096",
+      "sentence_id": 24,
+      "catalog_key": "nocost",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "요금 절감액을 현재 자료만으로 산정할 수 없다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "재무 담당자는 제어기 구입비, 설치 인건비, 통신료, 유지보수 계약료를 별도 파일에서 관리한다고 답했다. 이번 점검 메모에는 그 파일의 합계나 건물별 계약전력, 최대수요 요금, 전기요금 단가가 연결되어 있지 않다.",
+          "source_start": 4505,
+          "source_end": 4624
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "따라서 -18.4 kW와 -11.2 kW 관측을 금액 절감 또는 투자 회수 기간으로 환산하는 것은 이 파일의 직접 결과가 아니다.",
+          "source_start": 4684,
+          "source_end": 4756
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-097",
+      "sentence_id": 24,
+      "catalog_key": "nopayback",
+      "claim_text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+      "atomic_claim": "투자 회수 기간을 현재 자료만으로 산정할 수 없다.",
+      "report_start": 1869,
+      "report_end": 1948,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "요금제, 최대수요 산정 방식, 각 건물의 계약전력, 설치비 회수 기간이 이번 파일에 없기 때문이다.",
+          "source_start": 2696,
+          "source_end": 2751
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "따라서 -18.4 kW와 -11.2 kW 관측을 금액 절감 또는 투자 회수 기간으로 환산하는 것은 이 파일의 직접 결과가 아니다.",
+          "source_start": 4684,
+          "source_end": 4756
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-098",
+      "sentence_id": 25,
+      "catalog_key": "noyear",
+      "claim_text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+      "atomic_claim": "자료만으로 연간 전력 절감 효과를 확인할 수 없다.",
+      "report_start": 1949,
+      "report_end": 2012,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료만으로 연간 전력 절감이나 모든 계절의 효과를 말할 수는 없다.",
+          "source_start": 156,
+          "source_end": 199
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-099",
+      "sentence_id": 25,
+      "catalog_key": "noseason",
+      "claim_text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+      "atomic_claim": "자료만으로 모든 계절의 효과를 확인할 수 없다.",
+      "report_start": 1949,
+      "report_end": 2012,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "따라서 이 자료만으로 연간 전력 절감이나 모든 계절의 효과를 말할 수는 없다.",
+          "source_start": 156,
+          "source_end": 199
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-100",
+      "sentence_id": 25,
+      "catalog_key": "citycost",
+      "claim_text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+      "atomic_claim": "도시 전체 비용 효과는 추가 자료 없이 판단할 수 없다.",
+      "report_start": 1949,
+      "report_end": 2012,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "최종 회의록은 도서관과 구청 별관의 지정 시간대 관측값을 사실로 남기되, 도시 전체의 비용·탄소·민원 효과는 추가 자료 없이는 판단하지 않는다고 적었다.",
+          "source_start": 2832,
+          "source_end": 2917
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-101",
+      "sentence_id": 25,
+      "catalog_key": "citycarbon",
+      "claim_text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+      "atomic_claim": "도시 전체 탄소 효과는 추가 자료 없이 판단할 수 없다.",
+      "report_start": 1949,
+      "report_end": 2012,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "최종 회의록은 도서관과 구청 별관의 지정 시간대 관측값을 사실로 남기되, 도시 전체의 비용·탄소·민원 효과는 추가 자료 없이는 판단하지 않는다고 적었다.",
+          "source_start": 2832,
+          "source_end": 2917
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-102",
+      "sentence_id": 25,
+      "catalog_key": "citycompl",
+      "claim_text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+      "atomic_claim": "도시 전체 민원 효과는 추가 자료 없이 판단할 수 없다.",
+      "report_start": 1949,
+      "report_end": 2012,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "최종 회의록은 도서관과 구청 별관의 지정 시간대 관측값을 사실로 남기되, 도시 전체의 비용·탄소·민원 효과는 추가 자료 없이는 판단하지 않는다고 적었다.",
+          "source_start": 2832,
+          "source_end": 2917
+        }
+      ],
+      "reason": "인용한 원문이 수치·단위·대상·기간 및 부정/조건을 직접 뒷받침한다."
+    },
+    {
+      "entry_id": "a670d1-103",
+      "sentence_id": 26,
+      "catalog_key": "truncated",
+      "claim_text": "또한 S2는 일부 내용이 생략된 잘린 노트이므로 원문 전체를 통한 추가 검증은 하지 못했다.[S2]",
+      "atomic_claim": "S2는 일부 내용이 생략된 잘린 노트다.",
+      "report_start": 2013,
+      "report_end": 2068,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "fact",
+      "status": "insufficient",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "not_verifiable_from_source_body",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "향후 비교 후보를 확보하고 결측 처리와 비용 자료를 사전에 정한 뒤에야 더 넓은 해석을 검토할 수 있다는 문구가 마지막 확인란에 남아 있다.",
+          "source_start": 5359,
+          "source_end": 5437
+        }
+      ],
+      "reason": "제공된 S2 본문에는 A~P 부록 및 종료 문구가 있고 생략·절단 표시는 없다. 본문만으로 전체 원전의 완전성까지 증명할 수 없으므로 contradicted 대신 insufficient. report 자체 주장은 절단의 증거가 아니다."
+    },
+    {
+      "entry_id": "a670d1-104",
+      "sentence_id": 26,
+      "catalog_key": "notverified",
+      "claim_text": "또한 S2는 일부 내용이 생략된 잘린 노트이므로 원문 전체를 통한 추가 검증은 하지 못했다.[S2]",
+      "atomic_claim": "작성자는 S2 원문 전체를 통한 추가 검증을 하지 못했다.",
+      "report_start": 2013,
+      "report_end": 2068,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "process_claim",
+      "status": "unchecked",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "not_verifiable_from_source_body",
+      "evidence": [],
+      "reason": "입력 packet에는 작성자의 작업 이력이 없다. 다른 기록과 외부 접근은 금지돼 확인하지 않았다. 미검증 실행 진술을 확인된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-105",
+      "sentence_id": 27,
+      "catalog_key": "jraw",
+      "claim_text": "12개 건물의 설치 전후 절대 피크값, 시설별 변화량, 이용시간 및 결측·제외 내역을 먼저 확보해 전체 결과를 재계산한다. (출처 없음) (판단)",
+      "atomic_claim": "12개 시설의 설치 전후 평균 피크·시설별 결과를 확보한다.",
+      "report_start": 2080,
+      "report_end": 2161,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "표에는 각 시설별로 설치 전 평균 피크와 설치 후 평균 피크를 별도로 보여 주지 않고, 그 차이만 kW 단위로 적었다.",
+          "source_start": 3543,
+          "source_end": 3609
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-106",
+      "sentence_id": 27,
+      "catalog_key": "jusage",
+      "claim_text": "12개 건물의 설치 전후 절대 피크값, 시설별 변화량, 이용시간 및 결측·제외 내역을 먼저 확보해 전체 결과를 재계산한다. (출처 없음) (판단)",
+      "atomic_claim": "이용시간 자료를 확보한다.",
+      "report_start": 2080,
+      "report_end": 2161,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "점검표의 열 제목은 '기준 대비 피크 전력 변화(kW)'와 '사용자 불만 접수(건/1,000 이용시간)'이다. 도서관은 -18.4 kW, 불만 0.7건으로 기록됐고, 구청 별관은 -11.2 kW, 불만 1.1건이었다.",
+          "source_start": 201,
+          "source_end": 322
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "운영센터는 냉방이 덥거나 춥다는 신고, 소음, 앱 화면 오류를 별도 코드로 입력했다. 점검표의 0.7건과 1.1건은 모든 코드의 합이 아니라 냉방 관련으로 확정된 신고를 1,000 이용시간으로 나눈 값이다.",
+          "source_start": 2057,
+          "source_end": 2172
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-107",
+      "sentence_id": 27,
+      "catalog_key": "jmissing",
+      "claim_text": "12개 건물의 설치 전후 절대 피크값, 시설별 변화량, 이용시간 및 결측·제외 내역을 먼저 확보해 전체 결과를 재계산한다. (출처 없음) (판단)",
+      "atomic_claim": "결측·제외 내역과 포함/제외 결과를 확보한다.",
+      "report_start": 2080,
+      "report_end": 2161,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "제어기 오류로 이틀간 계량값이 비어 있던 한 건물은 평균 계산에서 제외했다. 메모에는 제외 사실이 효과를 과대 또는 과소 추정했는지는 알 수 없다고 적혀 있다.",
+          "source_start": 456,
+          "source_end": 545
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "이유와 처리 방식은 기록되어 있지만, 제외 전후 평균의 차이와 제외가 결론을 어느 방향으로 움직였는지는 계산하지 않았다. 따라서 이 목록을 근거로 결측이 무작위였다고 말할 수 없다.",
+          "source_start": 977,
+          "source_end": 1078
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그 기간에는 안전 규칙 때문에 설정온도를 자동으로 올리는 명령을 중단했고, 해당 시간의 피크 전력은 비교 표에 포함하지 않았다. 기록은 이를 '운영 제약에 따른 제외'라고만 설명하며, 제외 시간을 포함했을 때의 추정치를 제공하지 않는다.",
+          "source_start": 216,
+          "source_end": 348
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-108",
+      "sentence_id": 27,
+      "catalog_key": "jaggregate",
+      "claim_text": "12개 건물의 설치 전후 절대 피크값, 시설별 변화량, 이용시간 및 결측·제외 내역을 먼저 확보해 전체 결과를 재계산한다. (출처 없음) (판단)",
+      "atomic_claim": "분모·기준 피크·운영시간·가중 기준을 정해 전체 효과를 계산한다.",
+      "report_start": 2080,
+      "report_end": 2161,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "운영 시간이 서로 다르므로, 단순히 kW 변화의 산술 평균을 전체 건물의 절감률로 바꾸는 것은 허용되지 않는다.",
+          "source_start": 1322,
+          "source_end": 1384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "작성자는 총 12개 건물의 모든 행을 이 요약 표에 다시 인쇄하지 않았고, 시설별 가중 평균도 제공하지 않았다. 따라서 독자가 두 공개 수치에서 전체 사업의 평균 변화나 절감 비율을 계산할 근거는 부족하다.",
+          "source_start": 3744,
+          "source_end": 3859
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-109",
+      "sentence_id": 28,
+      "catalog_key": "jcontrol",
+      "claim_text": "다음 분기에는 동일 시간대의 인접 미설치 건물을 대조군 후보로 삼고 기온·점유 인원·휴관 정보를 같은 단위로 수집한다.[S1][S2] (판단)",
+      "atomic_claim": "인접 미설치 건물을 대조군/비교 후보로 정한다.",
+      "report_start": 2162,
+      "report_end": 2241,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "다음 분기에는 동일 시간대의 인접 미설치 건물을 비교 후보로 검토한다는 계획만 있고, 확정된 결과는 없다.",
+          "source_start": 546,
+          "source_end": 605
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "초안에는 미설치 인접 건물 네 곳에 같은 방식의 계량 기록을 요청하고, 기온·점유 인원·휴관 정보를 일 단위로 맞추자는 제안이 있다. 제안서는 어떤 건물을 최종 대조군으로 정할지, 수집 기간을 몇 주로 할지, 결측을 어떤 규칙으로 처리할지는 아직 승인되지 않았다고 표시한다.",
+          "source_start": 2356,
+          "source_end": 2509
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-110",
+      "sentence_id": 28,
+      "catalog_key": "jconditions",
+      "claim_text": "다음 분기에는 동일 시간대의 인접 미설치 건물을 대조군 후보로 삼고 기온·점유 인원·휴관 정보를 같은 단위로 수집한다.[S1][S2] (판단)",
+      "atomic_claim": "기온·점유·휴관 조건의 수집/비교 기준을 맞춘다.",
+      "report_start": 2162,
+      "report_end": 2241,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "초안에는 미설치 인접 건물 네 곳에 같은 방식의 계량 기록을 요청하고, 기온·점유 인원·휴관 정보를 일 단위로 맞추자는 제안이 있다. 제안서는 어떤 건물을 최종 대조군으로 정할지, 수집 기간을 몇 주로 할지, 결측을 어떤 규칙으로 처리할지는 아직 승인되지 않았다고 표시한다.",
+          "source_start": 2356,
+          "source_end": 2509
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "그러나 변수들을 사용한 회귀식, 보정 전후 수치, 사전 분석 계획은 제시하지 않는다. 그러므로 기온이나 점유 인원을 기록했다는 사실만으로 두 기간이 충분히 비교 가능했다고 결론낼 수 없다.",
+          "source_start": 3420,
+          "source_end": 3525
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-111",
+      "sentence_id": 29,
+      "catalog_key": "jcosthold",
+      "claim_text": "전기요금제와 설치·운영 비용을 결합하기 전에는 kW 감소를 금액 절감이나 투자 회수 성과로 홍보하지 않는다. (출처 없음) (판단)",
+      "atomic_claim": "비용 자료 결합 전에는 kW 감소를 금액/투자 회수 성과로 환산·홍보하지 않는다.",
+      "report_start": 2242,
+      "report_end": 2315,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "따라서 -18.4 kW와 -11.2 kW 관측을 금액 절감 또는 투자 회수 기간으로 환산하는 것은 이 파일의 직접 결과가 아니다.",
+          "source_start": 4684,
+          "source_end": 4756
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    },
+    {
+      "entry_id": "a670d1-112",
+      "sentence_id": 30,
+      "catalog_key": "jheat",
+      "claim_text": "폭염 기간은 일반 운영일과 분리해 안전상 자동제어 중단 시간과 성과를 별도로 평가한다. (출처 없음) (판단)",
+      "atomic_claim": "폭염·수동 중지 구간을 별도 보고/분석한다.",
+      "report_start": 2316,
+      "report_end": 2377,
+      "span_semantics": "Python Unicode string character offsets, zero-based, end-exclusive; shared sentence context for individual atoms",
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [],
+      "citation_check": "not_cited",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "안전 담당자는 시설별 설정온도를 낮추거나 높이는 자동 명령을 잠시 멈추고 현장 관리자가 수동으로 판단하도록 했다.",
+          "source_start": 1794,
+          "source_end": 1857
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "기록은 제외 구간의 길이와 기온을 보관하지만, 그 자료로 폭염일에도 같은 피크 감소가 있었다고 추정하지 않는다. 반대로 효과가 없었다고 결론내리지도 않는다. 두 판단 모두 현재 자료가 제공하지 않는 반사실 비교를 요구한다.",
+          "source_start": 1914,
+          "source_end": 2038
+        }
+      ],
+      "reason": "명시된 판단·제안이며 관련 자료 한계와 모순되지 않는다. 이미 실행·확정된 사실로 간주하지 않는다."
+    }
+  ],
+  "question_requirements": [
+    {
+      "requirement": "기간·표본",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-001",
+        "a670d1-002",
+        "a670d1-021",
+        "a670d1-022"
+      ]
+    },
+    {
+      "requirement": "전후 비교 4주·평일·13~17시",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-009",
+        "a670d1-010",
+        "a670d1-011",
+        "a670d1-012",
+        "a670d1-023",
+        "a670d1-024",
+        "a670d1-025",
+        "a670d1-026"
+      ]
+    },
+    {
+      "requirement": "두 시설 피크 수치·kW·감소 방향",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-003",
+        "a670d1-006",
+        "a670d1-032",
+        "a670d1-033",
+        "a670d1-034",
+        "a670d1-035",
+        "a670d1-036",
+        "a670d1-037"
+      ]
+    },
+    {
+      "requirement": "두 시설 불만 수치·1,000 이용시간 분모",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-004",
+        "a670d1-005",
+        "a670d1-007",
+        "a670d1-008",
+        "a670d1-038",
+        "a670d1-039",
+        "a670d1-042"
+      ]
+    },
+    {
+      "requirement": "운영 지표 값·기간·중앙값·표본",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-046",
+        "a670d1-047",
+        "a670d1-048",
+        "a670d1-049",
+        "a670d1-057"
+      ]
+    },
+    {
+      "requirement": "폭염 제외 조건",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-067"
+      ]
+    },
+    {
+      "requirement": "대조군·보정 및 전체/연간 확대 한계",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-071",
+        "a670d1-073",
+        "a670d1-090",
+        "a670d1-098"
+      ]
+    },
+    {
+      "requirement": "결측 건물 제외와 방향 불명",
+      "covered": true,
+      "entry_ids": [
+        "a670d1-078",
+        "a670d1-079"
+      ]
+    }
+  ],
+  "missing_questions_or_required_conditions": [],
+  "optional_details_not_required_for_summary": "요약 질문이므로 부록 A~P의 모든 사건·절차·미래 계획을 빠짐없이 다시 적을 의무는 없다. 단, 자료가 없다는 부정 주장을 했다면 실제 해당 부록과 대조했다. 명령 분모 제외 2시간 생략은 분모 제외 조건을 설명했다면 핵심 필수 누락으로 세지 않았다.",
+  "coverage": {
+    "method": "전체 보고서 본문을 순서대로 직접 읽고, 각 문장의 병렬 절·수치·단위·분모·조건·부정·인과·시점을 원자 명제로 분리했다. 같은 주장이 반복되면 각 등장 위치에 별도로 기록했다.",
+    "sentence_count": 30,
+    "sentence_ledger": [
+      {
+        "sentence_id": 1,
+        "start": 52,
+        "end": 164,
+        "text": "2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기의 내부 점검에서, 도서관은 기준 대비 피크 전력이 18.4 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 0.7건이었다.[S1]",
+        "entry_ids": [
+          "a670d1-001",
+          "a670d1-002",
+          "a670d1-003",
+          "a670d1-004",
+          "a670d1-005"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 2,
+        "start": 165,
+        "end": 234,
+        "text": "구청 별관은 같은 기준에서 피크 전력이 11.2 kW 감소했고 냉방 관련 불만은 1,000 이용시간당 1.1건이었다.[S1]",
+        "entry_ids": [
+          "a670d1-006",
+          "a670d1-007",
+          "a670d1-008"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 3,
+        "start": 235,
+        "end": 305,
+        "text": "비교 범위는 설치 전후 각 4주의 평일 오후 1시부터 5시까지이며, 전년 동월이나 연간 사용량을 비교한 결과가 아니다.[S1]",
+        "entry_ids": [
+          "a670d1-009",
+          "a670d1-010",
+          "a670d1-011",
+          "a670d1-012",
+          "a670d1-013",
+          "a670d1-014"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 4,
+        "start": 306,
+        "end": 389,
+        "text": "따라서 확인된 성과는 특정 시설·시간대의 관측값과 운영 안정성에 한정되며, 연간 절감액이나 사업 전체의 인과적 효과는 확인할 수 없다.[S1][S2]",
+        "entry_ids": [
+          "a670d1-015",
+          "a670d1-016",
+          "a670d1-017",
+          "a670d1-018"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 5,
+        "start": 409,
+        "end": 483,
+        "text": "시청 에너지과의 2026년 8월 내부 점검 메모는 2026년 5월부터 8월까지 12개 공공건물에 설치한 냉방 제어기를 다뤘다.[S1]",
+        "entry_ids": [
+          "a670d1-019",
+          "a670d1-020",
+          "a670d1-021",
+          "a670d1-022"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 6,
+        "start": 484,
+        "end": 566,
+        "text": "설치 전 4주와 설치 후 4주의 평일 오후 1시부터 5시까지 계량기 값을 비교했으며, 야간 전용 건물과 주말 휴관 시설은 표본에서 제외했다.[S1]",
+        "entry_ids": [
+          "a670d1-023",
+          "a670d1-024",
+          "a670d1-025",
+          "a670d1-026",
+          "a670d1-027",
+          "a670d1-028",
+          "a670d1-029"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 7,
+        "start": 567,
+        "end": 607,
+        "text": "체육관도 주말 행사가 많지만 이번 비교에는 평일 자료만 포함됐다.[S2]",
+        "entry_ids": [
+          "a670d1-030",
+          "a670d1-031"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 8,
+        "start": 624,
+        "end": 681,
+        "text": "도서관의 ‘기준 대비 피크 전력 변화’는 -18.4 kW였고, 구청 별관은 -11.2 kW였다.[S1]",
+        "entry_ids": [
+          "a670d1-032",
+          "a670d1-033"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 9,
+        "start": 682,
+        "end": 754,
+        "text": "음수 부호는 피크 전력이 각각 18.4 kW와 11.2 kW 감소했다는 뜻이며, 절감률을 나타내는 백분율이 아니다.[S1][S2]",
+        "entry_ids": [
+          "a670d1-034",
+          "a670d1-035",
+          "a670d1-036",
+          "a670d1-037"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 10,
+        "start": 755,
+        "end": 818,
+        "text": "도서관의 사용자 불만 접수는 0.7건/1,000 이용시간, 구청 별관은 1.1건/1,000 이용시간이었다.[S1]",
+        "entry_ids": [
+          "a670d1-038",
+          "a670d1-039"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 11,
+        "start": 819,
+        "end": 933,
+        "text": "이 수치는 총 민원이나 만족도 점수가 아니라 냉방 관련으로 확정된 신고를 이용시간으로 표준화한 값이며, 동일 이용자의 반복 연락은 여러 건으로 남고 현장에서 구두로 해결된 요청은 누락됐을 수 있다.[S2]",
+        "entry_ids": [
+          "a670d1-040",
+          "a670d1-041",
+          "a670d1-042",
+          "a670d1-043",
+          "a670d1-044",
+          "a670d1-045"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 12,
+        "start": 947,
+        "end": 1021,
+        "text": "5월 3일부터 8월 28일까지 제어 명령 성공률의 중앙값은 99.2%였고, 장애 티켓 37건의 중앙 처리 시간은 46분이었다.[S2]",
+        "entry_ids": [
+          "a670d1-046",
+          "a670d1-047",
+          "a670d1-048",
+          "a670d1-049"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 13,
+        "start": 1022,
+        "end": 1097,
+        "text": "성공률은 장비가 수신 확인을 돌려준 명령의 비율로, 재전송 후 성공한 명령도 포함하고 통신 장비 교체 시간은 분모에서 제외했다.[S2]",
+        "entry_ids": [
+          "a670d1-050",
+          "a670d1-051",
+          "a670d1-052"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 14,
+        "start": 1098,
+        "end": 1183,
+        "text": "장애 티켓에는 화면 표시 오류, 실내기 응답 지연, 관리자 계정 잠김이 함께 포함됐으며, 46분은 최초 접수부터 종료까지 걸린 시간의 중앙값이다.[S2]",
+        "entry_ids": [
+          "a670d1-053",
+          "a670d1-054",
+          "a670d1-055",
+          "a670d1-056",
+          "a670d1-057"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 15,
+        "start": 1184,
+        "end": 1235,
+        "text": "이 운영 지표들은 피크 전력 감소나 이용자 만족도를 재현하거나 검증한 수치가 아니다.[S2]",
+        "entry_ids": [
+          "a670d1-058",
+          "a670d1-059"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 16,
+        "start": 1248,
+        "end": 1339,
+        "text": "7월 22일부터 24일과 8월 6일부터 8일까지의 폭염 경보 기간에는 안전 규칙에 따라 자동 설정온도 명령을 일시 중단하고 현장 관리자가 수동으로 판단했다.[S2]",
+        "entry_ids": [
+          "a670d1-060",
+          "a670d1-061",
+          "a670d1-062",
+          "a670d1-063",
+          "a670d1-064"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 17,
+        "start": 1340,
+        "end": 1404,
+        "text": "일부 건물에서는 창문 개방과 추가 환기도 있었으며, 해당 시간대는 설치 전후 피크 전력 비교표에서 제외됐다.[S2]",
+        "entry_ids": [
+          "a670d1-065",
+          "a670d1-066",
+          "a670d1-067"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 18,
+        "start": 1405,
+        "end": 1461,
+        "text": "그러므로 이 결과를 폭염일에도 적용하거나, 반대로 폭염일에는 효과가 없었다고 해석할 수 없다.[S2]",
+        "entry_ids": [
+          "a670d1-068",
+          "a670d1-069"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 19,
+        "start": 1477,
+        "end": 1520,
+        "text": "제공된 두 출처 사이에 수치상 명시적인 모순은 확인되지 않았다. (출처 없음)",
+        "entry_ids": [
+          "a670d1-070"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 20,
+        "start": 1521,
+        "end": 1620,
+        "text": "그러나 대조군이 없고 기온·점유 인원·설정온도에 관한 회귀식, 보정 전후 결과와 사전 분석 계획도 제시되지 않아 관측된 감소를 제어기의 인과효과로 확정할 수 없다.[S1][S2]",
+        "entry_ids": [
+          "a670d1-071",
+          "a670d1-072",
+          "a670d1-073",
+          "a670d1-074",
+          "a670d1-075"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 21,
+        "start": 1621,
+        "end": 1697,
+        "text": "제어기 오류로 이틀간 계량값이 비었던 한 건물은 평균에서 제외됐으며, 이 제외가 효과를 과대 또는 과소 추정했는지는 알 수 없다.[S1]",
+        "entry_ids": [
+          "a670d1-076",
+          "a670d1-077",
+          "a670d1-078",
+          "a670d1-079"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 22,
+        "start": 1698,
+        "end": 1771,
+        "text": "특수 행사·정비·통신 장애 등의 날짜나 시간 구간도 제외됐지만, 제외 전후 평균 차이와 결론에 미친 방향은 계산되지 않았다.[S2]",
+        "entry_ids": [
+          "a670d1-080",
+          "a670d1-081",
+          "a670d1-082",
+          "a670d1-083",
+          "a670d1-084"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 23,
+        "start": 1773,
+        "end": 1868,
+        "text": "12개 건물 전체의 시설별 수치, 가중 평균, 설치 전후 절대 피크 전력값이 없으므로 공개된 두 시설 수치만으로 사업 전체의 평균 변화나 절감률을 계산할 수 없다.[S2]",
+        "entry_ids": [
+          "a670d1-085",
+          "a670d1-086",
+          "a670d1-087",
+          "a670d1-088",
+          "a670d1-089",
+          "a670d1-090"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 24,
+        "start": 1869,
+        "end": 1948,
+        "text": "전기요금제, 최대수요 산정 방식, 계약전력과 설치·운영 비용도 제시되지 않아 요금 절감액이나 투자 회수 기간을 산출할 수 없다.[S1][S2]",
+        "entry_ids": [
+          "a670d1-091",
+          "a670d1-092",
+          "a670d1-093",
+          "a670d1-094",
+          "a670d1-095",
+          "a670d1-096",
+          "a670d1-097"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 25,
+        "start": 1949,
+        "end": 2012,
+        "text": "자료는 연간 전력 절감, 모든 계절의 효과, 도시 전체의 비용·탄소·민원 효과를 뒷받침하지 않는다.[S1][S2]",
+        "entry_ids": [
+          "a670d1-098",
+          "a670d1-099",
+          "a670d1-100",
+          "a670d1-101",
+          "a670d1-102"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 26,
+        "start": 2013,
+        "end": 2068,
+        "text": "또한 S2는 일부 내용이 생략된 잘린 노트이므로 원문 전체를 통한 추가 검증은 하지 못했다.[S2]",
+        "entry_ids": [
+          "a670d1-103",
+          "a670d1-104"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 27,
+        "start": 2080,
+        "end": 2161,
+        "text": "12개 건물의 설치 전후 절대 피크값, 시설별 변화량, 이용시간 및 결측·제외 내역을 먼저 확보해 전체 결과를 재계산한다. (출처 없음) (판단)",
+        "entry_ids": [
+          "a670d1-105",
+          "a670d1-106",
+          "a670d1-107",
+          "a670d1-108"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 28,
+        "start": 2162,
+        "end": 2241,
+        "text": "다음 분기에는 동일 시간대의 인접 미설치 건물을 대조군 후보로 삼고 기온·점유 인원·휴관 정보를 같은 단위로 수집한다.[S1][S2] (판단)",
+        "entry_ids": [
+          "a670d1-109",
+          "a670d1-110"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 29,
+        "start": 2242,
+        "end": 2315,
+        "text": "전기요금제와 설치·운영 비용을 결합하기 전에는 kW 감소를 금액 절감이나 투자 회수 성과로 홍보하지 않는다. (출처 없음) (판단)",
+        "entry_ids": [
+          "a670d1-111"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "sentence_id": 30,
+        "start": 2316,
+        "end": 2377,
+        "text": "폭염 기간은 일반 운영일과 분리해 안전상 자동제어 중단 시간과 성과를 별도로 평가한다. (출처 없음) (판단)",
+        "entry_ids": [
+          "a670d1-112"
+        ],
+        "manually_reviewed": true
+      }
+    ],
+    "nonclaim_segments": [
+      {
+        "start": 0,
+        "end": 44,
+        "text": "# 질문: 제시된 지역 냉방 시범사업의 성과를 수치·단위·조건과 함께 요약하라.",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 46,
+        "end": 50,
+        "text": "## 답",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 391,
+        "end": 396,
+        "text": "## 근거",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 398,
+        "end": 407,
+        "text": "### 적용 범위",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 609,
+        "end": 622,
+        "text": "### 피크 전력과 불만",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 935,
+        "end": 945,
+        "text": "### 시스템 운영",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 1237,
+        "end": 1246,
+        "text": "### 폭염 조건",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 1463,
+        "end": 1475,
+        "text": "## 반대 근거와 한계",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 2070,
+        "end": 2078,
+        "text": "## 다음 행동",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 2379,
+        "end": 2384,
+        "text": "## 출처",
+        "type": "heading_or_question",
+        "review_note": "질문·제목은 성과 사실 주장 아님."
+      },
+      {
+        "start": 2386,
+        "end": 2466,
+        "text": "- [S1] replay real-ko-table S1 — https://fixture.invalid/replay/real-ko-table/S1",
+        "type": "bibliography",
+        "review_note": "S1/S2 식별자는 입력에 존재한다. fixture.invalid URL 문자열은 report 내부에서만 제공되어 출처 본문의 진위·호스팅 근거로 쓰지 않았다."
+      },
+      {
+        "start": 2467,
+        "end": 2547,
+        "text": "- [S2] replay real-ko-table S2 — https://fixture.invalid/replay/real-ko-table/S2",
+        "type": "bibliography",
+        "review_note": "S1/S2 식별자는 입력에 존재한다. fixture.invalid URL 문자열은 report 내부에서만 제공되어 출처 본문의 진위·호스팅 근거로 쓰지 않았다."
+      }
+    ],
+    "self_assessed_full_body_coverage": true,
+    "not_an_automatic_proof": "문자열 위치·근거 인용 일치는 프로그램으로 확인했지만 원자 분할과 의미적 완전성은 단일 검수자의 자기 점검이다. 전체 사실을 누락 없이 찾았다는 자동 증명이나 독립 이중 검수가 아니다."
+  },
+  "limitations": [
+    "단일 Astra 판단이며 실제 논문적 일반 정확도나 다른 질문·모델·실험 조건의 품질을 주장하지 않는다.",
+    "참값 판정 범위는 제공 source 본문이다. 실제 사업·URL·원전 완전성의 외부 진위를 검증하지 않았다.",
+    "원자 수는 이 검수의 분할 규칙과 반복 등장 횟수에 따른 값이며 독립 표본 수 또는 정확도 통계가 아니다.",
+    "권고·추론이 명시되고 근거와 모순되지 않으면 사실 오류로 세지 않았다."
+  ]
+}

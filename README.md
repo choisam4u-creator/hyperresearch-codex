@@ -1,5 +1,6 @@
 # hyperresearch-codex
 
+입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
 토큰 절감과 품질의 후속 실측은 [사전 등록 실험 계획](docs/EFFICIENCY-STUDY-PROTOCOL.md)을 따릅니다. 실행 도구 준비와 실제 효과 입증은 구분합니다.
 
 [![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.3.1-orange)

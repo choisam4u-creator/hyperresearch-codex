@@ -1,0 +1,74 @@
+{
+  "scope": "mock_route_observation_not_actual_tokens_or_quality",
+  "case_id": "fact-ko-01",
+  "tier": "full",
+  "preset": "lean",
+  "report_format": "facts",
+  "observations": [
+    {
+      "strategy": "standard",
+      "backend": "mock",
+      "attempt_count": 12,
+      "steps": [
+        "analyst",
+        "loci",
+        "investigator_L1",
+        "draft_2",
+        "draft_1",
+        "synth",
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction",
+        "patcher",
+        "citecheck",
+        "polish"
+      ],
+      "critic_steps": [
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction"
+      ],
+      "citecheck_present": true,
+      "workflow": {
+        "strategy": "standard",
+        "single_draft": false,
+        "reason": "preserve_existing_route",
+        "verification_preserved": true,
+        "performance_measured": false
+      },
+      "config_hash": "7d7cff22c12afaa2c2a1d3c5a2c871a58d060284903fcb6172c6e1abbcebaf03",
+      "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2"
+    },
+    {
+      "strategy": "adaptive",
+      "backend": "mock",
+      "attempt_count": 9,
+      "steps": [
+        "analyst",
+        "loci",
+        "investigator_L1",
+        "writer",
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction",
+        "patcher",
+        "citecheck"
+      ],
+      "critic_steps": [
+        "critic_depth",
+        "critic_dialectic",
+        "critic_instruction"
+      ],
+      "citecheck_present": true,
+      "workflow": {
+        "strategy": "adaptive",
+        "single_draft": true,
+        "reason": "explicit_facts_format",
+        "verification_preserved": true,
+        "performance_measured": false
+      },
+      "config_hash": "f1030a9d0b841ed5ced34ac84a8e855fcb7255d502e3f7ac2c519b1f23091d64",
+      "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2"
+    }
+  ]
+}

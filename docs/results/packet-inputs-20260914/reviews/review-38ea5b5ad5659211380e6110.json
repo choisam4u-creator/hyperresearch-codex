@@ -1,0 +1,3023 @@
+{
+  "schema_version": "blind_atomic_review_v1",
+  "opaque_id": "38ea5b5ad5659211380e6110",
+  "question": "Compare the two archive routes while preserving their scope and boundary conditions.",
+  "lang": "en",
+  "report_sha256": "99ef04c0f7977a47e888033c73b793b4e2b5ee05f306cd9c9a4a4839c7ddde83",
+  "report_character_length": 4847,
+  "source_sha256": {
+    "S1": "f77fb87622247cdbff24ab40f0238db668df6f55c25bc0b13433f1cd0613743c",
+    "S2": "7aaa11639514aeb6df7657dff3583c5837ffe085798accd0d267eb33e6f08025"
+  },
+  "reviewer": "Single Astra independent blind source-grounded judgment",
+  "blind_scope": "Read only these four new packet JSONs. Did not read experiment conditions, model labels, other execution records, or earlier review outputs. No web/API/model CLI calls or subagents.",
+  "status_definitions": {
+    "supported": "Source supports the proposition directly or as an explicitly limited inference.",
+    "contradicted": "Source explicitly conflicts with the proposition.",
+    "insufficient": "The claimed extension is not established, without assuming that the opposite is proven.",
+    "unchecked": "Outside supplied source-body scope; not externally checked."
+  },
+  "critical_definition": "An error or unsupported extension materially changes eligible input, prerequisite, refusal boundary, timing comparison, or provenance guarantee relevant to the question.",
+  "quality_rule": "통과: essential answer supported and no material unsupported extension found. 실패: material source contradiction or unsupported application-condition extension. 미확정: noncritical factual/provenance extensions remain unestablished. Not a model-level score.",
+  "quality": "통과",
+  "quality_basis": "필수 적용 조건·거부 조건·기록 항목·서로 다른 표본과 시간 제외 범위를 보존한다. 주요 근거 충돌이나 필수 조건 누락을 발견하지 못했다. 판단 문장은 앞서 명시한 signed/private 또는 validated-public 범위 안에서 읽었다.",
+  "counts": {
+    "factual_atoms": 65,
+    "factual_status_counts": {
+      "supported": 65
+    },
+    "all_entries": 78,
+    "all_status_counts": {
+      "supported": 78
+    },
+    "kind_counts": {
+      "fact": 65,
+      "judgment": 7,
+      "inference": 6
+    },
+    "critical_findings": 0
+  },
+  "entries": [
+    {
+      "entry_id": "38ea5b-001",
+      "unit_id": 1,
+      "catalog_key": "nowinner",
+      "claim_text": "Neither route is universally superior: Cedar is the applicable route for a signed archive on a pre-approved private hostname, while Maple is limited to public HTTPS sources [S1][S2].",
+      "atomic_claim": "두 guide는 보편적으로 우월한 route를 제시하지 않는다.",
+      "report_start": 109,
+      "report_end": 291,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-002",
+      "unit_id": 1,
+      "catalog_key": "cscope",
+      "claim_text": "Neither route is universally superior: Cedar is the applicable route for a signed archive on a pre-approved private hostname, while Maple is limited to public HTTPS sources [S1][S2].",
+      "atomic_claim": "Cedar의 문서화된 입력은 승인된 비공개 hostname의 signed archive다.",
+      "report_start": 109,
+      "report_end": 291,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-003",
+      "unit_id": 1,
+      "catalog_key": "mscope",
+      "claim_text": "Neither route is universally superior: Cedar is the applicable route for a signed archive on a pre-approved private hostname, while Maple is limited to public HTTPS sources [S1][S2].",
+      "atomic_claim": "Maple 입력 범위는 public HTTPS source로 제한된다.",
+      "report_start": 109,
+      "report_end": 291,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-004",
+      "unit_id": 2,
+      "catalog_key": "jselect",
+      "claim_text": "Choose according to source location and approval constraints, not the reported median retrieval times, because the tests used different file-size ranges and Cedar’s measurement excluded prior copying and manual approval [S1][S2].",
+      "atomic_claim": "source 접근 범위와 승인/필요 통제를 먼저 확인하여 route를 선택한다.",
+      "report_start": 292,
+      "report_end": 521,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-005",
+      "unit_id": 2,
+      "catalog_key": "sizeunmatched",
+      "claim_text": "Choose according to source location and approval constraints, not the reported median retrieval times, because the tests used different file-size ranges and Cedar’s measurement excluded prior copying and manual approval [S1][S2].",
+      "atomic_claim": "두 시험의 파일 크기 범위가 달라 동일 크기·동일 파일을 맞춘 비교가 아니다.",
+      "report_start": 292,
+      "report_end": 521,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-006",
+      "unit_id": 2,
+      "catalog_key": "ccopy",
+      "claim_text": "Choose according to source location and approval constraints, not the reported median retrieval times, because the tests used different file-size ranges and Cedar’s measurement excluded prior copying and manual approval [S1][S2].",
+      "atomic_claim": "Cedar 보고 시간에는 그 segment로의 사전 복사 시간이 제외된다.",
+      "report_start": 292,
+      "report_end": 521,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-007",
+      "unit_id": 2,
+      "catalog_key": "capproval",
+      "claim_text": "Choose according to source location and approval constraints, not the reported median retrieval times, because the tests used different file-size ranges and Cedar’s measurement excluded prior copying and manual approval [S1][S2].",
+      "atomic_claim": "Cedar 보고 시간에는 수동 승인 시간이 제외된다.",
+      "report_start": 292,
+      "report_end": 521,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-008",
+      "unit_id": 3,
+      "catalog_key": "jcedar",
+      "claim_text": "For an intranet-only archive, Cedar is the viable route if an administrator can approve the hostname before the run [S1] (judgment).",
+      "atomic_claim": "signed archive·승인된 private hostname이라는 앞선 범위를 전제로 Cedar 사전 관리자 등록을 확인한다.",
+      "report_start": 522,
+      "report_end": 654,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다. 바로 앞 문장에서 signed archive 조건을 명시했다. 승인만으로 어떤 intranet archive든 처리한다는 무조건 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-009",
+      "unit_id": 4,
+      "catalog_key": "mnotsameapproval",
+      "claim_text": "For an archive already available through validated public HTTPS, Maple avoids Cedar’s private-host approval condition [S1][S2] (judgment).",
+      "atomic_claim": "적격 public HTTPS용 Maple를 선택할 때 Cedar의 private-host 등록 조건은 적용하지 않는다.",
+      "report_start": 655,
+      "report_end": 793,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-010",
+      "unit_id": 4,
+      "catalog_key": "jmaple",
+      "claim_text": "For an archive already available through validated public HTTPS, Maple avoids Cedar’s private-host approval condition [S1][S2] (judgment).",
+      "atomic_claim": "public HTTPS 사본의 존재와 usual validation 통과를 확인한다.",
+      "report_start": 655,
+      "report_end": 793,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It cannot retrieve the intranet archive required by a department that has not published a public copy. The guide presents this as a scope limit, not an intermittent failure.",
+          "source_start": 449,
+          "source_end": 622
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-011",
+      "unit_id": 7,
+      "catalog_key": "cscope",
+      "claim_text": "| Eligible source | Signed archive on an approved private hostname [S1] | Public HTTPS source only [S2] |",
+      "atomic_claim": "Cedar의 문서화된 입력은 승인된 비공개 hostname의 signed archive다.",
+      "report_start": 839,
+      "report_end": 944,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-012",
+      "unit_id": 7,
+      "catalog_key": "mscope",
+      "claim_text": "| Eligible source | Signed archive on an approved private hostname [S1] | Public HTTPS source only [S2] |",
+      "atomic_claim": "Maple 입력 범위는 public HTTPS source로 제한된다.",
+      "report_start": 839,
+      "report_end": 944,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-013",
+      "unit_id": 8,
+      "catalog_key": "cadmin",
+      "claim_text": "| Required condition | Administrator lists the hostname before the run; otherwise connection is refused [S1] | Source must be publicly published and pass usual validation [S2] |",
+      "atomic_claim": "관리자가 실행 전에 hostname을 목록에 등록해야 한다.",
+      "report_start": 945,
+      "report_end": 1122,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-014",
+      "unit_id": 8,
+      "catalog_key": "crefuse",
+      "claim_text": "| Required condition | Administrator lists the hostname before the run; otherwise connection is refused [S1] | Source must be publicly published and pass usual validation [S2] |",
+      "atomic_claim": "사전 hostname 등록 조건이 충족되지 않으면 Cedar가 연결을 거부한다.",
+      "report_start": 945,
+      "report_end": 1122,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-015",
+      "unit_id": 8,
+      "catalog_key": "mvalidation",
+      "claim_text": "| Required condition | Administrator lists the hostname before the run; otherwise connection is refused [S1] | Source must be publicly published and pass usual validation [S2] |",
+      "atomic_claim": "Maple에 사용할 public HTTPS source는 usual validation을 통과해야 한다.",
+      "report_start": 945,
+      "report_end": 1122,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-016",
+      "unit_id": 9,
+      "catalog_key": "carbitrary",
+      "claim_text": "| Private-network access | Supported only for the approved hostname; arbitrary private-address access is not claimed [S1] | Rejected, so an unpublished intranet archive is inaccessible [S2] |",
+      "atomic_claim": "Cedar의 임의 비공개 주소에 대한 일반 접근 능력은 주장되지 않는다.",
+      "report_start": 1123,
+      "report_end": 1314,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not claim that Cedar can reach arbitrary private addresses.",
+          "source_start": 303,
+          "source_end": 377
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-017",
+      "unit_id": 9,
+      "catalog_key": "cscope",
+      "claim_text": "| Private-network access | Supported only for the approved hostname; arbitrary private-address access is not claimed [S1] | Rejected, so an unpublished intranet archive is inaccessible [S2] |",
+      "atomic_claim": "Cedar의 문서화된 입력은 승인된 비공개 hostname의 signed archive다.",
+      "report_start": 1123,
+      "report_end": 1314,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-018",
+      "unit_id": 9,
+      "catalog_key": "mreject",
+      "claim_text": "| Private-network access | Supported only for the approved hostname; arbitrary private-address access is not claimed [S1] | Rejected, so an unpublished intranet archive is inaccessible [S2] |",
+      "atomic_claim": "Maple는 private network address를 의도적으로 거부한다.",
+      "report_start": 1123,
+      "report_end": 1314,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-019",
+      "unit_id": 9,
+      "catalog_key": "mintranet",
+      "claim_text": "| Private-network access | Supported only for the approved hostname; arbitrary private-address access is not claimed [S1] | Rejected, so an unpublished intranet archive is inaccessible [S2] |",
+      "atomic_claim": "공개 사본 없는 필수 intranet archive는 Maple로 가져올 수 없다.",
+      "report_start": 1123,
+      "report_end": 1314,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It cannot retrieve the intranet archive required by a department that has not published a public copy. The guide presents this as a scope limit, not an intermittent failure.",
+          "source_start": 449,
+          "source_end": 622
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-020",
+      "unit_id": 10,
+      "catalog_key": "chash",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "테스트 환경에서 Cedar가 원본 파일 hash를 보존했다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다. 표/요약의 기록 기능은 이 문서의 시험 관찰 범위 안에서 읽었다. 보편적으로 항상 보존한다는 보증으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-021",
+      "unit_id": 10,
+      "catalog_key": "ctimestamp",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "테스트 환경에서 Cedar가 retrieval timestamp를 저장했다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다. 표/요약의 기록 기능은 이 문서의 시험 관찰 범위 안에서 읽었다. 보편적으로 항상 보존한다는 보증으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-022",
+      "unit_id": 10,
+      "catalog_key": "caudit",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "승인 hostname을 사용할 때 Cedar가 audit event를 기록한다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The route records an audit event when an approved hostname is used.",
+          "source_start": 740,
+          "source_end": 807
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-023",
+      "unit_id": 10,
+      "catalog_key": "cauditrecord",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "Cedar의 audit event는 configured source와 retrieval action을 기록한다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not describe the event as proof that the file content is accurate; it only records the configured source and retrieval action.",
+          "source_start": 808,
+          "source_end": 949
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-024",
+      "unit_id": 10,
+      "catalog_key": "murl",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "Maple는 redirect 후 최종 URL을 저장한다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Maple stores the final URL after redirects and a content hash.",
+          "source_start": 386,
+          "source_end": 448
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-025",
+      "unit_id": 10,
+      "catalog_key": "mhash",
+      "claim_text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+      "atomic_claim": "Maple는 content hash를 저장한다.",
+      "report_start": 1315,
+      "report_end": 1490,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Maple stores the final URL after redirects and a content hash.",
+          "source_start": 386,
+          "source_end": 448
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-026",
+      "unit_id": 11,
+      "catalog_key": "ctime",
+      "claim_text": "| Observed timing | 38-second median for eight 80–140 MB archives, after copying to the approved segment [S1] | 31-second median for eight 50–90 MB public archives [S2] |",
+      "atomic_claim": "Cedar 관측값은 80~140 MB archive 8개의 retrieval time 중앙값 38초다.",
+      "report_start": 1491,
+      "report_end": 1661,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-027",
+      "unit_id": 11,
+      "catalog_key": "cstart",
+      "claim_text": "| Observed timing | 38-second median for eight 80–140 MB archives, after copying to the approved segment [S1] | 31-second median for eight 50–90 MB public archives [S2] |",
+      "atomic_claim": "Cedar의 시간 측정은 승인 network segment로 archive를 복사한 뒤에 시작한다.",
+      "report_start": 1491,
+      "report_end": 1661,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-028",
+      "unit_id": 11,
+      "catalog_key": "mtime",
+      "claim_text": "| Observed timing | 38-second median for eight 80–140 MB archives, after copying to the approved segment [S1] | 31-second median for eight 50–90 MB public archives [S2] |",
+      "atomic_claim": "Maple public test의 관측값은 50~90 MB archive 8개의 retrieval time 중앙값 31초다.",
+      "report_start": 1491,
+      "report_end": 1661,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-029",
+      "unit_id": 12,
+      "catalog_key": "cnoe2e",
+      "claim_text": "| End-to-end comparison | Unknown; copy and manual approval time were excluded [S1] | Unknown under conditions matched to Cedar [S1][S2] |",
+      "atomic_claim": "Cedar 관측 시간은 새 고객의 전체 시작부터 종료까지 소요 시간이 아니다.",
+      "report_start": 1662,
+      "report_end": 1800,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-030",
+      "unit_id": 12,
+      "catalog_key": "ccopy",
+      "claim_text": "| End-to-end comparison | Unknown; copy and manual approval time were excluded [S1] | Unknown under conditions matched to Cedar [S1][S2] |",
+      "atomic_claim": "Cedar 보고 시간에는 그 segment로의 사전 복사 시간이 제외된다.",
+      "report_start": 1662,
+      "report_end": 1800,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-031",
+      "unit_id": 12,
+      "catalog_key": "capproval",
+      "claim_text": "| End-to-end comparison | Unknown; copy and manual approval time were excluded [S1] | Unknown under conditions matched to Cedar [S1][S2] |",
+      "atomic_claim": "Cedar 보고 시간에는 수동 승인 시간이 제외된다.",
+      "report_start": 1662,
+      "report_end": 1800,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-032",
+      "unit_id": 12,
+      "catalog_key": "noe2ecompare",
+      "claim_text": "| End-to-end comparison | Unknown; copy and manual approval time were excluded [S1] | Unknown under conditions matched to Cedar [S1][S2] |",
+      "atomic_claim": "동일 archive·네트워크·승인/검증 조건 및 측정 경계를 맞춘 end-to-end 비교가 제공되지 않는다.",
+      "report_start": 1662,
+      "report_end": 1800,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-033",
+      "unit_id": 13,
+      "catalog_key": "reliabilityunknown",
+      "claim_text": "| Reliability, cost, security completeness, throughput | Unknown [S1] | Unknown [S2] |",
+      "atomic_claim": "제공 자료로 route 신뢰도·failure rate 비교를 확인할 수 없다.",
+      "report_start": 1801,
+      "report_end": 1887,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-034",
+      "unit_id": 13,
+      "catalog_key": "costunknown",
+      "claim_text": "| Reliability, cost, security completeness, throughput | Unknown [S1] | Unknown [S2] |",
+      "atomic_claim": "제공 자료로 route 비용 비교를 확인할 수 없다.",
+      "report_start": 1801,
+      "report_end": 1887,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-035",
+      "unit_id": 13,
+      "catalog_key": "securityunknown",
+      "claim_text": "| Reliability, cost, security completeness, throughput | Unknown [S1] | Unknown [S2] |",
+      "atomic_claim": "제공 자료로 보안의 완전성을 비교할 수 없다.",
+      "report_start": 1801,
+      "report_end": 1887,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Its guide says this reduces the chance that a job reaches an internal service by mistake.",
+          "source_start": 99,
+          "source_end": 188
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-036",
+      "unit_id": 13,
+      "catalog_key": "throughputunknown",
+      "claim_text": "| Reliability, cost, security completeness, throughput | Unknown [S1] | Unknown [S2] |",
+      "atomic_claim": "제공 자료로 처리량 비교를 확인할 수 없다.",
+      "report_start": 1801,
+      "report_end": 1887,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-037",
+      "unit_id": 14,
+      "catalog_key": "cscope",
+      "claim_text": "Cedar reads a signed archive from an approved private hostname only when an administrator has listed that hostname before the run [S1].",
+      "atomic_claim": "Cedar의 문서화된 입력은 승인된 비공개 hostname의 signed archive다.",
+      "report_start": 1902,
+      "report_end": 2037,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-038",
+      "unit_id": 14,
+      "catalog_key": "cadmin",
+      "claim_text": "Cedar reads a signed archive from an approved private hostname only when an administrator has listed that hostname before the run [S1].",
+      "atomic_claim": "관리자가 실행 전에 hostname을 목록에 등록해야 한다.",
+      "report_start": 1902,
+      "report_end": 2037,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-039",
+      "unit_id": 15,
+      "catalog_key": "crefuse",
+      "claim_text": "If the hostname has not been listed, Cedar refuses the connection, and the guide does not claim access to arbitrary private addresses [S1].",
+      "atomic_claim": "사전 hostname 등록 조건이 충족되지 않으면 Cedar가 연결을 거부한다.",
+      "report_start": 2038,
+      "report_end": 2177,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-040",
+      "unit_id": 15,
+      "catalog_key": "carbitrary",
+      "claim_text": "If the hostname has not been listed, Cedar refuses the connection, and the guide does not claim access to arbitrary private addresses [S1].",
+      "atomic_claim": "Cedar의 임의 비공개 주소에 대한 일반 접근 능력은 주장되지 않는다.",
+      "report_start": 2038,
+      "report_end": 2177,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not claim that Cedar can reach arbitrary private addresses.",
+          "source_start": 303,
+          "source_end": 377
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-041",
+      "unit_id": 16,
+      "catalog_key": "chash",
+      "claim_text": "S1 reports that Cedar preserved the original file hash and stored a retrieval timestamp [S1].",
+      "atomic_claim": "테스트 환경에서 Cedar가 원본 파일 hash를 보존했다.",
+      "report_start": 2179,
+      "report_end": 2272,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다. 표/요약의 기록 기능은 이 문서의 시험 관찰 범위 안에서 읽었다. 보편적으로 항상 보존한다는 보증으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-042",
+      "unit_id": 16,
+      "catalog_key": "ctimestamp",
+      "claim_text": "S1 reports that Cedar preserved the original file hash and stored a retrieval timestamp [S1].",
+      "atomic_claim": "테스트 환경에서 Cedar가 retrieval timestamp를 저장했다.",
+      "report_start": 2179,
+      "report_end": 2272,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다. 표/요약의 기록 기능은 이 문서의 시험 관찰 범위 안에서 읽었다. 보편적으로 항상 보존한다는 보증으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-043",
+      "unit_id": 17,
+      "catalog_key": "caudit",
+      "claim_text": "Its audit event records use of the approved hostname, the configured source, and the retrieval action, but it does not establish that the archive’s contents are accurate [S1].",
+      "atomic_claim": "승인 hostname을 사용할 때 Cedar가 audit event를 기록한다.",
+      "report_start": 2273,
+      "report_end": 2448,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The route records an audit event when an approved hostname is used.",
+          "source_start": 740,
+          "source_end": 807
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-044",
+      "unit_id": 17,
+      "catalog_key": "cauditrecord",
+      "claim_text": "Its audit event records use of the approved hostname, the configured source, and the retrieval action, but it does not establish that the archive’s contents are accurate [S1].",
+      "atomic_claim": "Cedar의 audit event는 configured source와 retrieval action을 기록한다.",
+      "report_start": 2273,
+      "report_end": 2448,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not describe the event as proof that the file content is accurate; it only records the configured source and retrieval action.",
+          "source_start": 808,
+          "source_end": 949
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-045",
+      "unit_id": 17,
+      "catalog_key": "cauditaccuracy",
+      "claim_text": "Its audit event records use of the approved hostname, the configured source, and the retrieval action, but it does not establish that the archive’s contents are accurate [S1].",
+      "atomic_claim": "Cedar audit event는 파일 내용의 정확성을 입증하지 않는다.",
+      "report_start": 2273,
+      "report_end": 2448,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not describe the event as proof that the file content is accurate; it only records the configured source and retrieval action.",
+          "source_start": 808,
+          "source_end": 949
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-046",
+      "unit_id": 18,
+      "catalog_key": "ctime",
+      "claim_text": "Cedar recorded a median retrieval time of 38 seconds across eight archives ranging from 80 to 140 MB [S1].",
+      "atomic_claim": "Cedar 관측값은 80~140 MB archive 8개의 retrieval time 중앙값 38초다.",
+      "report_start": 2450,
+      "report_end": 2556,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-047",
+      "unit_id": 19,
+      "catalog_key": "cstart",
+      "claim_text": "Measurement began only after each archive had been copied to the approved network segment, excluding that copy and manual approval time, so the result is not an end-to-end time for a new customer [S1].",
+      "atomic_claim": "Cedar의 시간 측정은 승인 network segment로 archive를 복사한 뒤에 시작한다.",
+      "report_start": 2557,
+      "report_end": 2758,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-048",
+      "unit_id": 19,
+      "catalog_key": "ccopy",
+      "claim_text": "Measurement began only after each archive had been copied to the approved network segment, excluding that copy and manual approval time, so the result is not an end-to-end time for a new customer [S1].",
+      "atomic_claim": "Cedar 보고 시간에는 그 segment로의 사전 복사 시간이 제외된다.",
+      "report_start": 2557,
+      "report_end": 2758,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-049",
+      "unit_id": 19,
+      "catalog_key": "capproval",
+      "claim_text": "Measurement began only after each archive had been copied to the approved network segment, excluding that copy and manual approval time, so the result is not an end-to-end time for a new customer [S1].",
+      "atomic_claim": "Cedar 보고 시간에는 수동 승인 시간이 제외된다.",
+      "report_start": 2557,
+      "report_end": 2758,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-050",
+      "unit_id": 19,
+      "catalog_key": "cnoe2e",
+      "claim_text": "Measurement began only after each archive had been copied to the approved network segment, excluding that copy and manual approval time, so the result is not an end-to-end time for a new customer [S1].",
+      "atomic_claim": "Cedar 관측 시간은 새 고객의 전체 시작부터 종료까지 소요 시간이 아니다.",
+      "report_start": 2557,
+      "report_end": 2758,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-051",
+      "unit_id": 20,
+      "catalog_key": "mscope",
+      "claim_text": "Maple accepts only public HTTPS sources and intentionally rejects private network addresses [S2].",
+      "atomic_claim": "Maple 입력 범위는 public HTTPS source로 제한된다.",
+      "report_start": 2760,
+      "report_end": 2857,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-052",
+      "unit_id": 20,
+      "catalog_key": "mreject",
+      "claim_text": "Maple accepts only public HTTPS sources and intentionally rejects private network addresses [S2].",
+      "atomic_claim": "Maple는 private network address를 의도적으로 거부한다.",
+      "report_start": 2760,
+      "report_end": 2857,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-053",
+      "unit_id": 21,
+      "catalog_key": "mintranet",
+      "claim_text": "It therefore cannot retrieve an intranet archive unless the department publishes a public copy that passes the usual validation [S2].",
+      "atomic_claim": "공개 사본 없는 필수 intranet archive는 Maple로 가져올 수 없다.",
+      "report_start": 2858,
+      "report_end": 2991,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It cannot retrieve the intranet archive required by a department that has not published a public copy. The guide presents this as a scope limit, not an intermittent failure.",
+          "source_start": 449,
+          "source_end": 622
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-054",
+      "unit_id": 21,
+      "catalog_key": "mpubliccopy",
+      "claim_text": "It therefore cannot retrieve an intranet archive unless the department publishes a public copy that passes the usual validation [S2].",
+      "atomic_claim": "Maple를 선택하려면 intranet archive의 public HTTPS 사본 및 usual validation 조건을 충족해야 한다.",
+      "report_start": 2858,
+      "report_end": 2991,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "It cannot retrieve the intranet archive required by a department that has not published a public copy. The guide presents this as a scope limit, not an intermittent failure.",
+          "source_start": 449,
+          "source_end": 622
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-055",
+      "unit_id": 22,
+      "catalog_key": "murl",
+      "claim_text": "S2 reports that Maple stores the final redirected URL and content hash and observed a 31-second median in its public test set [S2].",
+      "atomic_claim": "Maple는 redirect 후 최종 URL을 저장한다.",
+      "report_start": 2993,
+      "report_end": 3124,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Maple stores the final URL after redirects and a content hash.",
+          "source_start": 386,
+          "source_end": 448
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-056",
+      "unit_id": 22,
+      "catalog_key": "mhash",
+      "claim_text": "S2 reports that Maple stores the final redirected URL and content hash and observed a 31-second median in its public test set [S2].",
+      "atomic_claim": "Maple는 content hash를 저장한다.",
+      "report_start": 2993,
+      "report_end": 3124,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Maple stores the final URL after redirects and a content hash.",
+          "source_start": 386,
+          "source_end": 448
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-057",
+      "unit_id": 22,
+      "catalog_key": "mmedian",
+      "claim_text": "S2 reports that Maple stores the final redirected URL and content hash and observed a 31-second median in its public test set [S2].",
+      "atomic_claim": "Maple public test의 관측 retrieval time 중앙값은 31초다.",
+      "report_start": 2993,
+      "report_end": 3124,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-058",
+      "unit_id": 23,
+      "catalog_key": "sourceconditions",
+      "claim_text": "The routes cover different source boundaries: Cedar supports a pre-approved private hostname with additional setup, whereas Maple supports public HTTPS sources [S1][S2].",
+      "atomic_claim": "Cedar의 승인 private source 및 추가 설정과 Maple public HTTPS source는 서로 다른 적용 조건이다.",
+      "report_start": 3126,
+      "report_end": 3295,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-059",
+      "unit_id": 24,
+      "catalog_key": "nocompare",
+      "claim_text": "Their timing figures do not constitute a controlled comparison because the archive-size ranges differ and Cedar’s measurement omits preceding work [S1][S2].",
+      "atomic_claim": "두 timing은 서로 다른 테스트의 운영 관측값이며 controlled performance comparison이 아니다.",
+      "report_start": 3296,
+      "report_end": 3452,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-060",
+      "unit_id": 24,
+      "catalog_key": "sizeunmatched",
+      "claim_text": "Their timing figures do not constitute a controlled comparison because the archive-size ranges differ and Cedar’s measurement omits preceding work [S1][S2].",
+      "atomic_claim": "두 시험의 파일 크기 범위가 달라 동일 크기·동일 파일을 맞춘 비교가 아니다.",
+      "report_start": 3296,
+      "report_end": 3452,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-061",
+      "unit_id": 24,
+      "catalog_key": "ccopy",
+      "claim_text": "Their timing figures do not constitute a controlled comparison because the archive-size ranges differ and Cedar’s measurement omits preceding work [S1][S2].",
+      "atomic_claim": "Cedar 보고 시간에는 그 segment로의 사전 복사 시간이 제외된다.",
+      "report_start": 3296,
+      "report_end": 3452,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-062",
+      "unit_id": 24,
+      "catalog_key": "capproval",
+      "claim_text": "Their timing figures do not constitute a controlled comparison because the archive-size ranges differ and Cedar’s measurement omits preceding work [S1][S2].",
+      "atomic_claim": "Cedar 보고 시간에는 수동 승인 시간이 제외된다.",
+      "report_start": 3296,
+      "report_end": 3452,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-063",
+      "unit_id": 25,
+      "catalog_key": "noscopeconflict",
+      "claim_text": "The reviewed sources do not disagree about either route’s stated boundary, and neither identifies a universal winner [S1][S2].",
+      "atomic_claim": "제공된 두 guide의 문서화된 route 경계 사이에서 직접 모순을 발견하지 못했다.",
+      "report_start": 3486,
+      "report_end": 3612,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "It cannot retrieve the intranet archive required by a department that has not published a public copy. The guide presents this as a scope limit, not an intermittent failure.",
+          "source_start": 449,
+          "source_end": 622
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-064",
+      "unit_id": 25,
+      "catalog_key": "nowinner",
+      "claim_text": "The reviewed sources do not disagree about either route’s stated boundary, and neither identifies a universal winner [S1][S2].",
+      "atomic_claim": "두 guide는 보편적으로 우월한 route를 제시하지 않는다.",
+      "report_start": 3486,
+      "report_end": 3612,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-065",
+      "unit_id": 26,
+      "catalog_key": "lower",
+      "claim_text": "Maple’s lower observed median does not prove that it is faster under equivalent conditions because its archives were smaller and the tests were not matched [S1][S2].",
+      "atomic_claim": "Maple의 관측 median 31초는 Cedar의 38초보다 수치상 낮다.",
+      "report_start": 3613,
+      "report_end": 3778,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-066",
+      "unit_id": 26,
+      "catalog_key": "nospeed",
+      "claim_text": "Maple’s lower observed median does not prove that it is faster under equivalent conditions because its archives were smaller and the tests were not matched [S1][S2].",
+      "atomic_claim": "두 median만으로 동일 조건의 Maple 속도 우위를 입증할 수 없다.",
+      "report_start": 3613,
+      "report_end": 3778,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다. smaller/larger는 표에 기재된 50~90 MB 대 80~140 MB 범위를 요약한 것이다. 실제 두 범위는 80~90 MB에서 겹치므로 모든 Maple 파일이 모든 Cedar 파일보다 작다는 뜻으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-067",
+      "unit_id": 26,
+      "catalog_key": "sizeunmatched",
+      "claim_text": "Maple’s lower observed median does not prove that it is faster under equivalent conditions because its archives were smaller and the tests were not matched [S1][S2].",
+      "atomic_claim": "두 시험의 파일 크기 범위가 달라 동일 크기·동일 파일을 맞춘 비교가 아니다.",
+      "report_start": 3613,
+      "report_end": 3778,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다. smaller/larger는 표에 기재된 50~90 MB 대 80~140 MB 범위를 요약한 것이다. 실제 두 범위는 80~90 MB에서 겹치므로 모든 Maple 파일이 모든 Cedar 파일보다 작다는 뜻으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-068",
+      "unit_id": 27,
+      "catalog_key": "noe2ecompare",
+      "claim_text": "The sources provide no controlled end-to-end test using the same archives and conditions [S1][S2].",
+      "atomic_claim": "동일 archive·네트워크·승인/검증 조건 및 측정 경계를 맞춘 end-to-end 비교가 제공되지 않는다.",
+      "report_start": 3779,
+      "report_end": 3877,
+      "kind": "inference",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-069",
+      "unit_id": 28,
+      "catalog_key": "reliabilityunknown",
+      "claim_text": "They also provide no results that support comparing reliability, cost, security completeness, or throughput [S1][S2].",
+      "atomic_claim": "제공 자료로 route 신뢰도·failure rate 비교를 확인할 수 없다.",
+      "report_start": 3878,
+      "report_end": 3995,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "In the tested environment, Cedar preserved the original file hash and stored a retrieval timestamp.",
+          "source_start": 203,
+          "source_end": 302
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-070",
+      "unit_id": 28,
+      "catalog_key": "costunknown",
+      "claim_text": "They also provide no results that support comparing reliability, cost, security completeness, or throughput [S1][S2].",
+      "atomic_claim": "제공 자료로 route 비용 비교를 확인할 수 없다.",
+      "report_start": 3878,
+      "report_end": 3995,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-071",
+      "unit_id": 28,
+      "catalog_key": "securityunknown",
+      "claim_text": "They also provide no results that support comparing reliability, cost, security completeness, or throughput [S1][S2].",
+      "atomic_claim": "제공 자료로 보안의 완전성을 비교할 수 없다.",
+      "report_start": 3878,
+      "report_end": 3995,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Its guide says this reduces the chance that a job reaches an internal service by mistake.",
+          "source_start": 99,
+          "source_end": 188
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-072",
+      "unit_id": 28,
+      "catalog_key": "throughputunknown",
+      "claim_text": "They also provide no results that support comparing reliability, cost, security completeness, or throughput [S1][S2].",
+      "atomic_claim": "제공 자료로 처리량 비교를 확인할 수 없다.",
+      "report_start": 3878,
+      "report_end": 3995,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The median retrieval time was 38 seconds for eight archives between 80 and 140 MB.",
+          "source_start": 488,
+          "source_end": 570
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "해당 packet의 S1/S2 전체 본문을 읽었으며 이 결과/필드를 제공하는 문장은 없다. 인용문은 관련 문맥이며 부재 자체의 자동 증명이 아니다. 미제공을 기능 부재나 불능으로 확대하지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-073",
+      "unit_id": 29,
+      "catalog_key": "cauditrecord",
+      "claim_text": "Cedar’s audit event is evidence of the configured source and retrieval action, not evidence that the retrieved content is correct [S1].",
+      "atomic_claim": "Cedar의 audit event는 configured source와 retrieval action을 기록한다.",
+      "report_start": 3996,
+      "report_end": 4131,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not describe the event as proof that the file content is accurate; it only records the configured source and retrieval action.",
+          "source_start": 808,
+          "source_end": 949
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-074",
+      "unit_id": 29,
+      "catalog_key": "cauditaccuracy",
+      "claim_text": "Cedar’s audit event is evidence of the configured source and retrieval action, not evidence that the retrieved content is correct [S1].",
+      "atomic_claim": "Cedar audit event는 파일 내용의 정확성을 입증하지 않는다.",
+      "report_start": 3996,
+      "report_end": 4131,
+      "kind": "fact",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide does not describe the event as proof that the file content is accurate; it only records the configured source and retrieval action.",
+          "source_start": 808,
+          "source_end": 949
+        }
+      ],
+      "reason": "원문이 해당 대상·수치·단위·관측/적용 조건과 부정 범위를 뒷받침한다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-075",
+      "unit_id": 31,
+      "catalog_key": "jselect",
+      "claim_text": "Confirm whether the authoritative archive must remain private or may be published through validated public HTTPS before selecting a route [S1][S2] (judgment).",
+      "atomic_claim": "source 접근 범위와 승인/필요 통제를 먼저 확인하여 route를 선택한다.",
+      "report_start": 4153,
+      "report_end": 4311,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Route Maple accepts only public HTTPS sources and intentionally rejects private network addresses.",
+          "source_start": 0,
+          "source_end": 98
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "A department choosing Maple must have a public HTTPS source that passes the usual validation.",
+          "source_start": 623,
+          "source_end": 716
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "Neither guide gives a universal winner. Cedar covers an approved private source with an extra setup condition; Maple covers public HTTPS sources with a different file set.",
+          "source_start": 718,
+          "source_end": 889
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-076",
+      "unit_id": 33,
+      "catalog_key": "jcedar",
+      "claim_text": "If the archive must remain private, arrange Cedar hostname approval and include copying plus manual approval in the operational schedule [S1] (judgment).",
+      "atomic_claim": "signed archive·승인된 private hostname이라는 앞선 범위를 전제로 Cedar 사전 관리자 등록을 확인한다.",
+      "report_start": 4315,
+      "report_end": 4468,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Route Cedar reads a signed archive from an approved private hostname.",
+          "source_start": 0,
+          "source_end": 69
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The deployment guide requires an administrator to list the hostname before a run begins; otherwise the route refuses the connection.",
+          "source_start": 70,
+          "source_end": 202
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-077",
+      "unit_id": 33,
+      "catalog_key": "jcopyapproval",
+      "claim_text": "If the archive must remain private, arrange Cedar hostname approval and include copying plus manual approval in the operational schedule [S1] (judgment).",
+      "atomic_claim": "Cedar의 복사 및 수동 승인을 계획/전체 시간 측정에 포함한다.",
+      "report_start": 4315,
+      "report_end": 4468,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    },
+    {
+      "entry_id": "38ea5b-078",
+      "unit_id": 35,
+      "catalog_key": "jbench",
+      "claim_text": "If performance determines the decision, benchmark both routes with the same archives and measure the complete workflow from approval or publication through retrieval [S1][S2] (judgment).",
+      "atomic_claim": "두 route가 적격인 조건에서 같은 archive·비교 가능한 환경과 전체 시작/종료를 맞춰 benchmark한다.",
+      "report_start": 4472,
+      "report_end": 4658,
+      "kind": "judgment",
+      "status": "supported",
+      "critical": false,
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "citation_check": "matches",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "exact_quote": "Cedar's timing figure is measured after the archive has already been copied to the approved network segment.",
+          "source_start": 379,
+          "source_end": 487
+        },
+        {
+          "source_id": "S1",
+          "exact_quote": "The guide warns that this number excludes the prior copy into the segment and excludes manual approval time. It is therefore not an end-to-end time for a new customer.",
+          "source_start": 571,
+          "source_end": 738
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "In a public test set of eight archives, Maple had a median retrieval time of 31 seconds. The test set used files between 50 and 90 MB, so the timing is not directly matched to Cedar's file range.",
+          "source_start": 189,
+          "source_end": 384
+        },
+        {
+          "source_id": "S2",
+          "exact_quote": "The two timing figures are useful operational observations but are not a controlled performance comparison.",
+          "source_start": 890,
+          "source_end": 997
+        }
+      ],
+      "reason": "명시적 권고/해석이며 원문 범위와 모순되지 않는다. 실행 완료 또는 보편적 성능 보증으로 읽지 않는다.",
+      "span_note": "zero-based Python Unicode character offsets; end exclusive. A sentence/table row may supply shared context to several independently checkable propositions."
+    }
+  ],
+  "question_requirements": [
+    {
+      "requirement": "Cedar signed archive / approved private hostname",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-002",
+        "38ea5b-011",
+        "38ea5b-017",
+        "38ea5b-037"
+      ]
+    },
+    {
+      "requirement": "Cedar administrator registration before run / refusal",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-013",
+        "38ea5b-014",
+        "38ea5b-038",
+        "38ea5b-039"
+      ]
+    },
+    {
+      "requirement": "Cedar arbitrary-private-address claim boundary",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-016",
+        "38ea5b-040"
+      ]
+    },
+    {
+      "requirement": "Maple public HTTPS / private-address rejection",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-003",
+        "38ea5b-012",
+        "38ea5b-018",
+        "38ea5b-051",
+        "38ea5b-052"
+      ]
+    },
+    {
+      "requirement": "Maple unpublished intranet exception / usual validation",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-015",
+        "38ea5b-019",
+        "38ea5b-053",
+        "38ea5b-054"
+      ]
+    },
+    {
+      "requirement": "Both timing observations with sample count / MB ranges",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-026",
+        "38ea5b-028",
+        "38ea5b-046"
+      ]
+    },
+    {
+      "requirement": "Cedar prior copy / approval time exclusions",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-006",
+        "38ea5b-007",
+        "38ea5b-027",
+        "38ea5b-030",
+        "38ea5b-031",
+        "38ea5b-047",
+        "38ea5b-048",
+        "38ea5b-049",
+        "38ea5b-061",
+        "38ea5b-062"
+      ]
+    },
+    {
+      "requirement": "Unmatched comparison / no universal winner",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-001",
+        "38ea5b-059",
+        "38ea5b-064"
+      ]
+    },
+    {
+      "requirement": "Provenance records and content-accuracy limit",
+      "covered": true,
+      "entry_ids": [
+        "38ea5b-020",
+        "38ea5b-021",
+        "38ea5b-023",
+        "38ea5b-024",
+        "38ea5b-025",
+        "38ea5b-041",
+        "38ea5b-042",
+        "38ea5b-044",
+        "38ea5b-045",
+        "38ea5b-055",
+        "38ea5b-056",
+        "38ea5b-073",
+        "38ea5b-074"
+      ]
+    }
+  ],
+  "missing_questions_or_required_conditions": [],
+  "coverage": {
+    "method": "Read every prose sentence, every non-header table row/cell meaning, and every next-action item. Split independently verifiable clauses; keep numerical observations with their units, sample count and file-size boundary together. Repeated statements have separate location records.",
+    "unit_count": 30,
+    "unit_ledger": [
+      {
+        "unit_id": 1,
+        "start": 109,
+        "end": 291,
+        "text": "Neither route is universally superior: Cedar is the applicable route for a signed archive on a pre-approved private hostname, while Maple is limited to public HTTPS sources [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-001",
+          "38ea5b-002",
+          "38ea5b-003"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 2,
+        "start": 292,
+        "end": 521,
+        "text": "Choose according to source location and approval constraints, not the reported median retrieval times, because the tests used different file-size ranges and Cedar’s measurement excluded prior copying and manual approval [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-004",
+          "38ea5b-005",
+          "38ea5b-006",
+          "38ea5b-007"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 3,
+        "start": 522,
+        "end": 654,
+        "text": "For an intranet-only archive, Cedar is the viable route if an administrator can approve the hostname before the run [S1] (judgment).",
+        "format": "list_item",
+        "entry_ids": [
+          "38ea5b-008"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 4,
+        "start": 655,
+        "end": 793,
+        "text": "For an archive already available through validated public HTTPS, Maple avoids Cedar’s private-host approval condition [S1][S2] (judgment).",
+        "format": "list_item",
+        "entry_ids": [
+          "38ea5b-009",
+          "38ea5b-010"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 7,
+        "start": 839,
+        "end": 944,
+        "text": "| Eligible source | Signed archive on an approved private hostname [S1] | Public HTTPS source only [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-011",
+          "38ea5b-012"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 8,
+        "start": 945,
+        "end": 1122,
+        "text": "| Required condition | Administrator lists the hostname before the run; otherwise connection is refused [S1] | Source must be publicly published and pass usual validation [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-013",
+          "38ea5b-014",
+          "38ea5b-015"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 9,
+        "start": 1123,
+        "end": 1314,
+        "text": "| Private-network access | Supported only for the approved hostname; arbitrary private-address access is not claimed [S1] | Rejected, so an unpublished intranet archive is inaccessible [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-016",
+          "38ea5b-017",
+          "38ea5b-018",
+          "38ea5b-019"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 10,
+        "start": 1315,
+        "end": 1490,
+        "text": "| Recorded provenance | Original file hash, retrieval timestamp, and audit event for configured source and retrieval action [S1] | Final redirected URL and content hash [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-020",
+          "38ea5b-021",
+          "38ea5b-022",
+          "38ea5b-023",
+          "38ea5b-024",
+          "38ea5b-025"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 11,
+        "start": 1491,
+        "end": 1661,
+        "text": "| Observed timing | 38-second median for eight 80–140 MB archives, after copying to the approved segment [S1] | 31-second median for eight 50–90 MB public archives [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-026",
+          "38ea5b-027",
+          "38ea5b-028"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 12,
+        "start": 1662,
+        "end": 1800,
+        "text": "| End-to-end comparison | Unknown; copy and manual approval time were excluded [S1] | Unknown under conditions matched to Cedar [S1][S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-029",
+          "38ea5b-030",
+          "38ea5b-031",
+          "38ea5b-032"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 13,
+        "start": 1801,
+        "end": 1887,
+        "text": "| Reliability, cost, security completeness, throughput | Unknown [S1] | Unknown [S2] |",
+        "format": "table_row",
+        "entry_ids": [
+          "38ea5b-033",
+          "38ea5b-034",
+          "38ea5b-035",
+          "38ea5b-036"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 14,
+        "start": 1902,
+        "end": 2037,
+        "text": "Cedar reads a signed archive from an approved private hostname only when an administrator has listed that hostname before the run [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-037",
+          "38ea5b-038"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 15,
+        "start": 2038,
+        "end": 2177,
+        "text": "If the hostname has not been listed, Cedar refuses the connection, and the guide does not claim access to arbitrary private addresses [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-039",
+          "38ea5b-040"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 16,
+        "start": 2179,
+        "end": 2272,
+        "text": "S1 reports that Cedar preserved the original file hash and stored a retrieval timestamp [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-041",
+          "38ea5b-042"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 17,
+        "start": 2273,
+        "end": 2448,
+        "text": "Its audit event records use of the approved hostname, the configured source, and the retrieval action, but it does not establish that the archive’s contents are accurate [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-043",
+          "38ea5b-044",
+          "38ea5b-045"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 18,
+        "start": 2450,
+        "end": 2556,
+        "text": "Cedar recorded a median retrieval time of 38 seconds across eight archives ranging from 80 to 140 MB [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-046"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 19,
+        "start": 2557,
+        "end": 2758,
+        "text": "Measurement began only after each archive had been copied to the approved network segment, excluding that copy and manual approval time, so the result is not an end-to-end time for a new customer [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-047",
+          "38ea5b-048",
+          "38ea5b-049",
+          "38ea5b-050"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 20,
+        "start": 2760,
+        "end": 2857,
+        "text": "Maple accepts only public HTTPS sources and intentionally rejects private network addresses [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-051",
+          "38ea5b-052"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 21,
+        "start": 2858,
+        "end": 2991,
+        "text": "It therefore cannot retrieve an intranet archive unless the department publishes a public copy that passes the usual validation [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-053",
+          "38ea5b-054"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 22,
+        "start": 2993,
+        "end": 3124,
+        "text": "S2 reports that Maple stores the final redirected URL and content hash and observed a 31-second median in its public test set [S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-055",
+          "38ea5b-056",
+          "38ea5b-057"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 23,
+        "start": 3126,
+        "end": 3295,
+        "text": "The routes cover different source boundaries: Cedar supports a pre-approved private hostname with additional setup, whereas Maple supports public HTTPS sources [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-058"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 24,
+        "start": 3296,
+        "end": 3452,
+        "text": "Their timing figures do not constitute a controlled comparison because the archive-size ranges differ and Cedar’s measurement omits preceding work [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-059",
+          "38ea5b-060",
+          "38ea5b-061",
+          "38ea5b-062"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 25,
+        "start": 3486,
+        "end": 3612,
+        "text": "The reviewed sources do not disagree about either route’s stated boundary, and neither identifies a universal winner [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-063",
+          "38ea5b-064"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 26,
+        "start": 3613,
+        "end": 3778,
+        "text": "Maple’s lower observed median does not prove that it is faster under equivalent conditions because its archives were smaller and the tests were not matched [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-065",
+          "38ea5b-066",
+          "38ea5b-067"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 27,
+        "start": 3779,
+        "end": 3877,
+        "text": "The sources provide no controlled end-to-end test using the same archives and conditions [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-068"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 28,
+        "start": 3878,
+        "end": 3995,
+        "text": "They also provide no results that support comparing reliability, cost, security completeness, or throughput [S1][S2].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-069",
+          "38ea5b-070",
+          "38ea5b-071",
+          "38ea5b-072"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 29,
+        "start": 3996,
+        "end": 4131,
+        "text": "Cedar’s audit event is evidence of the configured source and retrieval action, not evidence that the retrieved content is correct [S1].",
+        "format": "prose",
+        "entry_ids": [
+          "38ea5b-073",
+          "38ea5b-074"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 31,
+        "start": 4153,
+        "end": 4311,
+        "text": "Confirm whether the authoritative archive must remain private or may be published through validated public HTTPS before selecting a route [S1][S2] (judgment).",
+        "format": "list_item",
+        "entry_ids": [
+          "38ea5b-075"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 33,
+        "start": 4315,
+        "end": 4468,
+        "text": "If the archive must remain private, arrange Cedar hostname approval and include copying plus manual approval in the operational schedule [S1] (judgment).",
+        "format": "list_item",
+        "entry_ids": [
+          "38ea5b-076",
+          "38ea5b-077"
+        ],
+        "manually_reviewed": true
+      },
+      {
+        "unit_id": 35,
+        "start": 4472,
+        "end": 4658,
+        "text": "If performance determines the decision, benchmark both routes with the same archives and measure the complete workflow from approval or publication through retrieval [S1][S2] (judgment).",
+        "format": "list_item",
+        "entry_ids": [
+          "38ea5b-078"
+        ],
+        "manually_reviewed": true
+      }
+    ],
+    "nonclaim_segments": [
+      {
+        "start": 0,
+        "end": 96,
+        "text": "# Question: Compare the two archive routes while preserving their scope and boundary conditions.",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 98,
+        "end": 107,
+        "text": "## Answer",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 1889,
+        "end": 1900,
+        "text": "## Evidence",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 3454,
+        "end": 3484,
+        "text": "## Counter-evidence and limits",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 4133,
+        "end": 4148,
+        "text": "## Next actions",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 4660,
+        "end": 4670,
+        "text": "## Sources",
+        "type": "heading/question",
+        "note": "질문·제목은 검증 대상 성과 사실이 아니다."
+      },
+      {
+        "start": 4672,
+        "end": 4759,
+        "text": "- S1 — “replay real-en-boundary S1”: https://fixture.invalid/replay/real-en-boundary/S1",
+        "type": "bibliography",
+        "note": "ID는 제공 source에 존재한다. 실제 URL/domain 호스팅은 source 본문에서 확인할 수 없고 외부 확인하지 않았다."
+      },
+      {
+        "start": 4760,
+        "end": 4847,
+        "text": "- S2 — “replay real-en-boundary S2”: https://fixture.invalid/replay/real-en-boundary/S2",
+        "type": "bibliography",
+        "note": "ID는 제공 source에 존재한다. 실제 URL/domain 호스팅은 source 본문에서 확인할 수 없고 외부 확인하지 않았다."
+      },
+      {
+        "start": 795,
+        "end": 824,
+        "text": "| Criterion | Cedar | Maple |",
+        "format": "table_row",
+        "type": "table_header_or_list_marker",
+        "note": "표 머리·구분선 또는 목록 번호로 독립 사실 주장 아님."
+      },
+      {
+        "start": 825,
+        "end": 838,
+        "text": "|---|---|---|",
+        "format": "table_row",
+        "type": "table_header_or_list_marker",
+        "note": "표 머리·구분선 또는 목록 번호로 독립 사실 주장 아님."
+      },
+      {
+        "start": 4150,
+        "end": 4152,
+        "text": "1.",
+        "format": "prose",
+        "type": "table_header_or_list_marker",
+        "note": "표 머리·구분선 또는 목록 번호로 독립 사실 주장 아님."
+      },
+      {
+        "start": 4312,
+        "end": 4314,
+        "text": "2.",
+        "format": "prose",
+        "type": "table_header_or_list_marker",
+        "note": "표 머리·구분선 또는 목록 번호로 독립 사실 주장 아님."
+      },
+      {
+        "start": 4469,
+        "end": 4471,
+        "text": "3.",
+        "format": "prose",
+        "type": "table_header_or_list_marker",
+        "note": "표 머리·구분선 또는 목록 번호로 독립 사실 주장 아님."
+      }
+    ],
+    "self_assessed_full_body_coverage": true,
+    "not_an_automatic_proof": "Exact report spans, source quote spans, SHA and non-whitespace text coverage are mechanically checkable. Semantic atom completeness and judgment are one reviewers assessment, not an automated completeness proof."
+  },
+  "limitations": [
+    "Single Astra judgment; not a scientific estimate of general accuracy and not an independently replicated review.",
+    "Source-body grounding only; real routes, actual domains and hidden implementation behavior were not externally verified.",
+    "Atom counts depend on grouping and repeated occurrences; they are not independent statistical samples.",
+    "Reasonable clearly scoped judgment/inference is separated from facts and not labeled error merely because it is inferential."
+  ]
+}

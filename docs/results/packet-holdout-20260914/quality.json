@@ -1,0 +1,346 @@
+{
+  "scope": "single_Astra_blind_full_report_review_not_general_accuracy",
+  "binding_checks": "report and source spans/hash verified; not independent semantic proof",
+  "records": [
+    {
+      "run_id": "real-ko-missing-r1-baseline",
+      "opaque_id": "7008131e7afb2d0e14b67df7",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 74,
+        "factual_status_counts": {
+          "supported": 74
+        },
+        "all_entries": 88,
+        "all_status_counts": {
+          "supported": 87,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 74,
+          "inference": 7,
+          "judgment": 6,
+          "process_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-7008131e7afb2d0e14b67df7.json",
+      "review_sha256": "a589878dd11cea1c017adbdcb5520b588b73e974835975298694fa8116665572"
+    },
+    {
+      "run_id": "real-ko-missing-r1-packet",
+      "opaque_id": "414e195aa371705769b1bbb7",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 74,
+        "factual_status_counts": {
+          "supported": 73,
+          "insufficient": 1
+        },
+        "all_entries": 94,
+        "all_status_counts": {
+          "supported": 92,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 74,
+          "judgment": 13,
+          "inference": 6,
+          "provenance_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-414e195aa371705769b1bbb7.json",
+      "review_sha256": "027d2b13f24d02e570e3cca81931d6de3aa43deb2b6b343640c96ec33af2c305"
+    },
+    {
+      "run_id": "real-ko-missing-r2-packet",
+      "opaque_id": "70f576265948d7ff409693da",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 77,
+        "factual_status_counts": {
+          "supported": 77
+        },
+        "all_entries": 98,
+        "all_status_counts": {
+          "supported": 97,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 77,
+          "inference": 11,
+          "judgment": 9,
+          "provenance_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-70f576265948d7ff409693da.json",
+      "review_sha256": "a8a08c36f7992e5a6f04bee2535488b6afcd3103c263eb78d01001dd6688996e"
+    },
+    {
+      "run_id": "real-ko-missing-r2-baseline",
+      "opaque_id": "c61c4571e0289bffb759fc07",
+      "blind_quality": "통과",
+      "counts": {
+        "factual_atoms": 72,
+        "factual_status_counts": {
+          "supported": 72
+        },
+        "all_entries": 85,
+        "all_status_counts": {
+          "supported": 85
+        },
+        "kind_counts": {
+          "fact": 72,
+          "judgment": 7,
+          "inference": 6
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-c61c4571e0289bffb759fc07.json",
+      "review_sha256": "805d2cb2881afe574e553cdab1ac4333cf30242000e23891f6a313c7bbe1ac85"
+    },
+    {
+      "run_id": "real-ko-missing-r3-baseline",
+      "opaque_id": "d0ca6cc7b4632604b4f9ac1f",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 73,
+        "factual_status_counts": {
+          "supported": 72,
+          "insufficient": 1
+        },
+        "all_entries": 90,
+        "all_status_counts": {
+          "supported": 88,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 73,
+          "judgment": 8,
+          "inference": 8,
+          "provenance_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-d0ca6cc7b4632604b4f9ac1f.json",
+      "review_sha256": "3976b44900fd875c3f5d256c5a74acb875e60dd5852b807722bf2979b65af8b5"
+    },
+    {
+      "run_id": "real-ko-missing-r3-packet",
+      "opaque_id": "64d0a291f0e96ab3949c6471",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 72,
+        "factual_status_counts": {
+          "supported": 72
+        },
+        "all_entries": 90,
+        "all_status_counts": {
+          "supported": 89,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 72,
+          "judgment": 9,
+          "inference": 8,
+          "provenance_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-64d0a291f0e96ab3949c6471.json",
+      "review_sha256": "095539b08d7f130e7171e2a4b9a7f9dc4a4dff16c1aab0eef0beed730d69ba37"
+    },
+    {
+      "run_id": "real-en-long-r1-packet",
+      "opaque_id": "af2e0d75d42d3da4db65a19a",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 74,
+        "factual_status_counts": {
+          "supported": 73,
+          "insufficient": 1
+        },
+        "all_entries": 88,
+        "all_status_counts": {
+          "supported": 86,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "inference": 8,
+          "fact": 74,
+          "judgment": 5,
+          "process_claim": 1
+        },
+        "critical_findings": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-af2e0d75d42d3da4db65a19a.json",
+      "review_sha256": "bbad69f28c2254ec7c4e5df147618c732b9eff9d1e3cd49245238a717ac89daa"
+    },
+    {
+      "run_id": "real-en-long-r1-baseline",
+      "opaque_id": "7910aaa22102ac45f931319e",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 70,
+        "factual_status_counts": {
+          "supported": 69,
+          "insufficient": 1
+        },
+        "all_entries": 82,
+        "all_status_counts": {
+          "supported": 80,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 70,
+          "inference": 7,
+          "judgment": 4,
+          "process_claim": 1
+        },
+        "critical_findings": 0,
+        "required_condition_omissions": 1
+      },
+      "missing_questions_or_required_conditions": [
+        "Pre-first-desk specialist-transfer exclusion"
+      ],
+      "review_file": "reviews/review-7910aaa22102ac45f931319e.json",
+      "review_sha256": "606935ca73e123a1831d73a8afb64c9c2a6f19ed9e81d99b6ef49178cc514736"
+    },
+    {
+      "run_id": "real-en-long-r2-baseline",
+      "opaque_id": "6b928fa575f178df4639b245",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 59,
+        "factual_status_counts": {
+          "supported": 58,
+          "insufficient": 1
+        },
+        "all_entries": 76,
+        "all_status_counts": {
+          "supported": 74,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "inference": 9,
+          "fact": 59,
+          "judgment": 7,
+          "process_claim": 1
+        },
+        "critical_findings": 0,
+        "required_condition_omissions": 1
+      },
+      "missing_questions_or_required_conditions": [
+        "Pre-first-desk specialist-transfer exclusion"
+      ],
+      "review_file": "reviews/review-6b928fa575f178df4639b245.json",
+      "review_sha256": "7579a91b1701c19b8224d08dd49b80b4880a51941ca11c1f2e75b14381fab47a"
+    },
+    {
+      "run_id": "real-en-long-r2-packet",
+      "opaque_id": "fbe41b7c510a623211f743ae",
+      "blind_quality": "실패",
+      "counts": {
+        "factual_atoms": 65,
+        "factual_status_counts": {
+          "supported": 64,
+          "contradicted": 1
+        },
+        "all_entries": 81,
+        "all_status_counts": {
+          "supported": 78,
+          "contradicted": 1,
+          "unchecked": 1,
+          "insufficient": 1
+        },
+        "kind_counts": {
+          "inference": 9,
+          "fact": 65,
+          "judgment": 6,
+          "provenance_claim": 1
+        },
+        "critical_findings": 1,
+        "required_condition_omissions": 1
+      },
+      "missing_questions_or_required_conditions": [
+        "Pre-first-desk specialist-transfer exclusion"
+      ],
+      "review_file": "reviews/review-fbe41b7c510a623211f743ae.json",
+      "review_sha256": "c3d258007b6c9ba54d147d7a85f84b506795d0cea61063240fb2632ee136ed78"
+    },
+    {
+      "run_id": "real-en-long-r3-packet",
+      "opaque_id": "05cb29ea29b0ee03fa862bab",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 70,
+        "factual_status_counts": {
+          "supported": 69,
+          "insufficient": 1
+        },
+        "all_entries": 83,
+        "all_status_counts": {
+          "supported": 81,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "fact": 70,
+          "inference": 8,
+          "process_claim": 1,
+          "judgment": 4
+        },
+        "critical_findings": 0,
+        "required_condition_omissions": 1
+      },
+      "missing_questions_or_required_conditions": [
+        "Pre-first-desk specialist-transfer exclusion"
+      ],
+      "review_file": "reviews/review-05cb29ea29b0ee03fa862bab.json",
+      "review_sha256": "649f76bfa6412df7e52355509521f932f18fedc45159f105d6a72e379905b9c3"
+    },
+    {
+      "run_id": "real-en-long-r3-baseline",
+      "opaque_id": "c08cffba78f21395242832f0",
+      "blind_quality": "미확정",
+      "counts": {
+        "factual_atoms": 63,
+        "factual_status_counts": {
+          "supported": 62,
+          "insufficient": 1
+        },
+        "all_entries": 75,
+        "all_status_counts": {
+          "supported": 73,
+          "insufficient": 1,
+          "unchecked": 1
+        },
+        "kind_counts": {
+          "inference": 5,
+          "fact": 63,
+          "judgment": 6,
+          "process_claim": 1
+        },
+        "critical_findings": 0,
+        "required_condition_omissions": 0
+      },
+      "missing_questions_or_required_conditions": [],
+      "review_file": "reviews/review-c08cffba78f21395242832f0.json",
+      "review_sha256": "06bef9880d63aede0fc71fce24d1be34718c0b3bbd7aa967578f3fd2ac2c579e"
+    }
+  ]
+}

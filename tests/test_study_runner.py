@@ -91,3 +91,40 @@ class ObservedControlsTests(unittest.TestCase):
             self.assertIn('attempt_count', observed_controls(changed, folder, case, roles, 'mock')[0])
             wrong = dict(case, prompt='wrong'); (folder / 'frozen_input.json').write_text(json.dumps(wrong))
             self.assertIn('frozen_case', observed_controls(manifest, folder, case, roles, 'mock')[0])
+
+class StrictStudyRunnerTests(unittest.TestCase):
+    def test_incomplete_usage_is_unknown_preserving_known_input(self):
+        from hprc.study_runner import strict_usage
+        for usage in ({}, {'input_tokens':100}, {'input_tokens':100,'output_tokens':False,'cached_input_tokens':0},
+                      {'input_tokens':100,'output_tokens':10,'cached_input_tokens':101}):
+            value = strict_usage([{'usage_known':True,'usage':usage,'status':'ok','attempt':1}])
+            self.assertEqual(value['unknown_calls'], 1)
+            self.assertEqual(value['input_tokens'], usage.get('input_tokens', 0))
+        value = strict_usage([{'usage_known':True,'usage':{'input_tokens':100,'output_tokens':10,'cached_input_tokens':50},'status':'ok','attempt':1}])
+        self.assertEqual(value['unknown_calls'], 0)
+        self.assertEqual(value['total_tokens'], 110)
+
+    def test_post_call_mutation_stops_after_recording_usage(self):
+        plan = build_plan(INPUTS, REVISION, 1)
+        with tempfile.TemporaryDirectory() as tmp, patch('hprc.study_runner.assert_frozen', side_effect=[None,None,ValueError('changed')]):
+            result = execute(ROOT, INPUTS, Path(tmp)/'out', plan, backend='mock')
+            self.assertEqual(result['status'], 'stopped')
+            self.assertEqual(len(result['records']), 1)
+            self.assertGreater(result['known_tokens'], 0)
+            self.assertIn('post_run_frozen:ValueError', result['records'][0]['observed_control_errors'])
+
+    def test_live_cli_requires_preregistered_plan(self):
+        with patch('hprc.study_runner.subprocess.run') as call:
+            with self.assertRaises(SystemExit):
+                main(['--execute','--approved-total-tokens','4000000','--output','unused'])
+            call.assert_not_called()
+
+    def test_cli_changed_frozen_plan_never_starts_model(self):
+        with tempfile.TemporaryDirectory() as tmp, patch('hprc.study_runner.revision', return_value=REVISION), patch('hprc.study_runner.subprocess.run') as call:
+            plan = build_plan(INPUTS, REVISION)
+            plan['code_sha'] = 'changed'
+            path = Path(tmp)/'plan.json'
+            path.write_text(json.dumps(plan))
+            with self.assertRaises(ValueError):
+                main(['--mock','--plan',str(path),'--output',str(Path(tmp)/'out')])
+            call.assert_not_called()

@@ -1,0 +1,2141 @@
+{
+  "status": "completed_attempts",
+  "known_tokens": 2906338,
+  "records": [
+    {
+      "run_id": "real-ko-missing-r1-baseline",
+      "case_id": "real-ko-missing",
+      "arm": "baseline",
+      "repetition": 1,
+      "sequence": 1,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 119.4086028750753,
+      "reported_total_tokens": 227919,
+      "input_tokens": 223104,
+      "cached_input_tokens": 116864,
+      "output_tokens": 4815,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "103ed0b0d6a57d2c784e3be60aed76b25e5d0f98ea040ebf9ef42a869d4760d1",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 17.8,
+          "at": 1789370636.902698,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36128,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 703,
+            "reasoning_output_tokens": 100
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 45.3,
+          "at": 1789370682.190044,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36767,
+            "cached_input_tokens": 17408,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2068,
+            "reasoning_output_tokens": 400
+          },
+          "input_bytes": 9702,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 13.6,
+          "at": 1789370695.845429,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36807,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 388,
+            "reasoning_output_tokens": 255
+          },
+          "input_bytes": 8384,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 20.9,
+          "at": 1789370703.161705,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37357,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 819,
+            "reasoning_output_tokens": 435
+          },
+          "input_bytes": 12328,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 12.8,
+          "at": 1789370715.9917178,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38170,
+            "cached_input_tokens": 9984,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 329,
+            "reasoning_output_tokens": 55
+          },
+          "input_bytes": 13096,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 22.3,
+          "at": 1789370738.278763,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37875,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 508,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 5069,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "7008131e7afb2d0e14b67df7",
+      "blind_report_sha256": "103ed0b0d6a57d2c784e3be60aed76b25e5d0f98ea040ebf9ef42a869d4760d1",
+      "report_characters": 2738,
+      "whitespace_split_words": 636
+    },
+    {
+      "run_id": "real-ko-missing-r1-packet",
+      "case_id": "real-ko-missing",
+      "arm": "packet",
+      "repetition": 1,
+      "sequence": 2,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 133.15274354198482,
+      "reported_total_tokens": 230472,
+      "input_tokens": 225140,
+      "cached_input_tokens": 162688,
+      "output_tokens": 5332,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "20513e0c1a102fa7a1f716285fd6ccb4f44fec354bfbcb3c5e01b1b76db4a85b",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 21.0,
+          "at": 1789370759.580265,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36116,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 755,
+            "reasoning_output_tokens": 75
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 47.2,
+          "at": 1789370806.8472488,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37488,
+            "cached_input_tokens": 32000,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2150,
+            "reasoning_output_tokens": 452
+          },
+          "input_bytes": 9066,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 13.6,
+          "at": 1789370820.442102,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37205,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 374,
+            "reasoning_output_tokens": 214
+          },
+          "input_bytes": 9468,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 25.9,
+          "at": 1789370832.827251,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38432,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1008,
+            "reasoning_output_tokens": 604
+          },
+          "input_bytes": 14163,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 15.1,
+          "at": 1789370847.9309309,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38007,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 480,
+            "reasoning_output_tokens": 156
+          },
+          "input_bytes": 12260,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 23.6,
+          "at": 1789370871.513824,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37892,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 565,
+            "reasoning_output_tokens": 35
+          },
+          "input_bytes": 5161,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "414e195aa371705769b1bbb7",
+      "blind_report_sha256": "20513e0c1a102fa7a1f716285fd6ccb4f44fec354bfbcb3c5e01b1b76db4a85b",
+      "report_characters": 2816,
+      "whitespace_split_words": 665
+    },
+    {
+      "run_id": "real-ko-missing-r2-packet",
+      "case_id": "real-ko-missing",
+      "arm": "packet",
+      "repetition": 2,
+      "sequence": 1,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 5,
+      "status": "ok",
+      "returncode": 0,
+      "elapsed_seconds": 153.82713766593952,
+      "reported_total_tokens": 210993,
+      "input_tokens": 205509,
+      "cached_input_tokens": 118272,
+      "output_tokens": 5484,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "29703da0284f2e68401d32a6a39f5809c5e538ea28c50724667d9366417d3c0a",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 33.5,
+          "at": 1789370905.386484,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 53968,
+            "cached_input_tokens": 34304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1022,
+            "reasoning_output_tokens": 202
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 78.5,
+          "at": 1789370983.944802,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37466,
+            "cached_input_tokens": 17536,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2968,
+            "reasoning_output_tokens": 1238
+          },
+          "input_bytes": 9150,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 13.3,
+          "at": 1789370997.311536,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38693,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 434,
+            "reasoning_output_tokens": 288
+          },
+          "input_bytes": 14222,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 15.7,
+          "at": 1789370999.618906,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37465,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 507,
+            "reasoning_output_tokens": 345
+          },
+          "input_bytes": 9542,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 25.8,
+          "at": 1789371025.4404879,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37917,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 553,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 5279,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        }
+      ],
+      "pipeline_quality_status": "passed",
+      "blind_quality": "미확정",
+      "opaque_id": "70f576265948d7ff409693da",
+      "blind_report_sha256": "29703da0284f2e68401d32a6a39f5809c5e538ea28c50724667d9366417d3c0a",
+      "report_characters": 2810,
+      "whitespace_split_words": 644
+    },
+    {
+      "run_id": "real-ko-missing-r2-baseline",
+      "case_id": "real-ko-missing",
+      "arm": "baseline",
+      "repetition": 2,
+      "sequence": 2,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 144.44673333398532,
+      "reported_total_tokens": 226562,
+      "input_tokens": 221820,
+      "cached_input_tokens": 128128,
+      "output_tokens": 4742,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "82a5a1fe2100efe0c9330382d0b51e22eea2399d7ee735eb31a80bfff9f8251c",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 23.2,
+          "at": 1789371048.9698539,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36138,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 902,
+            "reasoning_output_tokens": 165
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 63.0,
+          "at": 1789371111.957153,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36942,
+            "cached_input_tokens": 17408,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1988,
+            "reasoning_output_tokens": 414
+          },
+          "input_bytes": 10823,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 12.2,
+          "at": 1789371124.143714,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36969,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 279,
+            "reasoning_output_tokens": 143
+          },
+          "input_bytes": 8045,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 17.3,
+          "at": 1789371129.266691,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37005,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 582,
+            "reasoning_output_tokens": 319
+          },
+          "input_bytes": 12467,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 13.6,
+          "at": 1789371142.866591,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36855,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 330,
+            "reasoning_output_tokens": 109
+          },
+          "input_bytes": 11376,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 27.1,
+          "at": 1789371169.9677398,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37911,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 661,
+            "reasoning_output_tokens": 85
+          },
+          "input_bytes": 5166,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "통과",
+      "opaque_id": "c61c4571e0289bffb759fc07",
+      "blind_report_sha256": "82a5a1fe2100efe0c9330382d0b51e22eea2399d7ee735eb31a80bfff9f8251c",
+      "report_characters": 2588,
+      "whitespace_split_words": 611
+    },
+    {
+      "run_id": "real-ko-missing-r3-baseline",
+      "case_id": "real-ko-missing",
+      "arm": "baseline",
+      "repetition": 3,
+      "sequence": 1,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 152.02447283396032,
+      "reported_total_tokens": 285110,
+      "input_tokens": 279975,
+      "cached_input_tokens": 217600,
+      "output_tokens": 5135,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "aaaafba115edc766239114c60468e361014c394e3019b9598c429f4ac4aebc56",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 32.1,
+          "at": 1789371202.267714,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 73228,
+            "cached_input_tokens": 62464,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1122,
+            "reasoning_output_tokens": 351
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 68.4,
+          "at": 1789371270.6417,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 57262,
+            "cached_input_tokens": 47488,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2174,
+            "reasoning_output_tokens": 424
+          },
+          "input_bytes": 9403,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 14.2,
+          "at": 1789371284.857428,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36707,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 326,
+            "reasoning_output_tokens": 194
+          },
+          "input_bytes": 8051,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.2,
+          "at": 1789371288.864734,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37362,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 725,
+            "reasoning_output_tokens": 485
+          },
+          "input_bytes": 11895,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 11.8,
+          "at": 1789371300.679368,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37564,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 304,
+            "reasoning_output_tokens": 131
+          },
+          "input_bytes": 10604,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 21.4,
+          "at": 1789371322.080788,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37852,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 484,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 4954,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "26f217e00725f8165f8dbce4e78afd612589ce22fb3b6377af5136305bb02135"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "d0ca6cc7b4632604b4f9ac1f",
+      "blind_report_sha256": "aaaafba115edc766239114c60468e361014c394e3019b9598c429f4ac4aebc56",
+      "report_characters": 2641,
+      "whitespace_split_words": 607
+    },
+    {
+      "run_id": "real-ko-missing-r3-packet",
+      "case_id": "real-ko-missing",
+      "arm": "packet",
+      "repetition": 3,
+      "sequence": 2,
+      "input_hash": "998e412c2cf3d6fd837e6dac88b8866b4a0cd35ecf36490ab87d64a59c06b645",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 136.01463266694918,
+      "reported_total_tokens": 229901,
+      "input_tokens": 225039,
+      "cached_input_tokens": 128256,
+      "output_tokens": 4862,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "7904201f51ce637a6fa00d14406bc1542d2efa3cf746e46caf49effba2776a16",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 21.5,
+          "at": 1789371343.8766232,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36129,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 734,
+            "reasoning_output_tokens": 90
+          },
+          "input_bytes": 4304,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 57.8,
+          "at": 1789371401.726917,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37353,
+            "cached_input_tokens": 17536,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1896,
+            "reasoning_output_tokens": 307
+          },
+          "input_bytes": 9027,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.0,
+          "at": 1789371419.7185438,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37123,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 561,
+            "reasoning_output_tokens": 418
+          },
+          "input_bytes": 9033,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 20.4,
+          "at": 1789371422.141759,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38491,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 840,
+            "reasoning_output_tokens": 576
+          },
+          "input_bytes": 13656,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 11.0,
+          "at": 1789371433.179936,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38018,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 260,
+            "reasoning_output_tokens": 49
+          },
+          "input_bytes": 12548,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 25.0,
+          "at": 1789371458.1601532,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37925,
+            "cached_input_tokens": 18048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 571,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 5258,
+          "runtime": {
+            "prompt_hash": "83711a414c44ace0264bbbc9f3222670879c461f1b94d7832344d4727be7d804",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "a0ccabe3f35e1feed18fa1d2ea1dfeeac55d070c2a681331719a72d4e0fc1635"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "64d0a291f0e96ab3949c6471",
+      "blind_report_sha256": "7904201f51ce637a6fa00d14406bc1542d2efa3cf746e46caf49effba2776a16",
+      "report_characters": 2631,
+      "whitespace_split_words": 630
+    },
+    {
+      "run_id": "real-en-long-r1-packet",
+      "case_id": "real-en-long",
+      "arm": "packet",
+      "repetition": 1,
+      "sequence": 1,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 214.47665895801038,
+      "reported_total_tokens": 253521,
+      "input_tokens": 246834,
+      "cached_input_tokens": 176896,
+      "output_tokens": 6687,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "c3f79f04dd8ee483e3eaffb502759e45dd7da7fbeb74ffb4090243c284de62ae",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 26.8,
+          "at": 1789371485.2312472,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 56768,
+            "cached_input_tokens": 50432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1100,
+            "reasoning_output_tokens": 157
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 105.0,
+          "at": 1789371590.212501,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37919,
+            "cached_input_tokens": 17280,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1792,
+            "reasoning_output_tokens": 450
+          },
+          "input_bytes": 14436,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 23.5,
+          "at": 1789371613.687381,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36565,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1011,
+            "reasoning_output_tokens": 401
+          },
+          "input_bytes": 8709,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 30.5,
+          "at": 1789371620.7225869,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38166,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1417,
+            "reasoning_output_tokens": 879
+          },
+          "input_bytes": 15780,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 23.5,
+          "at": 1789371644.266568,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38824,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 867,
+            "reasoning_output_tokens": 125
+          },
+          "input_bytes": 18589,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 28.4,
+          "at": 1789371672.688264,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38592,
+            "cached_input_tokens": 29568,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 500,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 10125,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "af2e0d75d42d3da4db65a19a",
+      "blind_report_sha256": "c3f79f04dd8ee483e3eaffb502759e45dd7da7fbeb74ffb4090243c284de62ae",
+      "report_characters": 5489,
+      "whitespace_split_words": 730
+    },
+    {
+      "run_id": "real-en-long-r1-baseline",
+      "case_id": "real-en-long",
+      "arm": "baseline",
+      "repetition": 1,
+      "sequence": 2,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 453.789900957956,
+      "reported_total_tokens": 251077,
+      "input_tokens": 246064,
+      "cached_input_tokens": 179968,
+      "output_tokens": 5013,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "54e7ad76e2dd01f321f3bfb607ec4d04839c0695ffdd2c137f1180d447706022",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 26.3,
+          "at": 1789371699.309173,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 56806,
+            "cached_input_tokens": 50432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1060,
+            "reasoning_output_tokens": 164
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 48.3,
+          "at": 1789371747.605171,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38046,
+            "cached_input_tokens": 17280,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1632,
+            "reasoning_output_tokens": 314
+          },
+          "input_bytes": 16075,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 10.9,
+          "at": 1789371758.481805,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36406,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 278,
+            "reasoning_output_tokens": 153
+          },
+          "input_bytes": 7483,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 341.6,
+          "at": 1789372089.272438,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37817,
+            "cached_input_tokens": 34304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1031,
+            "reasoning_output_tokens": 222
+          },
+          "input_bytes": 13790,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.7,
+          "at": 1789372108.0316858,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38490,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 620,
+            "reasoning_output_tokens": 94
+          },
+          "input_bytes": 16885,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.5,
+          "at": 1789372126.5169861,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38499,
+            "cached_input_tokens": 29568,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 392,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 9765,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "7910aaa22102ac45f931319e",
+      "blind_report_sha256": "54e7ad76e2dd01f321f3bfb607ec4d04839c0695ffdd2c137f1180d447706022",
+      "report_characters": 4902,
+      "whitespace_split_words": 673
+    },
+    {
+      "run_id": "real-en-long-r2-baseline",
+      "case_id": "real-en-long",
+      "arm": "baseline",
+      "repetition": 2,
+      "sequence": 1,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 172.32982387498487,
+      "reported_total_tokens": 233508,
+      "input_tokens": 227760,
+      "cached_input_tokens": 146432,
+      "output_tokens": 5748,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "964e5971aec08548944ed5b54868d8fbb6dcc92d30775026247fbc628720f056",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 27.8,
+          "at": 1789372154.6034188,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36961,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1055,
+            "reasoning_output_tokens": 66
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 68.9,
+          "at": 1789372223.5197,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38412,
+            "cached_input_tokens": 31744,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1869,
+            "reasoning_output_tokens": 481
+          },
+          "input_bytes": 17857,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 14.0,
+          "at": 1789372237.5248861,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36468,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 264,
+            "reasoning_output_tokens": 139
+          },
+          "input_bytes": 7922,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 33.1,
+          "at": 1789372256.630778,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38912,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1254,
+            "reasoning_output_tokens": 650
+          },
+          "input_bytes": 14919,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 23.4,
+          "at": 1789372280.013927,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38455,
+            "cached_input_tokens": 17152,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 866,
+            "reasoning_output_tokens": 446
+          },
+          "input_bytes": 16839,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.9,
+          "at": 1789372298.93188,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38552,
+            "cached_input_tokens": 17920,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 440,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 10011,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "6b928fa575f178df4639b245",
+      "blind_report_sha256": "964e5971aec08548944ed5b54868d8fbb6dcc92d30775026247fbc628720f056",
+      "report_characters": 5440,
+      "whitespace_split_words": 765
+    },
+    {
+      "run_id": "real-en-long-r2-packet",
+      "case_id": "real-en-long",
+      "arm": "packet",
+      "repetition": 2,
+      "sequence": 2,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 144.2470762920566,
+      "reported_total_tokens": 252345,
+      "input_tokens": 246483,
+      "cached_input_tokens": 189696,
+      "output_tokens": 5862,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "866704399d9b53b3994912567feb6c989695c6e34c1059efadad874832fe0d91",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 32.7,
+          "at": 1789372331.965919,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 57015,
+            "cached_input_tokens": 50432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1203,
+            "reasoning_output_tokens": 234
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 40.6,
+          "at": 1789372372.547937,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37835,
+            "cached_input_tokens": 31744,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1757,
+            "reasoning_output_tokens": 482
+          },
+          "input_bytes": 14216,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 14.9,
+          "at": 1789372387.495565,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36745,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 412,
+            "reasoning_output_tokens": 290
+          },
+          "input_bytes": 8521,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 33.7,
+          "at": 1789372406.240809,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38107,
+            "cached_input_tokens": 27136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1506,
+            "reasoning_output_tokens": 898
+          },
+          "input_bytes": 15172,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 15.1,
+          "at": 1789372421.3268118,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38195,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 507,
+            "reasoning_output_tokens": 126
+          },
+          "input_bytes": 15877,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 21.9,
+          "at": 1789372443.3046541,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38586,
+            "cached_input_tokens": 17920,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 477,
+            "reasoning_output_tokens": 40
+          },
+          "input_bytes": 10213,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "실패",
+      "opaque_id": "fbe41b7c510a623211f743ae",
+      "blind_report_sha256": "866704399d9b53b3994912567feb6c989695c6e34c1059efadad874832fe0d91",
+      "report_characters": 5130,
+      "whitespace_split_words": 712
+    },
+    {
+      "run_id": "real-en-long-r3-packet",
+      "case_id": "real-en-long",
+      "arm": "packet",
+      "repetition": 3,
+      "sequence": 1,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 3,
+      "elapsed_seconds": 184.4795543330256,
+      "reported_total_tokens": 252481,
+      "input_tokens": 245980,
+      "cached_input_tokens": 190976,
+      "output_tokens": 6501,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "33539ee6856d153951d2da28400d9e1bb95b53255227ab16740baf65467a11ab",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 26.6,
+          "at": 1789372470.181503,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 56852,
+            "cached_input_tokens": 50432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1056,
+            "reasoning_output_tokens": 207
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 79.1,
+          "at": 1789372549.3082108,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37768,
+            "cached_input_tokens": 17280,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2405,
+            "reasoning_output_tokens": 1052
+          },
+          "input_bytes": 13825,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 12.4,
+          "at": 1789372561.734247,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36784,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 307,
+            "reasoning_output_tokens": 182
+          },
+          "input_bytes": 8665,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 29.9,
+          "at": 1789372579.1926222,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38174,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1151,
+            "reasoning_output_tokens": 603
+          },
+          "input_bytes": 15244,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 27.6,
+          "at": 1789372606.858443,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37802,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1097,
+            "reasoning_output_tokens": 742
+          },
+          "input_bytes": 13760,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 21.0,
+          "at": 1789372627.8458712,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38600,
+            "cached_input_tokens": 29568,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 485,
+            "reasoning_output_tokens": 21
+          },
+          "input_bytes": 10122,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "3c19d3de029e7d10bf84883899d633d29fed9f40d5dfd91fafadcd542133b9d7"
+          }
+        }
+      ],
+      "pipeline_quality_status": "review_required",
+      "blind_quality": "미확정",
+      "opaque_id": "05cb29ea29b0ee03fa862bab",
+      "blind_report_sha256": "33539ee6856d153951d2da28400d9e1bb95b53255227ab16740baf65467a11ab",
+      "report_characters": 5354,
+      "whitespace_split_words": 743
+    },
+    {
+      "run_id": "real-en-long-r3-baseline",
+      "case_id": "real-en-long",
+      "arm": "baseline",
+      "repetition": 3,
+      "sequence": 2,
+      "input_hash": "8a46decddbb89b44d91d9ac1af3d52ea8be1ddad066f5d51df92de598aa5a0b8",
+      "backend": "codex",
+      "observed_control_errors": [],
+      "attempt_count": 6,
+      "status": "ok",
+      "returncode": 0,
+      "elapsed_seconds": 174.65442320797592,
+      "reported_total_tokens": 252449,
+      "input_tokens": 245923,
+      "cached_input_tokens": 190720,
+      "output_tokens": 6526,
+      "unknowncalls": 0,
+      "retry_attempt_count": 0,
+      "failure_attempt_count": 0,
+      "report_sha256": "5b4704d9eaa33d4eea09e030e2000e3612fc309c5b264eb68e418a4f9246d977",
+      "attempts": [
+        {
+          "step": "analyst",
+          "role": "analyst",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 27.7,
+          "at": 1789372655.904491,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 56854,
+            "cached_input_tokens": 50432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1088,
+            "reasoning_output_tokens": 222
+          },
+          "input_bytes": 10024,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "writer",
+          "role": "writer",
+          "model": "gpt-5.6-sol",
+          "effort": "medium",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 65.1,
+          "at": 1789372721.033464,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37988,
+            "cached_input_tokens": 31744,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1968,
+            "reasoning_output_tokens": 690
+          },
+          "input_bytes": 15817,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 11.7,
+          "at": 1789372732.765118,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 36381,
+            "cached_input_tokens": 28160,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 317,
+            "reasoning_output_tokens": 193
+          },
+          "input_bytes": 7477,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "role": "critic",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 42.4,
+          "at": 1789372763.431254,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 37686,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2027,
+            "reasoning_output_tokens": 1091
+          },
+          "input_bytes": 13576,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "patcher",
+          "role": "patcher",
+          "model": "gpt-5.6-terra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 18.5,
+          "at": 1789372781.9630342,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38556,
+            "cached_input_tokens": 31232,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 725,
+            "reasoning_output_tokens": 116
+          },
+          "input_bytes": 17004,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        },
+        {
+          "step": "citecheck",
+          "role": "citecheck",
+          "model": "gpt-6-astra",
+          "effort": "low",
+          "backend": "codex",
+          "status": "ok",
+          "attempt": 1,
+          "seconds": 20.6,
+          "at": 1789372802.5765262,
+          "usage_known": true,
+          "usage": {
+            "input_tokens": 38458,
+            "cached_input_tokens": 17920,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 401,
+            "reasoning_output_tokens": 0
+          },
+          "input_bytes": 9600,
+          "runtime": {
+            "prompt_hash": "710dbe4c63aa21310dd79ac0d8b7722e3170299420e3c15a500dda3ece5025af",
+            "code_hash": "72fba0cfa5cd35689d6f8ba90580addbfcd2c8e5273f6ed3d28db6c52f5ae4b2",
+            "config_hash": "62c7fa06e44e24d2b8c2a40ecbc8642ed9d6427e5c77e06b6dfc33ac155c6391"
+          }
+        }
+      ],
+      "pipeline_quality_status": "passed",
+      "blind_quality": "미확정",
+      "opaque_id": "c08cffba78f21395242832f0",
+      "blind_report_sha256": "5b4704d9eaa33d4eea09e030e2000e3612fc309c5b264eb68e418a4f9246d977",
+      "report_characters": 4914,
+      "whitespace_split_words": 655
+    }
+  ]
+}

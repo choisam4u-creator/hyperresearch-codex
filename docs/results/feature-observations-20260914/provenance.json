@@ -1,0 +1,52 @@
+{
+  "scope": "sanitized mock-only public staging capsule",
+  "original_sha256_note": "original_sha256 hashes the source artifact before any path sanitization; it does not disclose the private source location.",
+  "entries": [
+    {
+      "public_file": "offline-observations.json",
+      "source_kind": "private offline observation",
+      "original_sha256": "358882031fe4576443884da61d5e51e38c43314f64e7a5ae258553d84b3a19e0",
+      "sanitized_sha256": "3752bb467ed5834a155b11374533b5360241b1d54b6b7e634365c043a03ff5a9",
+      "sanitization": [
+        "fixture: replaced local absolute path with repository-relative fixture path"
+      ]
+    },
+    {
+      "public_file": "full-route-observations.json",
+      "source_kind": "private offline observation",
+      "original_sha256": "27fae66626c2e3d13fdae62654c5a144dacdeef62f0ec9e1a8d82a3384a8dc96",
+      "sanitized_sha256": "27fae66626c2e3d13fdae62654c5a144dacdeef62f0ec9e1a8d82a3384a8dc96",
+      "sanitization": [
+        "no local absolute paths found in retained JSON values"
+      ]
+    },
+    {
+      "public_file": "phase4-preflight.mock.json",
+      "source_kind": "private offline observation",
+      "original_sha256": "4d82e169c3ae8a96302439a68500899bd14abce4709253085a240b5edc208105",
+      "sanitized_sha256": "4d82e169c3ae8a96302439a68500899bd14abce4709253085a240b5edc208105",
+      "sanitization": [
+        "no local absolute paths found in retained JSON values"
+      ]
+    },
+    {
+      "public_file": "run_offline_probe.py",
+      "source_kind": "offline reproduction probe",
+      "original_sha256": "965e440c990136ace2286575353f59690cdfbeb8b7ca7c573c9dc380721502eb",
+      "sanitized_sha256": "502c6595c68f6f5a4e61814c4dcea776996fcc53ba0354c156b8cacbe8d02a62",
+      "sanitization": [
+        "repository discovery substituted for the original fixed parent index; no private absolute path",
+        "output fixture field remains repository-relative on reproduction"
+      ]
+    },
+    {
+      "public_file": "full_route_probe.py",
+      "source_kind": "offline reproduction probe",
+      "original_sha256": "0eb38c5bbbe78648c8a7d3eb14207e0397f1835e5f112a592ff90a7ea0c9a768",
+      "sanitized_sha256": "0eb38c5bbbe78648c8a7d3eb14207e0397f1835e5f112a592ff90a7ea0c9a768",
+      "sanitization": [
+        "unchanged: repository discovery or repository-relative fixture lookup; no private absolute path"
+      ]
+    }
+  ]
+}

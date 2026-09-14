@@ -1,0 +1,785 @@
+{
+  "scope": "mock_preflight_prepared_bytes_and_content_hashes_not_actual_tokens_or_quality",
+  "plan_sha256": "911be164b359b344a2b466dfcac299d13918d474696a311eff15ee352782c7ee",
+  "observations": [
+    {
+      "run_id": "real-ko-table-r1-baseline",
+      "case_id": "real-ko-table",
+      "arm": "baseline",
+      "steps": [
+        {
+          "step": "analyst",
+          "prepared_input_bytes": 2577,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_independence.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "a7cecaa4a7fa4e665db3967a18d76d5eedc0318e4c7b6be6cb009b91d58ca10e",
+            "S2-note.md": "5a88c16c472582c74dc9686954913321eef50d8aaa4d782adc550140cb60d1ee",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "writer",
+          "prepared_input_bytes": 12980,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_digest.md",
+            "_independence.md",
+            "claims.json",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "bc5e7678b0d4864f9f3372013c83827db9796d76be772be06e6640e3b7dd9343",
+            "S2-note.md": "5e22dfe0ed4d85049e0308c8f4f13c966cb9d73c8c7c019b4336c78ee8ef0a15",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "claims.json": "85e971fb86651a6dc559353cf769c7c7089441bd5b90dec5c2849d521816b937",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "prepared_input_bytes": 3623,
+          "input_names": [
+            "S1-excerpt.md",
+            "S2-excerpt.md",
+            "_digest.md",
+            "_independence.md",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "f17412554892c45abdd1e6ded4a53fb3d06b2bbf33e5ed994051ab9ae3720647",
+            "S2-excerpt.md": "2e6375cbfbea9a23461b38f5ebebeac5f9f7e441d07221bbace55ff7f5eab8ea",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "prepared_input_bytes": 1946,
+          "input_names": [
+            "deterministic_checks.json",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "deterministic_checks.json": "4c59faae57b912b022601322936d21f3eb0138620e9217adea130fdc97a6d17e",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "patcher",
+          "prepared_input_bytes": 2931,
+          "input_names": [
+            "S1-excerpt.md",
+            "_digest.md",
+            "draft.md",
+            "findings.json"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "f17412554892c45abdd1e6ded4a53fb3d06b2bbf33e5ed994051ab9ae3720647",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "findings.json": "1a4006e73437c4d093d3f6954b75e2643cde223dbd9c00f12f53b37397f4bcbf"
+          }
+        },
+        {
+          "step": "citecheck",
+          "prepared_input_bytes": 15496,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "samples.json"
+          ],
+          "input_sha256": {
+            "S1-note.md": "bc5e7678b0d4864f9f3372013c83827db9796d76be772be06e6640e3b7dd9343",
+            "S2-note.md": "8b99692402a020910431b7ab98d3366daafe20098f7ba1240a0b7be1be299cde",
+            "samples.json": "2cb17e058a6ac3aa4e7409fc2f9c1e1e6428976f21bb5a778a0bacc588e654a1"
+          }
+        }
+      ],
+      "evidence_selection_records": [],
+      "observed_backend": "mock",
+      "observed_control_errors": [],
+      "frozen_case_hash": "27cc44695b18bd368eaba281b92e20d3cc6f228f55f8d04160e0f1abceceb5a6",
+      "runtime_metadata_errors": []
+    },
+    {
+      "run_id": "real-ko-table-r1-evidence_selection",
+      "case_id": "real-ko-table",
+      "arm": "evidence_selection",
+      "steps": [
+        {
+          "step": "analyst",
+          "prepared_input_bytes": 2577,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_independence.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "a7cecaa4a7fa4e665db3967a18d76d5eedc0318e4c7b6be6cb009b91d58ca10e",
+            "S2-note.md": "5a88c16c472582c74dc9686954913321eef50d8aaa4d782adc550140cb60d1ee",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "writer",
+          "prepared_input_bytes": 12980,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_digest.md",
+            "_independence.md",
+            "claims.json",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "bc5e7678b0d4864f9f3372013c83827db9796d76be772be06e6640e3b7dd9343",
+            "S2-note.md": "5e22dfe0ed4d85049e0308c8f4f13c966cb9d73c8c7c019b4336c78ee8ef0a15",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "claims.json": "85e971fb86651a6dc559353cf769c7c7089441bd5b90dec5c2849d521816b937",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "prepared_input_bytes": 3623,
+          "input_names": [
+            "S1-excerpt.md",
+            "S2-excerpt.md",
+            "_digest.md",
+            "_independence.md",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "f17412554892c45abdd1e6ded4a53fb3d06b2bbf33e5ed994051ab9ae3720647",
+            "S2-excerpt.md": "2e6375cbfbea9a23461b38f5ebebeac5f9f7e441d07221bbace55ff7f5eab8ea",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "prepared_input_bytes": 1946,
+          "input_names": [
+            "deterministic_checks.json",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "deterministic_checks.json": "4c59faae57b912b022601322936d21f3eb0138620e9217adea130fdc97a6d17e",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "question.txt": "25685168df0063ef2e573b6aceeab6d10020f9fe0001f62aaa8cf06e2153dc4b"
+          }
+        },
+        {
+          "step": "patcher",
+          "prepared_input_bytes": 2931,
+          "input_names": [
+            "S1-excerpt.md",
+            "_digest.md",
+            "draft.md",
+            "findings.json"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "f17412554892c45abdd1e6ded4a53fb3d06b2bbf33e5ed994051ab9ae3720647",
+            "_digest.md": "b89ea7883929ba542a414096fad282cbad40d7e44845cd292c2d3a2fb8ade11f",
+            "draft.md": "f081baf280fdebca739fee5d2ee9486de337c5131afcadabbfbb430085c8fed2",
+            "findings.json": "1a4006e73437c4d093d3f6954b75e2643cde223dbd9c00f12f53b37397f4bcbf"
+          }
+        },
+        {
+          "step": "citecheck",
+          "prepared_input_bytes": 15496,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "samples.json"
+          ],
+          "input_sha256": {
+            "S1-note.md": "bc5e7678b0d4864f9f3372013c83827db9796d76be772be06e6640e3b7dd9343",
+            "S2-note.md": "8b99692402a020910431b7ab98d3366daafe20098f7ba1240a0b7be1be299cde",
+            "samples.json": "2cb17e058a6ac3aa4e7409fc2f9c1e1e6428976f21bb5a778a0bacc588e654a1"
+          }
+        }
+      ],
+      "evidence_selection_records": [
+        {
+          "source_id": "S1",
+          "source_chars": 634,
+          "omitted_chars": 413,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 437,
+              "char_end": 633
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 5466,
+          "omitted_chars": 5149,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 3448,
+              "char_end": 3553
+            },
+            {
+              "char_start": 3555,
+              "char_end": 3742
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 634,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 634
+            }
+          ],
+          "truncated": false
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 5466,
+          "omitted_chars": 1776,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 537,
+              "char_end": 804
+            },
+            {
+              "char_start": 806,
+              "char_end": 1106
+            },
+            {
+              "char_start": 1108,
+              "char_end": 1412
+            },
+            {
+              "char_start": 1414,
+              "char_end": 1760
+            },
+            {
+              "char_start": 1762,
+              "char_end": 2066
+            },
+            {
+              "char_start": 2068,
+              "char_end": 2365
+            },
+            {
+              "char_start": 2367,
+              "char_end": 2652
+            },
+            {
+              "char_start": 2947,
+              "char_end": 3268
+            },
+            {
+              "char_start": 3270,
+              "char_end": 3553
+            },
+            {
+              "char_start": 3555,
+              "char_end": 3887
+            },
+            {
+              "char_start": 3889,
+              "char_end": 4193
+            },
+            {
+              "char_start": 4195,
+              "char_end": 4517
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 634,
+          "omitted_chars": 520,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 437,
+              "char_end": 526
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 5466,
+          "omitted_chars": 5336,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 3448,
+              "char_end": 3553
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 634,
+          "omitted_chars": 520,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 26
+            },
+            {
+              "char_start": 437,
+              "char_end": 526
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 634,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 634
+            }
+          ],
+          "truncated": false
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 5466,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 5466
+            }
+          ],
+          "truncated": false
+        }
+      ],
+      "observed_backend": "mock",
+      "observed_control_errors": [],
+      "frozen_case_hash": "27cc44695b18bd368eaba281b92e20d3cc6f228f55f8d04160e0f1abceceb5a6",
+      "runtime_metadata_errors": []
+    },
+    {
+      "run_id": "real-en-boundary-r1-evidence_selection",
+      "case_id": "real-en-boundary",
+      "arm": "evidence_selection",
+      "steps": [
+        {
+          "step": "analyst",
+          "prepared_input_bytes": 2008,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_independence.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "25517b597cd704ec3b1492ec15ae4fb5507c8f8ee8b597001579eb331a1a68c7",
+            "S2-note.md": "3315cc74019c11a05f4a125823934aa222652722efe2a289516c5b9ae5771796",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "writer",
+          "prepared_input_bytes": 4567,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_digest.md",
+            "_independence.md",
+            "claims.json",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "d37cd56885c3ca0cd3ca9a28aba53d4eb4ebb68663bda81dbc9d412547ff4fd3",
+            "S2-note.md": "0d338ab4543915b135f9d39355217925387d5c66b833ac2a3f9e467a63f81daa",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "claims.json": "00c21c6de79e53cda08d3a81f7c81d31c85908c15ed623103fb57433037f2753",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "prepared_input_bytes": 1692,
+          "input_names": [
+            "deterministic_checks.json",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "deterministic_checks.json": "218215ebcf628847ba68212ac73e176c2931b008a403cf19eaacca564b0069ae",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "prepared_input_bytes": 3062,
+          "input_names": [
+            "S1-excerpt.md",
+            "S2-excerpt.md",
+            "_digest.md",
+            "_independence.md",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "9b99e161edab12c5ea998d6052b3b471181ea041f348f7d3d8028d50e6b66ef4",
+            "S2-excerpt.md": "01a83c4cf53aa7125c5cf6cdde9704d141213a423b02c3784f03dc3b6a71f732",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "patcher",
+          "prepared_input_bytes": 2423,
+          "input_names": [
+            "S1-excerpt.md",
+            "_digest.md",
+            "draft.md",
+            "findings.json"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "9b99e161edab12c5ea998d6052b3b471181ea041f348f7d3d8028d50e6b66ef4",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "findings.json": "407cf116bf7b969e61433349b60b0d519dbd83e85c3af5fdd99263e919961890"
+          }
+        },
+        {
+          "step": "citecheck",
+          "prepared_input_bytes": 3189,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "samples.json"
+          ],
+          "input_sha256": {
+            "S1-note.md": "d37cd56885c3ca0cd3ca9a28aba53d4eb4ebb68663bda81dbc9d412547ff4fd3",
+            "S2-note.md": "0d338ab4543915b135f9d39355217925387d5c66b833ac2a3f9e467a63f81daa",
+            "samples.json": "4112ec6e9675dc85fc24c678bc102a1615c7b70afaa047ac43c65f7745638e12"
+          }
+        }
+      ],
+      "evidence_selection_records": [
+        {
+          "source_id": "S1",
+          "source_chars": 1054,
+          "omitted_chars": 744,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 29
+            },
+            {
+              "char_start": 31,
+              "char_end": 231
+            },
+            {
+              "char_start": 971,
+              "char_end": 1053
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 1029,
+          "omitted_chars": 723,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 29
+            },
+            {
+              "char_start": 749,
+              "char_end": 920
+            },
+            {
+              "char_start": 921,
+              "char_end": 1028
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 1054,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 1054
+            }
+          ],
+          "truncated": false
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 1029,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 1029
+            }
+          ],
+          "truncated": false
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 1054,
+          "omitted_chars": 907,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 29
+            },
+            {
+              "char_start": 31,
+              "char_end": 150
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 1029,
+          "omitted_chars": 881,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 29
+            },
+            {
+              "char_start": 749,
+              "char_end": 869
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 1054,
+          "omitted_chars": 907,
+          "exact_spans": [
+            {
+              "char_start": 1,
+              "char_end": 29
+            },
+            {
+              "char_start": 31,
+              "char_end": 150
+            }
+          ],
+          "truncated": true
+        },
+        {
+          "source_id": "S1",
+          "source_chars": 1054,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 1054
+            }
+          ],
+          "truncated": false
+        },
+        {
+          "source_id": "S2",
+          "source_chars": 1029,
+          "omitted_chars": 0,
+          "exact_spans": [
+            {
+              "char_start": 0,
+              "char_end": 1029
+            }
+          ],
+          "truncated": false
+        }
+      ],
+      "observed_backend": "mock",
+      "observed_control_errors": [],
+      "frozen_case_hash": "dba6d6038e6e87a3be7b16c0e24aab6ff5612ef7998b7f435595b153ae3011a6",
+      "runtime_metadata_errors": []
+    },
+    {
+      "run_id": "real-en-boundary-r1-baseline",
+      "case_id": "real-en-boundary",
+      "arm": "baseline",
+      "steps": [
+        {
+          "step": "analyst",
+          "prepared_input_bytes": 2008,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_independence.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "25517b597cd704ec3b1492ec15ae4fb5507c8f8ee8b597001579eb331a1a68c7",
+            "S2-note.md": "3315cc74019c11a05f4a125823934aa222652722efe2a289516c5b9ae5771796",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "writer",
+          "prepared_input_bytes": 4567,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "_digest.md",
+            "_independence.md",
+            "claims.json",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-note.md": "d37cd56885c3ca0cd3ca9a28aba53d4eb4ebb68663bda81dbc9d412547ff4fd3",
+            "S2-note.md": "0d338ab4543915b135f9d39355217925387d5c66b833ac2a3f9e467a63f81daa",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "claims.json": "00c21c6de79e53cda08d3a81f7c81d31c85908c15ed623103fb57433037f2753",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "critic_dialectic",
+          "prepared_input_bytes": 3062,
+          "input_names": [
+            "S1-excerpt.md",
+            "S2-excerpt.md",
+            "_digest.md",
+            "_independence.md",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "9b99e161edab12c5ea998d6052b3b471181ea041f348f7d3d8028d50e6b66ef4",
+            "S2-excerpt.md": "01a83c4cf53aa7125c5cf6cdde9704d141213a423b02c3784f03dc3b6a71f732",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "_independence.md": "37a15e53326f1d9037b92e6dad4ec66f187a3882fa20c607c0cda3bba7c229ad",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "critic_instruction",
+          "prepared_input_bytes": 1692,
+          "input_names": [
+            "deterministic_checks.json",
+            "draft.md",
+            "question.txt"
+          ],
+          "input_sha256": {
+            "deterministic_checks.json": "218215ebcf628847ba68212ac73e176c2931b008a403cf19eaacca564b0069ae",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "question.txt": "a5f46b8a04823e6d4461598725a39782a01688bb498d0df3b1d1dcfb1ba20f1e"
+          }
+        },
+        {
+          "step": "patcher",
+          "prepared_input_bytes": 2423,
+          "input_names": [
+            "S1-excerpt.md",
+            "_digest.md",
+            "draft.md",
+            "findings.json"
+          ],
+          "input_sha256": {
+            "S1-excerpt.md": "9b99e161edab12c5ea998d6052b3b471181ea041f348f7d3d8028d50e6b66ef4",
+            "_digest.md": "b92dadb2a850e574bf87de567222913fa9828a776980c592d9a7f070e2e659b3",
+            "draft.md": "01f77aef034741bfd7d2a21fc3da9bec1bed19d7d4dff1d4fc52eb5d29141f7a",
+            "findings.json": "407cf116bf7b969e61433349b60b0d519dbd83e85c3af5fdd99263e919961890"
+          }
+        },
+        {
+          "step": "citecheck",
+          "prepared_input_bytes": 3189,
+          "input_names": [
+            "S1-note.md",
+            "S2-note.md",
+            "samples.json"
+          ],
+          "input_sha256": {
+            "S1-note.md": "d37cd56885c3ca0cd3ca9a28aba53d4eb4ebb68663bda81dbc9d412547ff4fd3",
+            "S2-note.md": "0d338ab4543915b135f9d39355217925387d5c66b833ac2a3f9e467a63f81daa",
+            "samples.json": "4112ec6e9675dc85fc24c678bc102a1615c7b70afaa047ac43c65f7745638e12"
+          }
+        }
+      ],
+      "evidence_selection_records": [],
+      "observed_backend": "mock",
+      "observed_control_errors": [],
+      "frozen_case_hash": "dba6d6038e6e87a3be7b16c0e24aab6ff5612ef7998b7f435595b153ae3011a6",
+      "runtime_metadata_errors": []
+    }
+  ],
+  "comparisons": [
+    {
+      "case_id": "real-ko-table",
+      "candidate_arm": "evidence_selection",
+      "identical_step_input_sha256": true
+    },
+    {
+      "case_id": "real-en-boundary",
+      "candidate_arm": "evidence_selection",
+      "identical_step_input_sha256": true
+    }
+  ],
+  "all_paired_step_inputs_identical": true
+}

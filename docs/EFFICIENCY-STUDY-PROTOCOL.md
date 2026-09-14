@@ -1,6 +1,6 @@
 # 효율 데이터 확보 계획
 
-상태: 계획·검증 도구 준비. 새 실제 모델 실측 결과는 아직 없다. 이 문서는 성능 주장이나 이전 실측 예산의 재사용 승인이 아니다.
+상태: 개발8회와 보류12회 실제 실행 및 결과 공개 작업 완료. [실측 결과와 한계](EFFICIENCY-RESULTS-20260914.md)를 함께 읽는다. 이 문서의 새 실행에는 별도 예산 승인이 필요하다.
 
 ## 공개할 데이터
 
@@ -55,7 +55,14 @@ python3 -m hprc.study_runner
 python3 -m hprc.study_runner --mock --repetitions 1 --output research/experiments/packet-mock-001
 ```
 
-명시적인 사용자 예산 승인 후에만 `--execute --approved-total-tokens 4000000`과 새 출력 폴더를 사용한다. 4회 탐색 승인을 받았다면 `--repetitions 1 --approved-total-tokens 2000000`을 사용한다. 이 숫자는 다음 실행을 중단하는 기준이며 구독 사용량이나 청구액의 강제 상한이 아니다. 실행 전 `python3 hpr.py doctor`로 환경을 확인한다. 실제 실행은 커밋된 깨끗한 checkout에서만 진행하며, 도중 코드·프롬프트·설정·입력 변화가 있으면 중단한다.
+실제 실행 전에 계획을 파일로 고정한다. 명시적인 사용자 예산 승인 후에만 그 계획을 `--plan`으로 전달한다.
+
+```sh
+python3 -m hprc.study_runner > research/packet-plan.json
+python3 -m hprc.study_runner --execute --plan research/packet-plan.json --approved-total-tokens 4000000 --output research/experiments/packet-new
+```
+
+실제 실행은 새 출력 폴더를 사용한다. 4회 탐색 승인을 받았다면 `--repetitions 1 --approved-total-tokens 2000000`을 사용한다. 이 숫자는 다음 실행을 중단하는 기준이며 구독 사용량이나 청구액의 강제 상한이 아니다. 실행 전 `python3 hpr.py doctor`로 환경을 확인한다. 실제 실행은 커밋된 깨끗한 checkout에서만 진행하며, 각 호출 전후 코드·프롬프트·설정·입력 변화가 있으면 기록된 비용을 보존하고 중단한다. 사용량 필드 일부가 누락되면 알려진 값은 남기되 미측정 호출로 분류한다.
 
 `plan.json`은 사전 계획, `experiment.json`은 실패까지 포함한 실행 장부, `summary.json`은 비교 가능 여부다. `blind/`는 조건 이름을 제거한 검토 자료이며 각 실행 폴더의 identity 자료와 분리해 검토자에게 제공한다. 자동 집계는 품질 판정을 만들지 않는다. 전체 본문 검토의 판정과 근거, 보고서 해시를 별도로 남긴 뒤 공개 보고서에서 토큰 결과와 함께 해석해야 한다. 모의 실행 결과로 절감률이나 품질 개선을 주장할 수 없다.
 

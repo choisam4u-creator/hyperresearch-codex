@@ -1,5 +1,6 @@
 # hyperresearch-codex (한국어)
 
+입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
 영문 README(기본): [README.md](README.md) · 상태: 베타 0.3.1 · 저자 samchoi
 
 Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있다. 새 조사에서의 자동 재사용은 후속 개발 대상이다.
