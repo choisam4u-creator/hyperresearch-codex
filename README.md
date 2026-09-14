@@ -1,5 +1,7 @@
 # hyperresearch-codex
 
+토큰 절감과 품질의 후속 실측은 [사전 등록 실험 계획](docs/EFFICIENCY-STUDY-PROTOCOL.md)을 따릅니다. 실행 도구 준비와 실제 효과 입증은 구분합니다.
+
 [![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.3.1-orange)
 
 A Codex-only research pipeline that turns one prompt into a **sourced, adversarially reviewed brief** (not a 10,000-word survey — see the comparison in `docs/COMPARISON-drb67.html`). **Python orchestrates, `codex exec` judges, gates verify.**

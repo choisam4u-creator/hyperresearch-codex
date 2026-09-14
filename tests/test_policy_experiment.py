@@ -27,3 +27,17 @@ class PolicyExperimentTests(unittest.TestCase):
     def test_missing_usage_completeness_does_not_produce_a_token_delta(self):
         a,b=self.pair();del b['unknowncalls']
         self.assertIsNone(compare_policy(a,b,['verification.semantic'])['total_token_delta'])
+
+    def test_efficiency_packet_is_an_explicit_allowed_toggle(self):
+        a,b=self.pair()
+        b['runtime_metadata']['config_snapshot']['verification']['semantic']=False
+        for row in (a,b):
+            row['runtime_metadata']['config_snapshot']['efficiency']={'packet_inputs':False,'evidence_selection':False}
+            row['runtime_metadata']['config_hash']=fingerprint(row['runtime_metadata']['config_snapshot'])
+        b['runtime_metadata']['config_snapshot']['efficiency']['packet_inputs']=True
+        b['runtime_metadata']['config_hash']=fingerprint(b['runtime_metadata']['config_snapshot'])
+        self.assertEqual({'baseline':False,'candidate':True},compare_policy(a,b,['efficiency.packet_inputs'])['changes']['efficiency.packet_inputs'])
+
+    def test_non_boolean_quality_flag_is_not_a_pass(self):
+        a,b=self.pair();a['quality_qualified']=1;b['quality_qualified']=1
+        self.assertIsNone(compare_policy(a,b,['verification.semantic'])['quality_preserved'])
