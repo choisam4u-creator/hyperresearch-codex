@@ -53,3 +53,21 @@ class ResultIntegrityTests(unittest.TestCase):
             (folder/'records.json').write_text(json.dumps(rows))
             with self.assertRaises(AssertionError):
                 checker.verify(folder)
+
+
+class EvidenceCheckoutTests(unittest.TestCase):
+    def test_autocrlf_checkout_preserves_original_evidence_bytes(self):
+        if shutil.which('git') is None:
+            self.skipTest('Git checkout 검증에는 git이 필요함')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            payload = b'{"evidence": "frozen"}\n'
+            subprocess.run(['git','init',str(root)], capture_output=True, check=True)
+            shutil.copyfile(ROOT/'.gitattributes', root/'.gitattributes')
+            evidence = root/'docs/results/example.json'
+            evidence.parent.mkdir(parents=True)
+            evidence.write_bytes(payload)
+            subprocess.run(['git','-C',str(root),'-c','core.autocrlf=true','add','--','.gitattributes','docs/results/example.json'], capture_output=True, check=True)
+            evidence.unlink()
+            subprocess.run(['git','-C',str(root),'-c','core.autocrlf=true','checkout-index','--all','--force'], capture_output=True, check=True)
+            self.assertEqual(evidence.read_bytes(), payload)

@@ -152,3 +152,7 @@ Astra 검수에서 발견한 실제 호출 정보 미대조와 회계/정책 위
 - 근거 선택4회 실측은 mock 전달 입력 차이가 없어 미실행. 해당200만 예산 미사용·미재배정. 재사용·갱신·Full은 mock 관찰, 두 블로그는 비공개 원문 근거/계산 검증만 수행했다.
 - 공개 검증기의 본문 교체·최적화모드·합계 불일치 회귀를 포함한 최종 전체 mock 회귀388개 통과(12.232초). CI 결과는 커밋 댓글에서 별도로 확인한다.
 - macOS 격리 wheel 설치·저장소 밖 help와 mock smoke 통과. 실제 Windows 모델·외부 사용자 테스트·블로그 게시는 수행하지 않았다.
+
+### 공개 근거 checkout 후속 수정
+
+초기 [CI34821428315](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34821428315)는 Linux3종 통과, Windows mock의 원문 바이트 해시 검사1건 실패였다. `core.autocrlf=true` 임시 checkout으로 CRLF 변환을 재현했고, `.gitattributes`의 `/docs/results/** -text`로 원문·검토 JSON·동결 실행기의 바이트를 보존했다. 해시 검사를 완화하거나 결과 데이터를 고치지 않았다. 독립 재현에서 공개 텍스트82개 SHA 변경이82→0개로 줄었고 두 실험의 검증이 통과했다. 새 회귀를 포함한 로컬 전체389개(12.539초)가 통과했으며 후속 원격 CI 결과는 커밋 댓글에 기록한다. 실제 Windows 연구 모델 실행과는 별개다.
