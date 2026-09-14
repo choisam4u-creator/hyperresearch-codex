@@ -156,3 +156,7 @@ Astra 검수에서 발견한 실제 호출 정보 미대조와 회계/정책 위
 ### 공개 근거 checkout 후속 수정
 
 초기 [CI34821428315](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34821428315)는 Linux3종 통과, Windows mock의 원문 바이트 해시 검사1건 실패였다. `core.autocrlf=true` 임시 checkout으로 CRLF 변환을 재현했고, `.gitattributes`의 `/docs/results/** -text`로 원문·검토 JSON·동결 실행기의 바이트를 보존했다. 해시 검사를 완화하거나 결과 데이터를 고치지 않았다. 독립 재현에서 공개 텍스트82개 SHA 변경이82→0개로 줄었고 두 실험의 검증이 통과했다. 새 회귀를 포함한 로컬 전체389개(12.539초)가 통과했으며 후속 원격 CI 결과는 커밋 댓글에 기록한다. 실제 Windows 연구 모델 실행과는 별개다.
+
+## 기존 실측 로그 기반 오프라인 수정 (2026-09-14)
+
+`tests/test_claim_delivery.py`, `tests/test_text_select.py`, `tests/test_input_packets.py`, `tests/test_patch_salvage.py`로 작성자 근거 보충·연속 조건·분할 경계·공유 예산·감사 기록과 부분 패치 안전 검사를 재현한다. [결과와 한계](OFFLINE-REPAIR-20260914.md)를 참고한다. 새 실제 리서치 호출은 수행하지 않았다.

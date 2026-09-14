@@ -77,5 +77,67 @@ class TextSelectTests(unittest.TestCase):
         self.assertEqual(["| item | unit |\n| --- | --- |"], chunks)
 
 
+class ClaimEvidenceSupplementTests(unittest.TestCase):
+    def test_supplement_preserves_existing_context_and_source_sentences(self):
+        import json
+        from pathlib import Path
+        case = next(c for c in json.loads((Path(__file__).parent/'fixtures/realistic_inputs.json').read_text())['cases'] if c['id']=='real-en-long')
+        body = case['sources']['S2']
+        claim = 'Staff logged 58 corrections: 21 after a sick call, 17 after a late-opening program, 12 after a ticket-printer restart, and 8 free-text descriptions.'
+        before, _ = select(body, case['prompt'], 5000)
+        after, clipped = select(body, case['prompt'], 5000, evidence_queries=(claim,))
+        self.assertNotIn('21 followed a sick call', before)
+        self.assertIn('21 followed a sick call', after)
+        self.assertIn('excluded from the matching calculation', after)
+        self.assertLessEqual(len(after), 5000)
+        self.assertTrue(clipped)
+        # 기존 발췌는 생략 표식만 제외하고 모두 그대로 남아야 한다.
+        before_content = before.rsplit('\n\n[… 관련도 낮은',1)[0]
+        for fragment in before_content.split('\n\n[…]\n\n'):
+            self.assertIn(fragment, after)
+        for fragment in after.rsplit('\n\n[… 관련도 낮은',1)[0].split('\n\n[…]\n\n'):
+            self.assertIn(fragment, body)
+
+    def test_irrelevant_claim_or_full_source_does_not_inject_claim_text(self):
+        body = 'Original documented observation.\n\n' + 'Background description. ' * 100
+        normal = select(body, 'documented observation', 300)
+        self.assertEqual(normal, select(body, 'documented observation', 300, evidence_queries=('fabricated Jupiter unicorn',)))
+        self.assertEqual(('short source',False),select('short source','query',100,evidence_queries=('invented assertion',)))
+
+    def test_supplement_is_bounded_for_small_caps(self):
+        body = 'intro ' * 30 + '\n\nMeasured capacity reached 31 units. Conditions exclude reserve units.\n\n' + 'background ' * 100
+        for cap in (0,1,40,80,160,300):
+            result, _ = select(body,'intro',cap,evidence_queries=('Measured capacity 31 units',))
+            self.assertLessEqual(len(result),cap)
+
+    def test_supplement_keeps_adjacent_condition_atomically(self):
+        body = ('Overview of the evaluation.\n\n' + ('Alpha methodology and background. ' * 7)
+                + '\n\nMeasured capacity reached 31 units. This applies only when cooling is enabled. It is not valid above 30 degrees. '
+                + ('Unrelated archival background discussion. ' * 15))
+        for cap in (370, 500):
+            with self.subTest(cap=cap):
+                result, _ = select(body, 'Alpha methodology', cap,
+                                   evidence_queries=('Measured capacity reached 31 units',))
+                if 'Measured capacity reached 31 units.' in result:
+                    self.assertIn('This applies only when cooling is enabled.', result)
+                    self.assertIn('It is not valid above 30 degrees.', result)
+                self.assertLessEqual(len(result), cap)
+        result, _ = select(body, 'Alpha methodology', 500,
+                           evidence_queries=('Measured capacity reached 31 units',))
+        self.assertIn('Measured capacity reached 31 units.', result)
+
+    def test_condition_chain_crosses_internal_chunk_boundary(self):
+        body = ('Overview of the evaluation.\n\n' + ('Alpha methodology and background. ' * 7)
+                + '\n\n' + 'Archival records were retained. ' * 5
+                + 'Measured capacity reached 31 units. This applies only when cooling is enabled. '
+                + 'It is not valid above 30 degrees. ' + 'Unrelated archival background discussion. ' * 15)
+        result, _ = select(body, 'Alpha methodology', 500,
+                           evidence_queries=('Measured capacity reached 31 units',), supplemental_cap=1000)
+        self.assertIn('Measured capacity reached 31 units.', result)
+        self.assertIn('This applies only when cooling is enabled.', result)
+        self.assertIn('It is not valid above 30 degrees.', result)
+        self.assertLessEqual(len(result), 1000)
+
+
 if __name__ == "__main__":
     unittest.main()

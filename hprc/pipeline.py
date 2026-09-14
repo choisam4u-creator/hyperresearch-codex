@@ -431,19 +431,50 @@ class Run:
             return list(pool.map(lambda job: job[1](), jobs))
 
     # ---- 입력 구성(토큰 다이어트) ----
-    def notes(self, ids=None, cap=None, query=None) -> dict[str, str]:
+    def notes(self, ids=None, cap=None, query=None, evidence_queries=None, evidence_budget=None) -> dict[str, str]:
         """지정한 출처 id 의 노트만, cap 자까지. 넘치면 query(기본: 질문)와 관련 있는 문단을 고른다. 잘리면 truncated 표시."""
         cap = cap or self.cfg["note_max_chars"]
         query = self.prompt if query is None else query
         out = {}
+        chosen_sources = [s for s in self.sources if ids is None or s['id'] in ids]
+        raw_bodies = {s['id']: note_body(Path(s['path'])) for s in chosen_sources}
+        selections = {}
+        if evidence_queries:
+            from .input_packets import claims_evidence_packet
+
+            def choose(sid, supplements=(), limit=None):
+                if self.cfg.get('efficiency', {}).get('evidence_selection'):
+                    return claims_evidence_packet(raw_bodies[sid], query.splitlines(), cap,
+                                                  supplemental_queries=supplements, supplemental_cap=limit)
+                body, truncated = select(raw_bodies[sid], query, cap, evidence_queries=supplements, supplemental_cap=limit)
+                return {'excerpt': body, 'truncated': truncated}
+
+            bases = {s['id']: choose(s['id']) for s in chosen_sources}
+            remaining = cap * len(bases) - sum(len(value['excerpt']) for value in bases.values())
+            allocations = []
+            for sid in sorted(bases):
+                original_chars = len(bases[sid]['excerpt'])
+                # 짧은 출처의 미사용 본문 예산만 공유한다. 기존 선택은 교체하지 않는다.
+                limit = original_chars + remaining
+                selections[sid] = choose(sid, tuple(evidence_queries.get(sid, ())), limit)
+                added = len(selections[sid]['excerpt']) - original_chars
+                remaining -= added
+                allocations.append({'source_id': sid, 'base_cap_chars': cap, 'expanded_cap_chars': limit,
+                                    'before_chars': original_chars, 'selected_chars': len(selections[sid]['excerpt']),
+                                    'added_chars': added})
+            if evidence_budget is not None:
+                evidence_budget.update(scope='writer_source_body_chars_not_tokens', total_cap_chars=cap * len(bases),
+                                       selected_chars=sum(len(value['excerpt']) for value in selections.values()),
+                                       allocations=allocations)
         for s in self.sources:
             if ids is not None and s["id"] not in ids:
                 continue
             front = read_front(Path(s["path"]))
-            raw_body = note_body(Path(s["path"]))
+            raw_body = raw_bodies[s['id']]
+            source_queries = tuple((evidence_queries or {}).get(s["id"], ()))
             if self.cfg.get('efficiency', {}).get('evidence_selection'):
                 from .input_packets import claims_evidence_packet
-                selected = claims_evidence_packet(raw_body, query.splitlines(), cap)
+                selected = selections.get(s['id']) or claims_evidence_packet(raw_body, query.splitlines(), cap, supplemental_queries=source_queries)
                 body, truncated = selected['excerpt'], selected['truncated']
                 record = {k: v for k, v in selected.items() if k != 'excerpt'}
                 record.update(source_id=s['id'], source_sha256=hashlib.sha256(raw_body.encode()).hexdigest(), query_sha256=hashlib.sha256(query.encode()).hexdigest())
@@ -453,7 +484,10 @@ class Run:
                     self.m.save()
                     atomic_write(self.dir / 'evidence_selections.json', json.dumps(records, ensure_ascii=False, indent=2))
             else:
-                body, truncated = _clip(raw_body, cap, query)
+                if s['id'] in selections:
+                    body, truncated = selections[s['id']]['excerpt'], selections[s['id']]['truncated']
+                else:
+                    body, truncated = select(raw_body, query, cap, evidence_queries=source_queries)
             # 구형 노트에 빠진 날짜는 실행별 출처 메타에서 복구한다.
             published = front.get('published') or s.get('published') or '미표기'
             modified = front.get('modified') or s.get('modified') or '미표기'
@@ -463,6 +497,8 @@ class Run:
                                         f"domain: {front.get('domain','')}\n"
                                         f"truncated: {'true' if truncated else 'false'}\n---\n")
             out[f"{s['id']}-note.md"] = wrap_source(metadata + body, front.get('url', s.get('url', '')))
+        if evidence_budget is not None:
+            evidence_budget['prepared_note_bytes_including_wrappers'] = sum(len(value.encode('utf-8')) for value in out.values())
         return out
 
     def excerpts(self, ids=None, query=None) -> dict[str, str]:
@@ -840,8 +876,15 @@ class Run:
         if not self.begin("draft"):
             return
         digest = self.digest()
-        base = {"question.txt": self.prompt, "claims.json": (self.dir / "claims.json").read_text(encoding="utf-8"), "_digest.md": digest,
-                "_independence.md": self.independence_md(), **self.notes(self.relevant, self.cfg["draft_note_chars"])}
+        claims_text = (self.dir / "claims.json").read_text(encoding="utf-8")
+        claims = json.loads(claims_text)["claims"]
+        source_queries = {sid: tuple(claim["text"] for claim in claims if sid in claim["sources"])
+                          for sid in self.relevant}
+        evidence_budget = {}
+        draft_notes = self.notes(self.relevant, self.cfg["draft_note_chars"], evidence_queries=source_queries, evidence_budget=evidence_budget)
+        atomic_write(self.dir / 'writer_evidence_budget.json', json.dumps(evidence_budget, ensure_ascii=False, indent=2))
+        base = {"question.txt": self.prompt, "claims.json": claims_text, "_digest.md": digest,
+                "_independence.md": self.independence_md(), **draft_notes}
         if self.tier == "light" or self.m.data["workflow"]["single_draft"]:
             if self.tier == "full":
                 base.update(self._interim())
@@ -922,7 +965,7 @@ class Run:
         text = (self.dir / src_file).read_text(encoding="utf-8")
         res = self.call(name, _prompt(prompt_name, self.lang, hunk_max=self.G["hunk_max_chars"]), schemas.PATCHER, {src_file: text, **extra}, role)
         try:
-            new, rejected = apply_hunks(text, res["hunks"], ratio, self.G["hunk_max_chars"])
+            new, rejected = apply_hunks(text, res["hunks"], ratio, self.G["hunk_max_chars"], preserve_judgment_lang=self.lang)
             unknown = [c for c in re.findall(r"\[(S\d+)\]", new) if c not in self.known]
             if unknown:
                 raise GateError(f"수정본이 없는 출처를 인용: {unknown}")

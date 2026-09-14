@@ -35,6 +35,28 @@ class InputPacketTests(unittest.TestCase):
         self.assertIn(source, packet)
         self.assertIn("unless caching is disabled", packet)
 
+    def test_packet_omits_audit_fingerprints_but_profile_retains_them(self):
+        inputs = {"a.md": "first source", "b.md": "두 번째 source"}
+        packet = make_packet(inputs)["_input_packet.md"]
+        profile = input_profile(inputs)
+        self.assertNotIn("<!-- utf8_bytes=", packet)
+        for name, body in inputs.items():
+            self.assertIn(f"## Virtual file: {name}\n{body}\n<!-- End virtual file: {name} -->", packet)
+            self.assertEqual(len(body.encode("utf-8")), profile["files"][name]["bytes"])
+            self.assertEqual(64, len(profile["files"][name]["sha256"]))
+
+    def test_supplemental_selection_is_recorded_and_bound(self):
+        body = 'Measured capacity reached 31 units. Only valid with cooling.'
+        first = claims_evidence_packet(body, ['overview'], 500,
+                                       supplemental_queries=(' capacity  31 ', 'capacity 31'))
+        second = claims_evidence_packet(body, ['overview'], 500,
+                                        supplemental_queries=('capacity 32',))
+        self.assertEqual(['capacity 31'], first['supplemental_queries'])
+        self.assertNotEqual(first['selection_queries_sha256'], second['selection_queries_sha256'])
+        self.assertEqual('supplemental', first['claim_coverage'][1]['query_kind'])
+        self.assertEqual('capacity 31', first['claim_coverage'][1]['query'])
+        self.assertTrue(first['claim_coverage'][1]['candidate_exact_spans'])
+
     def test_packet_rejects_ambiguous_filename_and_non_string_body(self):
         with self.assertRaises(ValueError):
             make_packet({"bad\nname": "body"})

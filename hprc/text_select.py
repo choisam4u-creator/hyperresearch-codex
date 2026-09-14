@@ -15,6 +15,9 @@ _CONTEXT_CUE = re.compile(
     r"(?:예외|제외|조건|단위|한정|경우에만|일\s*때만|않(?:는|다)|없(?:는|다)|"
     r"exception|except|unless|only\s+(?:when|if|for)|condition|unit|not\s+applicable)", re.IGNORECASE)
 _SEPARATOR = "\n\n[…]\n\n"
+_SUPPLEMENT_CONTEXT = re.compile(
+    _CONTEXT_CUE.pattern + r"|\b(?:not|only|cannot|without|limited|unaudited)\b|미검증|검증되지|한계",
+    re.IGNORECASE)
 
 
 def terms(text: str) -> set[str]:
@@ -104,7 +107,7 @@ def _score(paragraph: str, query_terms: set[str]) -> float:
     return len(paragraph_terms & query_terms) / (len(paragraph_terms) ** 0.5 + 1) if paragraph_terms else 0.0
 
 
-def _render(chosen: list[tuple[int, str]], body_length: int, cap: int) -> str:
+def _render(chosen: list[tuple[tuple[int, int], str]], body_length: int, cap: int) -> str:
     content = _SEPARATOR.join(text for _, text in sorted(chosen))
     omitted = max(0, body_length - sum(len(text) for _, text in chosen))
     marker = f"\n\n[… 관련도 낮은 {omitted:,}자 생략: 이 노트는 잘렸다 …]\n"
@@ -113,8 +116,9 @@ def _render(chosen: list[tuple[int, str]], body_length: int, cap: int) -> str:
     return content[:cap - len(marker)].rstrip() + marker
 
 
-def select(body: str, query: str, cap: int, intro_chars: int = 800) -> tuple[str, bool]:
-    """(선택 본문, 잘림 여부). 잘린 결과는 생략 표식까지 ``cap`` 이하다."""
+def select(body: str, query: str, cap: int, intro_chars: int = 800, evidence_queries: tuple[str, ...] = (),
+           supplemental_cap: int | None = None) -> tuple[str, bool]:
+    """(선택 본문, 잘림 여부). 기본 상한은 cap; 공유 예산은 기존 선택을 유지하며 보충에만 쓴다."""
     if cap <= 0:
         return "", bool(body)
     if len(body) <= cap:
@@ -157,4 +161,60 @@ def select(body: str, query: str, cap: int, intro_chars: int = 800) -> tuple[str
             if projected("") >= cap * 0.8:
                 break
 
-    return _render(list(chosen.items()), len(body), cap), True
+    # 이미 고른 문맥을 교체하지 않는다. 남은 상한 안에서 분석 주장의 원문
+    # 후보 문장만 보충한다. 주장의 진실 여부를 단어 겹침으로 판정하지 않는다.
+    pieces = [((index, 0), paragraph) for index, paragraph in chosen.items()]
+    limit = max(len(_render(pieces, len(body), cap)), supplemental_cap) if evidence_queries and supplemental_cap is not None else cap
+    reserve = max(reserve, len(f"\n\n[… 관련도 낮은 {len(body):,}자 생략: 이 노트는 잘렸다 …]\n"))
+    claim_terms = [terms(value) for value in evidence_queries if isinstance(value, str)]
+    if not claim_terms:
+        return _render(pieces, len(body), cap), True
+
+    # 보충 구간은 인위적인 chunk 경계가 아니라 원문 문단에서 찾는다.
+    # 그래야 chunk 다음에 이어지는 조건 문장도 같은 원문 구간에 들어간다.
+    offsets, cursor = [], 0
+    for paragraph in paras:
+        position = body.find(paragraph, cursor)
+        offsets.append(position)
+        if position >= 0:
+            cursor = position + len(paragraph)
+    occupied = [(offsets[index], offsets[index] + len(value))
+                for index, value in chosen.items() if offsets[index] >= 0]
+    candidates, cursor = [], 0
+    for paragraph in re.split(r"\n\s*\n", body):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        position = body.find(paragraph, cursor)
+        cursor = position + len(paragraph)
+        if "|" in paragraph:
+            continue
+        boundaries = [0] + [match.end() for match in re.finditer(r"(?<=[.!?。])\s+", paragraph)]
+        spans = [(start, end) for start, end in zip(boundaries, boundaries[1:] + [len(paragraph)]) if start < end]
+        for offset, (start, end) in enumerate(spans):
+            sentence = paragraph[start:end].rstrip()
+            sentence_terms = terms(sentence)
+            matching = [query for query in claim_terms if len(sentence_terms & query) >= 2]
+            if not matching:
+                continue
+            left, right = offset, offset
+            while left > 0 and _SUPPLEMENT_CONTEXT.search(paragraph[slice(*spans[left - 1])]):
+                left -= 1
+            while right + 1 < len(spans) and _SUPPLEMENT_CONTEXT.search(paragraph[slice(*spans[right + 1])]):
+                right += 1
+            value = paragraph[spans[left][0]:spans[right][1]].rstrip()
+            first = position + spans[left][0]
+            last = first + len(value)
+            if any(first < old_end and last > old_start for old_start, old_end in occupied):
+                continue
+            score = max(_score(sentence, query) for query in matching)
+            candidates.append((-score, first, last, value))
+    for _, first, last, sentence in sorted(candidates):
+        if any(first < old_end and last > old_start for old_start, old_end in occupied):
+            continue
+        needed = sum(len(value) for _, value in pieces) + len(pieces) * len(_SEPARATOR) + len(sentence) + reserve
+        if needed <= limit:
+            index = max((i for i, position in enumerate(offsets) if 0 <= position <= first), default=0)
+            pieces.append(((index, first + 1), sentence))
+            occupied.append((first, last))
+    return _render(pieces, len(body), limit), True

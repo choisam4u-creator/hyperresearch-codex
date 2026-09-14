@@ -99,10 +99,8 @@ def make_packet(inputs: dict[str, str]) -> dict[str, str]:
     """
     sections = ["# Prepared input packet", "", "The virtual file names below are exact.", ""]
     for name, body in _checked_inputs(inputs):
-        metadata = _record(body)
         sections.extend((
             f"## Virtual file: {name}",
-            f"<!-- utf8_bytes={metadata['bytes']} sha256={metadata['sha256']} -->",
             body,
             f"<!-- End virtual file: {name} -->",
             "",
@@ -160,7 +158,7 @@ def _exact_spans(body: str, selected: str) -> tuple[list[dict[str, int]], int]:
     return spans, unlocated
 
 
-def evidence_packet(body: str, query: str, cap: int) -> dict:
+def evidence_packet(body: str, query: str, cap: int, supplemental_queries: tuple[str, ...] = (), supplemental_cap: int | None = None) -> dict:
     """근거 발췌와 원문 위치를 함께 반환한다.
 
     선택은 ``text_select.select``의 문단·표·인접 조건/예외 보존 규칙을 그대로
@@ -171,7 +169,10 @@ def evidence_packet(body: str, query: str, cap: int) -> dict:
         raise TypeError("근거 본문과 질의는 문자열이어야 합니다")
     if not isinstance(cap, int):
         raise TypeError("근거 상한은 정수여야 합니다")
-    excerpt, truncated = select(body, f"{query}\n{_COUNTER_EVIDENCE_TERMS}", cap)
+    if not all(isinstance(value, str) for value in supplemental_queries):
+        raise TypeError("보충 질의는 문자열 목록이어야 합니다")
+    supplemental_queries = tuple(dict.fromkeys(" ".join(value.split()) for value in supplemental_queries if value.strip()))
+    excerpt, truncated = select(body, f"{query}\n{_COUNTER_EVIDENCE_TERMS}", cap, evidence_queries=supplemental_queries, supplemental_cap=supplemental_cap)
     spans, unlocated = _exact_spans(body, excerpt)
     exact_chars = sum(span["char_end"] - span["char_start"] for span in spans)
     return {
@@ -180,18 +181,22 @@ def evidence_packet(body: str, query: str, cap: int) -> dict:
         "source_chars": len(body),
         "omitted_chars": max(0, len(body) - exact_chars),
         "exact_spans": spans,
+        "supplemental_queries": list(supplemental_queries),
+        "selection_queries_sha256": hashlib.sha256(json.dumps(
+            {"primary": query, "supplemental": supplemental_queries}, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest(),
         "scope": {
             "selection": "text_select_relevance_candidates_v1",
             "positions_are_only_for_exact_source_substrings": True,
             "unlocated_selected_chars": unlocated,
             "semantic_support_or_contradiction_determined": False,
             "omitted_context_is_not_evidence_of_absence": True,
-            "cap_chars": cap,
+            "base_cap_chars": cap,
+            "cap_chars": supplemental_cap if supplemental_queries and supplemental_cap is not None else cap,
         },
     }
 
 
-def claims_evidence_packet(body: str, queries: list[str], cap: int) -> dict:
+def claims_evidence_packet(body: str, queries: list[str], cap: int, supplemental_queries: tuple[str, ...] = (), supplemental_cap: int | None = None) -> dict:
     """여러 주장 질의를 한 발췌 상한 안에서 고르고, 주장별 후보 범위를 남긴다.
 
     각 주장을 따로 잘라 합치면 앞선 주장만 cap을 소진하거나 같은 문단을 여러 번
@@ -208,9 +213,9 @@ def claims_evidence_packet(body: str, queries: list[str], cap: int) -> dict:
         if value and value not in seen:
             normalized.append(value)
             seen.add(value)
-    packet = evidence_packet(body, "\n".join(normalized), cap)
+    packet = evidence_packet(body, "\n".join(normalized), cap, supplemental_queries=supplemental_queries, supplemental_cap=supplemental_cap)
     coverage = []
-    for query in normalized:
+    for kind, query in [("primary", query) for query in normalized] + [("supplemental", query) for query in packet["supplemental_queries"]]:
         query_terms = terms(query)
         present = terms(packet["excerpt"]) & query_terms
         candidate_spans = []
@@ -220,6 +225,7 @@ def claims_evidence_packet(body: str, queries: list[str], cap: int) -> dict:
                 candidate_spans.append(dict(span))
         coverage.append({
             "query": query,
+            "query_kind": kind,
             "query_terms": sorted(query_terms),
             "selected_query_terms": sorted(present),
             "missing_query_terms": sorted(query_terms - present),
