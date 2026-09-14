@@ -167,10 +167,20 @@ def status(run_id: str | None) -> None:
         secs = sum(u.get("seconds", 0) for u in m["usage"])
         from hprc.config import load
         from hprc.pipeline import estimate_cost
-        cost = estimate_cost(m["usage"], load(ROOT)["budget"])
-        unknown = (f" · 미측정 {cost['unknown_calls']}회 · 요금 상한 미확정 (측정분 ≈${cost['usd_upper']})"
-                   if cost["unknown_calls"] else f" · 요금 상한 ≈${cost['usd_upper']}")
+        snapshot = m.get("effective_config_snapshot")
+        if not isinstance(snapshot, dict) or not isinstance(snapshot.get("budget"), dict):
+            snapshot = m.get("config_snapshot")
+        if isinstance(snapshot, dict) and isinstance(snapshot.get("budget"), dict):
+            pricing = snapshot["budget"]
+            pricing_note = "실행에 저장된 설정 단가"
+        else:
+            pricing = load(ROOT)["budget"]
+            pricing_note = "과거 단가 기록 없음·현재 설정으로 추정"
+        cost = estimate_cost(m["usage"], pricing)
+        unknown = (f" · 미측정 {cost['unknown_calls']}회 · 설정 단가 추정 미확정 (측정분 ≈${cost['usd_upper']})"
+                   if cost["unknown_calls"] else f" · 설정 단가 추정 ≈${cost['usd_upper']}")
         print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")
+        print("   " + pricing_note + " · 실제 청구액이나 계정 잔량이 아닙니다")
         guidance_path = run_dir / "cost_guidance.json"
         if guidance_path.is_file():
             from hprc.cost_guidance import render_cost_guidance

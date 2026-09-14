@@ -17,3 +17,13 @@ class PolicyExperimentTests(unittest.TestCase):
         with self.assertRaises(ValueError):compare_policy(a,b,['verification.semantic'])
     def test_unknown_cost_has_no_complete_delta(self):
         a,b=self.pair();b['unknowncalls']=1;self.assertIsNone(compare_policy(a,b,['verification.semantic'])['total_token_delta'])
+
+    def test_unverified_quality_is_unknown_not_a_failure(self):
+        a,b=self.pair();b['quality_qualified']=None
+        self.assertIsNone(compare_policy(a,b,['verification.semantic'])['quality_preserved'])
+        a['quality_qualified']=False
+        self.assertFalse(compare_policy(a,b,['verification.semantic'])['quality_preserved'])
+
+    def test_missing_usage_completeness_does_not_produce_a_token_delta(self):
+        a,b=self.pair();del b['unknowncalls']
+        self.assertIsNone(compare_policy(a,b,['verification.semantic'])['total_token_delta'])

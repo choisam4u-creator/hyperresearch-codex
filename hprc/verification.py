@@ -16,8 +16,16 @@ _DATE_PATTERNS = (
     re.compile(r"(?<!\d)(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일"),
     re.compile(rf"\b({_MONTH_PATTERN})\s+(\d{{1,2}})(?:st|nd|rd|th)?,?\s+(\d{{4}})\b", re.IGNORECASE),
 )
+_KOREAN_YEAR_RANGE = re.compile(
+    r"(?<!\d)(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})(?:\s*일)?\s*(?:~|[-–—]|부터)\s*(\d{1,2})\s*일(?:까지)?"
+)
+# 날짜 표기는 수치 근거 검사의 대상이 아니다. 다만 연도가 없거나 달력상
+# 해석할 수 없는 표기는 _date_values에서 확정값으로 만들지 않아 별도 검토를 남긴다.
+_KOREAN_DATE_LIKE = re.compile(
+    r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?:\s*일)?(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
+)
 _UNITS = ("milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
-          "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "년", "월", "일", "명", "건", "개", "배",
+          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "년", "월", "일", "명", "건", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 _QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
                        "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
@@ -35,6 +43,8 @@ _UNIT_SCALE = {
     "hour": ("time", Decimal("3600")), "hours": ("time", Decimal("3600")), "시간": ("time", Decimal("3600")),
     "m": ("length", Decimal("1")), "km": ("length", Decimal("1000")),
     "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")),
+    "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
+    "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
     "%": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
     "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
@@ -63,8 +73,11 @@ def _quote_text(value: str) -> str:
 
 def _date_values(text: str) -> list[dict]:
     values = []
+    ranges = list(_KOREAN_YEAR_RANGE.finditer(text))
     for pattern_index, pattern in enumerate(_DATE_PATTERNS):
         for match in pattern.finditer(text):
+            if any(r.start() <= match.start() < r.end() for r in ranges):
+                continue
             try:
                 if pattern_index == 2:
                     year, month, day = int(match.group(3)), _MONTHS[match.group(1).lower()], int(match.group(2))
@@ -74,7 +87,26 @@ def _date_values(text: str) -> list[dict]:
             except (ValueError, KeyError):
                 continue
             values.append({"raw": match.group(0), "value": value, "start": match.start(), "end": match.end()})
+    for match in ranges:
+        try:
+            year, month, first_day, last_day = map(int, match.groups())
+            if first_day > last_day:
+                continue
+            first = dt.date(year, month, first_day).isoformat()
+            last = dt.date(year, month, last_day).isoformat()
+        except ValueError:
+            continue
+        values.extend((
+            {"raw": match.group(0), "value": first, "start": match.start(), "end": match.end()},
+            {"raw": match.group(0), "value": last, "start": match.start(), "end": match.end()},
+        ))
     return sorted(values, key=lambda item: item["start"])
+
+
+def _date_like_spans(text: str) -> list[dict]:
+    spans = {(match.start(), match.end(), match.group(0)) for pattern in (*_DATE_PATTERNS, _KOREAN_DATE_LIKE)
+             for match in pattern.finditer(text)}
+    return [{"raw": raw, "start": start, "end": end} for start, end, raw in sorted(spans)]
 
 
 def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
@@ -93,8 +125,13 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
             continue
         unit = split.group(2).strip().lower()
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
-        values.append({"raw": raw, "value": number * scale, "dimension": dimension,
-                       "start": match.start(), "end": match.end()})
+        item = {"raw": raw, "value": number * scale, "dimension": dimension,
+                "start": match.start(), "end": match.end()}
+        # mW/MW는 대소문자에 따라 배율이 달라 지원하지 않는다.
+        # 공백 유무와 관계없이 추출하되 근거 일치에는 사용하지 않는다.
+        if unit in {"mw", "mwh"}:
+            item["unsupported_unit"] = split.group(2).strip()
+        values.append(item)
     return values
 
 
@@ -162,20 +199,43 @@ def _context_compatible(claim_text: str, claim: dict, source_text: str, source: 
 def _check_structured_values(claim: dict, cited_text: str, issues: list[dict]) -> None:
     claim_dates = _date_values(claim["sentence"])
     source_dates = _date_values(cited_text)
+    claim_date_spans = _date_like_spans(claim["sentence"])
+    source_date_spans = _date_like_spans(cited_text)
+    reported_date_spans = set()
     for value in claim_dates:
+        span_key = (value["start"], value["end"], value["raw"])
         matches = [candidate for candidate in source_dates if candidate["value"] == value["value"]]
         if not matches:
-            issues.append(_issue("date_evidence_unclear", "medium", claim["line"],
-                                 f"날짜 {value['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
+            if span_key not in reported_date_spans:
+                issues.append(_issue("date_evidence_unclear", "medium", claim["line"],
+                                     f"날짜 {value['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
+                reported_date_spans.add(span_key)
         elif not any(_context_compatible(claim["sentence"], value, cited_text, candidate) for candidate in matches):
-            issues.append(_issue("date_context_unclear", "medium", claim["line"],
-                                 f"날짜 {value['raw']}가 원문과 다른 문맥일 수 있어 검토가 필요합니다."))
+            if span_key not in reported_date_spans:
+                issues.append(_issue("date_context_unclear", "medium", claim["line"],
+                                     f"날짜 {value['raw']}가 원문과 다른 문맥일 수 있어 검토가 필요합니다."))
+                reported_date_spans.add(span_key)
 
-    claim_quantities = _quantity_values(claim["sentence"], claim_dates)
-    source_quantities = _quantity_values(cited_text, source_dates)
+    # 연도가 생략된 월·일 및 잘못된 달력 날짜는 수치로 통과시키지 않는다.
+    # _date_values가 확정한 값으로 덮이지 않은 span은 보수적으로 날짜 검토를 남긴다.
+    for span in claim_date_spans:
+        span_key = (span["start"], span["end"], span["raw"])
+        if (span_key not in reported_date_spans
+                and not any(value["start"] <= span["start"] and span["end"] <= value["end"] for value in claim_dates)):
+            issues.append(_issue("date_evidence_unclear", "medium", claim["line"],
+                                 f"날짜 {span['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
+            reported_date_spans.add(span_key)
+
+    claim_quantities = _quantity_values(claim["sentence"], claim_date_spans)
+    source_quantities = _quantity_values(cited_text, source_date_spans)
     for value in claim_quantities:
+        if value.get("unsupported_unit"):
+            issues.append(_issue("numeric_evidence_unclear", "medium", claim["line"],
+                                 f"수치·단위 {value['raw']} {value['unsupported_unit']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
+            continue
         matches = [candidate for candidate in source_quantities
-                   if candidate["dimension"] == value["dimension"] and candidate["value"] == value["value"]]
+                   if not candidate.get("unsupported_unit")
+                   and candidate["dimension"] == value["dimension"] and candidate["value"] == value["value"]]
         if not matches:
             issues.append(_issue("numeric_evidence_unclear", "medium", claim["line"],
                                  f"수치·단위 {value['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))

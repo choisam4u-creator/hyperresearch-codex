@@ -92,6 +92,58 @@ class VerificationTests(unittest.TestCase):
                             {"selected_count": 0, "checked_count": 0}, report, [], [])
         self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in bad["issues"]))
 
+    def test_korean_date_ranges_are_not_treated_as_independent_quantities(self):
+        report = "2026년 7월 22~24일과 8월 6~8일에는 자동 명령을 중단했다. [S1]\n"
+        source = "7월 22일부터 24일, 8월 6일부터 8일에는 자동 명령을 중단했다."
+        result = verify_report(report, {"S1": source}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        numeric = [issue for issue in result["issues"] if issue["kind"].startswith("numeric_")]
+        self.assertEqual([], numeric)
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+
+    def test_invalid_korean_date_range_stays_under_date_review(self):
+        report = "2026년 2월 30~31일에 점검했다. [S1]\n"
+        result = verify_report(report, {"S1": "점검 기록"}, [], {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_reversed_date_ranges_cannot_match_valid_source_ranges(self):
+        for date in ("2026년 7월 24~22일", "2026년 7월 24일부터 22일"):
+            report = date + "에 점검했다. [S1]\n"
+            result = verify_report(report, {"S1": "2026년 7월 22~24일에 점검했다."}, [],
+                                   {"selected_count": 0, "checked_count": 0}, report, [], [])
+            self.assertTrue(any(issue["kind"] == "date_evidence_unclear" for issue in result["issues"]))
+            self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+
+    def test_unknown_source_power_unit_cannot_support_unitless_value(self):
+        report = "Measured value was 12. [S1]\n"
+        result = verify_report(report, {"S1": "Measured value was 12 MW."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in result["issues"]))
+
+    def test_power_and_energy_units_are_distinct_but_scale_within_dimension(self):
+        power = verify_report("Measured power was 12 kW. [S1]\n", {"S1": "Measured power was 12000 W."}, [],
+                              {"selected_count": 0, "checked_count": 0}, "Measured power was 12 kW. [S1]\n", [], [])
+        energy = verify_report("Measured energy was 12 kWh. [S1]\n", {"S1": "Measured energy was 12000 Wh."}, [],
+                               {"selected_count": 0, "checked_count": 0}, "Measured energy was 12 kWh. [S1]\n", [], [])
+        mismatch = verify_report("Measured energy was 12 kW. [S1]\n", {"S1": "Measured energy was 12 kWh."}, [],
+                                 {"selected_count": 0, "checked_count": 0}, "Measured energy was 12 kW. [S1]\n", [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in power["issues"]))
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in energy["issues"]))
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in mismatch["issues"]))
+
+    def test_unspaced_unsupported_power_units_remain_review_required(self):
+        for unit in ("mW", "MW", "mWh", "MWh"):
+            report = f"Measured power was 12{unit}. [S1]\n"
+            result = verify_report(report, {"S1": f"Measured power was 12{unit}."}, [],
+                                   {"selected_count": 0, "checked_count": 0}, report, [], [])
+            self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in result["issues"]))
+
+    def test_unsupported_milli_or_mega_watt_units_remain_review_required(self):
+        report = "Measured power was 12 mW. [S1]\n"
+        result = verify_report(report, {"S1": "Measured power was 12 MW."}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in result["issues"]))
+
     def test_quote_normalization_accepts_unicode_apostrophe_and_space_variants(self):
         quote = "The model’s result is source backed"
         report = f'“{quote}” [S1]\n'

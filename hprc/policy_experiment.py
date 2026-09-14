@@ -30,7 +30,9 @@ def compare_policy(left, right, changed_paths):
         if values[0] == values[1]: raise ValueError('선언한 설정이 바뀌지 않았습니다')
         changes[path]={'baseline':values[0],'candidate':values[1]}
     if configs[0] != configs[1]: raise ValueError('허용하지 않은 출력·예산·기타 설정도 바뀌었습니다')
+    qualities = (left.get('quality_qualified'), right.get('quality_qualified'))
+    preserved = False if any(q is False for q in qualities) else True if all(q is True for q in qualities) else None
     return {'case_id':left['case_id'],'mode':'explicit_policy_toggle','changes':changes,
-            'total_token_delta':right['reported_total_tokens']-left['reported_total_tokens'] if not left.get('unknowncalls') and not right.get('unknowncalls') else None,
-            'quality_preserved': left.get('quality_qualified') is True and right.get('quality_qualified') is True,
+            'total_token_delta':right['reported_total_tokens']-left['reported_total_tokens'] if left.get('unknowncalls') == 0 and right.get('unknowncalls') == 0 else None,
+            'quality_preserved': preserved,
             'scope':'selected_rubric_not_full_factual_accuracy'}
