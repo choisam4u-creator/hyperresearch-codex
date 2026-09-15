@@ -61,10 +61,10 @@ def mock_backend(step: str, prompt: str, inputs: dict) -> dict:
             idx = next((i for i, l in enumerate(lines) if l.startswith(("## 근거", "## Evidence"))), -1) + 1
             quote = lines[idx] if 0 < idx < len(lines) else ""
             return {"findings": [{"id": "F1", "quote": quote, "problem": "모의 지적: 반대 근거 없음", "suggested_fix": quote + " 다만 반대 사례도 있다.",
-                                  "severity": "medium", "source_ids": [sorted(notes)[0]] if notes else []}]}
+                                  "severity": "medium", "evidence_status": "actionable", "source_ids": [sorted(notes)[0]] if notes else []}]}
         if step == "critic_instruction":
             return {"findings": [{"id": "F9", "quote": "이 문장은 초안에 없습니다", "problem": "지어낸 비평(게이트가 버려야 함)",
-                                  "suggested_fix": "", "severity": "low", "source_ids": []}]}
+                                  "suggested_fix": "", "severity": "low", "evidence_status": "actionable", "source_ids": []}]}
         return {"findings": []}
     if step == "patcher":
         findings = json.loads(inputs["findings.json"])["findings"]

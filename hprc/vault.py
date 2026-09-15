@@ -84,17 +84,25 @@ def sync(root: Path) -> int:
     """마크다운 전체를 다시 읽어 FTS5 색인을 새로 만든다. 색인은 지워도 된다."""
     notes_dir = root / "research" / "notes"
     db = sqlite3.connect(root / "research" / "index.sqlite")
-    db.execute("DROP TABLE IF EXISTS notes")
-    db.execute("CREATE VIRTUAL TABLE notes USING fts5(id, title, url, domain, path, body)")
-    count = 0
-    for path in sorted(notes_dir.glob("*.md")) if notes_dir.is_dir() else []:
-        front = read_front(path)
-        db.execute("INSERT INTO notes VALUES (?,?,?,?,?,?)",
-                   (front.get("id", ""), front.get("title", ""), front.get("url", ""), front.get("domain", ""), str(path), note_body(path)))
-        count += 1
-    db.commit()
-    db.close()
-    return count
+    try:
+        # 여러 run이 같은 vault를 갱신해도 DROP/CREATE 사이를 다른 writer가
+        # 관찰하지 않도록 전체 재구축을 하나의 쓰기 트랜잭션으로 직렬화한다.
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("DROP TABLE IF EXISTS notes")
+        db.execute("CREATE VIRTUAL TABLE notes USING fts5(id, title, url, domain, path, body)")
+        count = 0
+        for path in sorted(notes_dir.glob("*.md")) if notes_dir.is_dir() else []:
+            front = read_front(path)
+            db.execute("INSERT INTO notes VALUES (?,?,?,?,?,?)",
+                       (front.get("id", ""), front.get("title", ""), front.get("url", ""), front.get("domain", ""), str(path), note_body(path)))
+            count += 1
+        db.commit()
+        return count
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
 def search(root: Path, query: str, limit: int = 10) -> list[dict]:

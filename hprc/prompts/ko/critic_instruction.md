@@ -6,3 +6,5 @@
 최종 답은 _schema.json 형식의 JSON 하나만.
 
 첫 줄의 "# 질문: " 또는 "# Question: " 접두사는 허용된 형식이다. 뒤에 원 질문이 그대로 있으면 접두사를 제거하라고 지적하지 마라. deterministic_checks.json이 있으면 형식 검사는 그 결과를 참고하고, 질문의 의미상 요구 충족 여부를 우선 검토하라.
+
+지시·형식 지적의 evidence_status는 actionable로 반환하세요.

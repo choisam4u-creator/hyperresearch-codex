@@ -22,7 +22,8 @@ from .config import load
 from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
-from .gates import LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist, judgment_sentences, report_lint
+from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
+                    defer_excerpt_absence_findings, judgment_sentences, report_lint)
 from .manifest import Manifest, atomic_write
 from .locking import LockError, run_lock
 from .run_paths import run_directory
@@ -813,7 +814,8 @@ class Run:
         cache_key = artifact_reuse.make_analysis_key({**context, 'source_hashes': self.source_hashes()}, inputs)
         result, cached = None, None
         cacheable = not self.m.data.get('update_from')
-        if cacheable and self.cfg.get('efficiency', {}).get('reuse_analysis'):
+        reuse_analysis = cacheable and self.cfg.get('efficiency', {}).get('reuse_analysis')
+        if reuse_analysis:
             cached = artifact_reuse.load(self.root, cache_key)
             if cached and self.valid_analysis(cached.get('result')):
                 result = cached['result']
@@ -822,41 +824,67 @@ class Run:
                 self.m.save()
             elif cached:
                 cached = None
-        if result is None and self.m.data.get('update_from'):
-            from .research_updates import plan_incremental_analysis
-            previous = run_directory(self.root, self.m.data['update_from'])
-            update = plan_incremental_analysis(previous, self.sources, context)
-            atomic_write(self.dir / 'update_plan.json', json.dumps(update, ensure_ascii=False, indent=2))
-            if update['mode'] == 'unchanged':
-                prior = json.loads((previous / 'claims.json').read_text(encoding='utf-8'))
-                candidate = {**prior, 'claims': update['retained_claims']}
-                if self.valid_analysis(candidate):
-                    result = candidate
-                    self.m.data.setdefault('reuse_events', []).append({'step':'analyst','source_run_id':self.m.data['update_from'], 'reason':'unchanged_verified_sources_and_context','model_call_skipped':True,'token_savings':None})
-                    self.m.save()
-            elif update['mode'] == 'incremental':
-                affected = set(update['analysis_source_ids'])
-                retained = update['retained_claims']
-                delta_inputs = {'question.txt':self.prompt, '_independence.md':self.independence_md(),
-                                'retained_claims.json':json.dumps(retained, ensure_ascii=False),
-                                **self.notes(affected)}
-                instruction = _prompt('analyst', self.lang) + '\nUPDATE CONTRACT: retained_claims.json contains prior model assertions from unchanged sources, not verified truth. Re-evaluate contradictions and gaps across retained assertions and new notes. Return the complete claims inventory, including still-relevant retained claims. New or changed assertions must cite supplied note files. Preserve text and source IDs when retaining assertions whose notes are absent. Do not invent absent evidence. You may drop invalidated assertions. Claim IDs must be unique.'
-                candidate = self.call('analyst_update', instruction, schemas.ANALYST, delta_inputs, 'analyst')
-                if not self.valid_analysis(candidate): raise Blocked('invalid incremental analysis')
-                retained_keys = {(c['text'], tuple(sorted(c['sources']))) for c in retained}
-                if any((c['text'], tuple(sorted(c['sources']))) not in retained_keys and (not c['sources'] or not set(c['sources']) <= affected) for c in candidate['claims']):
-                    raise Blocked('증분 분석이 제공하지 않은 원문의 새 주장을 만들었습니다. 전체 분석으로 다시 실행하세요.')
-                result = candidate
-        if result is None:
-            result = self.call("analyst", _prompt("analyst", self.lang), schemas.ANALYST, inputs, "analyst")
-        if not self.valid_analysis(result):
-            raise Blocked('분석 산출물 구조·출처·주장 연결이 유효하지 않습니다')
-        if cacheable and self.cfg.get('efficiency', {}).get('reuse_analysis') and not cached:
+        singleflight = None
+        if reuse_analysis and result is None:
             try:
-                artifact_reuse.save(self.root, cache_key, result, {'source_run_id': self.run_id, 'backend': os.environ.get('HPR_BACKEND', 'codex')})
+                singleflight = artifact_reuse.analysis_singleflight(
+                    self.root, cache_key,
+                    timeout=float(self.cfg.get('codex', {}).get('timeout', 900)) + 30.0,
+                )
+                singleflight.__enter__()
             except (OSError, ValueError, TypeError) as error:
-                self.m.data.setdefault('reuse_events', []).append({'step':'analyst','cache_write_skipped':type(error).__name__,'model_call_skipped':False})
-                self.m.save()
+                raise Blocked(f"분석 캐시 single-flight 잠금 실패: {error}") from error
+        try:
+            if singleflight is not None:
+                cached = artifact_reuse.load(self.root, cache_key)
+                if cached and self.valid_analysis(cached.get('result')):
+                    result = cached['result']
+                    self.m.data.setdefault('reuse_events', []).append({
+                        'step': 'analyst', 'key': cache_key,
+                        'provenance': cached.get('provenance', {}), 'model_call_skipped': True,
+                        'token_savings': None, 'singleflight_wait': True,
+                    })
+                    self.m.save()
+                elif cached:
+                    cached = None
+            if result is None and self.m.data.get('update_from'):
+                from .research_updates import plan_incremental_analysis
+                previous = run_directory(self.root, self.m.data['update_from'])
+                update = plan_incremental_analysis(previous, self.sources, context)
+                atomic_write(self.dir / 'update_plan.json', json.dumps(update, ensure_ascii=False, indent=2))
+                if update['mode'] == 'unchanged':
+                    prior = json.loads((previous / 'claims.json').read_text(encoding='utf-8'))
+                    candidate = {**prior, 'claims': update['retained_claims']}
+                    if self.valid_analysis(candidate):
+                        result = candidate
+                        self.m.data.setdefault('reuse_events', []).append({'step':'analyst','source_run_id':self.m.data['update_from'], 'reason':'unchanged_verified_sources_and_context','model_call_skipped':True,'token_savings':None})
+                        self.m.save()
+                elif update['mode'] == 'incremental':
+                    affected = set(update['analysis_source_ids'])
+                    retained = update['retained_claims']
+                    delta_inputs = {'question.txt':self.prompt, '_independence.md':self.independence_md(),
+                                    'retained_claims.json':json.dumps(retained, ensure_ascii=False),
+                                    **self.notes(affected)}
+                    instruction = _prompt('analyst', self.lang) + '\nUPDATE CONTRACT: retained_claims.json contains prior model assertions from unchanged sources, not verified truth. Re-evaluate contradictions and gaps across retained assertions and new notes. Return the complete claims inventory, including still-relevant retained claims. New or changed assertions must cite supplied note files. Preserve text and source IDs when retaining assertions whose notes are absent. Do not invent absent evidence. You may drop invalidated assertions. Claim IDs must be unique.'
+                    candidate = self.call('analyst_update', instruction, schemas.ANALYST, delta_inputs, 'analyst')
+                    if not self.valid_analysis(candidate): raise Blocked('invalid incremental analysis')
+                    retained_keys = {(c['text'], tuple(sorted(c['sources']))) for c in retained}
+                    if any((c['text'], tuple(sorted(c['sources']))) not in retained_keys and (not c['sources'] or not set(c['sources']) <= affected) for c in candidate['claims']):
+                        raise Blocked('증분 분석이 제공하지 않은 원문의 새 주장을 만들었습니다. 전체 분석으로 다시 실행하세요.')
+                    result = candidate
+            if result is None:
+                result = self.call("analyst", _prompt("analyst", self.lang), schemas.ANALYST, inputs, "analyst")
+            if not self.valid_analysis(result):
+                raise Blocked('분석 산출물 구조·출처·주장 연결이 유효하지 않습니다')
+            if reuse_analysis and not cached:
+                try:
+                    artifact_reuse.save(self.root, cache_key, result, {'source_run_id': self.run_id, 'backend': os.environ.get('HPR_BACKEND', 'codex')})
+                except (OSError, ValueError, TypeError) as error:
+                    self.m.data.setdefault('reuse_events', []).append({'step':'analyst','cache_write_skipped':type(error).__name__,'model_call_skipped':False})
+                    self.m.save()
+        finally:
+            if singleflight is not None:
+                singleflight.__exit__(*sys.exc_info())
         atomic_write(self.dir / "claims.json", json.dumps(result, ensure_ascii=False, indent=2))
         used = sorted({s for c in result["claims"] for s in c["sources"]}, key=lambda x: int(x[1:]))
         self.relevant = set(used) if used else set(self.known)
@@ -984,14 +1012,18 @@ class Run:
         dropped += filtered["dropped"]
         for i, f in enumerate(findings, 1):
             f["id"] = f"F{i}"
-        atomic_write(self.dir / "findings.json", json.dumps({"findings": findings, "dropped": dropped, "deterministic": filtered["deterministic"]}, ensure_ascii=False, indent=2))
-        self.end("critics", "ok", f"지적 {len(findings)}개, 인용 불일치로 버림 {len(dropped)}개")
+        _, deferred = defer_excerpt_absence_findings(findings)
+        findings = [next((d for d in deferred if d["id"] == f["id"]), f) for f in findings]
+        atomic_write(self.dir / "findings.json", json.dumps({"findings": findings, "dropped": dropped,
+                     "deferred": deferred, "deterministic": filtered["deterministic"]}, ensure_ascii=False, indent=2))
+        self.end("critics", "ok", f"지적 {len(findings)}개, 패치 보류 {len(deferred)}개, 인용 불일치로 버림 {len(dropped)}개")
 
     def _apply_hunk_step(self, name, prompt_name, src_file, dst_file, role, ratio, extra):
         text = (self.dir / src_file).read_text(encoding="utf-8")
         res = self.call(name, _prompt(prompt_name, self.lang, hunk_max=self.G["hunk_max_chars"]), schemas.PATCHER, {src_file: text, **extra}, role)
         audit = {"stage": name, "source_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
-                 "scope": "numeric_removal_review_signals_not_factual_judgments", "changes": []}
+                 "scope": "numeric_and_qualifier_removal_review_signals_not_factual_judgments",
+                 "changes": [], "qualifier_changes": []}
         try:
             applied = []
             new, rejected = apply_hunks(text, res["hunks"], ratio, self.G["hunk_max_chars"],
@@ -1005,8 +1037,9 @@ class Run:
                 raise GateError(f"{name} 이 판단 표시를 지움")
             new, _ = clean_internal_cites(new, self.lang)
             atomic_write(self.dir / dst_file, new)
-            from .patch_audit import numeric_removals
-            audit.update(changes=numeric_removals(applied), result_sha256=hashlib.sha256(new.encode("utf-8")).hexdigest())
+            from .patch_audit import numeric_removals, qualifier_removals
+            audit.update(changes=numeric_removals(applied), qualifier_changes=qualifier_removals(applied, self.lang),
+                         result_sha256=hashlib.sha256(new.encode("utf-8")).hexdigest())
             atomic_write(self.dir / f"{name}_numeric_audit.json", json.dumps(audit, ensure_ascii=False, indent=2))
             if name == "patcher":
                 resolved = sorted({fid for h in applied if h["find"] != h["replace"]
@@ -1025,13 +1058,14 @@ class Run:
         if not self.begin("patch"):
             return
         findings = json.loads((self.dir / "findings.json").read_text(encoding="utf-8"))["findings"]
-        if not findings:
+        actionable = [f for f in findings if f.get("patch_action") != "deferred"]
+        if not actionable:
             atomic_write(self.dir / "report.md", (self.dir / "draft.md").read_text(encoding="utf-8"))
-            self.end("patch", "ok", "지적 없음, 초안 유지"); return
-        ids = {s for f in findings for s in f.get("source_ids", [])} & self.known or self.relevant
+            self.end("patch", "ok", "적용 가능한 지적 없음, 초안 유지"); return
+        ids = {s for f in actionable for s in f.get("source_ids", [])} & self.known or self.relevant
         note = self._apply_hunk_step("patcher", "patcher", "draft.md", "report.md", "patcher", self.G["patch_max_ratio"],
-                                     {"findings.json": json.dumps({"findings": findings}, ensure_ascii=False), "_digest.md": self.digest(),
-                                      **self.excerpts(ids, "\n".join(f["problem"] + " " + f.get("suggested_fix", "") for f in findings))})
+                                     {"findings.json": json.dumps({"findings": actionable}, ensure_ascii=False), "_digest.md": self.digest(),
+                                      **self.excerpts(ids, "\n".join(f["problem"] + " " + f.get("suggested_fix", "") for f in actionable))})
         self.end("patch", "ok", note)
 
     def evidence_sources(self):
@@ -1204,6 +1238,17 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         quality = verify_report(report, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, checks, sampling,
                                 snapshot_path.read_text(encoding="utf-8") if snapshot_path.exists() else None,
                                 findings, [f["id"] for f in findings if f["id"] not in resolved])
+        for finding in findings:
+            if finding.get("patch_action") != "deferred":
+                continue
+            quality["issues"].append({
+                "kind": "deferred_finding_review", "severity": finding.get("severity", "medium"), "line": None,
+                "finding_id": finding.get("id"), "quote": finding.get("quote", ""),
+                "source_ids": finding.get("source_ids", []),
+                "reason": finding.get("deferral_reason", "excerpt_absence_is_not_source_absence"),
+                "message": "발췌 부재만으로 자동 수정하지 않은 비평 지적입니다. 원문 근거와 수정 필요성을 검토하세요.",
+            })
+            quality["status"] = "review_required"
         for stage in ("patcher", "polish"):
             audit_path = self.dir / f"{stage}_numeric_audit.json"
             if audit_path.exists():
@@ -1212,6 +1257,12 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
                     quality["issues"].append({"kind": "numeric_removal_in_edit", "severity": "medium", "line": None,
                                               "stage": stage, "audit_file": audit_path.name,
                                               "message": "수정 중 숫자가 삭제·교체됐습니다. 올바른 정정인지 조건 누락인지 검토하세요."})
+                    quality["status"] = "review_required"
+                if audit.get("qualifier_changes"):
+                    quality["issues"].append({"kind": "qualifier_removal_in_edit", "severity": "medium", "line": None,
+                                              "stage": stage, "audit_file": audit_path.name,
+                                              "changes": audit["qualifier_changes"],
+                                              "message": "수정 중 제외·조건·부정 표지가 줄었습니다. 올바른 정정인지 한정 손실인지 검토하세요."})
                     quality["status"] = "review_required"
         evidence_sources = self.evidence_sources()
         record = None

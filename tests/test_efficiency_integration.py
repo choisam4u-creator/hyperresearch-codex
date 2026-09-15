@@ -94,6 +94,24 @@ class EfficiencyIntegrationTests(unittest.TestCase):
         self.assertTrue(any(row['kind'] == 'numeric_removal_in_edit' for row in quality['issues']))
         self.assertFalse(any('audit' in row['step'] for row in self.data('numeric-review')['usage']))
 
+    def test_qualifier_edit_signal_reaches_final_quality_with_before_after(self):
+        actual = pipeline.Run.step_patch
+        def audited(run):
+            actual(run)
+            (run.dir / 'patcher_numeric_audit.json').write_text(json.dumps({
+                'changes': [], 'qualifier_changes': [{
+                    'finding_ids': ['F2'], 'removed_qualifiers': {'condition': ['only']},
+                    'before': 'Only if approved.', 'after': 'Approved.'
+                }]
+            }), encoding='utf-8')
+        with patch.object(pipeline.Run, 'step_patch', audited):
+            out = self.run_case('qualifier-review')
+        quality = json.loads((out / 'quality.json').read_text(encoding='utf-8'))
+        issue = next(row for row in quality['issues'] if row['kind'] == 'qualifier_removal_in_edit')
+        self.assertEqual('review_required', quality['status'])
+        self.assertEqual(('Only if approved.', 'Approved.'),
+                         (issue['changes'][0]['before'], issue['changes'][0]['after']))
+
     def test_inline_inputs_reach_writer_and_critics_via_prompt_stdin_without_input_files(self):
         actual=pipeline.run_step;seen=[]
         def recording(name,prompt,schema,inputs,*args,**kwargs):

@@ -1,5 +1,13 @@
 """새 모델 호출 없이 검토 진입점을 만든다. 원 보고서의 결론을 새로 추론하지 않는다."""
+import html
 import re
+
+
+def _review_quote(value, limit=300):
+    value = str(value or '')
+    if len(value) > limit:
+        value = value[:limit] + '…'
+    return '<br>'.join(html.escape(line) for line in value.splitlines())
 
 
 def render_brief(report, quality, usage, lang='ko', report_format='brief'):
@@ -15,7 +23,25 @@ def render_brief(report, quality, usage, lang='ko', report_format='brief'):
     rows = [title, '', f"**{quality['status']}** · {report_format}", '',
             '## 보고서 발췌' if ko else '## Report excerpt', '', excerpt, '',
             '## 확인할 항목' if ko else '## Review items', '']
-    rows += [f"- {i['kind']}: {i['message']}" for i in quality.get('issues', [])[:12]]
+    # 보류·수정 손실의 직접 검토 정보는 일반 경고의 표시 상한에 가리지 않는다.
+    issues = quality.get('issues', [])
+    detailed_kinds = {'deferred_finding_review', 'qualifier_removal_in_edit'}
+    displayed = [issue for index, issue in enumerate(issues)
+                 if index < 12 or issue.get('kind') in detailed_kinds]
+    for issue in displayed:
+        rows.append(f"- {issue['kind']}: {issue['message']}")
+        if issue.get('kind') == 'qualifier_removal_in_edit':
+            for change in issue.get('changes', [])[:3]:
+                ids = ', '.join(change.get('finding_ids', [])) or ('없음' if ko else 'none')
+                rows.append(f"  - finding: {ids}")
+                rows.append(f"    - before: {_review_quote(change.get('before'))}")
+                rows.append(f"    - after: {_review_quote(change.get('after'))}")
+            rows.append(f"  - {'전체 기록' if ko else 'Full record'}: {issue.get('audit_file', '')}")
+        if issue.get('kind') == 'deferred_finding_review':
+            ids = ', '.join(issue.get('source_ids', [])) or ('없음' if ko else 'none')
+            rows.append(f"  - finding: {issue.get('finding_id', '')} · sources: {ids}")
+            rows.append(f"    - quote: {_review_quote(issue.get('quote'))}")
+            rows.append(f"    - reason: {html.escape(str(issue.get('reason', '')))}")
     if not quality.get('issues'):
         rows += ['- 자동 검사에서 추가 신호 없음. 미검증 범위는 상세 기록 참조.' if ko else '- No additional automatic flags; see detailed verification scope.']
     if not usage.get('complete', usage.get('unknown_calls', 0) == 0):

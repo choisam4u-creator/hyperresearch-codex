@@ -1,5 +1,7 @@
 # hyperresearch-codex
 
+[Latest maintenance](docs/INTERNAL-POLISH-20260916.md): qualifier-loss review signals, concurrent analysis reuse, a no-model preview and manual feedback.
+
 [기존 데이터 기반 후속 보완](docs/EXISTING-DATA-REPAIRS-20260915.md): 숫자 조건 손실 감사와 불필요한 재분석 방지를 추가했습니다. 새 연구·평가 호출은 하지 않았습니다.
 
 입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
@@ -11,7 +13,7 @@ A Codex-only research pipeline that turns one prompt into a **sourced, adversari
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.
 
-**Status:** beta 0.3.1. 10 real runs on `gpt-6-astra` (4 full, 6 light), plus a mock test suite covering failure paths. The test count may change as the suite evolves; run the command below for the current count. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
+**Status:** beta 0.3.1, with subsequent maintenance commits. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies are linked below and have separate scopes. A mock test suite covers failure paths. The test count may change as the suite evolves; run the command below for the current count. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
 
 ## Three rules
 
@@ -45,6 +47,12 @@ New source notes use immutable snapshots with permanent IDs; each run keeps its 
 - Python 3.11+ with `httpx` and `pypdf` (installed by `pip install`). SQLite with FTS5 (standard on macOS and most Linux builds).
 - macOS is the measured install and execution environment. Linux is covered by CI install, help, and mock checks only. Windows 3.12 passed installation, help, locking, mock run/resume and wheel smoke in [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191) (`PYTHONUTF8=1`). Four POSIX shell fixtures are skipped on Windows; actual Codex research remains unverified.
 
+## Try the format without model calls
+
+After installation, `hpr demo` prints a synthetic report/review preview. It does not require Codex login, access the network, or perform research. It demonstrates the output format; it is not a quality benchmark or a full pipeline run.
+
+Already have a run? `hpr feedback RUN_ID` prints a limited diagnostic summary for local inspection. Nothing is submitted automatically. See [voluntary feedback](docs/FEEDBACK.md). Real `hpr run` commands below consume your configured model usage.
+
 ## 60-second start
 
 ```bash
@@ -54,7 +62,7 @@ hpr doctor                             # checks the Codex CLI, login, sqlite FTS
 hpr run "your question" --dry-run      # what will run, how many calls, rough cost
 hpr run "your question"                # light tier: ~8 calls, progress prints live (Korean report by default)
 hpr run "your question" --lang en      # English prompts and report
-hpr run "your question" --preset lean  # subscription-friendly: 2 critics, 2 drafts, smaller caps (~40 % fewer tokens)
+hpr run "your question" --preset lean  # subscription-friendly: 2 critics, 2 drafts, smaller caps (smaller configured limits; savings vary)
 open research/runs/*/final_report.md
 ```
 

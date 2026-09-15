@@ -2,8 +2,9 @@
 FINDING = {"type": "object", "additionalProperties": False,
            "properties": {"id": {"type": "string"}, "quote": {"type": "string"}, "problem": {"type": "string"},
                           "suggested_fix": {"type": "string"}, "severity": {"type": "string", "enum": ["low", "medium", "high"]},
+                          "evidence_status": {"type": "string", "enum": ["actionable", "excerpt_insufficient"]},
                           "source_ids": {"type": "array", "items": {"type": "string"}}},
-           "required": ["id", "quote", "problem", "suggested_fix", "severity", "source_ids"]}
+           "required": ["id", "quote", "problem", "suggested_fix", "severity", "source_ids", "evidence_status"]}
 
 ANALYST = {"type": "object", "additionalProperties": False,
            "properties": {

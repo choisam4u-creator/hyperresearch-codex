@@ -36,6 +36,18 @@ def critic_quotes_exist(findings: list[dict], draft: str) -> tuple[list[dict], l
     return kept, dropped
 
 
+def defer_excerpt_absence_findings(findings: list[dict]) -> tuple[list[dict], list[dict]]:
+    """critic이 명시적으로 excerpt_insufficient로 분류한 finding만 검토로 보낸다."""
+    actionable, deferred = [], []
+    for finding in findings:
+        if finding.get("critic") != "instruction" and finding.get("evidence_status") == "excerpt_insufficient":
+            deferred.append({**finding, "patch_action": "deferred",
+                             "deferral_reason": "excerpt_absence_is_not_source_absence"})
+        else:
+            actionable.append(finding)
+    return actionable, deferred
+
+
 def apply_hunks(draft: str, hunks: list[dict], max_ratio: float, hunk_max: int,
                 preserve_judgment_lang: str | None = None,
                 applied_hunks: list[dict] | None = None) -> tuple[str, list[dict]]:

@@ -26,9 +26,13 @@ def _page(url: str, title: str, body: str) -> dict:
 def main() -> None:
     os.environ["HPR_BACKEND"] = "mock"
     from hprc import fetch, pipeline, scholar, search
+    from hprc.demo import render_demo
+    from hprc.feedback import build_feedback
     import hprc
 
     _assert_installed_package(hprc.__file__)
+    demo = render_demo()
+    assert "synthetic_preview" in demo and "[S1]" in demo
     preserved = Path(tempfile.mkdtemp(prefix="hpr-wheel-smoke-"))
     (preserved / "research").mkdir()
     urls = preserved / "urls.txt"
@@ -69,6 +73,12 @@ def main() -> None:
         manifest_after = json.loads((preserved / "research/runs" / run_id / "manifest.json").read_text(encoding="utf-8"))
         assert calls_before > 0
         assert len(manifest_after["usage"]) == calls_before, (calls_before, len(manifest_after["usage"]))
+
+    feedback = build_feedback(final.parent)
+    assert feedback['backend'] == 'mock' and feedback['token_measurement'] == 'estimated'
+    assert feedback['model_calls'] == calls_before
+    assert '합성 출처' not in json.dumps(feedback, ensure_ascii=False)
+    assert str(preserved) not in json.dumps(feedback)
 
     print(f"wheel_smoke=ok root={preserved} model_calls=0 resume_calls=0")
 

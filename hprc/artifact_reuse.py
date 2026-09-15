@@ -8,17 +8,42 @@
 from __future__ import annotations
 
 import copy
+import errno
 import hashlib
 import json
+import math
 import os
 import re
+import socket
+import stat
 import tempfile
+import time
+from contextlib import contextmanager
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
+
+try:
+    import fcntl
+except ImportError:  # Windows
+    fcntl = None
+
+try:
+    import msvcrt
+except ImportError:  # POSIX
+    msvcrt = None
 
 
 SCHEMA_VERSION = 1
 _KEY = re.compile(r"^[0-9a-f]{64}$")
+
+
+class AnalysisSingleFlightTimeout(ValueError):
+    """동일 분석 키의 선행 생성이 제한 시간 안에 끝나지 않았을 때."""
+
+
+class AnalysisSingleFlightUnsupported(ValueError):
+    """현재 플랫폼에서 안전한 프로세스 간 잠금을 제공할 수 없을 때."""
 
 
 def _canonical(value: Any) -> bytes:
@@ -123,6 +148,95 @@ def _digest_payload(envelope: dict) -> str:
     return hashlib.sha256(_canonical(unsigned)).hexdigest()
 
 
+def _lock_backend() -> str:
+    if fcntl is not None:
+        return "posix"
+    if msvcrt is not None:
+        return "windows"
+    raise AnalysisSingleFlightUnsupported("이 플랫폼은 분석 캐시 single-flight 잠금을 지원하지 않습니다")
+
+
+def _try_lock(stream, backend: str) -> bool:
+    try:
+        if backend == "posix":
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        else:
+            stream.seek(0)
+            msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+        return True
+    except OSError as error:
+        if isinstance(error, BlockingIOError) or error.errno in {
+            errno.EACCES, errno.EAGAIN, errno.EDEADLK,
+        }:
+            return False
+        raise
+
+
+def _unlock(stream, backend: str) -> None:
+    if backend == "posix":
+        fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+    else:
+        stream.seek(0)
+        msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+@contextmanager
+def analysis_singleflight(root: Path, key: str, *, timeout: float = 930.0,
+                          poll_interval: float = 0.05) -> Iterator[None]:
+    """동일 분석 키에서 한 프로세스만 miss를 생성하도록 제한 시간 동안 잠근다.
+
+    잠금 파일은 캐시 항목과 같은 안전한 디렉터리에 영구 보존한다. 프로세스가
+    실패하거나 예외가 나도 운영체제 잠금은 해제되므로 다음 대기자가 캐시를 다시
+    확인한 뒤 생성할 수 있다.
+    """
+    if (not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0 or
+            not isinstance(poll_interval, (int, float)) or
+            not math.isfinite(poll_interval) or poll_interval <= 0):
+        raise ValueError("single-flight 대기 시간은 양수여야 합니다")
+    backend = _lock_backend()
+    entry = _entry_path(root, key, create=True)
+    lock_path = entry.with_suffix(".lock")
+    if lock_path.is_symlink() or lock_path.parent != entry.parent:
+        raise ValueError("분석 캐시 잠금 경로가 안전하지 않습니다")
+    flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NONBLOCK", 0)
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(lock_path, flags, 0o600)
+    if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+        os.close(descriptor)
+        raise ValueError("분석 캐시 잠금 대상이 일반 파일이 아닙니다")
+    stream = os.fdopen(descriptor, "r+b", buffering=0)
+    acquired = False
+    try:
+        stream.seek(0, os.SEEK_END)
+        if stream.tell() == 0:
+            stream.write(b" ")
+        deadline = time.monotonic() + timeout
+        while not (acquired := _try_lock(stream, backend)):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise AnalysisSingleFlightTimeout(
+                    f"동일 분석 캐시 생성 대기 시간이 {timeout:g}초를 초과했습니다"
+                )
+            time.sleep(min(poll_interval, remaining))
+        owner = (
+            f" pid={os.getpid()} host={socket.gethostname()} "
+            f"acquired={datetime.now(timezone.utc).isoformat()}\n"
+        ).encode("utf-8")
+        stream.seek(0)
+        stream.write(owner)
+        stream.truncate()
+        stream.flush()
+        os.fsync(stream.fileno())
+        yield
+    finally:
+        try:
+            if acquired:
+                _unlock(stream, backend)
+        finally:
+            stream.close()
+
+
 def load(root: Path, key: str) -> dict | None:
     """검증된 ``result``와 ``provenance``를 반환하고, 의심스러우면 ``None``.
 
@@ -186,4 +300,7 @@ def save(root: Path, key: str, result: dict, provenance: dict) -> None:
             os.unlink(temporary)
 
 
-__all__ = ["SCHEMA_VERSION", "load", "make_analysis_key", "make_key", "save"]
+__all__ = [
+    "AnalysisSingleFlightTimeout", "AnalysisSingleFlightUnsupported", "SCHEMA_VERSION",
+    "analysis_singleflight", "load", "make_analysis_key", "make_key", "save",
+]

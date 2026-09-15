@@ -4,3 +4,5 @@ Rules: `quote` is a verbatim draft sentence (if a whole section is missing, quot
 Read every file in one command (e.g. `cat *.md *.json`). Return exactly one JSON object matching _schema.json.
 
 The first-line "# Question: " or "# 질문: " prefix is allowed when followed by the exact question. Do not request its removal. If deterministic_checks.json is provided, use it for format checks and focus on semantic fulfillment of the question.
+
+For instruction and format findings, return evidence_status as actionable.

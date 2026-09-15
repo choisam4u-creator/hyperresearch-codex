@@ -221,6 +221,8 @@ def main() -> int:
     ins = sub.add_parser("install-skill"); ins.add_argument("--yes", action="store_true", help="~/.codex/skills 에 실제로 복사")
     q = sub.add_parser("search"); q.add_argument("query"); q.add_argument("--limit", type=int, default=10)
     st = sub.add_parser("status"); st.add_argument("run_id", nargs="?")
+    fb = sub.add_parser("feedback", help="기존 실행의 비식별 수치/열거형 JSON을 로컬 출력"); fb.add_argument("run_id")
+    sub.add_parser("demo", help="네트워크·모델 호출 없는 합성 미리보기")
     for name in ("sync", "doctor", "mcp", "mcp-config", "skill"):
         sub.add_parser(name)
     a = p.parse_args()
@@ -258,7 +260,7 @@ def main() -> int:
             validated_run_dir = run_directory(ROOT, a.run_id) if a.run_id is not None else None
             if validated_run_dir is None:
                 runs_directory(ROOT)
-        elif a.cmd in ("resume", "status"):
+        elif a.cmd in ("resume", "status", "feedback"):
             validated_run_dir = run_directory(ROOT, a.run_id) if a.run_id is not None else None
             if validated_run_dir is None:
                 runs_directory(ROOT)
@@ -266,6 +268,16 @@ def main() -> int:
         print("BLOCKED:", error, file=sys.stderr); return 2
     if a.cmd == "doctor":
         return doctor()
+    if a.cmd == "demo":
+        from .demo import render_demo
+        print(render_demo()); return 0
+    if a.cmd == "feedback":
+        from .feedback import FeedbackError, render_feedback
+        try:
+            print(render_feedback(validated_run_dir))
+        except FeedbackError as error:
+            print("BLOCKED:", error, file=sys.stderr); return 2
+        return 0
     if a.cmd == "sync":
         print("색인한 노트:", vault.sync(ROOT)); return 0
     if a.cmd == "search":

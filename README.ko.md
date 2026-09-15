@@ -1,11 +1,13 @@
 # hyperresearch-codex (한국어)
 
+[내부 품질·체험 후속 보완](docs/INTERNAL-POLISH-20260916.md): 조건 손실 검토, 동시 분석 재사용, 무호출 미리보기와 수동 피드백을 추가했습니다.
+
 [기존 데이터 기반 후속 보완](docs/EXISTING-DATA-REPAIRS-20260915.md): 숫자 조건 손실 감사와 불필요한 재분석 방지를 추가했습니다. 새 연구·평가 호출은 하지 않았습니다.
 
 입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
 영문 README(기본): [README.md](README.md) · 상태: 베타 0.3.1 · 저자 samchoi
 
-Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있다. 새 조사에서의 자동 재사용은 후속 개발 대상이다.
+Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있다. 새 조사에서의 자료·분석 재사용은 검증 조건을 갖춘 선택 기능이며 기본 비활성이다.
 
 [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code 전용)에서 영감을 받아 samchoi 가 Codex 전용으로 새로 만들었다. 지휘 장치를 파이썬으로 옮기고 모델 호출을 `codex exec` 로 바꾼 별도 구현이며 코드·프롬프트를 공유하지 않는다.
 
@@ -40,6 +42,12 @@ Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex �
 - `hpr doctor`는 `codex --version`과 `codex login status`를 timeout 제한으로 검사한다. 실측 기준 0.153.4와 다르면 비차단 경고를 띄우고, 버전·로그인 조회 실패는 실패 사유를 명확히 표시한다.
 - Python 3.11 이상, `httpx`·`pypdf`(`pip install` 로 자동), FTS5 가 있는 SQLite(macOS·대부분의 Linux 기본).
 - macOS에서 설치·실행을 실측했다. Linux는 CI의 설치·help·mock 검사만 확인했다. Windows 3.12도 [CI](https://github.com/choisam4u-creator/hyperresearch-codex/actions/runs/34766135191)에서 설치·help·잠금·mock 실행/재개·wheel smoke를 통과했다(`PYTHONUTF8=1`). POSIX 셸 fixture 4개는 Windows에서 제외하며 실제 Codex 리서치 실행은 미검증이다.
+
+## 모델 호출 없이 체험하고 제보하기
+
+설치 후 `hpr demo`를 실행하면 합성 보고서·검수 형식 미리보기를 출력한다. Codex 로그인·네트워크·리서치 호출 없이 사용할 수 있으며 전체 파이프라인 실행이나 품질 성능 입증은 아니다.
+
+기존 실행이 있다면 `hpr feedback RUN_ID`로 제한된 진단 요약을 출력해 먼저 확인한다. 자동 전송은 없으며 [자발적 피드백 안내](docs/FEEDBACK.md)를 따라 직접 제출한다. 아래의 실제 `run` 명령은 설정된 모델 사용량을 소모한다.
 
 ## 사용
 

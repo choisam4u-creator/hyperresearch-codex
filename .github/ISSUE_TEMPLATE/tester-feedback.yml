@@ -1,0 +1,85 @@
+name: Tester feedback
+description: Share a successful or failed test without private research data
+title: "[Tester feedback] "
+labels: [feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        GitHub issues are public and submission is manual. Review everything before posting. Do not include prompts, private sources, fetched text, raw logs, local paths, error strings, account details, or credentials. `hpr feedback RUN_ID` prints a local allowlisted JSON summary and sends nothing.
+  - type: dropdown
+    id: test_kind
+    attributes:
+      label: Test kind
+      options:
+        - Installation
+        - Synthetic demo
+        - Mock run
+        - Real run
+        - Unknown
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - Success
+        - Failure or blocked
+        - Mixed
+    validations:
+      required: true
+  - type: textarea
+    id: feedback_json
+    attributes:
+      label: Allowlisted feedback JSON
+      description: Paste the output of hpr feedback RUN_ID after reviewing it.
+      render: json
+  - type: dropdown
+    id: usefulness
+    attributes:
+      label: Was this useful for your task?
+      options:
+        - Yes
+        - Partly
+        - No
+        - Not assessed
+    validations:
+      required: true
+  - type: input
+    id: hpr_version
+    attributes:
+      label: hyperresearch-codex version
+      placeholder: 0.3.1 or commit ID
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS and Python version only. Do not include a user name, host name, or local path.
+      placeholder: macOS 15, Python 3.13
+    validations:
+      required: true
+  - type: input
+    id: codex_version
+    attributes:
+      label: Optional Codex CLI version and configured model
+      description: Leave blank for mock tests. Do not include account details.
+  - type: textarea
+    id: public_sentence
+    attributes:
+      label: Optional public sentence
+      description: One sentence about what you tested, only if it is safe to publish.
+  - type: input
+    id: public_source
+    attributes:
+      label: Optional public source URL
+      description: A source that is already public. Do not paste a private or signed URL.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Public submission check
+      options:
+        - label: I reviewed this public issue and removed private data, credentials, raw logs, local paths, and private source content.
+          required: true

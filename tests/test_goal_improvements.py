@@ -134,11 +134,18 @@ class GoalImprovementsTests(unittest.TestCase):
              'origin':'deterministic','check_id':'first_line_question'},
             {'id':'F2','quote':'Atlas','problem':'unsupported claim','severity':'high','source_ids':[]},
             {'id':'F3','quote':'old section','problem':'missing','severity':'high','source_ids':[],
-             'origin':'deterministic','check_id':'required_section_1'}]
+             'origin':'deterministic','check_id':'required_section_1'},
+            {'id':'F4','quote':'Atlas runs in a sandbox.','problem':'excerpt does not mention it',
+             'suggested_fix':'','severity':'low','source_ids':['S1'],'patch_action':'deferred',
+             'deferral_reason':'excerpt_absence_is_not_source_absence'}]
         (run.dir/'report.md').write_text('# 질문: q\nAtlas runs in a sandbox. [S1]\n')
         (run.dir/'findings.json').write_text(json.dumps({'findings':findings}))
         with mock.patch.dict('os.environ', {'HPR_BACKEND':'mock'}):
             run.step_citecheck()
         with mock.patch.object(pipeline,'verify_report',wraps=pipeline.verify_report) as verify:
             run.step_final()
-        self.assertEqual(['F2','F3'],verify.call_args.args[6])
+        self.assertEqual(['F2','F3','F4'],verify.call_args.args[6])
+        quality = json.loads((run.dir/'quality.json').read_text())
+        deferred = next(issue for issue in quality['issues'] if issue['kind'] == 'deferred_finding_review')
+        self.assertEqual('review_required', quality['status'])
+        self.assertEqual(('F4', ['S1']), (deferred['finding_id'], deferred['source_ids']))
