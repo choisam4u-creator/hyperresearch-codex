@@ -810,7 +810,7 @@ class Run:
         from . import artifact_reuse
         self.m.data['analysis_runtime'] = context['analysis_runtime']
         self.m.save()
-        cache_key = artifact_reuse.make_key({**context, 'source_hashes': self.source_hashes()}, inputs)
+        cache_key = artifact_reuse.make_analysis_key({**context, 'source_hashes': self.source_hashes()}, inputs)
         result, cached = None, None
         cacheable = not self.m.data.get('update_from')
         if cacheable and self.cfg.get('efficiency', {}).get('reuse_analysis'):
@@ -949,7 +949,7 @@ class Run:
         draft = (self.dir / "draft.md").read_text(encoding="utf-8")
         inputs = {"question.txt": self.prompt, "draft.md": draft, "_digest.md": self.digest(), "_independence.md": self.independence_md(),
                   **self.excerpts(self.relevant, self.prompt + "\n" + draft)}
-        from .critique_policy import apply_critique_policy, deterministic_report_checks, CRITIC_COMBINED, CRITIC_COMBINED_PROMPT
+        from .critique_policy import apply_critique_policy, deterministic_report_checks, CRITIC_COMBINED, CRITIC_COMBINED_PROMPT, CRITIC_EVIDENCE_BOUNDARY
         deterministic = deterministic_report_checks(draft, self.prompt, self.lang)
         policy = self.cfg.get("critic_policy", {})
         kinds = self.T["critics"]
@@ -969,6 +969,8 @@ class Run:
                         selected_inputs = {"question.txt": self.prompt, "draft.md": draft,
                                            "deterministic_checks.json": json.dumps(deterministic, ensure_ascii=False)}
                     prompt = (CRITIC_COMBINED_PROMPT + f"\nReport language: {self.lang}" if kind == "combined" else _prompt(f"critic_{kind}", self.lang))
+                    if kind != "instruction":
+                        prompt += "\n" + CRITIC_EVIDENCE_BOUNDARY
                     res = self.call(f"critic_{kind}", prompt, CRITIC_COMBINED if kind == "combined" else schemas.CRITIC, selected_inputs, "critic")
                     atomic_write(partial, json.dumps(res, ensure_ascii=False, indent=2))
                 kept, dropped = critic_quotes_exist(res["findings"], draft)
@@ -988,8 +990,12 @@ class Run:
     def _apply_hunk_step(self, name, prompt_name, src_file, dst_file, role, ratio, extra):
         text = (self.dir / src_file).read_text(encoding="utf-8")
         res = self.call(name, _prompt(prompt_name, self.lang, hunk_max=self.G["hunk_max_chars"]), schemas.PATCHER, {src_file: text, **extra}, role)
+        audit = {"stage": name, "source_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+                 "scope": "numeric_removal_review_signals_not_factual_judgments", "changes": []}
         try:
-            new, rejected = apply_hunks(text, res["hunks"], ratio, self.G["hunk_max_chars"], preserve_judgment_lang=self.lang)
+            applied = []
+            new, rejected = apply_hunks(text, res["hunks"], ratio, self.G["hunk_max_chars"],
+                                        preserve_judgment_lang=self.lang, applied_hunks=applied)
             unknown = [c for c in re.findall(r"\[(S\d+)\]", new) if c not in self.known]
             if unknown:
                 raise GateError(f"수정본이 없는 출처를 인용: {unknown}")
@@ -999,14 +1005,18 @@ class Run:
                 raise GateError(f"{name} 이 판단 표시를 지움")
             new, _ = clean_internal_cites(new, self.lang)
             atomic_write(self.dir / dst_file, new)
+            from .patch_audit import numeric_removals
+            audit.update(changes=numeric_removals(applied), result_sha256=hashlib.sha256(new.encode("utf-8")).hexdigest())
+            atomic_write(self.dir / f"{name}_numeric_audit.json", json.dumps(audit, ensure_ascii=False, indent=2))
             if name == "patcher":
-                rejected_pairs = {(h["find"], h["replace"]) for h in rejected}
-                resolved = sorted({fid for h in res["hunks"] if h["find"] != h["replace"] and (h["find"], h["replace"]) not in rejected_pairs
+                resolved = sorted({fid for h in applied if h["find"] != h["replace"]
                                    for fid in h["finding_ids"]})
                 atomic_write(self.dir / "patcher_resolution.json", json.dumps({"applied_finding_ids": resolved, "rejected": rejected, "skipped": res.get("skipped", [])}, ensure_ascii=False))
             return f"적용 {len(res['hunks']) - len(rejected)}, 거부 {len(rejected)}, 건너뜀 {len(res.get('skipped', []))}"
         except GateError as error:
             atomic_write(self.dir / dst_file, text)
+            audit.update(gate_error=str(error), result_sha256=audit["source_sha256"])
+            atomic_write(self.dir / f"{name}_numeric_audit.json", json.dumps(audit, ensure_ascii=False, indent=2))
             if name == "patcher":
                 atomic_write(self.dir / "patcher_resolution.json", json.dumps({"applied_finding_ids": [], "gate_error": str(error)}, ensure_ascii=False))
             return f"게이트 거부 → 원문 유지: {error}"
@@ -1194,6 +1204,15 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         quality = verify_report(report, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, checks, sampling,
                                 snapshot_path.read_text(encoding="utf-8") if snapshot_path.exists() else None,
                                 findings, [f["id"] for f in findings if f["id"] not in resolved])
+        for stage in ("patcher", "polish"):
+            audit_path = self.dir / f"{stage}_numeric_audit.json"
+            if audit_path.exists():
+                audit = json.loads(audit_path.read_text(encoding="utf-8"))
+                if audit.get("changes"):
+                    quality["issues"].append({"kind": "numeric_removal_in_edit", "severity": "medium", "line": None,
+                                              "stage": stage, "audit_file": audit_path.name,
+                                              "message": "수정 중 숫자가 삭제·교체됐습니다. 올바른 정정인지 조건 누락인지 검토하세요."})
+                    quality["status"] = "review_required"
         evidence_sources = self.evidence_sources()
         record = None
         compatible_check = (snapshot_path.exists() and citecheck.get("source_hashes") == self.source_hashes()

@@ -29,6 +29,18 @@ class EfficiencyIntegrationTests(unittest.TestCase):
         self.run_case('second',efficiency=opts)
         self.assertEqual(before['usage'],self.data('second')['usage'])
         self.assertTrue((second/'evidence_matrix.md').is_file())
+
+    def test_downstream_delivery_change_reuses_identical_analyst_only_when_enabled(self):
+        self.run_case('cache-base', efficiency={'reuse_analysis': True})
+        for rid, option in [('cache-packet', 'packet_inputs'), ('cache-inline', 'inline_inputs')]:
+            self.run_case(rid, efficiency={'reuse_analysis': True, option: True})
+            data = self.data(rid)
+            self.assertFalse(any(row['step'] == 'analyst' for row in data['usage']))
+            self.assertTrue(data['reuse_events'][0]['model_call_skipped'])
+            self.assertIsNone(data['reuse_events'][0]['token_savings'])
+            self.assertTrue(any(row['step'] == 'writer' for row in data['usage']))
+        self.run_case('cache-disabled', efficiency={'inline_inputs': True})
+        self.assertTrue(any(row['step'] == 'analyst' for row in self.data('cache-disabled')['usage']))
     def test_packet_reaches_backend_and_profiles_are_not_tokens(self):
         actual=pipeline.run_step;seen=[]
         def recording(name,prompt,schema,inputs,*args,**kwargs):
@@ -54,6 +66,33 @@ class EfficiencyIntegrationTests(unittest.TestCase):
         self.assertTrue(seen[0][0])
         self.assertNotIn('INLINE INPUT CONTRACT',seen[0][1])
         self.assertNotIn('prompt_stdin',seen[0][2])
+
+    def test_evidence_critics_receive_excerpt_scope_boundary(self):
+        actual = pipeline.run_step
+        seen = []
+        def recording(name, prompt, *args, **kwargs):
+            if name.startswith('critic_'):
+                seen.append((name, prompt))
+            return actual(name, prompt, *args, **kwargs)
+        with patch.object(pipeline, 'run_step', side_effect=recording):
+            self.run_case('critic-scope')
+        evidence = [prompt for name, prompt in seen if name != 'critic_instruction']
+        self.assertTrue(evidence)
+        self.assertTrue(all('Absence from either is not absence from the source' in prompt for prompt in evidence))
+
+    def test_numeric_edit_signal_reaches_final_quality_without_new_call(self):
+        actual = pipeline.Run.step_patch
+        def audited(run):
+            actual(run)
+            (run.dir / 'patcher_numeric_audit.json').write_text(json.dumps({
+                'changes': [{'removed_numbers': ['1080'], 'finding_ids': ['F2']}]
+            }), encoding='utf-8')
+        with patch.object(pipeline.Run, 'step_patch', audited):
+            out = self.run_case('numeric-review')
+        quality = json.loads((out / 'quality.json').read_text(encoding='utf-8'))
+        self.assertEqual('review_required', quality['status'])
+        self.assertTrue(any(row['kind'] == 'numeric_removal_in_edit' for row in quality['issues']))
+        self.assertFalse(any('audit' in row['step'] for row in self.data('numeric-review')['usage']))
 
     def test_inline_inputs_reach_writer_and_critics_via_prompt_stdin_without_input_files(self):
         actual=pipeline.run_step;seen=[]

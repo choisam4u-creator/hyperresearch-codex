@@ -37,7 +37,8 @@ def critic_quotes_exist(findings: list[dict], draft: str) -> tuple[list[dict], l
 
 
 def apply_hunks(draft: str, hunks: list[dict], max_ratio: float, hunk_max: int,
-                preserve_judgment_lang: str | None = None) -> tuple[str, list[dict]]:
+                preserve_judgment_lang: str | None = None,
+                applied_hunks: list[dict] | None = None) -> tuple[str, list[dict]]:
     """find→replace 덩어리를 정확히 일치할 때만 적용. 총 변경 비율이 상한을 넘으면 전부 거부."""
     text, applied, rejected = draft, [], []
     for h in hunks:
@@ -54,6 +55,8 @@ def apply_hunks(draft: str, hunks: list[dict], max_ratio: float, hunk_max: int,
     ratio = 1 - difflib.SequenceMatcher(None, draft, text).ratio()
     if ratio > max_ratio:
         raise GateError(f"수정 비율 {ratio:.0%} 이 상한 {max_ratio:.0%} 을 넘음 → 전면 재작성으로 보고 거부")
+    if applied_hunks is not None:
+        applied_hunks.extend(applied)
     return text, rejected
 
 

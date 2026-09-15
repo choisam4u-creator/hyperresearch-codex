@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -49,6 +50,33 @@ def make_key(context: dict, inputs: dict[str, str]) -> str:
         "inputs": inputs,
     }
     return hashlib.sha256(_canonical(payload)).hexdigest()
+
+
+_ANALYSIS_KEY_SCOPE = "analysis-delivery-insensitive-v1"
+
+
+def make_analysis_key(context: dict, inputs: dict[str, str]) -> str:
+    """후속 전달 옵션만 제외한 버전별 분석 캐시 키를 반환한다.
+
+    ``analysis_runtime.config.efficiency.packet_inputs``와 ``inline_inputs``만
+    분석가의 프롬프트·입력 파일에 영향을 주지 않는다. 나머지 맥락과 정확한
+    입력 바이트는 모두 유지한다. 별도 범위 표식으로 기존 ``make_key``와 구분한다.
+    """
+    if not isinstance(context, dict):
+        raise TypeError("context는 dict여야 합니다")
+    normalized = copy.deepcopy(context)
+    runtime = normalized.get("analysis_runtime")
+    if isinstance(runtime, dict):
+        config = runtime.get("config")
+        if isinstance(config, dict):
+            efficiency = config.get("efficiency")
+            if isinstance(efficiency, dict):
+                efficiency.pop("packet_inputs", None)
+                efficiency.pop("inline_inputs", None)
+    return make_key(
+        {"analysis_key_scope": _ANALYSIS_KEY_SCOPE, "analysis_context": normalized},
+        inputs,
+    )
 
 
 def _cache_directory(root: Path, *, create: bool) -> Path:
@@ -158,4 +186,4 @@ def save(root: Path, key: str, result: dict, provenance: dict) -> None:
             os.unlink(temporary)
 
 
-__all__ = ["SCHEMA_VERSION", "load", "make_key", "save"]
+__all__ = ["SCHEMA_VERSION", "load", "make_analysis_key", "make_key", "save"]

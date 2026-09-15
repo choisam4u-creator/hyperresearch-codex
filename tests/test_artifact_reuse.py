@@ -91,5 +91,82 @@ class ArtifactReuseTests(unittest.TestCase):
         self.assertEqual([], list(outside.iterdir()))
 
 
+
+class AnalysisKeyTests(unittest.TestCase):
+    def setUp(self):
+        self.context = {
+            "question": "고정 질문",
+            "lang": "ko",
+            "as_of": "2026-09-15",
+            "source_hashes": {"S1": "1" * 64},
+            "analysis_runtime": {
+                "config": {
+                    "efficiency": {"packet_inputs": False, "inline_inputs": False,
+                                   "reuse_analysis": True, "strategy": "standard"},
+                    "verification": {"semantic": False},
+                },
+                "runtime": {"code_hash": "2" * 64, "prompt_hash": "3" * 64},
+                "model": {"model": "fixture", "effort": "low"},
+                "schema": {"type": "object", "required": ["claims"]},
+                "prompt": "analyst prompt",
+                "backend": "codex",
+            },
+        }
+        self.inputs = {"question.txt": "고정 질문", "S1-note.md": "근거 본문"}
+
+    def key(self, context=None, inputs=None):
+        return artifact_reuse.make_analysis_key(context or self.context, inputs or self.inputs)
+
+    def test_delivery_flags_share_a_versioned_key_without_mutating_context(self):
+        import copy
+        original = copy.deepcopy(self.context)
+        packet = copy.deepcopy(self.context)
+        packet["analysis_runtime"]["config"]["efficiency"]["packet_inputs"] = True
+        inline = copy.deepcopy(self.context)
+        inline["analysis_runtime"]["config"]["efficiency"]["inline_inputs"] = True
+        key = self.key()
+        self.assertRegex(key, r"^[0-9a-f]{64}$")
+        self.assertEqual(key, self.key(packet))
+        self.assertEqual(key, self.key(inline))
+        self.assertEqual(original, self.context)
+        self.assertTrue(original["analysis_runtime"]["config"]["efficiency"]["packet_inputs"] is False)
+        self.assertNotEqual(artifact_reuse.make_key(self.context, self.inputs),
+                            artifact_reuse.make_key(packet, self.inputs))
+        self.assertNotEqual(artifact_reuse.make_key(self.context, self.inputs),
+                            artifact_reuse.make_key(inline, self.inputs))
+
+    def test_other_analysis_context_and_input_changes_miss(self):
+        import copy
+        key = self.key()
+        variants = []
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["config"]["efficiency"]["strategy"] = "adaptive"
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["config"]["verification"]["semantic"] = True
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["schema"]["required"] = ["claims", "gaps"]
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["model"]["effort"] = "medium"
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["runtime"]["code_hash"] = "8" * 64
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["analysis_runtime"]["backend"] = "mock"
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["as_of"] = "2026-09-16"
+        variants.append((changed, self.inputs))
+        changed = copy.deepcopy(self.context)
+        changed["source_hashes"]["S1"] = "9" * 64
+        variants.append((changed, self.inputs))
+        variants.append((self.context, {**self.inputs, "S1-note.md": "바뀐 근거"}))
+        for context, inputs in variants:
+            self.assertNotEqual(key, self.key(context, inputs))
+
+
 if __name__ == "__main__":
     unittest.main()
