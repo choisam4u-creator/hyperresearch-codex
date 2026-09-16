@@ -5,7 +5,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from hprc import artifact_reuse, pipeline, vault
 
@@ -91,13 +91,27 @@ class AnalysisSingleFlightTests(unittest.TestCase):
             )
             for index, fixture in enumerate(fixtures)
         ]
-        for process in processes:
-            process.start()
-        for process in processes:
-            process.join(20)
-            self.assertFalse(process.is_alive(), "fake backend worker did not finish")
-            self.assertEqual(0, process.exitcode)
-        return [outcomes.get(timeout=2) for _ in processes]
+        started = []
+        try:
+            for process in processes:
+                process.start()
+                started.append(process)
+            # The configured Codex timeout is 2 seconds and the single-flight
+            # waiter may add 30 seconds. Leave margin for a busy CI runner.
+            for process in started:
+                process.join(40)
+            for process in started:
+                self.assertFalse(process.is_alive(), "fake backend worker did not finish")
+                self.assertEqual(0, process.exitcode)
+            return [outcomes.get(timeout=2) for _ in processes]
+        finally:
+            for process in started:
+                if process.is_alive():
+                    process.terminate()
+            for process in started:
+                process.join(5)
+            outcomes.close()
+            outcomes.join_thread()
 
     def _event_count(self):
         if not self.events.exists():
@@ -199,6 +213,30 @@ class AnalysisSingleFlightTests(unittest.TestCase):
         self.assertEqual([("ok", 3), ("ok", 3)],
                          sorted(outcomes.get(timeout=2) for _ in workers))
         self.assertEqual(3, len(vault.search(self.root, "shared")))
+
+    def test_vault_search_closes_connection_when_query_fails(self):
+        database = MagicMock()
+        database.execute.side_effect = RuntimeError("broken index")
+        with patch.object(vault.sqlite3, "connect", return_value=database):
+            with self.assertRaisesRegex(RuntimeError, "broken index"):
+                vault.search(self.root, "shared")
+        database.close.assert_called_once_with()
+
+    def test_partial_process_startup_cleans_started_worker_and_queue(self):
+        context = MagicMock()
+        first = MagicMock()
+        first.is_alive.return_value = True
+        second = MagicMock()
+        second.start.side_effect = OSError("spawn failed")
+        context.Process.side_effect = [first, second]
+        with patch.object(self, "ctx", context):
+            with self.assertRaisesRegex(OSError, "spawn failed"):
+                self._pair([FIXTURE, FIXTURE])
+        first.terminate.assert_called_once_with()
+        first.join.assert_called_once_with(5)
+        second.join.assert_not_called()
+        context.Queue.return_value.close.assert_called_once_with()
+        context.Queue.return_value.join_thread.assert_called_once_with()
 
 
 if __name__ == "__main__":

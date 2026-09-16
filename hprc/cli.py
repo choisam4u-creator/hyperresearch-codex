@@ -133,10 +133,16 @@ def doctor() -> int:
     except ImportError:
         print("httpx: 없음 (pip install httpx)"); ok = False
     import sqlite3
+    database = None
     try:
-        sqlite3.connect(":memory:").execute("CREATE VIRTUAL TABLE t USING fts5(x)"); print("sqlite FTS5: OK")
+        database = sqlite3.connect(":memory:")
+        database.execute("CREATE VIRTUAL TABLE t USING fts5(x)")
+        print("sqlite FTS5: OK")
     except sqlite3.OperationalError:
         print("sqlite FTS5: 없음"); ok = False
+    finally:
+        if database is not None:
+            database.close()
     try:
         import pypdf; print("pypdf:", pypdf.__version__, "(PDF 읽기 가능)")
     except ImportError:

@@ -1,13 +1,21 @@
 # hyperresearch-codex (한국어)
 
-[내부 품질·체험 후속 보완](docs/INTERNAL-POLISH-20260916.md): 조건 손실 검토, 동시 분석 재사용, 무호출 미리보기와 수동 피드백을 추가했습니다.
+[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![상태: beta](https://img.shields.io/badge/status-beta%200.4.0-orange)
 
-[기존 데이터 기반 후속 보완](docs/EXISTING-DATA-REPAIRS-20260915.md): 숫자 조건 손실 감사와 불필요한 재분석 방지를 추가했습니다. 새 연구·평가 호출은 하지 않았습니다.
+질문 하나를 **출처가 있고 반대 검토를 거친 브리프**로 만드는 Codex 전용 리서치 파이프라인입니다. 파이썬이 모든 단계를 통제하고, 모델은 읽기 전용으로 실행되며, 인용과 제한된 수정은 게이트를 통과해야 합니다.
 
-입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
-영문 README(기본): [README.md](README.md) · 상태: 베타 0.3.1 · 저자 samchoi
+Codex 로그인·네트워크·모델 사용량 없이 출력 형식을 먼저 확인할 수 있습니다.
 
-Codex 전용 리서치 파이프라인. 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있다. 새 조사에서의 자료·분석 재사용은 검증 조건을 갖춘 선택 기능이며 기본 비활성이다.
+```bash
+pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
+hpr demo
+```
+
+실제 조사는 설정된 Codex 사용량을 소모합니다. 먼저 `hpr run "질문" --dry-run`으로 호출 수와 대략 비용을 확인하세요. 입력 토큰 기준 중단 기능은 다음 호출 전 중단을 돕지만, 진행 중인 호출의 초과를 막는 결제 상한은 아닙니다.
+
+영문 README(기본): [README.md](README.md) · 상태: 베타 0.4.0 · 저자 samchoi
+
+질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있습니다. 새 조사에서의 자료·분석 재사용은 검증 조건을 갖춘 선택 기능이며 기본 비활성입니다. [최근 유지보수](docs/INTERNAL-POLISH-20260916.md), [20회 고정 입력 실측](docs/EFFICIENCY-RESULTS-20260914.md), [사전 등록 실험 계획](docs/EFFICIENCY-STUDY-PROTOCOL.md)을 공개하며 일반적인 품질 향상·토큰 절감으로 확대 해석하지 않습니다.
 
 [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code 전용)에서 영감을 받아 samchoi 가 Codex 전용으로 새로 만들었다. 지휘 장치를 파이썬으로 옮기고 모델 호출을 `codex exec` 로 바꾼 별도 구현이며 코드·프롬프트를 공유하지 않는다.
 

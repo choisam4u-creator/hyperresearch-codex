@@ -107,7 +107,9 @@ def sync(root: Path) -> int:
 
 def search(root: Path, query: str, limit: int = 10) -> list[dict]:
     db = sqlite3.connect(root / "research" / "index.sqlite")
-    rows = db.execute("SELECT id, title, url, path, snippet(notes, 5, '[', ']', '…', 18) FROM notes WHERE notes MATCH ? ORDER BY rank LIMIT ?",
-                      (query, limit)).fetchall()
-    db.close()
+    try:
+        rows = db.execute("SELECT id, title, url, path, snippet(notes, 5, '[', ']', '…', 18) FROM notes WHERE notes MATCH ? ORDER BY rank LIMIT ?",
+                          (query, limit)).fetchall()
+    finally:
+        db.close()
     return [{"id": r[0], "title": r[1], "url": r[2], "path": r[3], "snippet": r[4]} for r in rows]

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - 2026-09-17
+
+- Close short-lived SQLite connections on both success and failure, and make concurrency tests clean up surviving child processes deterministically.
+- Put the no-model demo, install path, usage boundary, contribution guide and threat model where a new reviewer can find them quickly.
+- Add reproducible source/wheel checks, a Trusted Publishing workflow, CodeQL scanning and documented release steps.
+- Collect the maintained post-0.3.1 runtime, validation, reuse, feedback and measurement work into one versioned release. Existing measurements keep their original scope; this release does not claim general quality improvement or token savings.
+
 ## 2026-09-16 내부 품질·동시 재사용·피드백 보완
 
 - 적용된 수정의 제외·조건·부정 표지 감소를 검토 신호로 표시하고, 수정 전후·finding 연결을 검토 안내에 추가했다.

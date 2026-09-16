@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hyperresearch-codex"
-version = "0.3.1"
+version = "0.4.0"
 description = "Codex-only deep research pipeline: Python orchestrates, codex exec judges, gates verify."
-readme = "README.md"
+readme = "PYPI.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [{name = "samchoi"}]

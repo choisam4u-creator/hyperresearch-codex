@@ -1,19 +1,21 @@
 # hyperresearch-codex
 
-[Latest maintenance](docs/INTERNAL-POLISH-20260916.md): qualifier-loss review signals, concurrent analysis reuse, a no-model preview and manual feedback.
+[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.4.0-orange)
 
-[기존 데이터 기반 후속 보완](docs/EXISTING-DATA-REPAIRS-20260915.md): 숫자 조건 손실 감사와 불필요한 재분석 방지를 추가했습니다. 새 연구·평가 호출은 하지 않았습니다.
+A Codex-only research pipeline that turns one prompt into a **sourced, adversarially reviewed brief**. Python controls every step, model calls run read-only, and gates check citations and bounded edits before a report is accepted.
 
-입력 패킷의 [실제 20회 결과와 품질 판정](docs/EFFICIENCY-RESULTS-20260914.md)을 공개했습니다. 소규모 고정 입력 실험이며 일반적인 절감·품질 향상은 입증되지 않았습니다.
-토큰 절감과 품질의 후속 실측은 [사전 등록 실험 계획](docs/EFFICIENCY-STUDY-PROTOCOL.md)을 따릅니다. 실행 도구 준비와 실제 효과 입증은 구분합니다.
+Try the output format without a Codex login, network access, or model usage:
 
-[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.3.1-orange)
+```bash
+pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
+hpr demo
+```
 
-A Codex-only research pipeline that turns one prompt into a **sourced, adversarially reviewed brief** (not a 10,000-word survey — see the comparison in `docs/COMPARISON-drb67.html`). **Python orchestrates, `codex exec` judges, gates verify.**
+Real research uses your configured Codex allowance. Run `hpr run "question" --dry-run` first to see the planned calls and rough cost. Input-token thresholds stop before later calls when possible, but in-flight calls can exceed them and they are not billing caps.
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.
 
-**Status:** beta 0.3.1, with subsequent maintenance commits. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies are linked below and have separate scopes. A mock test suite covers failure paths. The test count may change as the suite evolves; run the command below for the current count. Prompts will need tuning as Codex models change; the Korean README is [README.ko.md](README.ko.md).
+**Status:** beta 0.4.0. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies have separate scopes. The published 20-run input-packet study is a small fixed-input experiment and does not establish general quality or token savings. See [latest maintenance](docs/INTERNAL-POLISH-20260916.md), [measured results](docs/EFFICIENCY-RESULTS-20260914.md), and the [pre-registered protocol](docs/EFFICIENCY-STUDY-PROTOCOL.md). The Korean README is [README.ko.md](README.ko.md).
 
 ## Three rules
 
