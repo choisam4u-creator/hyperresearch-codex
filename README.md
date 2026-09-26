@@ -11,6 +11,8 @@ pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
 hpr demo
 ```
 
+See a [measured example report](examples/report-en-light-lean.md) with its citation-check limits, or browse [three case studies](docs/case-studies/README.md), including a review-required run.
+
 Real research uses your configured Codex allowance. Run `hpr run "question" --dry-run` first to see the planned calls and rough cost. Input-token thresholds stop before later calls when possible, but in-flight calls can exceed them and they are not billing caps.
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.

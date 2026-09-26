@@ -11,6 +11,8 @@ pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
 hpr demo
 ```
 
+[실측 예시 보고서](examples/report-ko-light-lean.md)에서 결과와 인용 검사 한계를 볼 수 있습니다. 검토 필요로 끝난 조사도 포함한 [실사용 사례 3건](docs/case-studies/README.md)을 확인하세요.
+
 실제 조사는 설정된 Codex 사용량을 소모합니다. 먼저 `hpr run "질문" --dry-run`으로 호출 수와 대략 비용을 확인하세요. 입력 토큰 기준 중단 기능은 다음 호출 전 중단을 돕지만, 진행 중인 호출의 초과를 막는 결제 상한은 아닙니다.
 
 영문 README(기본): [README.md](README.md) · 상태: 베타 0.4.0 · 저자 samchoi
