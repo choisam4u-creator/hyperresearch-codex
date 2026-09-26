@@ -11,6 +11,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import urllib.parse
 from unittest import mock
 from pathlib import Path
 
@@ -213,6 +214,29 @@ class PartTests(unittest.TestCase):
         self.assertEqual("https://github.com/o/r/tree/main", out[0]["url"])
         self.assertEqual(3, len(out))
         self.assertEqual("https://developers.openai.com/codex", out[1]["url"])
+
+    def test_prioritize_interleaves_hosts_before_repeating_generic_help_domain(self):
+        rows = [
+            {"url": "https://support.google.com/youtube/a", "official": True},
+            {"url": "https://support.google.com/youtube/b", "official": True},
+            {"url": "https://youtube.com/channel/direct", "official": True},
+            {"url": "https://example.org/market-case"},
+        ]
+        out = search.prioritize(rows, [])
+        self.assertEqual(["support.google.com", "youtube.com", "example.org", "support.google.com"],
+                         [urllib.parse.urlsplit(row["url"]).hostname for row in out])
+
+    def test_sync_source_list_adds_only_cited_missing_aliases(self):
+        report = "# Question: q\n## Answer\nClaim. [S1]\nPatched claim. [S2]\n## Evidence\n## Counter-evidence and limits\n## Sources\n- [S1] first\n"
+        synced, added = gates.sync_source_list(report, [
+            {"id": "S1", "title": "first", "domain": "one.test"},
+            {"id": "S2", "title": "second", "domain": "two.test"},
+            {"id": "S3", "title": "unused", "domain": "three.test"},
+        ], "en")
+        self.assertEqual(["S2"], added)
+        self.assertIn("- [S2] second — two.test", synced)
+        self.assertNotIn("[S3]", synced)
+        self.assertEqual((synced, []), gates.sync_source_list(synced, [], "en"))
 
     def test_citecheck_skips_judgment_sentences(self):
         text = "이게 낫다. (판단) [S1] 사실 문장이다. [S2]"

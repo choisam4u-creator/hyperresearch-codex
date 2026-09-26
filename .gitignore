@@ -2,6 +2,7 @@
 research/
 # 내부 보고서(개인 작업 맥락)는 올리지 않는다
 docs/internal/
+docs/open-source-intake/
 __pycache__/
 *.pyc
 .DS_Store

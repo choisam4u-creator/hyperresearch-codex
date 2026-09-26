@@ -36,6 +36,17 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual("medium", issue["severity"])
         self.assertEqual("review_required", result["status"])
 
+    def test_explicitly_unverified_scope_does_not_turn_context_counts_into_claims(self):
+        report = ("The 10 candidate topics have not been validated against 2026 search-volume data. [S1]\n"
+                  "The planner uses a 12-month average. [S1]\n")
+        source = "The planner uses a 12-month average."
+        result = verify_report(report, {"S1": source}, [],
+                               {"selected_count": 0, "checked_count": 0}, report, [], [])
+        self.assertFalse(any(issue["kind"].startswith("numeric_") for issue in result["issues"]))
+        unsupported = verify_report("The measured reduction was 42%. [S1]\n", {"S1": "No reduction was measured."}, [],
+                                    {"selected_count": 0, "checked_count": 0}, "The measured reduction was 42%. [S1]\n", [], [])
+        self.assertTrue(any(issue["kind"] == "numeric_evidence_unclear" for issue in unsupported["issues"]))
+
     def test_numeric_comparison_uses_complete_tokens_not_substrings(self):
         result = verify_report("비용은 20% 줄었다. [S1]\n", {"S1": "비용은 120%였다."}, [],
                                {"selected_count": 0, "checked_count": 0}, "비용은 20% 줄었다. [S1]\n", [], [])

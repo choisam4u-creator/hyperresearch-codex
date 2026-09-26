@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-09-26
+
+- Interleave search candidates across hostnames after ranking so one domain cannot monopolize the early source set.
+- Treat explicitly unverified or unmeasured quantities as disclosed gaps while continuing to warn on unsupported factual numbers.
+- Synchronize cited aliases into the human-readable Sources section after patching, and show `passed`, `review_required`, `missing`, or `malformed` quality state in `hpr status`.
+- Add privacy-safe `review_required` troubleshooting and a structured GitHub issue template.
+- Exclude private run, intake, and internal-document paths from source distributions. These deterministic fixes do not claim a new general quality or token-savings result.
+
 ## 0.4.0 - 2026-09-17
 
 - Close short-lived SQLite connections on both success and failure, and make concurrency tests clean up surviving child processes deterministically.

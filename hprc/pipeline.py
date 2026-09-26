@@ -23,7 +23,7 @@ from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
-                    defer_excerpt_absence_findings, judgment_sentences, report_lint)
+                    defer_excerpt_absence_findings, judgment_sentences, report_lint, sync_source_list)
 from .manifest import Manifest, atomic_write
 from .locking import LockError, run_lock
 from .run_paths import run_directory
@@ -1218,6 +1218,9 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         if not self.begin("final"):
             return out
         report = (self.dir / "report.md").read_text(encoding="utf-8")
+        report, source_list_added = sync_source_list(report, self.sources, self.lang)
+        if source_list_added:
+            atomic_write(self.dir / "report.md", report)
         problems = report_lint(report, self.prompt, self.known, self.lang)
         final_check = (self.dir / "citecheck_final.json").exists()
         citecheck = json.loads((self.dir / ("citecheck_final.json" if final_check else "citecheck.json")).read_text(encoding="utf-8"))

@@ -185,7 +185,16 @@ def status(run_id: str | None) -> None:
         cost = estimate_cost(m["usage"], pricing)
         unknown = (f" · 미측정 {cost['unknown_calls']}회 · 설정 단가 추정 미확정 (측정분 ≈${cost['usd_upper']})"
                    if cost["unknown_calls"] else f" · 설정 단가 추정 ≈${cost['usd_upper']}")
-        print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")
+        quality_path = run_dir / "quality.json"
+        if not quality_path.is_file():
+            quality_status = "missing"
+        else:
+            try:
+                quality = json.loads(quality_path.read_text(encoding="utf-8"))
+                quality_status = quality.get("status") if quality.get("status") in {"passed", "review_required"} else "unknown"
+            except (OSError, json.JSONDecodeError, AttributeError):
+                quality_status = "malformed"
+        print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | quality:{quality_status} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")
         print("   " + pricing_note + " · 실제 청구액이나 계정 잔량이 아닙니다")
         guidance_path = run_dir / "cost_guidance.json"
         if guidance_path.is_file():

@@ -98,6 +98,30 @@ def report_lint(text: str, prompt: str, known: set[str], lang: str = "ko") -> li
     return problems
 
 
+def sync_source_list(text: str, sources: list[dict], lang: str = "ko") -> tuple[str, list[str]]:
+    """본문 인용 별칭이 사람이 읽는 출처 절에도 모두 보이도록 누락 행을 보충한다."""
+    heading = LANG.get(lang, LANG["ko"])["sources"]
+    match = re.search(rf"(?m)^{re.escape(heading)}\s*$", text)
+    if not match:
+        return text, []
+    next_heading = re.search(r"(?m)^##\s+", text[match.end():])
+    end = match.end() + next_heading.start() if next_heading else len(text)
+    cited = set(CITE.findall(text[:match.start()]))
+    listed = set(CITE.findall(text[match.end():end]))
+    by_id = {source.get("id"): source for source in sources}
+    missing = sorted(cited - listed, key=lambda value: int(value[1:]))
+    if not missing:
+        return text, []
+    lines = []
+    for alias in missing:
+        source = by_id.get(alias, {})
+        title = str(source.get("title") or alias).replace("\n", " ").strip()[:80]
+        domain = str(source.get("domain") or "").strip()
+        lines.append(f"- [{alias}] {title}" + (f" — {domain}" if domain else ""))
+    insertion = "\n" + "\n".join(lines) + "\n"
+    return text[:end].rstrip("\n") + insertion + text[end:].lstrip("\n"), missing
+
+
 JUDGMENT = "(판단)"
 
 

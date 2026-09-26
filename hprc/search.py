@@ -156,7 +156,7 @@ def canonical_key(url: str) -> str:
 
 
 def prioritize(rows: list[dict], preferred_domains: list[str]) -> list[dict]:
-    """정찰(official) → 선호 도메인 → 나머지 순으로, 중복은 정규화 키로 제거."""
+    """품질 우선순위를 유지하면서 같은 호스트가 앞부분을 독점하지 않게 한다."""
     def rank(row):
         try:
             parts = urllib.parse.urlparse(row["url"])
@@ -165,13 +165,25 @@ def prioritize(rows: list[dict], preferred_domains: list[str]) -> list[dict]:
         host = parts.netloc.removeprefix("www.")
         pref = any(p in (host + parts.path) for p in preferred_domains)
         return (0 if row.get("official") else 1, 0 if pref else 1, 0 if row.get("via") == "user" else 1)
-    seen, out = set(), []
+    seen, ranked = set(), []
     for row in sorted(rows, key=rank):
         row["url"] = normalize_url(row["url"])
         key = canonical_key(row["url"])
         if key not in seen:
             seen.add(key)
-            out.append(row)
+            ranked.append(row)
+    buckets: dict[str, list[dict]] = {}
+    for row in ranked:
+        try:
+            host = (urllib.parse.urlsplit(row["url"]).hostname or "").lower()
+        except ValueError:
+            host = ""
+        buckets.setdefault(host, []).append(row)
+    out = []
+    while any(buckets.values()):
+        for bucket in buckets.values():
+            if bucket:
+                out.append(bucket.pop(0))
     return out
 
 

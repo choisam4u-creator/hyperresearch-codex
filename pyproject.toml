@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hyperresearch-codex"
-version = "0.4.0"
+version = "0.5.0"
 description = "Codex-only deep research pipeline: Python orchestrates, codex exec judges, gates verify."
 readme = "PYPI.md"
 license = "MIT"
@@ -39,3 +39,10 @@ hpr = "hprc.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["hprc"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/docs/internal",
+    "/docs/open-source-intake",
+    "/research",
+]

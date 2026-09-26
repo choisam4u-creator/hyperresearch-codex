@@ -155,6 +155,19 @@ class UsageRecoveryTests(unittest.TestCase):
         self.assertIn('≈$99.0',out.getvalue())
         self.assertIn('과거 단가 기록 없음',out.getvalue())
 
+    def test_status_reports_passed_review_missing_and_malformed_quality_distinctly(self):
+        statuses = (("passed", '{"status":"passed"}', "passed"),
+                    ("review", '{"status":"review_required"}', "review_required"),
+                    ("missing", None, "missing"),
+                    ("malformed", '{', "malformed"))
+        for run_id, payload, expected in statuses:
+            run = pipeline.Run(self.root, "q", "light", run_id, quiet=True)
+            if payload is not None:
+                (run.dir / "quality.json").write_text(payload, encoding="utf-8")
+            with mock.patch.object(cli, "ROOT", self.root), contextlib.redirect_stdout(io.StringIO()) as out:
+                cli.status(run.run_id)
+            self.assertIn(f"quality:{expected}", out.getvalue())
+
     def test_failure_metadata_falls_back_and_resume_continues_attempt_numbers(self):
         run = pipeline.Run(self.root, "질문", "light", "retry-resume", quiet=True)
         calls = []

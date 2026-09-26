@@ -38,6 +38,11 @@ _CONTEXT_STOP = {"the", "and", "for", "with", "that", "this", "from", "was", "we
                  "decreases", "lower", "fell", "fall", "reduced", "reduce", "증가", "상승", "감소", "하락"}
 _DIRECTIONS = ({"increase", "increased", "increases", "higher", "rose", "rise", "증가", "늘", "상승"},
                {"decrease", "decreased", "decreases", "lower", "fell", "fall", "reduced", "reduce", "감소", "줄", "하락"})
+_UNVERIFIED_SCOPE = re.compile(
+    r"\b(?:not|never)\s+(?:yet\s+)?(?:been\s+)?(?:validated|verified|measured|confirmed)\b|\b(?:unvalidated|unverified|unmeasured|unknown)\b|"
+    r"(?:검증|확인|측정)(?:되지|하지|하지 못|할 수 없)|(?:미검증|미확인|미측정)|(?:근거|자료|데이터)(?:가|는)?\s*(?:없|부족)",
+    re.IGNORECASE,
+)
 _UNIT_SCALE = {
     "ms": ("time", Decimal("0.001")), "millisecond": ("time", Decimal("0.001")), "milliseconds": ("time", Decimal("0.001")),
     "s": ("time", Decimal("1")), "second": ("time", Decimal("1")), "seconds": ("time", Decimal("1")), "초": ("time", Decimal("1")),
@@ -257,6 +262,10 @@ def _check_structured_values(claim: dict, cited_text: str, issues: list[dict]) -
                                  f"날짜 {span['raw']}의 원문 근거가 명확하지 않아 검토가 필요합니다."))
             reported_date_spans.add(span_key)
 
+    # 값이 사실이라고 주장하지 않고 미검증·미측정 범위를 명시한 문장은
+    # 그 숫자를 원문 수치 주장으로 승격하지 않는다.
+    if _UNVERIFIED_SCOPE.search(claim["sentence"]):
+        return
     claim_quantities = _quantity_values(claim["sentence"], claim_date_spans)
     source_quantities = _quantity_values(cited_text, source_date_spans)
     for value in claim_quantities:
