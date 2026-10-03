@@ -1,0 +1,43 @@
+{
+  "status": "review_required",
+  "issues": [
+    {
+      "kind": "numeric_context_unclear",
+      "severity": "medium",
+      "line": 4,
+      "message": "수치·단위 15건가 원문과 다른 문맥일 수 있어 검토가 필요합니다."
+    },
+    {
+      "kind": "numeric_context_unclear",
+      "severity": "medium",
+      "line": 4,
+      "message": "수치·단위 21건가 원문과 다른 문맥일 수 있어 검토가 필요합니다."
+    },
+    {
+      "kind": "numeric_context_unclear",
+      "severity": "medium",
+      "line": 4,
+      "message": "수치·단위 37%가 원문과 다른 문맥일 수 있어 검토가 필요합니다."
+    },
+    {
+      "kind": "unknown_cites_removed",
+      "severity": "medium",
+      "line": null,
+      "message": "초안의 없는 출처 인용을 지우고 '(출처 없음)'으로 표시했습니다: S4"
+    }
+  ],
+  "scope": {
+    "sampling": "sample_only",
+    "eligible_count": 6,
+    "selected_count": 6,
+    "checked_count": 6,
+    "full_report_verification": false,
+    "automatic_model_calls": false,
+    "claim_inventory": {
+      "candidates": 7,
+      "without_complete_links": 1,
+      "unchecked": 1,
+      "semantic_extraction_complete": false
+    }
+  }
+}

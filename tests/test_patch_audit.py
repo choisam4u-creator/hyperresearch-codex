@@ -63,7 +63,7 @@ class PatchNumericAuditTests(unittest.TestCase):
     def test_pipeline_keeps_deferred_finding_out_of_patcher_but_preserves_it(self):
         with tempfile.TemporaryDirectory() as tmp:
             run = Run.__new__(Run)
-            run.dir, run.lang, run.known, run.relevant = Path(tmp), 'en', {'S1'}, {'S1'}
+            run.dir, run.lang, run.known, run.relevant, run.sources = Path(tmp), 'en', {'S1'}, {'S1'}, []
             run.G = {'hunk_max_chars': 1200, 'patch_max_ratio': .5}
             run.begin = lambda _: True
             run.end = lambda *args: None

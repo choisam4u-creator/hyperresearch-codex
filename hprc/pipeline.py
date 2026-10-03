@@ -23,7 +23,8 @@ from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
-                    defer_excerpt_absence_findings, judgment_sentences, report_lint, sync_source_list)
+                    collapse_duplicate_sources, defer_excerpt_absence_findings, drop_unknown_cites, judgment_sentences,
+                    report_lint, sync_source_list)
 from .manifest import Manifest, atomic_write
 from .locking import LockError, run_lock
 from .run_paths import run_directory
@@ -556,6 +557,20 @@ class Run:
             lines.append(f"- 묶음 {cid}: {', '.join(ids)}" + ("" if len(ids) == 1 else "  ← URL 정본 일치 또는 본문 유사"))
         return "\n".join(lines) + "\n"
 
+    def clusters(self) -> dict[str, str]:
+        return {s["id"]: s.get("cluster", s["id"]) for s in self.sources}
+
+    def canonicals(self) -> dict[str, str]:
+        return {s["id"]: (s.get("canonical") or "").lower().rstrip("/") for s in self.sources}
+
+    def normalize_report(self) -> None:
+        """수정·다듬기가 다시 들인 중복 후보 겹침 인용과 출처 목록 중복 행을 인용 검사 전에 정리한다."""
+        path = self.dir / "report.md"
+        report = path.read_text(encoding="utf-8")
+        fixed, changes = collapse_duplicate_sources(report, self.clusters(), self.lang, self.canonicals())
+        if changes:
+            atomic_write(path, fixed)
+
     def load_sources(self):
         data = json.loads((self.dir / "sources.json").read_text(encoding="utf-8"))
         self.sources = data["sources"]
@@ -962,9 +977,16 @@ class Run:
                               {"question.txt": self.prompt, "_digest.md": digest, "_independence.md": self.independence_md(),
                                **drafts_in, **self._interim(), **self.excerpts(self.relevant, self.prompt + "\n" + "\n".join(drafts_in.values())[:20000])}, "synth")["markdown"]
         draft, fixed = clean_internal_cites(draft, self.lang)
+        # 범위 밖 인용 하나로 실행 전체를 멈추지 않는다. 지운 별칭은 기록해 최종 검증 상태에 남긴다.
+        draft, dropped = drop_unknown_cites(draft, self.known, self.lang)
+        draft, collapsed = collapse_duplicate_sources(draft, self.clusters(), self.lang, self.canonicals())
+        atomic_write(self.dir / "draft_gate.json", json.dumps({"unknown_cites_removed": dropped, "duplicate_sources_collapsed": collapsed},
+                                                              ensure_ascii=False))
         problems = report_lint(draft, self.prompt, self.known, self.lang)
         if fixed:
             problems.append(f"internal_cites_cleaned:{fixed}")
+        if dropped:
+            problems.append("dropped_unknown_cites:" + ",".join(dropped))
         hard = [p for p in problems if p.startswith(("verbatim", "unknown_cites", "no_citations"))]
         if hard:
             raise Blocked(f"초안 게이트 실패: {hard}")
@@ -1061,11 +1083,13 @@ class Run:
         actionable = [f for f in findings if f.get("patch_action") != "deferred"]
         if not actionable:
             atomic_write(self.dir / "report.md", (self.dir / "draft.md").read_text(encoding="utf-8"))
+            self.normalize_report()
             self.end("patch", "ok", "적용 가능한 지적 없음, 초안 유지"); return
         ids = {s for f in actionable for s in f.get("source_ids", [])} & self.known or self.relevant
         note = self._apply_hunk_step("patcher", "patcher", "draft.md", "report.md", "patcher", self.G["patch_max_ratio"],
                                      {"findings.json": json.dumps({"findings": actionable}, ensure_ascii=False), "_digest.md": self.digest(),
                                       **self.excerpts(ids, "\n".join(f["problem"] + " " + f.get("suggested_fix", "") for f in actionable))})
+        self.normalize_report()
         self.end("patch", "ok", note)
 
     def evidence_sources(self):
@@ -1150,7 +1174,9 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
             return
         if not self.begin("polish"):
             return
-        self.end("polish", "ok", self._apply_hunk_step("polish", "polish", "report.md", "report.md", "polish", self.G["polish_max_ratio"], {}))
+        note = self._apply_hunk_step("polish", "polish", "report.md", "report.md", "polish", self.G["polish_max_ratio"], {})
+        self.normalize_report()   # 재검사(recheck)가 정리된 본문을 스냅샷하도록 그 전에 둔다.
+        self.end("polish", "ok", note)
 
     def step_recheck(self):
         """다듬기로 바뀐 인용 문장만 최대 한 호출로 재검사한다. 기본 OFF."""
@@ -1311,6 +1337,13 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
             quality["status"] = "review_required"
         if problems:
             quality["issues"] += [{"kind": "report_lint", "severity": "high", "line": None, "message": p} for p in problems]
+            quality["status"] = "review_required"
+        gate_path = self.dir / "draft_gate.json"
+        dropped = json.loads(gate_path.read_text(encoding="utf-8")).get("unknown_cites_removed", []) if gate_path.exists() else []
+        if dropped:
+            quality["issues"].append({"kind": "unknown_cites_removed", "severity": "medium", "line": None,
+                                      "message": ("초안의 없는 출처 인용을 지우고 '(출처 없음)'으로 표시했습니다: " if self.lang == "ko"
+                                                  else "Removed draft citations to nonexistent sources and marked them '(no source)': ") + ", ".join(dropped)})
             quality["status"] = "review_required"
         gap_path = self.dir / "gap_fetch.json"
         if gap_path.exists():

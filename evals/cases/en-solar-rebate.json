@@ -1,0 +1,18 @@
+{
+  "id": "en-solar-rebate",
+  "lang": "en",
+  "baseline_time": "2026-06-30",
+  "prompt": "What were the results of the 2025 rooftop solar rebate program?",
+  "flaws": [],
+  "sources": {
+    "S1": "A utility filing reports that 2,800 homes installed rooftop solar under the 2025 rebate program. The median system size was 6.2 kilowatts. Installed homes reduced grid electricity purchases by a median of 48 percent over the first year.\n\nThe filing notes that installed homes were more likely to be owner-occupied and newer than the service-area average.",
+    "S2": "An independent audit sampled 150 rebate installations. It found that 9 percent had inverter faults within the first year, most of which were repaired under warranty. The audit did not measure electricity savings."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What were the results of the 2025 rooftop solar rebate program?\n\n## Answer\nAbout 2,800 homes installed rooftop solar under the program [S1]. Installed homes cut grid electricity purchases by a median of 48 percent in the first year [S1].\n\n## Evidence\n- The median system size was 6.2 kilowatts [S1].\n- An audit of 150 installations found inverter faults in 9 percent within the first year [S2].\n\n## Counter-evidence and limits\n- Installed homes were more likely to be owner-occupied and newer, so savings may not generalize [S1].\n- The audit did not measure electricity savings [S2].\n\n## Next actions\n- Track savings in a matched set of homes without solar (judgment)\n\n## Sources\n- [S1] Utility rebate filing\n- [S2] Independent installation audit\n"
+      }
+    ]
+  }
+}

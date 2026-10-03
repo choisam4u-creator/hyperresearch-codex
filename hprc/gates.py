@@ -98,6 +98,116 @@ def report_lint(text: str, prompt: str, known: set[str], lang: str = "ko") -> li
     return problems
 
 
+def drop_unknown_cites(text: str, known: set[str], lang: str = "ko") -> tuple[str, list[str]]:
+    """실제 출처로 풀리지 않는 [Sn]을 지운다. 같은 문장에 유효 인용이 없으면 '(출처 없음)'을 남긴다.
+
+    초안 하나의 범위 밖 인용 때문에 실행 전체를 멈추지 않으면서, 지어낸 인용이 본문에
+    남지 않게 한다. 반환: (정리된 본문, 지운 별칭 목록)."""
+    no_source = LANG.get(lang, LANG["ko"])["no_source"]
+    heading = LANG.get(lang, LANG["ko"])["sources"]
+    match = re.search(rf"(?m)^{re.escape(heading)}\s*$", text)
+    body, tail = (text[:match.start()], text[match.start():]) if match else (text, "")
+    removed: list[str] = []
+
+    def fix_sentence(sentence: str) -> str:
+        bad = [c for c in CITE.findall(sentence) if c not in known]
+        if not bad:
+            return sentence
+        removed.extend(bad)
+        has_valid = any(c in known for c in CITE.findall(sentence))
+        first = True
+
+        def repl(m):
+            nonlocal first
+            if m.group(1) in known:
+                return m.group(0)
+            out = "" if has_valid or not first or no_source in sentence else no_source
+            first = False
+            return out
+        fixed = CITE.sub(repl, sentence)
+        return re.sub(r"[ \t]{2,}", " ", fixed).replace(" .", ".").replace(" ]", "]")
+
+    lines = []
+    for line in body.split("\n"):
+        parts = re.split(r"(?<=[.!?])(\s+)", line)
+        lines.append("".join(fix_sentence(p) if i % 2 == 0 else p for i, p in enumerate(parts)))
+    # 출처 절의 없는 별칭 행은 지운다.
+    # 출처 절: 없는 별칭만 지우고, 유효 별칭이 하나도 남지 않는 행은 통째로 지운다.
+    tail_lines = []
+    for line in tail.split("\n"):
+        aliases = CITE.findall(line)
+        bad = [c for c in aliases if c not in known]
+        removed.extend(bad)
+        if bad and len(bad) == len(aliases):
+            continue
+        if bad:
+            line = re.sub(r"[ \t]*[,;]?[ \t]*\[(S\d+)\]", lambda m: "" if m.group(1) not in known else m.group(0), line)
+            line = re.sub(r"^(\s*[-*]\s*)[,;]\s*", r"\1", line)
+        tail_lines.append(line)
+    return "\n".join(lines) + "\n".join(tail_lines) if tail else "\n".join(lines), sorted(set(removed), key=lambda v: int(v[1:]))
+
+
+_SIMILAR_NOTE = {"ko": "본문 유사, 독립 출처가 아닐 수 있음", "en": "similar text, may not be independent"}
+_CITE_RUN = re.compile(r"\[S\d+\](?:[ \t]*\[S\d+\])+(?P<note>[ \t]*\([^()]*(?:"
+                       + "|".join(re.escape(v) for v in _SIMILAR_NOTE.values()) + r")\))?")
+
+
+def collapse_duplicate_sources(text: str, clusters: dict[str, str], lang: str = "ko",
+                               canonical: dict[str, str] | None = None) -> tuple[str, list[str]]:
+    """같은 관계 묶음 출처를 독립 근거처럼 겹쳐 인용한 것과 출처 목록의 중복 행을 정리한다.
+
+    관계 묶음은 중복 '후보'다(cluster.py). 정본 URL이 같은 경우만 확정 중복으로 보고
+    "[S1][S3]" → "[S1] (S3: S1과 같은 정본 URL)"로 줄인다. 본문 유사도로만 묶인 경우는 인용을
+    지우지 않고 "(S1·S3: 본문 유사, 독립 출처가 아닐 수 있음)"을 붙여 독자에게 알린다.
+    반환: (정리된 본문, 바뀐 내용 목록)."""
+    canonical = canonical or {}
+    heading = LANG.get(lang, LANG["ko"])["sources"]
+    match = re.search(rf"(?m)^{re.escape(heading)}\s*$", text)
+    body, tail = (text[:match.start()], text[match.start():]) if match else (text, "")
+    changes: list[str] = []
+
+    def same_url(a: str, b: str) -> bool:
+        return bool(canonical.get(a)) and canonical.get(a) == canonical.get(b)
+
+    def repl(m):
+        if m.group("note"):
+            return m.group(0)        # 이미 표시함(재실행해도 같은 결과)
+        kept, dropped, similar = [], [], []
+        for alias in dict.fromkeys(CITE.findall(m.group(0))):
+            group = clusters.get(alias, alias)
+            rep = next((k for k in kept if clusters.get(k, k) == group), None)
+            if rep and same_url(alias, rep):
+                dropped.append((alias, rep))
+            else:
+                if rep:
+                    similar.append((alias, rep))
+                kept.append(alias)
+        if not dropped and not similar:
+            return m.group(0)
+        changes.extend([f"{a}~{r}" for a, r in dropped] + [f"{a}?{r}" for a, r in similar])
+        notes = [f"{a}: {r}과 같은 정본 URL" if lang == "ko" else f"{a}: same canonical URL as {r}" for a, r in dropped]
+        groups: dict[str, list[str]] = {}
+        for a, r in similar:
+            groups.setdefault(r, [r]).append(a)
+        notes += ["·".join(g) + ": " + _SIMILAR_NOTE.get(lang, _SIMILAR_NOTE["ko"]) for g in groups.values()]
+        return "".join(f"[{k}]" for k in kept) + f" ({'; '.join(notes)})"
+    body = _CITE_RUN.sub(repl, body)
+    if tail:
+        next_heading = re.search(r"(?m)^##\s+", tail[len(heading):])
+        end = len(heading) + next_heading.start() if next_heading else len(tail)
+        seen, rows = set(), []
+        for line in tail[:end].split("\n"):
+            first = CITE.search(line)
+            if first and line.lstrip().startswith(("-", "*")) and first.group(1) in seen:
+                changes.append(f"row:{first.group(1)}")
+                continue
+            if first:
+                seen.add(first.group(1))
+            rows.append(line)
+        tail = "\n".join(rows) + tail[end:]
+    return body + tail, changes
+
+
 def sync_source_list(text: str, sources: list[dict], lang: str = "ko") -> tuple[str, list[str]]:
     """본문 인용 별칭이 사람이 읽는 출처 절에도 모두 보이도록 누락 행을 보충한다."""
     heading = LANG.get(lang, LANG["ko"])["sources"]
