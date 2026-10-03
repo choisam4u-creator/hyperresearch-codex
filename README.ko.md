@@ -23,6 +23,29 @@ hpr demo
 
 [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code 전용)에서 영감을 받아 samchoi 가 Codex 전용으로 새로 만들었다. 지휘 장치를 파이썬으로 옮기고 모델 호출을 `codex exec` 로 바꾼 별도 구현이며 코드·프롬프트를 공유하지 않는다.
 
+## 한눈에 보기
+
+- **무엇을 해 주나:** 질문 하나를 출처가 붙은 브리프로 만들고, 인용·비평 인용문·수정 범위를 파이썬 게이트가 검사합니다.
+- **설치 3줄:**
+
+  ```bash
+  pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
+  hpr doctor                      # Codex CLI·로그인·SQLite FTS5 확인
+  hpr run "질문" --dry-run         # 호출 계획과 대략 비용, 모델 사용 없음
+  ```
+
+- **첫 실행:** `hpr run "질문" --preset lean` → `research/runs/<run_id>/final_report.md`
+- **결과 예시** ([실측 예시 보고서](examples/report-ko-light-lean.md) 일부, 본문 무수정):
+
+  ```markdown
+  <!-- run: tp-light-ko-1c · 출처 8개 · 지적 3개 · 인용표본 5개 중 미지지 1개 · 린트 OK · 모델 호출 7회 -->
+  ## 답
+  티스토리 블로그에 JSON-LD를 넣으면 Google이 글의 내용과 의미를 이해하는 데 도움이 되며,
+  해당 정보를 리치 결과에 활용할 수 있습니다. [S2]
+  ```
+
+  run 줄은 일부 항목(토큰 수 등)을 줄여 옮겼습니다.
+
 ## 원리 세 줄
 
 1. **지휘자는 파이썬, 모델은 일꾼.** 단계 순서·병렬·재시도·중단 복구는 `hprc/pipeline.py` 와 `manifest.json` 이 맡는다.

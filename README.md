@@ -19,6 +19,30 @@ Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gi
 
 **Status:** beta 0.5.0. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies have separate scopes. The published 20-run input-packet study is a small fixed-input experiment and does not establish general quality or token savings. See [latest maintenance](docs/INTERNAL-POLISH-20260916.md), [measured results](docs/EFFICIENCY-RESULTS-20260914.md), and the [pre-registered protocol](docs/EFFICIENCY-STUDY-PROTOCOL.md). The Korean README is [README.ko.md](README.ko.md).
 
+## At a glance
+
+- **What it does:** turns one question into a sourced brief whose citations, critic quotes and edits are checked by Python gates.
+- **Install (3 lines):**
+
+  ```bash
+  pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
+  hpr doctor                      # Codex CLI, login, SQLite FTS5
+  hpr run "your question" --dry-run   # planned calls and rough cost, no model usage
+  ```
+
+- **First run:** `hpr run "your question" --lang en --preset lean` writes `research/runs/<run_id>/final_report.md`.
+- **What you get** (excerpt of [the measured example](examples/report-en-light-lean.md), unedited):
+
+  ```markdown
+  <!-- run: tp-light-en-1 · 8 sources · 7 critic findings · citation sample 1 of 5 unsupported · lint OK · 7 model calls -->
+  ## Answer
+  GGUF reduces stored-weight requirements substantially, but complete-pipeline memory—not
+  checkpoint size alone—determines practical feasibility; this is an inference from the
+  documented loading and activation behavior. [S2][S3][S6]
+  ```
+
+  The run line is translated and shortened here; the original header is in Korean and also lists token counts.
+
 ## Three rules
 
 1. **Python drives, the model works.** Step order, parallelism (max 2), retries and resume live in `hprc/pipeline.py` and a per-run `manifest.json`.

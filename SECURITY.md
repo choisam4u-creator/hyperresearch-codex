@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes are made on the current `0.4.x` release line and `main`. Older releases may receive documentation updates, but users should upgrade before reporting a runtime issue.
+Security fixes are made on the current `0.5.x` release line and `main`. Older releases may receive documentation updates, but users should upgrade before reporting a runtime issue.
 
 ## Reporting a vulnerability
 
