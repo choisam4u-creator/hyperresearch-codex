@@ -1,0 +1,22 @@
+{
+  "id": "en-library-hours",
+  "lang": "en",
+  "baseline_time": "2026-07-15",
+  "prompt": "Did extending library opening hours increase use?",
+  "flaws": [
+    "syndicated_copy_cited_as_independent",
+    "duplicate_source_row"
+  ],
+  "sources": {
+    "S1": "The city library system extended weekday closing time from 6 pm to 8 pm at five branches in March 2026. Over the following quarter, evening visits averaged 142 per branch per week. The library board report states that staffing costs for the extension were covered by a one-year grant.\n\nThe report does not compare visits with a matched set of branches that kept the old hours.",
+    "S2": "Syndicated from the library board bulletin. The city library system extended weekday closing time from 6 pm to 8 pm at five branches in March 2026. Over the following quarter, evening visits averaged 142 per branch per week. The library board report states that staffing costs for the extension were covered by a one-year grant.\n\nThe report does not compare visits with a matched set of branches that kept the old hours.",
+    "S3": "A neighborhood association poll of 300 residents found that 64 percent said later hours made the library easier to use. The poll was conducted online and was open to anyone, so respondents were self-selected."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did extending library opening hours increase use?\n\n## Answer\nEvening visits averaged 142 per branch per week after the change [S1][S2]. Residents reported that later hours made the library easier to use [S3].\n\n## Evidence\n- Five branches extended weekday closing time from 6 pm to 8 pm in March 2026 [S1].\n- Two independent reports confirm the evening visit figure [S1][S2].\n- 64 percent of 300 polled residents said later hours made the library easier to use [S3].\n\n## Counter-evidence and limits\n- No matched comparison branches were used [S1].\n- The poll respondents were self-selected [S3].\n\n## Next actions\n- Compare with branches that kept the old hours (judgment)\n\n## Sources\n- [S1] Library board report\n- [S2] Library board bulletin (syndicated)\n- [S3] Neighborhood association poll\n- [S2] Library board bulletin (syndicated)\n"
+      }
+    ]
+  }
+}

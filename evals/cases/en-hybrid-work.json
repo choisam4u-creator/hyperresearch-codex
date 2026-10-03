@@ -1,0 +1,22 @@
+{
+  "id": "en-hybrid-work",
+  "lang": "en",
+  "baseline_time": "2026-07-01",
+  "prompt": "What does the evidence say about hybrid work schedules and employee outcomes?",
+  "flaws": [
+    "missing_limits_section",
+    "number_not_in_source",
+    "uncited_fact"
+  ],
+  "sources": {
+    "S1": "A 2025 survey by the regional employers' council covered 1,240 office workers across 38 firms. Respondents who worked from home at least two days a week reported an average commute saving of 5.6 hours per week. The survey relied on self-reported time use and did not track productivity output.\n\nFirms with hybrid schedules reported a voluntary turnover rate of 11 percent, compared with 14 percent at fully on-site firms. The council notes that hybrid firms were on average larger, which may confound the comparison.",
+    "S2": "A field study at a single software company followed 412 engineers for six months after a hybrid policy began. Code review turnaround time did not change in a statistically significant way. Junior engineers received 18 percent fewer mentoring comments when their mentors were remote on the same day.\n\nThe authors caution that the study covers one company and one occupation, so the results may not generalize."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What does the evidence say about hybrid work schedules and employee outcomes?\n\n## Answer\nHybrid schedules are associated with lower voluntary turnover, 11 percent versus 14 percent [S1]. Workers save about 5.6 hours of commuting per week [S1].\n\n## Evidence\n- The survey covered 1,240 office workers across 38 firms [S1].\n- Code review turnaround did not change significantly over six months [S2].\n- Junior engineers received 25 percent fewer mentoring comments on remote days [S2].\n- Most managers prefer at least three office days per week.\n\n## Next actions\n- Compare firms of similar size before drawing conclusions (judgment)\n\n## Sources\n- [S1] Regional employers' council survey\n- [S2] Single-company field study\n"
+      }
+    ]
+  }
+}
