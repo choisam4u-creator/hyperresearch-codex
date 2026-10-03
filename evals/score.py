@@ -56,7 +56,7 @@ def sentences(block: str, lang: str) -> list[str]:
 def _plain(sentence: str, lang: str) -> str:
     # 인용 별칭과 파이프라인의 출처 주석 "(S3: …)"은 주장 내용이 아니므로 뺀다(2026-10-03 기준 변경, QUALITY-LOG 참조).
     text = CITE.sub("", sentence)
-    text = re.sub(r"\(S\d+:[^)]*\)", "", text)
+    text = re.sub(r"\(S\d+[:·][^)]*\)", "", text)
     text = re.sub(r"\bS\d+\b", "", text)
     for marker in MARKERS[lang]:
         text = text.replace(marker, "")
@@ -113,8 +113,10 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
 
     rows = CITE.findall(parts.get(src_heading, "")) if src_heading else []
     multi = [s for s in cited if len(set(CITE.findall(s))) >= 2]
-    same_cluster = [s for s in multi
-                    if len({sources.get(c, {}).get("cluster", c) for c in set(CITE.findall(s))}) == 1]
+    # 독자에게 '독립 출처가 아닐 수 있음'을 알린 겹침 인용은 감점하지 않는다(2026-10-03 기준 변경, QUALITY-LOG 참조).
+    warned = ("독립 출처가 아닐 수 있음", "may not be independent")
+    same_cluster = [s for s in multi if not any(w in s for w in warned)
+                    and len({sources.get(c, {}).get("cluster", c) for c in set(CITE.findall(s))}) == 1]
     dup = (len(rows) - len(set(rows))) + len(same_cluster)
     detail["duplicate_rows"] = len(rows) - len(set(rows))
     detail["same_cluster_cocites"] = same_cluster

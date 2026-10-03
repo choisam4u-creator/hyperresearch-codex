@@ -132,37 +132,65 @@ def drop_unknown_cites(text: str, known: set[str], lang: str = "ko") -> tuple[st
         parts = re.split(r"(?<=[.!?])(\s+)", line)
         lines.append("".join(fix_sentence(p) if i % 2 == 0 else p for i, p in enumerate(parts)))
     # 출처 절의 없는 별칭 행은 지운다.
-    tail_lines = [l for l in tail.split("\n") if not (CITE.search(l) and all(c not in known for c in CITE.findall(l)))]
-    if tail:
-        removed.extend(c for l in tail.split("\n") for c in CITE.findall(l) if c not in known)
+    # 출처 절: 없는 별칭만 지우고, 유효 별칭이 하나도 남지 않는 행은 통째로 지운다.
+    tail_lines = []
+    for line in tail.split("\n"):
+        aliases = CITE.findall(line)
+        bad = [c for c in aliases if c not in known]
+        removed.extend(bad)
+        if bad and len(bad) == len(aliases):
+            continue
+        if bad:
+            line = re.sub(r"[ \t]*[,;]?[ \t]*\[(S\d+)\]", lambda m: "" if m.group(1) not in known else m.group(0), line)
+            line = re.sub(r"^(\s*[-*]\s*)[,;]\s*", r"\1", line)
+        tail_lines.append(line)
     return "\n".join(lines) + "\n".join(tail_lines) if tail else "\n".join(lines), sorted(set(removed), key=lambda v: int(v[1:]))
 
 
-_CITE_RUN = re.compile(r"\[S\d+\](?:[ \t]*\[S\d+\])+")
+_SIMILAR_NOTE = {"ko": "본문 유사, 독립 출처가 아닐 수 있음", "en": "similar text, may not be independent"}
+_CITE_RUN = re.compile(r"\[S\d+\](?:[ \t]*\[S\d+\])+(?P<note>[ \t]*\([^()]*(?:"
+                       + "|".join(re.escape(v) for v in _SIMILAR_NOTE.values()) + r")\))?")
 
 
-def collapse_duplicate_sources(text: str, clusters: dict[str, str], lang: str = "ko") -> tuple[str, list[str]]:
-    """같은 관계 묶음(복제·전재) 출처를 독립 근거처럼 겹쳐 인용한 것과 출처 목록의 중복 행을 정리한다.
+def collapse_duplicate_sources(text: str, clusters: dict[str, str], lang: str = "ko",
+                               canonical: dict[str, str] | None = None) -> tuple[str, list[str]]:
+    """같은 관계 묶음 출처를 독립 근거처럼 겹쳐 인용한 것과 출처 목록의 중복 행을 정리한다.
 
-    "[S1][S3]"에서 S3이 S1과 같은 묶음이면 "[S1] (S3: S1과 같은 원문 계열)"로 바꿔, 대표 출처는
-    남기고 복제본이 따로 확인한 것처럼 보이지 않게 한다. 반환: (정리된 본문, 바뀐 내용 목록)."""
+    관계 묶음은 중복 '후보'다(cluster.py). 정본 URL이 같은 경우만 확정 중복으로 보고
+    "[S1][S3]" → "[S1] (S3: S1과 같은 정본 URL)"로 줄인다. 본문 유사도로만 묶인 경우는 인용을
+    지우지 않고 "(S1·S3: 본문 유사, 독립 출처가 아닐 수 있음)"을 붙여 독자에게 알린다.
+    반환: (정리된 본문, 바뀐 내용 목록)."""
+    canonical = canonical or {}
     heading = LANG.get(lang, LANG["ko"])["sources"]
     match = re.search(rf"(?m)^{re.escape(heading)}\s*$", text)
     body, tail = (text[:match.start()], text[match.start():]) if match else (text, "")
     changes: list[str] = []
 
+    def same_url(a: str, b: str) -> bool:
+        return bool(canonical.get(a)) and canonical.get(a) == canonical.get(b)
+
     def repl(m):
-        kept, dropped = [], []
+        if m.group("note"):
+            return m.group(0)        # 이미 표시함(재실행해도 같은 결과)
+        kept, dropped, similar = [], [], []
         for alias in dict.fromkeys(CITE.findall(m.group(0))):
             group = clusters.get(alias, alias)
             rep = next((k for k in kept if clusters.get(k, k) == group), None)
-            (dropped.append((alias, rep)) if rep else kept.append(alias))
-        if not dropped:
+            if rep and same_url(alias, rep):
+                dropped.append((alias, rep))
+            else:
+                if rep:
+                    similar.append((alias, rep))
+                kept.append(alias)
+        if not dropped and not similar:
             return m.group(0)
-        changes.extend(f"{alias}~{rep}" for alias, rep in dropped)
-        note = ", ".join(f"{alias}: {rep}과 같은 원문 계열" if lang == "ko" else f"{alias}: same-origin copy of {rep}"
-                         for alias, rep in dropped)
-        return "".join(f"[{k}]" for k in kept) + f" ({note})"
+        changes.extend([f"{a}~{r}" for a, r in dropped] + [f"{a}?{r}" for a, r in similar])
+        notes = [f"{a}: {r}과 같은 정본 URL" if lang == "ko" else f"{a}: same canonical URL as {r}" for a, r in dropped]
+        groups: dict[str, list[str]] = {}
+        for a, r in similar:
+            groups.setdefault(r, [r]).append(a)
+        notes += ["·".join(g) + ": " + _SIMILAR_NOTE.get(lang, _SIMILAR_NOTE["ko"]) for g in groups.values()]
+        return "".join(f"[{k}]" for k in kept) + f" ({'; '.join(notes)})"
     body = _CITE_RUN.sub(repl, body)
     if tail:
         next_heading = re.search(r"(?m)^##\s+", tail[len(heading):])

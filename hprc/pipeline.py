@@ -560,6 +560,17 @@ class Run:
     def clusters(self) -> dict[str, str]:
         return {s["id"]: s.get("cluster", s["id"]) for s in self.sources}
 
+    def canonicals(self) -> dict[str, str]:
+        return {s["id"]: (s.get("canonical") or "").lower().rstrip("/") for s in self.sources}
+
+    def normalize_report(self) -> None:
+        """수정·다듬기가 다시 들인 중복 후보 겹침 인용과 출처 목록 중복 행을 인용 검사 전에 정리한다."""
+        path = self.dir / "report.md"
+        report = path.read_text(encoding="utf-8")
+        fixed, changes = collapse_duplicate_sources(report, self.clusters(), self.lang, self.canonicals())
+        if changes:
+            atomic_write(path, fixed)
+
     def load_sources(self):
         data = json.loads((self.dir / "sources.json").read_text(encoding="utf-8"))
         self.sources = data["sources"]
@@ -968,7 +979,7 @@ class Run:
         draft, fixed = clean_internal_cites(draft, self.lang)
         # 범위 밖 인용 하나로 실행 전체를 멈추지 않는다. 지운 별칭은 기록해 최종 검증 상태에 남긴다.
         draft, dropped = drop_unknown_cites(draft, self.known, self.lang)
-        draft, collapsed = collapse_duplicate_sources(draft, self.clusters(), self.lang)
+        draft, collapsed = collapse_duplicate_sources(draft, self.clusters(), self.lang, self.canonicals())
         atomic_write(self.dir / "draft_gate.json", json.dumps({"unknown_cites_removed": dropped, "duplicate_sources_collapsed": collapsed},
                                                               ensure_ascii=False))
         problems = report_lint(draft, self.prompt, self.known, self.lang)
@@ -1072,11 +1083,13 @@ class Run:
         actionable = [f for f in findings if f.get("patch_action") != "deferred"]
         if not actionable:
             atomic_write(self.dir / "report.md", (self.dir / "draft.md").read_text(encoding="utf-8"))
+            self.normalize_report()
             self.end("patch", "ok", "적용 가능한 지적 없음, 초안 유지"); return
         ids = {s for f in actionable for s in f.get("source_ids", [])} & self.known or self.relevant
         note = self._apply_hunk_step("patcher", "patcher", "draft.md", "report.md", "patcher", self.G["patch_max_ratio"],
                                      {"findings.json": json.dumps({"findings": actionable}, ensure_ascii=False), "_digest.md": self.digest(),
                                       **self.excerpts(ids, "\n".join(f["problem"] + " " + f.get("suggested_fix", "") for f in actionable))})
+        self.normalize_report()
         self.end("patch", "ok", note)
 
     def evidence_sources(self):
@@ -1161,7 +1174,9 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
             return
         if not self.begin("polish"):
             return
-        self.end("polish", "ok", self._apply_hunk_step("polish", "polish", "report.md", "report.md", "polish", self.G["polish_max_ratio"], {}))
+        note = self._apply_hunk_step("polish", "polish", "report.md", "report.md", "polish", self.G["polish_max_ratio"], {})
+        self.normalize_report()   # 재검사(recheck)가 정리된 본문을 스냅샷하도록 그 전에 둔다.
+        self.end("polish", "ok", note)
 
     def step_recheck(self):
         """다듬기로 바뀐 인용 문장만 최대 한 호출로 재검사한다. 기본 OFF."""
@@ -1229,10 +1244,8 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         if not self.begin("final"):
             return out
         report = (self.dir / "report.md").read_text(encoding="utf-8")
-        # 수정·다듬기 단계가 다시 들인 복제 출처 겹침 인용과 중복 행도 정리한다.
-        report, collapsed = collapse_duplicate_sources(report, self.clusters(), self.lang)
         report, source_list_added = sync_source_list(report, self.sources, self.lang)
-        if source_list_added or collapsed:
+        if source_list_added:
             atomic_write(self.dir / "report.md", report)
         problems = report_lint(report, self.prompt, self.known, self.lang)
         final_check = (self.dir / "citecheck_final.json").exists()

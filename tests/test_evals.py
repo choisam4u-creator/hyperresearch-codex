@@ -73,6 +73,12 @@ class UnknownCiteTests(unittest.TestCase):
         self.assertEqual(["S9"], removed)
         self.assertEqual("## Evidence\n- A rose [S1]. B fell [S2].\n", text)
 
+    def test_unknown_alias_is_stripped_from_mixed_source_row(self):
+        text, removed = gates.drop_unknown_cites("## Sources\n- [S1], [S9] reports\n- [S9] x\n", {"S1"}, "en")
+        self.assertEqual("## Sources\n- [S1] reports\n", text)
+        self.assertEqual(["S9"], removed)
+        self.assertEqual([], gates.cites_resolve(text, {"S1"}))
+
     def test_known_cites_are_untouched(self):
         original = "## Answer\nA [S1]. B [S2].\n\n## Sources\n- [S1] a\n- [S2] b\n"
         self.assertEqual((original, []), gates.drop_unknown_cites(original, {"S1", "S2"}, "en"))
@@ -89,16 +95,23 @@ class UnknownCiteTests(unittest.TestCase):
 
 class DuplicateSourceTests(unittest.TestCase):
     CLUSTERS = {"S1": "S1", "S2": "S2", "S3": "S1"}
+    SAME_URL = {"S1": "https://a.example/x", "S3": "https://a.example/x"}
 
-    def test_same_origin_copy_is_not_shown_as_independent(self):
+    def test_similarity_only_cluster_keeps_both_cites_with_warning(self):
         text, changes = gates.collapse_duplicate_sources("## 근거\n- 두 출처가 확인한다 [S1][S3].\n", self.CLUSTERS, "ko")
-        self.assertEqual("## 근거\n- 두 출처가 확인한다 [S1] (S3: S1과 같은 원문 계열).\n", text)
+        self.assertEqual("## 근거\n- 두 출처가 확인한다 [S1][S3] (S1·S3: 본문 유사, 독립 출처가 아닐 수 있음).\n", text)
+        self.assertEqual(["S3?S1"], changes)
+        self.assertEqual((text, []), gates.collapse_duplicate_sources(text, self.CLUSTERS, "ko"))   # 재실행해도 같음
+
+    def test_same_canonical_url_is_collapsed(self):
+        text, changes = gates.collapse_duplicate_sources("## 근거\n- 두 출처가 확인한다 [S1][S3].\n", self.CLUSTERS, "ko", self.SAME_URL)
+        self.assertEqual("## 근거\n- 두 출처가 확인한다 [S1] (S3: S1과 같은 정본 URL).\n", text)
         self.assertEqual(["S3~S1"], changes)
 
-    def test_independent_sources_stay_and_mixed_run_keeps_distinct_groups(self):
-        text, _ = gates.collapse_duplicate_sources("## Evidence\n- A [S1][S2]. B [S1] [S2] [S3].\n", self.CLUSTERS, "en")
+    def test_independent_sources_stay(self):
+        text, _ = gates.collapse_duplicate_sources("## Evidence\n- A [S1][S2]. B [S1] [S2] [S3].\n", self.CLUSTERS, "en", self.SAME_URL)
         self.assertIn("A [S1][S2].", text)
-        self.assertIn("B [S1][S2] (S3: same-origin copy of S1).", text)
+        self.assertIn("B [S1][S2] (S3: same canonical URL as S1).", text)
 
     def test_repeated_source_rows_are_removed(self):
         text, changes = gates.collapse_duplicate_sources("## Sources\n- [S1] a\n- [S2] b\n- [S1] a\n", self.CLUSTERS, "en")
