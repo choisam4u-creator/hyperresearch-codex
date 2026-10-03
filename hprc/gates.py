@@ -138,6 +138,48 @@ def drop_unknown_cites(text: str, known: set[str], lang: str = "ko") -> tuple[st
     return "\n".join(lines) + "\n".join(tail_lines) if tail else "\n".join(lines), sorted(set(removed), key=lambda v: int(v[1:]))
 
 
+_CITE_RUN = re.compile(r"\[S\d+\](?:[ \t]*\[S\d+\])+")
+
+
+def collapse_duplicate_sources(text: str, clusters: dict[str, str], lang: str = "ko") -> tuple[str, list[str]]:
+    """같은 관계 묶음(복제·전재) 출처를 독립 근거처럼 겹쳐 인용한 것과 출처 목록의 중복 행을 정리한다.
+
+    "[S1][S3]"에서 S3이 S1과 같은 묶음이면 "[S1] (S3: S1과 같은 원문 계열)"로 바꿔, 대표 출처는
+    남기고 복제본이 따로 확인한 것처럼 보이지 않게 한다. 반환: (정리된 본문, 바뀐 내용 목록)."""
+    heading = LANG.get(lang, LANG["ko"])["sources"]
+    match = re.search(rf"(?m)^{re.escape(heading)}\s*$", text)
+    body, tail = (text[:match.start()], text[match.start():]) if match else (text, "")
+    changes: list[str] = []
+
+    def repl(m):
+        kept, dropped = [], []
+        for alias in dict.fromkeys(CITE.findall(m.group(0))):
+            group = clusters.get(alias, alias)
+            rep = next((k for k in kept if clusters.get(k, k) == group), None)
+            (dropped.append((alias, rep)) if rep else kept.append(alias))
+        if not dropped:
+            return m.group(0)
+        changes.extend(f"{alias}~{rep}" for alias, rep in dropped)
+        note = ", ".join(f"{alias}: {rep}과 같은 원문 계열" if lang == "ko" else f"{alias}: same-origin copy of {rep}"
+                         for alias, rep in dropped)
+        return "".join(f"[{k}]" for k in kept) + f" ({note})"
+    body = _CITE_RUN.sub(repl, body)
+    if tail:
+        next_heading = re.search(r"(?m)^##\s+", tail[len(heading):])
+        end = len(heading) + next_heading.start() if next_heading else len(tail)
+        seen, rows = set(), []
+        for line in tail[:end].split("\n"):
+            first = CITE.search(line)
+            if first and line.lstrip().startswith(("-", "*")) and first.group(1) in seen:
+                changes.append(f"row:{first.group(1)}")
+                continue
+            if first:
+                seen.add(first.group(1))
+            rows.append(line)
+        tail = "\n".join(rows) + tail[end:]
+    return body + tail, changes
+
+
 def sync_source_list(text: str, sources: list[dict], lang: str = "ko") -> tuple[str, list[str]]:
     """본문 인용 별칭이 사람이 읽는 출처 절에도 모두 보이도록 누락 행을 보충한다."""
     heading = LANG.get(lang, LANG["ko"])["sources"]

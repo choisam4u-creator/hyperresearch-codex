@@ -23,8 +23,8 @@ from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
-                    defer_excerpt_absence_findings, drop_unknown_cites, judgment_sentences, report_lint,
-                    sync_source_list)
+                    collapse_duplicate_sources, defer_excerpt_absence_findings, drop_unknown_cites, judgment_sentences,
+                    report_lint, sync_source_list)
 from .manifest import Manifest, atomic_write
 from .locking import LockError, run_lock
 from .run_paths import run_directory
@@ -557,6 +557,9 @@ class Run:
             lines.append(f"- 묶음 {cid}: {', '.join(ids)}" + ("" if len(ids) == 1 else "  ← URL 정본 일치 또는 본문 유사"))
         return "\n".join(lines) + "\n"
 
+    def clusters(self) -> dict[str, str]:
+        return {s["id"]: s.get("cluster", s["id"]) for s in self.sources}
+
     def load_sources(self):
         data = json.loads((self.dir / "sources.json").read_text(encoding="utf-8"))
         self.sources = data["sources"]
@@ -965,7 +968,9 @@ class Run:
         draft, fixed = clean_internal_cites(draft, self.lang)
         # 범위 밖 인용 하나로 실행 전체를 멈추지 않는다. 지운 별칭은 기록해 최종 검증 상태에 남긴다.
         draft, dropped = drop_unknown_cites(draft, self.known, self.lang)
-        atomic_write(self.dir / "draft_gate.json", json.dumps({"unknown_cites_removed": dropped}, ensure_ascii=False))
+        draft, collapsed = collapse_duplicate_sources(draft, self.clusters(), self.lang)
+        atomic_write(self.dir / "draft_gate.json", json.dumps({"unknown_cites_removed": dropped, "duplicate_sources_collapsed": collapsed},
+                                                              ensure_ascii=False))
         problems = report_lint(draft, self.prompt, self.known, self.lang)
         if fixed:
             problems.append(f"internal_cites_cleaned:{fixed}")
@@ -1224,8 +1229,10 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         if not self.begin("final"):
             return out
         report = (self.dir / "report.md").read_text(encoding="utf-8")
+        # 수정·다듬기 단계가 다시 들인 복제 출처 겹침 인용과 중복 행도 정리한다.
+        report, collapsed = collapse_duplicate_sources(report, self.clusters(), self.lang)
         report, source_list_added = sync_source_list(report, self.sources, self.lang)
-        if source_list_added:
+        if source_list_added or collapsed:
             atomic_write(self.dir / "report.md", report)
         problems = report_lint(report, self.prompt, self.known, self.lang)
         final_check = (self.dir / "citecheck_final.json").exists()

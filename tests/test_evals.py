@@ -87,6 +87,29 @@ class UnknownCiteTests(unittest.TestCase):
         self.assertIn("review_required", final)
 
 
+class DuplicateSourceTests(unittest.TestCase):
+    CLUSTERS = {"S1": "S1", "S2": "S2", "S3": "S1"}
+
+    def test_same_origin_copy_is_not_shown_as_independent(self):
+        text, changes = gates.collapse_duplicate_sources("## 근거\n- 두 출처가 확인한다 [S1][S3].\n", self.CLUSTERS, "ko")
+        self.assertEqual("## 근거\n- 두 출처가 확인한다 [S1] (S3: S1과 같은 원문 계열).\n", text)
+        self.assertEqual(["S3~S1"], changes)
+
+    def test_independent_sources_stay_and_mixed_run_keeps_distinct_groups(self):
+        text, _ = gates.collapse_duplicate_sources("## Evidence\n- A [S1][S2]. B [S1] [S2] [S3].\n", self.CLUSTERS, "en")
+        self.assertIn("A [S1][S2].", text)
+        self.assertIn("B [S1][S2] (S3: same-origin copy of S1).", text)
+
+    def test_repeated_source_rows_are_removed(self):
+        text, changes = gates.collapse_duplicate_sources("## Sources\n- [S1] a\n- [S2] b\n- [S1] a\n", self.CLUSTERS, "en")
+        self.assertEqual("## Sources\n- [S1] a\n- [S2] b\n", text)
+        self.assertEqual(["row:S1"], changes)
+
+    def test_single_cites_are_untouched(self):
+        original = "## Answer\nA [S3]. B [S1].\n\n## Sources\n- [S1] a\n- [S3] c\n"
+        self.assertEqual((original, []), gates.collapse_duplicate_sources(original, self.CLUSTERS, "en"))
+
+
 class HarnessTests(unittest.TestCase):
     def test_every_case_runs_through_the_pipeline(self):
         os.environ["HPR_BACKEND"] = "mock"
