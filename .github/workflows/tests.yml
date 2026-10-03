@@ -18,7 +18,7 @@ jobs:
       - run: hpr --help
       - run: HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py' -v
       - name: Quality evals
-        run: HPR_BACKEND=mock python -m evals.run --min-total 70
+        run: HPR_BACKEND=mock python -m evals.run --min-total 90
       - name: Build wheel
         run: |
           python -m pip wheel --no-deps . --wheel-dir "$RUNNER_TEMP/hpr-wheel"

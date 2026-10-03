@@ -1,0 +1,51 @@
+{
+  "findings": [],
+  "dropped": [],
+  "deferred": [],
+  "deterministic": {
+    "checks": [
+      {
+        "id": "first_line_question",
+        "kind": "first_line_question",
+        "passed": true,
+        "expected": [
+          "# Question: 보호 자전거 차로 설치의 효과를 수치와 한계까지 정리하라.",
+          "# 질문: 보호 자전거 차로 설치의 효과를 수치와 한계까지 정리하라.",
+          "보호 자전거 차로 설치의 효과를 수치와 한계까지 정리하라."
+        ],
+        "observed": "# 질문: 보호 자전거 차로 설치의 효과를 수치와 한계까지 정리하라."
+      },
+      {
+        "id": "required_section_1",
+        "kind": "required_section",
+        "passed": true,
+        "expected": [
+          "## 답"
+        ],
+        "observed": "## 답"
+      },
+      {
+        "id": "required_section_2",
+        "kind": "required_section",
+        "passed": true,
+        "expected": [
+          "## 근거"
+        ],
+        "observed": "## 근거"
+      },
+      {
+        "id": "required_section_3",
+        "kind": "required_section",
+        "passed": true,
+        "expected": [
+          "## 한계",
+          "## 반대 근거와 한계"
+        ],
+        "observed": "## 한계"
+      }
+    ],
+    "findings": [],
+    "passed": true,
+    "scope": "deterministic_first_line_and_existing_required_sections"
+  }
+}

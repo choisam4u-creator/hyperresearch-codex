@@ -1,0 +1,63 @@
+{
+  "sources": [
+    {
+      "id": "S1",
+      "note_id": "N-8b071080d314be85c21b33339a287bf115182b77ec78a7ade85c09535a732476",
+      "path": "research/notes/N-8b071080d314be85c21b33339a287bf115182b77ec78a7ade85c09535a732476-replay-ko-bike-lanes-s1.md",
+      "url": "https://fixture.invalid/replay/ko-bike-lanes/S1",
+      "title": "replay ko-bike-lanes S1",
+      "domain": "fixture.invalid",
+      "published": "",
+      "published_source": "",
+      "modified": "",
+      "modified_source": "",
+      "canonical": "https://fixture.invalid/replay/ko-bike-lanes/S1",
+      "via": "benchmark_replay",
+      "official": false,
+      "chars": 200,
+      "fetched_at": "2026-09-10",
+      "cluster": "S1"
+    },
+    {
+      "id": "S2",
+      "note_id": "N-4e07b2934719d3bebccd2986f09cc5ff691d11f7a974292312b0da44f8d2b4d4",
+      "path": "research/notes/N-4e07b2934719d3bebccd2986f09cc5ff691d11f7a974292312b0da44f8d2b4d4-replay-ko-bike-lanes-s2.md",
+      "url": "https://fixture.invalid/replay/ko-bike-lanes/S2",
+      "title": "replay ko-bike-lanes S2",
+      "domain": "fixture.invalid",
+      "published": "",
+      "published_source": "",
+      "modified": "",
+      "modified_source": "",
+      "canonical": "https://fixture.invalid/replay/ko-bike-lanes/S2",
+      "via": "benchmark_replay",
+      "official": false,
+      "chars": 118,
+      "fetched_at": "2026-09-10",
+      "cluster": "S2"
+    },
+    {
+      "id": "S3",
+      "note_id": "N-c807526ff74f47c88c4390a7d149e66b5484a43de237e816df696f2a31445be3",
+      "path": "research/notes/N-c807526ff74f47c88c4390a7d149e66b5484a43de237e816df696f2a31445be3-replay-ko-bike-lanes-s3.md",
+      "url": "https://fixture.invalid/replay/ko-bike-lanes/S3",
+      "title": "replay ko-bike-lanes S3",
+      "domain": "fixture.invalid",
+      "published": "",
+      "published_source": "",
+      "modified": "",
+      "modified_source": "",
+      "canonical": "https://fixture.invalid/replay/ko-bike-lanes/S3",
+      "via": "benchmark_replay",
+      "official": false,
+      "chars": 108,
+      "fetched_at": "2026-09-10",
+      "cluster": "S3"
+    }
+  ],
+  "skipped": [],
+  "independent_groups": 3,
+  "warnings": [
+    "domain_skew:fixture.invalid:100%"
+  ]
+}

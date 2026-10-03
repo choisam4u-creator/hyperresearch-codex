@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "sentence": "보호 차로 구간의 평일 자전거 통행량은 평균 37% 늘었다 [S1].",
+      "cites": [
+        "S1"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 4
+    },
+    {
+      "sentence": "부상 사고는 21건에서 15건으로 줄었다 [S1].",
+      "cites": [
+        "S1"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 4
+    },
+    {
+      "sentence": "- 하루 평균 불법 주정차는 52대에서 19대로 줄었다 [S3].",
+      "cites": [
+        "S3"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 7
+    },
+    {
+      "sentence": "- 응답 점포의 41%는 매출 변화가 없다고 답했다 [S2].",
+      "cites": [
+        "S2"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 8
+    },
+    {
+      "sentence": "- 사고 건수가 적어 통계적 결론을 내리기 어렵다 [S1].",
+      "cites": [
+        "S1"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 12
+    },
+    {
+      "sentence": "- 상인 설문은 장부가 아니라 인식을 물었다 [S2].",
+      "cites": [
+        "S2"
+      ],
+      "supported": true,
+      "reason": "모의 검사",
+      "line": 13
+    }
+  ],
+  "sampling": {
+    "samples": [
+      {
+        "sentence": "보호 차로 구간의 평일 자전거 통행량은 평균 37% 늘었다 [S1].",
+        "cites": [
+          "S1"
+        ],
+        "line": 4
+      },
+      {
+        "sentence": "부상 사고는 21건에서 15건으로 줄었다 [S1].",
+        "cites": [
+          "S1"
+        ],
+        "line": 4
+      },
+      {
+        "sentence": "- 하루 평균 불법 주정차는 52대에서 19대로 줄었다 [S3].",
+        "cites": [
+          "S3"
+        ],
+        "line": 7
+      },
+      {
+        "sentence": "- 응답 점포의 41%는 매출 변화가 없다고 답했다 [S2].",
+        "cites": [
+          "S2"
+        ],
+        "line": 8
+      },
+      {
+        "sentence": "- 사고 건수가 적어 통계적 결론을 내리기 어렵다 [S1].",
+        "cites": [
+          "S1"
+        ],
+        "line": 12
+      },
+      {
+        "sentence": "- 상인 설문은 장부가 아니라 인식을 물었다 [S2].",
+        "cites": [
+          "S2"
+        ],
+        "line": 13
+      }
+    ],
+    "eligible_count": 6,
+    "excluded_judgment_count": 0,
+    "selected_count": 6,
+    "scope": "sample_only",
+    "line_reference": "citecheck_report.md",
+    "checked_count": 6,
+    "unmatched_count": 0
+  },
+  "report_sha256": "48033eee867d61e54af872f972a8272106dc6a4d1e7d943a524437ff9cf55078",
+  "source_hashes": {
+    "S1": "59f94c1daed1b9b2eef986aa06b9bef4ab2f612f783e12bfd94fd49b8364a332",
+    "S2": "7f1e5dce74297b67f5e6371f00e400a24beb5b4c651b15211840ffb3fb4550bb",
+    "S3": "6a60244690e925420e9ecc1b6b95cd7ca71e60a534a2321c4ba0cefb234f9ffc"
+  },
+  "verification_context": "7f9f0b5e189d01e63056ca22b1a6cc022f66136c9c93733ebcdcef38f8bef779"
+}

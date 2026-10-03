@@ -1,0 +1,32 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "text": "시 교통국의 2026년 자전거 도로 평가 보고서다.",
+      "sources": [
+        "S1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "C2",
+      "text": "상인 연합회의 설문은 보호 차로 구간 점포 86곳을 대상으로 했다.",
+      "sources": [
+        "S2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "C3",
+      "text": "시민단체의 현장 관찰 기록은 보호 차로 구간의 불법 주정차를 2주간 세었다.",
+      "sources": [
+        "S3"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "contradictions": [],
+  "gaps": [
+    "모의 분석: 빈틈 예시"
+  ]
+}
