@@ -23,7 +23,8 @@ from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
 from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
-                    defer_excerpt_absence_findings, judgment_sentences, report_lint, sync_source_list)
+                    defer_excerpt_absence_findings, drop_unknown_cites, judgment_sentences, report_lint,
+                    sync_source_list)
 from .manifest import Manifest, atomic_write
 from .locking import LockError, run_lock
 from .run_paths import run_directory
@@ -962,9 +963,14 @@ class Run:
                               {"question.txt": self.prompt, "_digest.md": digest, "_independence.md": self.independence_md(),
                                **drafts_in, **self._interim(), **self.excerpts(self.relevant, self.prompt + "\n" + "\n".join(drafts_in.values())[:20000])}, "synth")["markdown"]
         draft, fixed = clean_internal_cites(draft, self.lang)
+        # 범위 밖 인용 하나로 실행 전체를 멈추지 않는다. 지운 별칭은 기록해 최종 검증 상태에 남긴다.
+        draft, dropped = drop_unknown_cites(draft, self.known, self.lang)
+        atomic_write(self.dir / "draft_gate.json", json.dumps({"unknown_cites_removed": dropped}, ensure_ascii=False))
         problems = report_lint(draft, self.prompt, self.known, self.lang)
         if fixed:
             problems.append(f"internal_cites_cleaned:{fixed}")
+        if dropped:
+            problems.append("dropped_unknown_cites:" + ",".join(dropped))
         hard = [p for p in problems if p.startswith(("verbatim", "unknown_cites", "no_citations"))]
         if hard:
             raise Blocked(f"초안 게이트 실패: {hard}")
@@ -1311,6 +1317,13 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
             quality["status"] = "review_required"
         if problems:
             quality["issues"] += [{"kind": "report_lint", "severity": "high", "line": None, "message": p} for p in problems]
+            quality["status"] = "review_required"
+        gate_path = self.dir / "draft_gate.json"
+        dropped = json.loads(gate_path.read_text(encoding="utf-8")).get("unknown_cites_removed", []) if gate_path.exists() else []
+        if dropped:
+            quality["issues"].append({"kind": "unknown_cites_removed", "severity": "medium", "line": None,
+                                      "message": ("초안의 없는 출처 인용을 지우고 '(출처 없음)'으로 표시했습니다: " if self.lang == "ko"
+                                                  else "Removed draft citations to nonexistent sources and marked them '(no source)': ") + ", ".join(dropped)})
             quality["status"] = "review_required"
         gap_path = self.dir / "gap_fetch.json"
         if gap_path.exists():

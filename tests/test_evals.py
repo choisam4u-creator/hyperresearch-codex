@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from evals import run, score  # noqa: E402
+from hprc import gates  # noqa: E402
 
 SOURCES = {"S1": {"text": "The pilot covered 12 buildings. Peak demand fell by 18.4 kW at the library.", "cluster": "S1"},
            "S2": {"text": "The pilot covered 12 buildings. Peak demand fell by 18.4 kW at the library.", "cluster": "S1"}}
@@ -59,6 +60,33 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(all(score.score(None, "ko", "q", {})[m] == 0 for m in score.METRICS))
 
 
+class UnknownCiteTests(unittest.TestCase):
+    def test_unknown_cite_is_replaced_by_no_source_marker(self):
+        text, removed = gates.drop_unknown_cites("## 근거\n- 대중교통도 늘었다 [S4].\n\n## 출처\n- [S1] a\n- [S4] b\n", {"S1"}, "ko")
+        self.assertEqual(["S4"], removed)
+        self.assertIn("대중교통도 늘었다 (출처 없음).", text)
+        self.assertNotIn("[S4]", text)
+        self.assertIn("- [S1] a", text)
+
+    def test_unknown_cite_next_to_valid_cite_is_just_dropped(self):
+        text, removed = gates.drop_unknown_cites("## Evidence\n- A rose [S1][S9]. B fell [S2].\n", {"S1", "S2"}, "en")
+        self.assertEqual(["S9"], removed)
+        self.assertEqual("## Evidence\n- A rose [S1]. B fell [S2].\n", text)
+
+    def test_known_cites_are_untouched(self):
+        original = "## Answer\nA [S1]. B [S2].\n\n## Sources\n- [S1] a\n- [S2] b\n"
+        self.assertEqual((original, []), gates.drop_unknown_cites(original, {"S1", "S2"}, "en"))
+
+    def test_pipeline_keeps_running_and_reports_the_removal(self):
+        os.environ["HPR_BACKEND"] = "mock"
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run.run_case(run.load_cases("ko-bike-lanes")[0], Path(tmp))
+            final = (Path(tmp) / "ko-bike-lanes/research/runs/eval/final_report.md").read_text(encoding="utf-8")
+        self.assertFalse(result["failed"], result["error"])
+        self.assertIn("unknown_cites_removed", final)
+        self.assertIn("review_required", final)
+
+
 class HarnessTests(unittest.TestCase):
     def test_every_case_runs_through_the_pipeline(self):
         os.environ["HPR_BACKEND"] = "mock"
@@ -66,6 +94,7 @@ class HarnessTests(unittest.TestCase):
             for case in run.load_cases():
                 result = run.run_case(case, Path(tmp))
                 self.assertIn("writer", result["calls"], case["id"])
+                self.assertFalse(result["failed"], (case["id"], result["error"]))
 
     def test_clean_control_case_stays_perfect(self):
         os.environ["HPR_BACKEND"] = "mock"
