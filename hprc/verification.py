@@ -26,7 +26,7 @@ _KOREAN_DATE_LIKE = re.compile(
 )
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
-_UNITS = ("milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
+_UNITS = ("percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 _QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
@@ -54,7 +54,7 @@ _UNIT_SCALE = {
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
     "개": ("count_item", Decimal("1")), "곳": ("count_place", Decimal("1")), "개소": ("count_place", Decimal("1")),
     "대": ("count_vehicle", Decimal("1")), "회": ("count_occurrence", Decimal("1")), "종": ("count_type", Decimal("1")),
-    "%": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
+    "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
     "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
 }
@@ -372,6 +372,76 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     return absent
 
 
+# 본문 표시용 증감 낱말은 검증 절의 _DIRECTIONS보다 좁게 둔다('늘'·'줄'은 '오늘'·'줄곧'에도 걸린다).
+_UP_MARK = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|늘렸|상승", re.I)
+_DOWN_MARK = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|reduced?|dropped)\b|감소|줄었|줄어|줄였|하락|낮췄|낮아", re.I)
+_SOURCE_SPLIT = re.compile(r"(?<=[.!?。])\s+|\n+")
+_EN_CONTEXT_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into",
+                    "their", "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year",
+                    "years", "median", "average", "report", "reports", "notes", "source"}
+
+
+def _plain_claim(sentence: str) -> str:
+    text = _CITE_ID.sub("", sentence)
+    text = re.sub(r"\((?:S\d+[:·][^)]*|판단|출처 없음|출처 불일치|judgment|no source|source mismatch)\)", "", text)
+    return text.strip()
+
+
+def _direction_of(text: str) -> str:
+    up, down = bool(_UP_MARK.search(text)), bool(_DOWN_MARK.search(text))
+    return "up" if up and not down else "down" if down and not up else ""
+
+
+def _content_stems(text: str) -> set[str]:
+    """문맥 비교용 낱말. 영어는 4글자 이상 낱말, 한국어는 어절 앞 두 글자(조사 차이를 넘기려는 근사)."""
+    text = _UP_MARK.sub(" ", _DOWN_MARK.sub(" ", re.sub(r"\d[\d,.]*", " ", text)))
+    return ({w.lower() for w in re.findall(r"[A-Za-z]{4,}", text)} - _EN_CONTEXT_STOP) | {w[:2] for w in re.findall(r"[가-힣]{2,}", text)}
+
+
+def _char_bigrams(text: str) -> set[str]:
+    compact = re.sub(r"[^0-9a-z가-힣]", "", text.lower())
+    return {compact[i:i + 2] for i in range(len(compact) - 1)}
+
+
+def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
+    """원문에 같은 값이 있어도 독자를 오도하는 경우만 돌려준다(확정에 가까운 신호만).
+
+    - direction: 같은 값이 든 원문 문장(값이 없으면 2-gram 60% 이상 겹치는 가장 가까운 문장)이
+      모두 주장과 반대 증감 방향만 말한다.
+    - context: 주장의 수치가 든 원문 문장 어디에도 주장의 문맥 낱말이 하나도 없다(같은 문자 체계일 때만;
+      번역 인용을 낱말 비교로 불일치라 단정하지 않는다)."""
+    plain = _plain_claim(sentence)
+    sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
+    if not plain or not sents:
+        return []
+    claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
+
+    def holders(value: dict) -> list[str]:
+        return [s for s in sents if any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])
+                                        for c in _quantity_values(s, _date_like_spans(s)) if not c.get("unsupported_unit"))]
+
+    found = []
+    claim_dir = _direction_of(plain)
+    if claim_dir:
+        anchored = list(dict.fromkeys(s for v in claim_values for s in holders(v)))
+        if not anchored:
+            grams = _char_bigrams(plain)
+            best = max(sents, key=lambda s: len(grams & _char_bigrams(s)))
+            if grams and len(grams & _char_bigrams(best)) / len(grams) >= 0.6:
+                anchored = [best]
+        if anchored and all(_direction_of(s) not in ("", claim_dir) for s in anchored):
+            found.append("direction")
+    stems = _content_stems(plain)
+    if stems and not _UNVERIFIED_SCOPE.search(plain):
+        for value in claim_values:
+            held = holders(value)
+            if (held and all(_scripts(s) == _scripts(plain) for s in held)
+                    and not any(any(t in s.lower() for t in stems) for s in held)):
+                found.append("context")
+                break
+    return found
+
+
 def _with_mark(sentence: str, mark: str) -> str:
     """문장 끝 구두점 앞에 표시를 넣는다. 구두점 뒤 인용이 있으면 맨 끝에 붙인다."""
     body = sentence.rstrip()
@@ -396,12 +466,16 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     """독자가 경고 없이 읽게 되는 근거 문제를 본문 문장에 직접 표시한다.
 
     - 인용 문장의 숫자·날짜가 인용 원문에 없으면 '(출처 불일치)'
+    - 인용 문장이 원문 값과 반대 증감 방향을 말하거나, 수치가 원문의 전혀 다른 문맥에서 왔으면 '(출처 불일치)'
     - 답·근거·한계 절의 인용도 판단 표시도 없는 사실 문장에는 '(출처 없음)'
-    판단 표시 문장, 표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
-    반환: (표시한 본문, {"mismatch": [...], "no_source": [...]})."""
+    - '(판단)'만 붙었지만 어떤 출처에도 없는 수치를 단정하는 문장에도 '(출처 없음)'
+    표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
+    반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
-    changes: dict[str, list[str]] = {"mismatch": [], "no_source": []}
+    changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": []}
+    all_text = "\n".join(source_texts.values())
+    all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -420,14 +494,26 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
         pieces = _MARK_SPLIT.split(line[len(lead):])
         fixed = []
         for index, piece in enumerate(pieces):
+            if (not index % 2 and claim_section and M["judgment"] in piece
+                    and not any(m in piece for m in marks[1:]) and not _CITE_ID.search(piece)
+                    and not _UNVERIFIED_SCOPE.search(piece)
+                    and any(not any(c["dimension"] == v["dimension"] and abs(c["value"]) == abs(v["value"]) for c in all_values)
+                            for v in _quantity_values(piece, _date_like_spans(piece)) if not v.get("unsupported_unit"))):
+                # 판단 표시는 해석에 쓰는 것이다. 어떤 출처에도 없는 수치를 단정하면 출처 없는 사실로 본다.
+                changes["no_source"].append(piece.strip())
+                fixed.append(_with_mark(piece, M["no_source"]))
+                continue
             if index % 2 or not piece.strip() or any(m in piece for m in marks):
                 fixed.append(piece)
                 continue
             cites = list(dict.fromkeys(_CITE_ID.findall(piece)))
             if cites:
                 cited_text = "\n".join(source_texts.get(c, "") for c in cites)
-                if cited_text.strip() and _absent_values(piece, cited_text):
+                conflicts = _value_conflicts(piece, cited_text) if cited_text.strip() else []
+                if cited_text.strip() and (_absent_values(piece, cited_text) or conflicts):
                     changes["mismatch"].append(piece.strip())
+                    for kind in conflicts:
+                        changes[f"{kind}_conflict"].append(piece.strip())
                     piece = _with_mismatch(piece, M["mismatch"])
             elif (claim_section and not piece.rstrip().endswith(":")
                   and len(re.sub(r"\W", "", piece)) >= 8):

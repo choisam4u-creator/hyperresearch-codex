@@ -46,7 +46,7 @@ class ReportMarkTests(unittest.TestCase):
         once, _ = mark_report_claims(KO, SOURCES, "ko")
         twice, changes = mark_report_claims(once, SOURCES, "ko")
         self.assertEqual(once, twice)
-        self.assertEqual({"mismatch": [], "no_source": []}, changes)
+        self.assertEqual({"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": []}, changes)
 
     def test_marker_stays_with_its_sentence_for_citation_sampling(self):
         text, _ = mark_report_claims(KO, SOURCES, "ko")
@@ -84,6 +84,64 @@ class ReportMarkTests(unittest.TestCase):
         text, changes = mark_report_claims("## 답\n전력은 18% 줄었다 [S9].\n", {}, "ko")
         self.assertNotIn("(출처 불일치)", text)
         self.assertEqual([], changes["mismatch"])
+
+
+class ValueConflictMarkTests(unittest.TestCase):
+    """원문에 같은 값이 있어도 반대 방향·다른 문맥이면 표시한다(2026-10-05). 오탐 방지 조건도 함께 고정한다."""
+
+    EN_SRC = {"S1": "Weekday ridership rose 21 percent compared with a year earlier. "
+                    "The report notes that 9 percent of surveyed riders switched from driving.",
+              "S2": "Complaints about crowding increased during the morning peak."}
+
+    def test_opposite_direction_with_same_number_is_marked(self):
+        text, changes = mark_report_claims("## Answer\nWeekday ridership fell 21 percent from a year earlier [S1].\n", self.EN_SRC, "en")
+        self.assertIn("(source mismatch) [S1]", text)
+        self.assertEqual(1, len(changes["direction_conflict"]))
+
+    def test_opposite_direction_without_number_needs_close_sentence(self):
+        text, _ = mark_report_claims("## Evidence\n- Complaints about crowding decreased during the morning peak [S2].\n", self.EN_SRC, "en")
+        self.assertIn("(source mismatch) [S2]", text)
+        loose, changes = mark_report_claims("## Evidence\n- Overall satisfaction decreased in winter [S2].\n", self.EN_SRC, "en")
+        self.assertNotIn("(source mismatch)", loose)
+        self.assertEqual([], changes["direction_conflict"])
+
+    def test_same_direction_is_not_marked(self):
+        text, _ = mark_report_claims("## Answer\nWeekday ridership increased 21 percent [S1].\n", self.EN_SRC, "en")
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_number_from_unrelated_source_sentence_is_marked(self):
+        text, changes = mark_report_claims("## Evidence\n- Traffic congestion on pilot corridors decreased 9 percent [S1].\n", self.EN_SRC, "en")
+        self.assertIn("(source mismatch) [S1]", text)
+        self.assertEqual(1, len(changes["context_conflict"]))
+
+    def test_cross_language_citation_is_not_called_out_of_context(self):
+        text, changes = mark_report_claims("## 근거\n- 승객 중 9%가 운전에서 전환했다 [S1].\n", self.EN_SRC, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        self.assertEqual([], changes["context_conflict"])
+
+    def test_korean_direction_and_context(self):
+        src = {"S1": "7월 쉼터 이용자는 하루 평균 1,240명이었고, 이 중 65세 이상이 71%였다.",
+               "S2": "7월 온열질환 신고는 23건으로 전년보다 감소했다. 오늘 집계를 공개했다."}
+        report = ("## 답\n온열질환 신고는 23건으로 전년보다 증가했다 [S2]. 온열질환 신고는 23건으로 줄었다 [S2].\n"
+                  "## 근거\n- 야간 운영으로 온열질환 신고가 71% 감소했다 [S1].\n- 이용자 중 65세 이상은 71%였다 [S1].\n")
+        text, changes = mark_report_claims(report, src, "ko")
+        self.assertIn("증가했다 (출처 불일치) [S2]", text)
+        self.assertIn("23건으로 줄었다 [S2].", text)
+        self.assertIn("71% 감소했다 (출처 불일치) [S1]", text)
+        self.assertIn("65세 이상은 71%였다 [S1].", text)
+        self.assertEqual(1, len(changes["direction_conflict"]))
+        self.assertEqual(1, len(changes["context_conflict"]))
+
+    def test_judgment_with_number_absent_from_all_sources_gets_no_source(self):
+        src = {"S1": "신고는 23건으로 전년 31건보다 감소했다."}
+        report = "## 답\n쉼터 덕분에 입원이 40% 줄었다 (판단).\n신고 23건은 작년 31건보다 적다 (판단).\n## 다음 행동\n- 40곳을 더 본다 (판단)\n"
+        text, changes = mark_report_claims(report, src, "ko")
+        self.assertIn("40% 줄었다 (판단) (출처 없음).", text)
+        self.assertIn("31건보다 적다 (판단).\n", text)
+        self.assertIn("- 40곳을 더 본다 (판단)\n", text)
+        self.assertEqual(1, len(changes["no_source"]))
+        again, _ = mark_report_claims(text, src, "ko")
+        self.assertEqual(text, again)
 
 
 if __name__ == "__main__":
