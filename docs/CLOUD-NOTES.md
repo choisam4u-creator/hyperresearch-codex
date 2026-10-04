@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-04 (품질 회차)
+
+- 점수 전후(`python -m evals.run`, 종합 평균): **95.6 → 99.2**. 주장-출처 일치 90.4→95.8, 표시 없는 미검증 주장 없음 90.6→100, 보고서 구조 97.2→100. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 개선 1 `verification.mark_report_claims`: 인용 원문에 없는 수치·날짜를 문장에 `(출처 불일치)`로, 답·근거·한계 절의 인용 없는 사실 문장을 `(출처 없음)`으로 직접 표시(수정·다듬기 직후, 인용 검사 전). 인용 없는 문장 표시가 있으면 review_required.
+  - 개선 2 `gates.fill_empty_limits`: 빈 한계 절을 분석 단계의 상충·빈틈으로 `(판단)` 표시해 채우고, 없으면 검토 필요를 명시.
+  - CI evals 하한 90→95. 시험 12개 추가(`tests/test_report_marks.py`, `tests/test_fill_limits.py`). CHANGELOG `Unreleased` 정리.
+  - 백로그: 공개 전 점검 보고(`docs/PUBLIC-CHECK-20261004.md`, 지운 것 없음). 품질 3건 완료 표시, 새 항목 3건 근거와 함께 추가.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 492개 통과(Python 3.11). `python -m evals.run --min-total 95` 통과. `compileall` 통과. `python -m evals.walkthrough examples/pipeline-walkthrough` 재생성 결과 변화 없음. 휠 빌드·3.12/3.13·Windows는 클라우드에서 돌리지 않음(CI 결과는 푸시 후 확인 필요). 실제 `codex exec`는 로그인이 없어 돌리지 않음.
+- 남은 한계: 고정 6개 case가 99.2로 포화돼 다음 개선을 구분하지 못한다(결함 case 추가가 백로그 맨 위 후보). `(출처 없음)` 자동 표시는 실제 codex 보고서에서 너무 많이 붙을 수 있다 — 문장 수와 review_required 비율을 실측해야 한다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "보호 자전거 차로의 효과는?"   # 결과 폴더의 report_marks.json·limits_filled.json과 final_report.md의 (출처 없음)·(출처 불일치) 개수 확인
+  ```
+
 ## 2026-10-03 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균): **76.0 → 95.6**. 인용 유효성 83.3→100, 주장-출처 일치 73.8→90.4, 중복 출처 없음 68.3→100, 표시 없는 미검증 주장 없음 73.9→90.6, 보고서 구조 80.5→97.2. 상세는 `docs/QUALITY-LOG.md`.
