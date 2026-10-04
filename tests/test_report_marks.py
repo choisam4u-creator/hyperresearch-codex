@@ -87,7 +87,7 @@ class ReportMarkTests(unittest.TestCase):
 
 
 class ValueConflictMarkTests(unittest.TestCase):
-    """원문에 같은 값이 있어도 반대 방향·다른 문맥이면 표시한다(2026-10-05). 오탐 방지 조건도 함께 고정한다."""
+    """원문에 같은 값이 있어도 반대 방향·다른 문맥이면 표시한다(2026-10-04 2회차). 오탐 방지 조건도 함께 고정한다."""
 
     EN_SRC = {"S1": "Weekday ridership rose 21 percent compared with a year earlier. "
                     "The report notes that 9 percent of surveyed riders switched from driving.",

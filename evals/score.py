@@ -72,12 +72,12 @@ def _numbers(text: str) -> list[str]:
     return [n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text)]
 
 
-# 방향 낱말과 문맥 낱말 비교(2026-10-05 기준 강화, QUALITY-LOG 참조). 영어는 낱말, 한국어는 어절 앞 두 글자로 본다.
+# 방향 낱말과 문맥 낱말 비교(2026-10-04 2회차 기준 강화, QUALITY-LOG 참조). 영어는 낱말, 한국어는 어절 앞 두 글자로 본다.
 _UP = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|상승|많아", re.I)
 _DOWN = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|lower|reduced?|dropped)\b|감소|줄었|줄어|하락|적었|낮아|낮췄", re.I)
 _EN_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into", "their",
             "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year", "years", "median",
-            "average", "about"}
+            "average"}
 
 
 def _source_sentences(source_text: str) -> list[str]:
@@ -105,7 +105,7 @@ def _shares_context(claim: str, source_sentence: str) -> bool:
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
-    2026-10-05 기준 강화: 숫자가 든 원문 문장 중 하나는 주장과 문맥 낱말을 공유해야 하고,
+    2026-10-04 2회차 기준 강화: 숫자가 든 원문 문장 중 하나는 주장과 문맥 낱말을 공유해야 하고,
     주장과 가장 가까운 원문 문장(숫자가 있으면 그 숫자가 든 문장)과 증감 방향이 반대면 안 된다."""
     plain = _plain(sentence, lang)
     source_numbers = set(_numbers(source_text))
@@ -169,7 +169,7 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     denom = len(rows) + len(multi)
     duplicate_sources = 1 - dup / denom if denom else 1.0
 
-    # '(판단)'만 붙은 문장이 어떤 출처에도 없는 수치를 담으면 판단이 아니라 표시 없는 사실로 본다(2026-10-05 기준 강화).
+    # '(판단)'만 붙은 문장이 어떤 출처에도 없는 수치를 담으면 판단이 아니라 표시 없는 사실로 본다(2026-10-04 2회차 기준 강화).
     all_numbers = {n for v in sources.values() for n in _numbers(v["text"])}
     unmarked = [s for s in claims if not CITE.search(s) and len(re.sub(r"\W", "", s)) >= 8
                 and (not any(m in s for m in MARKERS[lang])
