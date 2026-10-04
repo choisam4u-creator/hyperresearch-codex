@@ -39,5 +39,9 @@
       "unchecked": 1,
       "semantic_extraction_complete": false
     }
+  },
+  "marks": {
+    "no_source": 1,
+    "mismatch": 0
   }
 }

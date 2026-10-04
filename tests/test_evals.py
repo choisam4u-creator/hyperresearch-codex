@@ -93,6 +93,35 @@ class UnknownCiteTests(unittest.TestCase):
         self.assertIn("review_required", final)
 
 
+    def test_marks_are_counted_in_quality_and_header(self):
+        import json
+        os.environ["HPR_BACKEND"] = "mock"
+        with tempfile.TemporaryDirectory() as tmp:
+            run.run_case(run.load_cases("ko-heat-shelter")[0], Path(tmp))
+            out = Path(tmp) / "ko-heat-shelter/research/runs/eval"
+            quality = json.loads((out / "quality.json").read_text(encoding="utf-8"))
+            final = (out / "final_report.md").read_text(encoding="utf-8")
+        self.assertEqual({"no_source": 2, "mismatch": 2}, quality["marks"])
+        self.assertIn("본문 표시 출처 없음 2·출처 불일치 2개", final)
+        self.assertEqual("review_required", quality["status"])
+        self.assertIn("source_mismatch_marked", {i["kind"] for i in quality["issues"]})
+
+    def test_nonnumeric_direction_mismatch_alone_forces_review(self):
+        import json
+        os.environ["HPR_BACKEND"] = "mock"
+        case = json.loads(json.dumps(run.load_cases("en-solar-rebate")[0]))
+        md = case["responses"]["writer"][0]["markdown"]
+        case["responses"]["writer"][0]["markdown"] = md.replace(
+            "- The audit did not measure electricity savings [S2].",
+            "- Installation requests fell after the rebate was announced [S1].")
+        case["sources"]["S1"] += " Installation requests rose after the rebate was announced."
+        with tempfile.TemporaryDirectory() as tmp:
+            run.run_case(case, Path(tmp))
+            quality = json.loads((Path(tmp) / "en-solar-rebate/research/runs/eval/quality.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(quality["marks"]["mismatch"], 1)
+        self.assertEqual("review_required", quality["status"])
+
+
 class DuplicateSourceTests(unittest.TestCase):
     CLUSTERS = {"S1": "S1", "S2": "S2", "S3": "S1"}
     SAME_URL = {"S1": "https://a.example/x", "S3": "https://a.example/x"}

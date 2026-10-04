@@ -159,7 +159,9 @@ class UsageRecoveryTests(unittest.TestCase):
         statuses = (("passed", '{"status":"passed"}', "passed"),
                     ("review", '{"status":"review_required"}', "review_required"),
                     ("missing", None, "missing"),
-                    ("malformed", '{', "malformed"))
+                    ("malformed", '{', "malformed"),
+                    ("marked", '{"status":"review_required","marks":{"no_source":2,"mismatch":1}}',
+                     "review_required (출처 없음 2·출처 불일치 1)"))
         for run_id, payload, expected in statuses:
             run = pipeline.Run(self.root, "q", "light", run_id, quiet=True)
             if payload is not None:

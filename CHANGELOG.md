@@ -6,6 +6,7 @@
 - Collapse co-citations of the same canonical URL and warn on text-similar source pairs cited as if independent; drop duplicate Sources rows before citation checks.
 - Mark cited sentences whose numbers or dates are absent from the cited source `(source mismatch)` and uncited factual sentences in Answer/Evidence/Limits `(no source)` directly in the report body.
 - Fill an empty limits section with the analyst's conflicts and gaps marked `(judgment)`, or state that none were listed and review is needed.
+- Mark cited sentences `(source mismatch)` when every source sentence holding the same value states the opposite direction, when the number comes from an unrelated source sentence, or when text-similar sources are described as independent; add `(no source)` to `(judgment)` sentences asserting numbers found in no source. Count body marks in `quality.json`, the report header and `hpr status`.
 - Add the `evals/` fixed-case quality score (`python -m evals.run`) to CI. Fixed-case scores are not a general quality claim.
 
 ## 0.5.0 - 2026-09-26

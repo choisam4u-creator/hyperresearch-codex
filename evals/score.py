@@ -72,14 +72,60 @@ def _numbers(text: str) -> list[str]:
     return [n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", text)]
 
 
+# 방향 낱말과 문맥 낱말 비교(2026-10-04 2회차 기준 강화, QUALITY-LOG 참조). 영어는 낱말, 한국어는 어절 앞 두 글자로 본다.
+_UP = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|상승|많아", re.I)
+_DOWN = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|lower|reduced?|dropped)\b|감소|줄었|줄어|하락|적었|낮아|낮췄", re.I)
+_EN_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into", "their",
+            "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year", "years", "median",
+            "average"}
+
+
+def _source_sentences(source_text: str) -> list[str]:
+    return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", source_text) if s.strip()]
+
+
+def _direction(text: str) -> str:
+    up, down = bool(_UP.search(text)), bool(_DOWN.search(text))
+    return "up" if up and not down else "down" if down and not up else ""
+
+
+def _content_terms(text: str) -> set[str]:
+    text = re.sub(r"\d[\d,.]*", " ", text)
+    text = _UP.sub(" ", _DOWN.sub(" ", text))
+    words = {w.lower() for w in re.findall(r"[A-Za-z]{4,}", text)} - _EN_STOP
+    return words | {w[:2] for w in re.findall(r"[가-힣]{2,}", text)}
+
+
+def _shares_context(claim: str, source_sentence: str) -> bool:
+    terms = _content_terms(claim)
+    lowered = source_sentence.lower()
+    return not terms or any(t in lowered for t in terms)
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
-    """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다."""
+    """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
+
+    2026-10-04 2회차 기준 강화: 숫자가 든 원문 문장 중 하나는 주장과 문맥 낱말을 공유해야 하고,
+    주장과 가장 가까운 원문 문장(숫자가 있으면 그 숫자가 든 문장)과 증감 방향이 반대면 안 된다."""
     plain = _plain(sentence, lang)
     source_numbers = set(_numbers(source_text))
-    if any(n not in source_numbers for n in _numbers(plain)):
+    numbers = _numbers(plain)
+    if any(n not in source_numbers for n in numbers):
         return False
     grams = _bigrams(plain)
-    return not grams or len(grams & _bigrams(source_text)) / len(grams) >= 0.5
+    if grams and len(grams & _bigrams(source_text)) / len(grams) < 0.5:
+        return False
+    sents = _source_sentences(source_text)
+    anchored = [s for s in sents if any(n in _numbers(s) for n in numbers)]
+    for n in numbers:
+        holders = [s for s in sents if n in _numbers(s)]
+        if holders and not any(_shares_context(plain, s) for s in holders):
+            return False
+    nearest = anchored or ([max(sents, key=lambda s: len(grams & _bigrams(s)))] if sents and grams else [])
+    claim_dir = _direction(plain)
+    if claim_dir and nearest and all(_direction(s) not in ("", claim_dir) for s in nearest):
+        return False
+    return True
 
 
 def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -> dict:
@@ -123,8 +169,12 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     denom = len(rows) + len(multi)
     duplicate_sources = 1 - dup / denom if denom else 1.0
 
-    unmarked = [s for s in claims if not CITE.search(s) and not any(m in s for m in MARKERS[lang])
-                and len(re.sub(r"\W", "", s)) >= 8]
+    # '(판단)'만 붙은 문장이 어떤 출처에도 없는 수치를 담으면 판단이 아니라 표시 없는 사실로 본다(2026-10-04 2회차 기준 강화).
+    all_numbers = {n for v in sources.values() for n in _numbers(v["text"])}
+    unmarked = [s for s in claims if not CITE.search(s) and len(re.sub(r"\W", "", s)) >= 8
+                and (not any(m in s for m in MARKERS[lang])
+                     or (MARKERS[lang][0] in s and not any(m in s for m in MARKERS[lang][1:])
+                         and any(n not in all_numbers for n in _numbers(_plain(s, lang)))))]
     detail["unmarked"] = unmarked
     unmarked_unverified = 1 - len(unmarked) / len(claims) if claims else 0.0
 
