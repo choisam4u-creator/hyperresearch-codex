@@ -1367,6 +1367,12 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         no_source_mark, mismatch_mark = (("(출처 없음)", "(출처 불일치)") if self.lang == "ko"
                                          else ("(no source)", "(source mismatch)"))
         quality["marks"] = {"no_source": report.count(no_source_mark), "mismatch": report.count(mismatch_mark)}
+        if quality["marks"]["mismatch"]:
+            # 수치가 없는 방향·독립성 불일치는 verify_report가 못 볼 수 있으므로 본문 표시만으로도 검토를 요구한다.
+            quality["issues"].append({"kind": "source_mismatch_marked", "severity": "medium", "line": None,
+                                      "message": (f"원문과 맞지 않는 인용 문장 {quality['marks']['mismatch']}개에 '(출처 불일치)'를 표시했습니다. 원문을 확인하세요."
+                                                  if self.lang == "ko" else f"Marked {quality['marks']['mismatch']} cited sentence(s) '(source mismatch)'. Check them against the sources.")})
+            quality["status"] = "review_required"
         gap_path = self.dir / "gap_fetch.json"
         if gap_path.exists():
             quality["remaining_gaps"] = json.loads(gap_path.read_text(encoding="utf-8")).get("remaining_gaps", [])

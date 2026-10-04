@@ -143,6 +143,13 @@ class ValueConflictMarkTests(unittest.TestCase):
         again, _ = mark_report_claims(text, src, "ko")
         self.assertEqual(text, again)
 
+    def test_judgment_with_date_absent_from_all_sources_gets_no_source(self):
+        src = {"S1": "The pilot ran from March 1, 2025 to February 28, 2026."}
+        text, _ = mark_report_claims("## Answer\nThe program began on March 3, 2025 (judgment).\n"
+                                     "The pilot likely ran past March 1, 2025 (judgment).\n", src, "en")
+        self.assertIn("March 3, 2025 (judgment) (no source).", text)
+        self.assertIn("past March 1, 2025 (judgment).\n", text)
+
     def test_independence_claim_over_similar_sources_is_marked(self):
         src = {"S1": "피크 전력이 감소했다.", "S3": "[전재] 피크 전력이 감소했다."}
         note = " (S1·S3: 본문 유사, 독립 출처가 아닐 수 있음)"

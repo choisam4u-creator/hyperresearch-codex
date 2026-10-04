@@ -481,7 +481,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문 값과 반대 증감 방향을 말하거나, 수치가 원문의 전혀 다른 문맥에서 왔으면 '(출처 불일치)'
     - 답·근거·한계 절의 인용도 판단 표시도 없는 사실 문장에는 '(출처 없음)'
     - 본문 유사(복제 후보) 출처를 겹쳐 인용하며 '독립 출처'라고 말하면 '(출처 불일치)'
-    - '(판단)'만 붙었지만 어떤 출처에도 없는 수치를 단정하는 문장에도 '(출처 없음)'
+    - '(판단)'만 붙었지만 어떤 출처에도 없는 수치·날짜를 단정하는 문장에도 '(출처 없음)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
@@ -490,6 +490,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                                      "independence_conflict": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
+    all_dates = {d["value"] for d in _date_values(all_text)}
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -511,9 +512,10 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             if (not index % 2 and claim_section and M["judgment"] in piece
                     and not any(m in piece for m in marks[1:]) and not _CITE_ID.search(piece)
                     and not _UNVERIFIED_SCOPE.search(piece)
-                    and any(not any(c["dimension"] == v["dimension"] and abs(c["value"]) == abs(v["value"]) for c in all_values)
-                            for v in _quantity_values(piece, _date_like_spans(piece)) if not v.get("unsupported_unit"))):
-                # 판단 표시는 해석에 쓰는 것이다. 어떤 출처에도 없는 수치를 단정하면 출처 없는 사실로 본다.
+                    and (any(not any(c["dimension"] == v["dimension"] and abs(c["value"]) == abs(v["value"]) for c in all_values)
+                             for v in _quantity_values(piece, _date_like_spans(piece)) if not v.get("unsupported_unit"))
+                         or any(d["value"] not in all_dates for d in _date_values(piece)))):
+                # 판단 표시는 해석에 쓰는 것이다. 어떤 출처에도 없는 수치·날짜를 단정하면 출처 없는 사실로 본다.
                 changes["no_source"].append(piece.strip())
                 fixed.append(_with_mark(piece, M["no_source"]))
                 continue
