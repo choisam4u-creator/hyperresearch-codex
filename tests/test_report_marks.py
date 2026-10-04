@@ -46,7 +46,7 @@ class ReportMarkTests(unittest.TestCase):
         once, _ = mark_report_claims(KO, SOURCES, "ko")
         twice, changes = mark_report_claims(once, SOURCES, "ko")
         self.assertEqual(once, twice)
-        self.assertEqual({"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": []}, changes)
+        self.assertFalse(any(changes.values()))
 
     def test_marker_stays_with_its_sentence_for_citation_sampling(self):
         text, _ = mark_report_claims(KO, SOURCES, "ko")
@@ -142,6 +142,20 @@ class ValueConflictMarkTests(unittest.TestCase):
         self.assertEqual(1, len(changes["no_source"]))
         again, _ = mark_report_claims(text, src, "ko")
         self.assertEqual(text, again)
+
+    def test_independence_claim_over_similar_sources_is_marked(self):
+        src = {"S1": "피크 전력이 감소했다.", "S3": "[전재] 피크 전력이 감소했다."}
+        note = " (S1·S3: 본문 유사, 독립 출처가 아닐 수 있음)"
+        text, changes = mark_report_claims(f"## 근거\n- 두 독립 출처가 피크 전력 감소를 확인한다 [S1][S3]{note}.\n", src, "ko")
+        self.assertIn("확인한다 (출처 불일치) [S1][S3]", text)
+        self.assertEqual(1, len(changes["independence_conflict"]))
+        plain, changes = mark_report_claims(f"## 근거\n- 피크 전력이 감소했다 [S1][S3]{note}.\n", src, "ko")
+        self.assertNotIn("(출처 불일치)", plain)       # 경고 주석 안의 '독립'은 주장으로 세지 않는다
+        unwarned, _ = mark_report_claims("## 근거\n- 두 독립 출처가 피크 전력 감소를 확인한다 [S1][S3].\n", src, "ko")
+        self.assertNotIn("(출처 불일치)", unwarned)     # 묶음 경고가 없으면 독립성을 판단하지 않는다
+        en, _ = mark_report_claims("## Evidence\n- Two independent sources confirm the drop [S1][S3] "
+                                   "(S1·S3: similar text, may not be independent).\n", src, "en")
+        self.assertIn("(source mismatch) [S1][S3]", en)
 
 
 if __name__ == "__main__":

@@ -442,6 +442,18 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     return found
 
 
+# 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
+_SIMILAR_WARNED = re.compile(r"\(S\d+(?:·S\d+)+: [^)]*(?:독립 출처가 아닐 수 있음|may not be independent)[^)]*\)")
+_INDEPENDENCE_CLAIM = re.compile(
+    r"독립(?:적인|된|적으로)?\s*(?:출처|자료|근거|조사|보도|확인)|서로 다른 (?:두|세|여러) (?:출처|자료)|(?:두|세|여러) 출처(?:가|가 모두|모두)\b|"
+    r"\bindependent(?:ly)?\b|\b(?:two|three|both|multiple|several) (?:separate |different )?sources\b", re.IGNORECASE)
+
+
+def _independence_overclaim(sentence: str) -> bool:
+    """복제 후보 출처를 겹쳐 인용하면서 문장이 그 출처들을 독립 근거라고 말하면 True."""
+    return bool(_SIMILAR_WARNED.search(sentence)) and bool(_INDEPENDENCE_CLAIM.search(_SIMILAR_WARNED.sub("", sentence)))
+
+
 def _with_mark(sentence: str, mark: str) -> str:
     """문장 끝 구두점 앞에 표시를 넣는다. 구두점 뒤 인용이 있으면 맨 끝에 붙인다."""
     body = sentence.rstrip()
@@ -468,12 +480,14 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장의 숫자·날짜가 인용 원문에 없으면 '(출처 불일치)'
     - 인용 문장이 원문 값과 반대 증감 방향을 말하거나, 수치가 원문의 전혀 다른 문맥에서 왔으면 '(출처 불일치)'
     - 답·근거·한계 절의 인용도 판단 표시도 없는 사실 문장에는 '(출처 없음)'
+    - 본문 유사(복제 후보) 출처를 겹쳐 인용하며 '독립 출처'라고 말하면 '(출처 불일치)'
     - '(판단)'만 붙었지만 어떤 출처에도 없는 수치를 단정하는 문장에도 '(출처 없음)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
-    반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict": 문장 목록})."""
+    반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
-    changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": []}
+    changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
+                                     "independence_conflict": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     out, section, fenced = [], "", False
@@ -510,6 +524,8 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             if cites:
                 cited_text = "\n".join(source_texts.get(c, "") for c in cites)
                 conflicts = _value_conflicts(piece, cited_text) if cited_text.strip() else []
+                if _independence_overclaim(piece):
+                    conflicts.append("independence")
                 if cited_text.strip() and (_absent_values(piece, cited_text) or conflicts):
                     changes["mismatch"].append(piece.strip())
                     for kind in conflicts:
