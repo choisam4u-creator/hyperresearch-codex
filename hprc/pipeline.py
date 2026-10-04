@@ -22,7 +22,7 @@ from .config import load
 from .fetch import fetch_all
 from . import ledger
 from .citation_sampling import enrich_checks, render_summary, select_samples
-from .gates import (LANG, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
+from .gates import (LANG, fill_empty_limits, GateError, apply_hunks, clean_internal_cites, critic_quotes_exist,
                     collapse_duplicate_sources, defer_excerpt_absence_findings, drop_unknown_cites, judgment_sentences,
                     report_lint, sync_source_list)
 from .manifest import Manifest, atomic_write
@@ -568,6 +568,11 @@ class Run:
         path = self.dir / "report.md"
         report = path.read_text(encoding="utf-8")
         fixed, changes = collapse_duplicate_sources(report, self.clusters(), self.lang, self.canonicals())
+        claims_path = self.dir / "claims.json"
+        analysis = json.loads(claims_path.read_text(encoding="utf-8")) if claims_path.exists() else {}
+        fixed, limits_filled = fill_empty_limits(fixed, analysis.get("gaps", []), analysis.get("contradictions", []), self.lang)
+        if limits_filled:
+            atomic_write(self.dir / "limits_filled.json", json.dumps({"rows": limits_filled}, ensure_ascii=False))
         # 원문에 없는 수치·날짜와 인용 없는 사실 문장을 본문에 직접 표시한다(검증 절만 보고 놓치지 않게).
         fixed, marks = mark_report_claims(fixed, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, self.lang)
         if marks["mismatch"] or marks["no_source"]:

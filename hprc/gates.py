@@ -259,3 +259,32 @@ def clean_internal_cites(text: str, lang: str = "ko") -> tuple[str, int]:
         fixed += 1
         return "".join(f"[{i}]" for i in dict.fromkeys(ids)) if ids else no_source
     return _BRACKET.sub(repl, text), fixed
+
+
+def fill_empty_limits(text: str, gaps: list[str], contradictions: list[dict], lang: str = "ko", limit: int = 5) -> tuple[str, int]:
+    """제목만 있고 내용이 빈 한계 절을 분석 단계의 빈틈·상충으로 채운다.
+
+    결정 검사가 빠진 한계 절 제목만 붙이면 독자는 '한계 없음'으로 읽을 수 있다. 분석가의
+    빈틈·상충은 출처로 확인한 사실이 아니므로 '(판단)'으로 표시한다. 둘 다 없으면 한계를
+    찾지 못했다는 사실과 검토 필요를 적는다. 반환: (본문, 채운 줄 수). 내용이 있으면 그대로 둔다."""
+    L = LANG.get(lang, LANG["ko"])
+    canonical, alternatives = L["sections"][2]
+    lines = text.split("\n")
+    index = next((i for i, line in enumerate(lines) if line.strip() in (canonical, *alternatives)), None)
+    if index is None:
+        return text, 0
+    end = next((j for j in range(index + 1, len(lines)) if lines[j].startswith("#")), len(lines))
+    if any(line.strip() for line in lines[index + 1:end]):
+        return text, 0
+    clean = lambda value: re.sub(r"\s+", " ", str(value)).strip().rstrip(".。 ")
+    if lang == "ko":
+        rows = [f"- 분석 단계가 찾은 상충: {clean(c.get('note', ''))}. {L['judgment']}" for c in contradictions if clean(c.get("note", ""))]
+        rows += [f"- 분석 단계가 남긴 근거 빈틈: {clean(g)}. {L['judgment']}" for g in gaps if clean(g)]
+        empty = f"- 자동 분석에서 한계·반대 근거 항목을 찾지 못했으나 반대 근거가 없다는 뜻은 아니므로 검토가 필요하다. {L['judgment']}"
+    else:
+        rows = [f"- Conflict noted in analysis: {clean(c.get('note', ''))}. {L['judgment']}" for c in contradictions if clean(c.get("note", ""))]
+        rows += [f"- Evidence gap left by analysis: {clean(g)}. {L['judgment']}" for g in gaps if clean(g)]
+        empty = f"- Automated analysis listed no limits or counter-evidence, which does not show that none exist; review is needed. {L['judgment']}"
+    rows = rows[:limit] or [empty]
+    filled = lines[:index + 1] + [""] + rows + [""] + lines[end:] if end < len(lines) else lines[:index + 1] + [""] + rows + [""]
+    return "\n".join(filled), len(rows)
