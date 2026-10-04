@@ -93,6 +93,18 @@ class UnknownCiteTests(unittest.TestCase):
         self.assertIn("review_required", final)
 
 
+    def test_marks_are_counted_in_quality_and_header(self):
+        import json
+        os.environ["HPR_BACKEND"] = "mock"
+        with tempfile.TemporaryDirectory() as tmp:
+            run.run_case(run.load_cases("ko-heat-shelter")[0], Path(tmp))
+            out = Path(tmp) / "ko-heat-shelter/research/runs/eval"
+            quality = json.loads((out / "quality.json").read_text(encoding="utf-8"))
+            final = (out / "final_report.md").read_text(encoding="utf-8")
+        self.assertEqual({"no_source": 2, "mismatch": 2}, quality["marks"])
+        self.assertIn("본문 표시 출처 없음 2·출처 불일치 2개", final)
+
+
 class DuplicateSourceTests(unittest.TestCase):
     CLUSTERS = {"S1": "S1", "S2": "S2", "S3": "S1"}
     SAME_URL = {"S1": "https://a.example/x", "S3": "https://a.example/x"}

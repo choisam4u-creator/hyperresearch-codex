@@ -192,6 +192,9 @@ def status(run_id: str | None) -> None:
             try:
                 quality = json.loads(quality_path.read_text(encoding="utf-8"))
                 quality_status = quality.get("status") if quality.get("status") in {"passed", "review_required"} else "unknown"
+                marks = quality.get("marks")
+                if isinstance(marks, dict):
+                    quality_status += f" (출처 없음 {marks.get('no_source', 0)}·출처 불일치 {marks.get('mismatch', 0)})"
             except (OSError, json.JSONDecodeError, AttributeError):
                 quality_status = "malformed"
         print(f"{rid} | {m.get('tier','light')} | {m['prompt'][:45]} | quality:{quality_status} | 호출 {len(m['usage'])} · {secs:.0f}s · in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,}{unknown}")

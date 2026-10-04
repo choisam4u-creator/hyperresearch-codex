@@ -1363,6 +1363,10 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
                                       "message": (f"인용 없는 사실 문장 {len(marked['no_source'])}개에 '(출처 없음)'을 표시했습니다. 근거를 찾거나 판단으로 바꾸세요."
                                                   if self.lang == "ko" else f"Marked {len(marked['no_source'])} uncited factual sentence(s) '(no source)'. Add a source or mark them as judgment.")})
             quality["status"] = "review_required"
+        # 여러 실행을 비교할 수 있게 본문에 실제로 남은 표시 수를 요약에 둔다(hpr status·머리 주석).
+        no_source_mark, mismatch_mark = (("(출처 없음)", "(출처 불일치)") if self.lang == "ko"
+                                         else ("(no source)", "(source mismatch)"))
+        quality["marks"] = {"no_source": report.count(no_source_mark), "mismatch": report.count(mismatch_mark)}
         gap_path = self.dir / "gap_fetch.json"
         if gap_path.exists():
             quality["remaining_gaps"] = json.loads(gap_path.read_text(encoding="utf-8")).get("remaining_gaps", [])
@@ -1377,7 +1381,7 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         price = (f"요금 상한 미확정 (측정분 ≈${cost['usd_upper']}) · 미측정 {cost['unknown_calls']}회"
                  if cost["unknown_calls"] else f"요금 상한 ≈${cost['usd_upper']}")
         header = ["<!-- hyperresearch-codex " + self.tier + " -->",
-                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(관계 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
+                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(관계 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 본문 표시 출처 없음 {quality['marks']['no_source']}·출처 불일치 {quality['marks']['mismatch']}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
         U = self.U
         prov = ["", U["provenance"], "", U["cols"], "|---|---|---|---|---|---|---|---|"]
         for s in self.sources:
