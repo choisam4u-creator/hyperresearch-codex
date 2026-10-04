@@ -342,3 +342,97 @@ def verify_report(report: str, source_texts: dict[str, str], citation_checks: li
 
     issues.sort(key=lambda item: (item["line"] is None, item["line"] or 0, item["kind"], item["message"]))
     return {"status": "review_required" if issues else "passed", "issues": issues, "scope": scope}
+
+
+_MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismatch": "(출처 불일치)", "sources": "## 출처",
+                 "claims": ("## 답", "## 근거", "## 반대 근거와 한계", "## 한계")},
+          "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)", "sources": "## Sources",
+                 "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
+_MARK_SPLIT = re.compile(r"(?<=[.!?。])(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|judgment|no source|source mismatch)\))")
+_CITE_ID = re.compile(r"\[(S\d+)\]")
+
+
+def _absent_values(sentence: str, cited_text: str) -> list[str]:
+    """정규화한 날짜·수치가 인용 원문에 아예 없는 것만 돌려준다.
+
+    검증 절의 *_evidence_unclear는 지원하지 않는 단위(MW 등)·연도 없는 날짜 같은 모호함도
+    포함하므로 본문 표시에 쓰지 않는다. 모호한 값, 미검증 범위 문장, 문맥·부호 차이는
+    검증 절의 검토로만 남긴다."""
+    claim_spans = _date_like_spans(sentence)
+    source_dates = {value["value"] for value in _date_values(cited_text)}
+    absent = [value["raw"] for value in _date_values(sentence) if value["value"] not in source_dates]
+    if _UNVERIFIED_SCOPE.search(sentence):
+        return absent
+    source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
+    for value in _quantity_values(sentence, claim_spans):
+        if value.get("unsupported_unit"):
+            continue
+        if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source):
+            absent.append(value["raw"])
+    return absent
+
+
+def _with_mark(sentence: str, mark: str) -> str:
+    """문장 끝 구두점 앞에 표시를 넣는다. 구두점 뒤 인용이 있으면 맨 끝에 붙인다."""
+    body = sentence.rstrip()
+    trailing = sentence[len(body):]
+    if body and body[-1] in ".!?。":
+        return body[:-1].rstrip() + f" {mark}" + body[-1] + trailing
+    return body + f" {mark}" + trailing
+
+
+def _with_mismatch(sentence: str, mark: str) -> str:
+    """끝 인용 묶음 앞에 표시를 넣는다. 인용 문장 분리기가 ']' 뒤에서 끊어도 표시가 같은 문장에 남는다."""
+    tail = re.search(r"[ \t]*(?:\[S\d+\][ \t]*)+(?:\([^()]*\))?[ \t]*[.!?。]?\s*$", sentence)
+    if not tail or not tail.group(0).strip().startswith("[S"):
+        return _with_mark(sentence, mark)
+    head = sentence[:tail.start()].rstrip()
+    if head and head[-1] in ".!?。":        # "문장. [S1]" 꼴은 구두점 앞에 넣는다
+        return head[:-1].rstrip() + f" {mark}" + head[-1] + " " + tail.group(0).lstrip()
+    return head + f" {mark} " + tail.group(0).lstrip()
+
+
+def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "ko") -> tuple[str, dict]:
+    """독자가 경고 없이 읽게 되는 근거 문제를 본문 문장에 직접 표시한다.
+
+    - 인용 문장의 숫자·날짜가 인용 원문에 없으면 '(출처 불일치)'
+    - 답·근거·한계 절의 인용도 판단 표시도 없는 사실 문장에는 '(출처 없음)'
+    판단 표시 문장, 표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
+    반환: (표시한 본문, {"mismatch": [...], "no_source": [...]})."""
+    M = _MARKS.get(lang, _MARKS["ko"])
+    marks = (M["judgment"], M["no_source"], M["mismatch"])
+    changes: dict[str, list[str]] = {"mismatch": [], "no_source": []}
+    out, section, fenced = [], "", False
+    for line in report.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith(("```", "~~~")):
+            fenced = not fenced
+        if fenced or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
+            if stripped.startswith("## "):
+                section = stripped
+            out.append(line)
+            continue
+        if section == M["sources"]:
+            out.append(line)
+            continue
+        claim_section = section in M["claims"]
+        lead = re.match(r"^\s*(?:[-*]|\d+\.)\s+|^\s*", line).group(0)
+        pieces = _MARK_SPLIT.split(line[len(lead):])
+        fixed = []
+        for index, piece in enumerate(pieces):
+            if index % 2 or not piece.strip() or any(m in piece for m in marks):
+                fixed.append(piece)
+                continue
+            cites = list(dict.fromkeys(_CITE_ID.findall(piece)))
+            if cites:
+                cited_text = "\n".join(source_texts.get(c, "") for c in cites)
+                if cited_text.strip() and _absent_values(piece, cited_text):
+                    changes["mismatch"].append(piece.strip())
+                    piece = _with_mismatch(piece, M["mismatch"])
+            elif (claim_section and not piece.rstrip().endswith(":")
+                  and len(re.sub(r"\W", "", piece)) >= 8):
+                changes["no_source"].append(piece.strip())
+                piece = _with_mark(piece, M["no_source"])
+            fixed.append(piece)
+        out.append(lead + "".join(fixed))
+    return "\n".join(out), changes

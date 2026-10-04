@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Recover from a draft citation to a nonexistent source by removing it and marking the sentence `(no source)` instead of blocking the run; the removal is recorded and sets `review_required`.
+- Collapse co-citations of the same canonical URL and warn on text-similar source pairs cited as if independent; drop duplicate Sources rows before citation checks.
+- Mark cited sentences whose numbers or dates are absent from the cited source `(source mismatch)` and uncited factual sentences in Answer/Evidence/Limits `(no source)` directly in the report body.
+- Fill an empty limits section with the analyst's conflicts and gaps marked `(judgment)`, or state that none were listed and review is needed.
+- Add the `evals/` fixed-case quality score (`python -m evals.run`) to CI. Fixed-case scores are not a general quality claim.
+
 ## 0.5.0 - 2026-09-26
 
 - Interleave search candidates across hostnames after ranking so one domain cannot monopolize the early source set.
