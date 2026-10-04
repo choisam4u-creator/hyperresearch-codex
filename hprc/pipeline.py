@@ -31,7 +31,7 @@ from .run_paths import run_directory
 from .text_select import select
 from .mock import mock_backend
 from .vault import note_body, read_front, sync, write_note
-from .verification import verify_report
+from .verification import mark_report_claims, verify_report
 from .untrusted import wrap_source
 from .gap_plan import plan_gaps
 from .evidence import build_evidence_ledger, validate_evidence_ledger
@@ -568,7 +568,13 @@ class Run:
         path = self.dir / "report.md"
         report = path.read_text(encoding="utf-8")
         fixed, changes = collapse_duplicate_sources(report, self.clusters(), self.lang, self.canonicals())
-        if changes:
+        # 원문에 없는 수치·날짜와 인용 없는 사실 문장을 본문에 직접 표시한다(검증 절만 보고 놓치지 않게).
+        fixed, marks = mark_report_claims(fixed, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, self.lang)
+        if marks["mismatch"] or marks["no_source"]:
+            log = self.dir / "report_marks.json"
+            previous = json.loads(log.read_text(encoding="utf-8")) if log.exists() else {"mismatch": [], "no_source": []}
+            atomic_write(log, json.dumps({k: previous.get(k, []) + v for k, v in marks.items()}, ensure_ascii=False, indent=2))
+        if fixed != report:
             atomic_write(path, fixed)
 
     def load_sources(self):
@@ -1344,6 +1350,13 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
             quality["issues"].append({"kind": "unknown_cites_removed", "severity": "medium", "line": None,
                                       "message": ("초안의 없는 출처 인용을 지우고 '(출처 없음)'으로 표시했습니다: " if self.lang == "ko"
                                                   else "Removed draft citations to nonexistent sources and marked them '(no source)': ") + ", ".join(dropped)})
+            quality["status"] = "review_required"
+        marks_path = self.dir / "report_marks.json"
+        marked = json.loads(marks_path.read_text(encoding="utf-8")) if marks_path.exists() else {}
+        if marked.get("no_source"):
+            quality["issues"].append({"kind": "uncited_claims_marked", "severity": "medium", "line": None,
+                                      "message": (f"인용 없는 사실 문장 {len(marked['no_source'])}개에 '(출처 없음)'을 표시했습니다. 근거를 찾거나 판단으로 바꾸세요."
+                                                  if self.lang == "ko" else f"Marked {len(marked['no_source'])} uncited factual sentence(s) '(no source)'. Add a source or mark them as judgment.")})
             quality["status"] = "review_required"
         gap_path = self.dir / "gap_fetch.json"
         if gap_path.exists():
