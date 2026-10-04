@@ -1,0 +1,22 @@
+{
+  "id": "en-fare-free-bus",
+  "lang": "en",
+  "baseline_time": "2026-04-30",
+  "prompt": "What happened during the fare-free bus pilot?",
+  "flaws": [
+    "opposite_direction_claim",
+    "number_in_different_context",
+    "opposite_direction_no_number"
+  ],
+  "sources": {
+    "S1": "A transit agency report covers the fare-free bus pilot that ran from March 1, 2025 to February 28, 2026 on four routes. Weekday ridership on the pilot routes rose 21 percent compared with the same months a year earlier. Average boarding time per stop fell 14 percent because riders no longer paid at the front door.\n\nThe report notes that 9 percent of surveyed riders said they had switched from driving. The survey had 640 respondents and was not weighted to the rider population.",
+    "S2": "A city budget memo estimates that the pilot cost 3.8 million dollars in forgone fare revenue. Complaints about crowding increased during the morning peak. The memo does not estimate changes in traffic congestion."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What happened during the fare-free bus pilot?\n\n## Answer\nWeekday ridership on the pilot routes fell 21 percent compared with a year earlier [S1]. The pilot cost 3.8 million dollars in forgone fare revenue [S2].\n\n## Evidence\n- Average boarding time per stop fell 14 percent [S1].\n- Traffic congestion on the pilot corridors decreased 9 percent [S1].\n- Complaints about crowding decreased during the morning peak [S2].\n\n## Counter-evidence and limits\n- The rider survey had 640 respondents and was not weighted to the rider population [S1].\n- The budget memo does not estimate changes in traffic congestion [S2].\n\n## Next actions\n- Compare congestion counts on pilot and non-pilot corridors (judgment)\n\n## Sources\n- [S1] Transit agency pilot report\n- [S2] City budget memo\n"
+      }
+    ]
+  }
+}
