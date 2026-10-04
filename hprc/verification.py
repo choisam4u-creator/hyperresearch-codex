@@ -350,8 +350,26 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
 _MARK_SPLIT = re.compile(r"(?<=[.!?。])(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|judgment|no source|source mismatch)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
-# 숫자·날짜가 인용 원문에서 아예 확인되지 않는 경우만 표시한다. 문맥·부호 차이는 검증 절의 검토로 남긴다.
-_ABSENT_KINDS = {"numeric_evidence_unclear", "date_evidence_unclear"}
+
+
+def _absent_values(sentence: str, cited_text: str) -> list[str]:
+    """정규화한 날짜·수치가 인용 원문에 아예 없는 것만 돌려준다.
+
+    검증 절의 *_evidence_unclear는 지원하지 않는 단위(MW 등)·연도 없는 날짜 같은 모호함도
+    포함하므로 본문 표시에 쓰지 않는다. 모호한 값, 미검증 범위 문장, 문맥·부호 차이는
+    검증 절의 검토로만 남긴다."""
+    claim_spans = _date_like_spans(sentence)
+    source_dates = {value["value"] for value in _date_values(cited_text)}
+    absent = [value["raw"] for value in _date_values(sentence) if value["value"] not in source_dates]
+    if _UNVERIFIED_SCOPE.search(sentence):
+        return absent
+    source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
+    for value in _quantity_values(sentence, claim_spans):
+        if value.get("unsupported_unit"):
+            continue
+        if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source):
+            absent.append(value["raw"])
+    return absent
 
 
 def _with_mark(sentence: str, mark: str) -> str:
@@ -408,10 +426,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             cites = list(dict.fromkeys(_CITE_ID.findall(piece)))
             if cites:
                 cited_text = "\n".join(source_texts.get(c, "") for c in cites)
-                issues: list[dict] = []
-                if cited_text.strip():
-                    _check_structured_values({"sentence": piece, "line": None}, cited_text, issues)
-                if any(i["kind"] in _ABSENT_KINDS for i in issues):
+                if cited_text.strip() and _absent_values(piece, cited_text):
                     changes["mismatch"].append(piece.strip())
                     piece = _with_mismatch(piece, M["mismatch"])
             elif (claim_section and not piece.rstrip().endswith(":")

@@ -14,7 +14,7 @@
 | **종합 평균** | **95.6** | **98.6** | **99.2** |
 
 - 기준선: 지난 회차 끝 점수와 같음(main 159e2a1). 감점은 인용 원문에 없는 수치 `25 percent`·`18%`가 경고 없이 본문에 나감, 인용·표시 없는 사실 문장 4개, 빈 한계 절 1개, 2-gram 불일치 2문장.
-- 개선 1 (`verification.mark_report_claims`, `pipeline.normalize_report`): 지금까지 검증 절에만 있던 `numeric_evidence_unclear`·`date_evidence_unclear` 신호를 해당 문장에 `(출처 불일치)`로 직접 표시(끝 인용 묶음 앞에 넣어 인용 표본 분리기가 문장과 표시를 떼지 않게 함). 답·근거·한계 절에서 인용도 판단 표시도 없는 사실 문장에는 `(출처 없음)`을 붙이고 검증 상태를 review_required(`uncited_claims_marked`)로 둔다. 문맥·부호 차이(`*_context_unclear`, `numeric_sign_context_unclear`)는 확정 불일치가 아니라서 본문에 표시하지 않고 검증 절에만 남긴다. 수정·다듬기 직후, 인용 검사 전에 돌고 다시 돌려도 같은 결과다. 기록: `report_marks.json`.
+- 개선 1 (`verification.mark_report_claims`, `pipeline.normalize_report`): 정규화한 수치·날짜가 인용 원문에 아예 없는 문장에 `(출처 불일치)`를 직접 표시(지원하지 않는 단위·연도 없는 날짜처럼 모호한 값은 표시하지 않음 — PR #12 Codex 리뷰 반영)(끝 인용 묶음 앞에 넣어 인용 표본 분리기가 문장과 표시를 떼지 않게 함). 답·근거·한계 절에서 인용도 판단 표시도 없는 사실 문장에는 `(출처 없음)`을 붙이고 검증 상태를 review_required(`uncited_claims_marked`)로 둔다. 문맥·부호 차이(`*_context_unclear`, `numeric_sign_context_unclear`)는 확정 불일치가 아니라서 본문에 표시하지 않고 검증 절에만 남긴다. 수정·다듬기 직후, 인용 검사 전에 돌고 다시 돌려도 같은 결과다. 기록: `report_marks.json`.
 - 개선 2 (`gates.fill_empty_limits`): 결정 검사가 빠진 한계 절 제목만 붙여 빈 절로 남던 것을, 분석 단계 `claims.json`의 상충·빈틈(최대 5줄)으로 채우고 `(판단)` 표시. 둘 다 없으면 "찾지 못했으나 반대 근거가 없다는 뜻은 아니므로 검토가 필요하다"를 적는다. 내용이 있는 절은 건드리지 않는다. 기록: `limits_filled.json`.
 - 기준·픽스처 변경 없음. CI 하한만 `--min-total 90 → 95`로 올림(퇴보 방지).
 - 남은 감점: ko-cooling-pilot 2문장 — (a) "두 독립 출처가 확인한다"는 본문 유사 경고가 붙어 있지만 표현 자체가 원문과 다름, (b) "대조군이 없어 효과 크기를 확정할 수 없다 [S1]"은 바꿔 말한 추론. (b)는 알려진 점수기 한계, (a)는 '독립' 표현을 고치는 수정이 필요(백로그).

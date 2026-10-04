@@ -69,6 +69,17 @@ class ReportMarkTests(unittest.TestCase):
         sentences = [s["sentence"] for s in select_samples(text, 100, "(판단)")["samples"]]
         self.assertEqual(["전력은 18% 줄었다 (출처 불일치). [S1]"], sentences)
 
+    def test_ambiguous_units_and_partial_dates_are_not_marked_as_mismatch(self):
+        text, changes = mark_report_claims("## Answer\nMeasured power was 12 MW [S1].\n", {"S1": "Measured power was 12 MW."}, "en")
+        self.assertNotIn("(source mismatch)", text)
+        text, changes = mark_report_claims("## 답\n점검은 7월 22일에 진행됐다 [S1].\n", {"S1": "점검은 7월 22일에 진행됐다."}, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        self.assertEqual([], changes["mismatch"])
+
+    def test_full_date_absent_from_source_is_marked(self):
+        text, _ = mark_report_claims("## 답\n점검은 2026년 7월 23일에 진행됐다 [S1].\n", {"S1": "점검은 2026년 7월 22일에 진행됐다."}, "ko")
+        self.assertIn("(출처 불일치) [S1]", text)
+
     def test_missing_source_text_does_not_claim_mismatch(self):
         text, changes = mark_report_claims("## 답\n전력은 18% 줄었다 [S9].\n", {}, "ko")
         self.assertNotIn("(출처 불일치)", text)
