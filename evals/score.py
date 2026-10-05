@@ -15,9 +15,11 @@ HEAD = {
            "limits": ("## Counter-evidence and limits", "## Limits"), "sources": "## Sources", "next": "## Next actions",
            "end": "## Verification status"},
 }
-METRICS = ("citation_validity", "claim_source_match", "duplicate_sources", "unmarked_unverified", "structure")
+METRICS = ("citation_validity", "claim_source_match", "duplicate_sources", "unmarked_unverified", "internal_consistency",
+           "structure")
 LABELS = {"citation_validity": "인용 유효성", "claim_source_match": "주장-출처 일치", "duplicate_sources": "중복 출처 없음",
-          "unmarked_unverified": "표시 없는 미검증 주장 없음", "structure": "보고서 구조"}
+          "unmarked_unverified": "표시 없는 미검증 주장 없음", "internal_consistency": "본문 내부 일관성",
+          "structure": "보고서 구조"}
 
 
 def model_report(final: str, lang: str) -> str:
@@ -102,6 +104,63 @@ def _shares_context(claim: str, source_sentence: str) -> bool:
     return not terms or any(t in lowered for t in terms)
 
 
+# 인과 단정과 기간 단위(2026-10-05 기준 강화, QUALITY-LOG 참조).
+_CAUSAL = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|driven by|"
+                     r"attribut\w*|as a result)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로", re.I)
+_CAUSAL_SOURCE = re.compile(_CAUSAL.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
+_DISCLAIM = re.compile(r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
+                       r"(?:establish|determine|show|prove|isolate|distinguish|separate|attribute)\w*|\bobservational\b|"
+                       r"\bcorrelation\b|인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증)하지\s*(?:않|못)|(?:구분|입증)할 수 없", re.I)
+_PERIODS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
+            "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
+            "month": r"한 달|월평균|매월|월간|\bper month\b|\bmonthly\b|\ba month\b",
+            "year": r"연간|연평균|매년|해마다|\bper year\b|\ba year\b|\bannual(?:ly)?\b|\byearly\b|\beach year\b",
+            "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
+
+
+def _periods(text: str) -> set[str]:
+    return {k for k, pat in _PERIODS.items() if re.search(pat, text, re.I)}
+
+
+def causal_unsupported(plain: str, source_text: str) -> bool:
+    """주장이 인과를 단정하는데 인용 원문에 같은 대상(문맥 낱말 공유)의 인과를 말하는(부정·유보하지 않은) 문장이 없으면 True.
+
+    2026-10-05 PR #14 리뷰 반영: 다른 대상의 인과 문장("비 때문에 한 곳이 문을 닫았다")은 근거로 치지 않는다."""
+    if not _CAUSAL.search(plain) or _DISCLAIM.search(plain):
+        return False
+    terms = _content_terms(_CAUSAL_SOURCE.sub(" ", plain))
+    return not any(_CAUSAL_SOURCE.search(s) and not _DISCLAIM.search(s)
+                   and terms & _content_terms(_CAUSAL_SOURCE.sub(" ", s)) for s in _source_sentences(source_text))
+
+
+_NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")
+_CLAUSE = re.compile(r"[,;:()]")
+
+
+def _number_periods(text: str) -> list[tuple[str, set[str]]]:
+    """수치마다 그 수치가 든 절(쉼표 등으로 끊음)에서 가장 가까운 기간 단위 하나(PR #14 리뷰 반영)."""
+    out = []
+    for m in _NUM.finditer(text):
+        start = max((b.end() for b in _CLAUSE.finditer(text, 0, m.start())), default=0)
+        stop = next((b.start() for b in _CLAUSE.finditer(text, m.end())), len(text))
+        found = [(abs(x.start() + start - m.start()), k) for k, pat in _PERIODS.items()
+                 for x in re.finditer(pat, text[start:stop], re.I)]
+        out.append((m.group(0).replace(",", ""), {min(found)[1]} if found else set()))
+    return out
+
+
+def period_mismatch(plain: str, source_text: str) -> bool:
+    """주장 수치의 기간 단위(하루·한 달·연간·총계)가 원문에서 같은 수치가 나오는 자리마다의 기간 단위와 모두 다르면 True."""
+    held_all = [x for s in _source_sentences(source_text) for x in _number_periods(s)]
+    for n, claim_periods in _number_periods(plain):
+        if not claim_periods:
+            continue
+        held = [p for m, p in held_all if m == n]
+        if held and all(p and not (p & claim_periods) for p in held):
+            return True
+    return False
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -124,6 +183,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
     nearest = anchored or ([max(sents, key=lambda s: len(grams & _bigrams(s)))] if sents and grams else [])
     claim_dir = _direction(plain)
     if claim_dir and nearest and all(_direction(s) not in ("", claim_dir) for s in nearest):
+        return False
+    # 2026-10-05 기준 강화: 원문이 유보한 인과를 단정하거나, 같은 수치를 다른 기간 단위로 말하면 불일치.
+    if causal_unsupported(plain, source_text) or period_mismatch(plain, source_text):
         return False
     return True
 
@@ -170,13 +232,33 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     duplicate_sources = 1 - dup / denom if denom else 1.0
 
     # '(판단)'만 붙은 문장이 어떤 출처에도 없는 수치를 담으면 판단이 아니라 표시 없는 사실로 본다(2026-10-04 2회차 기준 강화).
+    # 출처에 있는 수치라도 원문과 다른 기간 단위로 말하면 같은 취급(2026-10-05 기준 강화).
     all_numbers = {n for v in sources.values() for n in _numbers(v["text"])}
+    all_text = "\n".join(v["text"] for v in sources.values())
     unmarked = [s for s in claims if not CITE.search(s) and len(re.sub(r"\W", "", s)) >= 8
                 and (not any(m in s for m in MARKERS[lang])
                      or (MARKERS[lang][0] in s and not any(m in s for m in MARKERS[lang][1:])
-                         and any(n not in all_numbers for n in _numbers(_plain(s, lang)))))]
+                         and (any(n not in all_numbers for n in _numbers(_plain(s, lang)))
+                              or period_mismatch(_plain(s, lang), all_text))))]
     detail["unmarked"] = unmarked
     unmarked_unverified = 1 - len(unmarked) / len(claims) if claims else 0.0
+
+    # 본문 내부 일관성(2026-10-05 추가): 인용 없는 문장(판단 등)이 같은 대상을 말하는 인용 문장과 반대 증감 방향이면
+    # 감점한다. 두 문장 중 하나에 '(출처 불일치)'가 붙어 있으면 독자에게 경고된 것으로 본다. 같은 대상은 문맥 낱말 2개 이상 공유.
+    def _terms(x: str) -> set[str]:
+        x = _UP.sub(" ", _DOWN.sub(" ", re.sub(r"\d[\d,.]*", " ", _plain(x, lang))))
+        return ({w.lower() for w in re.findall(r"[A-Za-z]{4,}", x)} - _EN_STOP) | {w[:2] for w in re.findall(r"[가-힣]{2,}", x)}
+    contradictions = []
+    for s in claims:
+        if CITE.search(s) or MARKERS[lang][2] in s or not _direction(_plain(s, lang)):
+            continue
+        for c in cited:
+            if (MARKERS[lang][2] not in c and _direction(_plain(c, lang)) not in ("", _direction(_plain(s, lang)))
+                    and len(_terms(s) & _terms(c)) >= 2):
+                contradictions.append(s)
+                break
+    detail["contradictions"] = contradictions
+    internal_consistency = 1 - len(contradictions) / len(claims) if claims else 0.0
 
     def filled(name: str) -> bool:   # 제목만 있고 내용이 빈 절은 구조로 치지 않는다
         return bool(parts.get(name, "").strip())
@@ -187,4 +269,4 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
 
     return {"citation_validity": round(100 * citation_validity, 1), "claim_source_match": round(100 * claim_source_match, 1),
             "duplicate_sources": round(100 * duplicate_sources, 1), "unmarked_unverified": round(100 * unmarked_unverified, 1),
-            "structure": round(100 * structure, 1), "failed": False, "detail": detail}
+            "internal_consistency": round(100 * internal_consistency, 1), "structure": round(100 * structure, 1), "failed": False, "detail": detail}

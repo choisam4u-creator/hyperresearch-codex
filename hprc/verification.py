@@ -409,7 +409,9 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - direction: 같은 값이 든 원문 문장(값이 없으면 2-gram 60% 이상 겹치는 가장 가까운 문장)이
       모두 주장과 반대 증감 방향만 말한다.
     - context: 주장의 수치가 든 원문 문장 어디에도 주장의 문맥 낱말이 하나도 없다(같은 문자 체계일 때만;
-      번역 인용을 낱말 비교로 불일치라 단정하지 않는다)."""
+      번역 인용을 낱말 비교로 불일치라 단정하지 않는다).
+    - causal: 원문이 유보·부정한 인과를 주장이 단정한다.
+    - period: 같은 수치를 원문과 다른 기간 단위(하루·한 달·연간·총계)로 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -439,7 +441,77 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
                     and not any(any(t in s.lower() for t in stems) for s in held)):
                 found.append("context")
                 break
+    if _causal_overclaim(plain, sents):
+        found.append("causal")
+    if _period_conflict(plain, sents):
+        found.append("period")
     return found
+
+
+# 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
+# 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
+_CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
+                           r"driven by|attribut\w*|as a result)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로", re.I)
+_CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
+_CAUSAL_DISCLAIM = re.compile(
+    r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
+    r"(?:establish|determine|show|prove|isolate|distinguish|separate|attribute)\w*|\bobservational\b|\bcorrelation\b|"
+    r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증)하지\s*(?:않|못)|(?:구분|입증)할 수 없", re.I)
+# 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
+_PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
+                 "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
+                 "month": r"한 달|월평균|매월|월간|\bper month\b|\bmonthly\b|\ba month\b",
+                 "year": r"연간|연평균|매년|해마다|\bper year\b|\ba year\b|\bannual(?:ly)?\b|\byearly\b|\beach year\b",
+                 "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
+
+
+_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])\s")
+
+
+def _periods_of(text: str) -> set[str]:
+    return {name for name, pattern in _PERIOD_WORDS.items() if re.search(pattern, text, re.I)}
+
+
+def _value_period(text: str, value: dict) -> set[str]:
+    """수치가 든 절(쉼표·쌍반점 등으로 끊음)의 기간 단위. 한 절에 여러 개면 수치에 가장 가까운 것 하나만 본다.
+
+    한 문장에 '하루 평균 100명, 총 3,000명'처럼 기간이 다른 수치가 같이 있어도 값마다 제 기간을 붙이려는 것이다
+    (PR #14 Codex 리뷰 반영)."""
+    start = max((m.end() for m in _CLAUSE_BREAK.finditer(text, 0, value["start"])), default=0)
+    stop = next((m.start() for m in _CLAUSE_BREAK.finditer(text, value["end"])), len(text))
+    clause = text[start:stop]
+    found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
+             for name, pattern in _PERIOD_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
+    return {min(found)[1]} if found else set()
+
+
+def _causal_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장이 인과를 단정하는데, 인용 원문이 인과를 유보·부정하는 문장을 담고 인과를 긍정하는 문장은 없으면 True."""
+    if not _CAUSAL_CLAIM.search(plain) or _CAUSAL_DISCLAIM.search(plain):
+        return False
+    # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
+    stems = _causal_stems(plain)
+    return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
+            and not any(_CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s)
+                        for s in sents))
+
+
+def _causal_stems(text: str) -> set[str]:
+    return _content_stems(_CAUSAL_ANY.sub(" ", text))
+
+
+def _period_conflict(plain: str, sents: list[str]) -> bool:
+    """주장 수치의 기간 단위가 같은 값이 나오는 원문 자리마다의 기간 단위와 하나도 겹치지 않으면 True(값마다 제 절의 기간)."""
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        claim_periods = _value_period(plain, value)
+        if value.get("unsupported_unit") or not claim_periods:
+            continue
+        held = [_value_period(s, c) for s in sents for c in _quantity_values(s, _date_like_spans(s))
+                if not c.get("unsupported_unit") and c["dimension"] == value["dimension"]
+                and abs(c["value"]) == abs(value["value"])]
+        if held and all(p and not (p & claim_periods) for p in held):
+            return True
+    return False
 
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
@@ -474,6 +546,41 @@ def _with_mismatch(sentence: str, mark: str) -> str:
     return head + f" {mark} " + tail.group(0).lstrip()
 
 
+def _trusted_cited_claims(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str]]]:
+    """답·근거·한계 절에서 인용이 있고 원문 대조에 걸리지 않은 문장의 (증감 방향, 문맥 낱말) 목록."""
+    out, section, fenced = [], "", False
+    for line in report.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith(("```", "~~~")):
+            fenced = not fenced
+        if stripped.startswith("## "):
+            section = stripped
+        if fenced or section not in M["claims"] or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
+            continue
+        body = re.sub(r"^\s*(?:[-*]|\d+\.)\s+", "", line)
+        for piece in _MARK_SPLIT.split(body)[::2]:
+            cites = list(dict.fromkeys(_CITE_ID.findall(piece)))
+            if not cites or M["mismatch"] in piece:
+                continue
+            cited_text = "\n".join(source_texts.get(c, "") for c in cites)
+            plain = _plain_claim(piece)
+            direction = _direction_of(plain)
+            if (direction and cited_text.strip() and not _absent_values(piece, cited_text)
+                    and not _value_conflicts(piece, cited_text)):
+                out.append((direction, _content_stems(plain)))
+    return out
+
+
+def _contradicts_cited(piece: str, trusted: list[tuple[str, set[str]]]) -> bool:
+    """같은 대상(문맥 낱말 2개 이상 공유)을 말하는 믿을 만한 인용 문장과 증감 방향이 반대면 True."""
+    plain = _plain_claim(piece)
+    direction = _direction_of(plain)
+    if not direction:
+        return False
+    stems = _content_stems(plain)
+    return any(d != direction and len(stems & other) >= 2 for d, other in trusted)
+
+
 def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "ko") -> tuple[str, dict]:
     """독자가 경고 없이 읽게 되는 근거 문제를 본문 문장에 직접 표시한다.
 
@@ -482,15 +589,21 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 답·근거·한계 절의 인용도 판단 표시도 없는 사실 문장에는 '(출처 없음)'
     - 본문 유사(복제 후보) 출처를 겹쳐 인용하며 '독립 출처'라고 말하면 '(출처 불일치)'
     - '(판단)'만 붙었지만 어떤 출처에도 없는 수치·날짜를 단정하는 문장에도 '(출처 없음)'
+    - 인용이 원문이 유보한 인과를 단정하거나 수치를 원문과 다른 기간 단위로 말하면 '(출처 불일치)'
+    - 인용 없는 문장(판단 포함)이 같은 대상의 인용 문장과 반대 방향이거나 출처 수치를 다른 기간으로 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
-    반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict": 문장 목록})."""
+    반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
+    "causal_conflict", "period_conflict", "internal_conflict": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
-                                     "independence_conflict": []}
+                                     "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
+                                     "internal_conflict": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
+    all_sents = [x.strip() for x in _SOURCE_SPLIT.split(all_text) if x.strip()]
+    trusted = _trusted_cited_claims(report, source_texts, M)
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -519,6 +632,18 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                 changes["no_source"].append(piece.strip())
                 fixed.append(_with_mark(piece, M["no_source"]))
                 continue
+            if (not index % 2 and claim_section and piece.strip() and not _CITE_ID.search(piece)
+                    and not any(m in piece for m in marks[1:]) and not _UNVERIFIED_SCOPE.search(piece)):
+                # 인용 없는 문장(판단 포함)이 같은 대상을 말하는 인용 문장과 반대 방향이거나, 출처 수치를 다른 기간으로 말하면
+                # 출처와 어긋난 문장이다. '(출처 없음)'보다 강한 '(출처 불일치)'를 붙인다.
+                kinds = (["internal"] if _contradicts_cited(piece, trusted) else []) + \
+                        (["period"] if _period_conflict(_plain_claim(piece), all_sents) else [])
+                if kinds:
+                    changes["mismatch"].append(piece.strip())
+                    for kind in kinds:
+                        changes[f"{kind}_conflict"].append(piece.strip())
+                    fixed.append(_with_mark(piece, M["mismatch"]))
+                    continue
             if index % 2 or not piece.strip() or any(m in piece for m in marks):
                 fixed.append(piece)
                 continue
