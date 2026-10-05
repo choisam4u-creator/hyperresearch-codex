@@ -2,6 +2,21 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-05 (품질 회차 2)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 12 case·강화 기준): **98.9 → 99.8**. 주장-출처 일치 93.4→99.0. (10 case 이전 끝 99.8, 새 case를 옛 기준으로 재면 99.8 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-ev-charging`, `en-heat-pump`) — 원문의 계획·목표 수치를 실적처럼 씀, 시범·표본 결과를 전역 결과로 일반화. 점수기 주장-출처 일치에 두 검사 추가(기존 10 case 오탐 0). 추정치 유보 제거는 범위에서 빼고 이유 기록.
+  - 개선: `verification`이 위 두 경우 인용 문장에 `(출처 불일치)` 표시(`plan_conflict`·`scope_conflict`). 기존 10 case 최종 보고서 변화 없음.
+  - 백로그 1건: 출처끼리 반대 방향 결과를 한계 절이 다루지 않으면 상충 안내 `(판단)` 한 줄 추가(`note_source_conflicts`, `source_conflicts.json`). 점수기는 재지 않음. 새 백로그 3건(상충 case, 추정치 유보, 오표시율 실측). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 529개 통과(Python 3.11, 새 시험 11개). `python -m evals.run --min-total 97` 통과. `compileall` 통과. `python -m evals.walkthrough examples/pipeline-walkthrough` 재생성 결과 변화 없음. 상충 안내는 임시 case로 실제 파이프라인을 돌려 한계 절 추가·`source_conflicts.json`·점수 무변화를 확인. 휠 빌드·3.12/3.13·Windows는 클라우드에서 돌리지 않음(CI는 푸시 후 확인 필요). 실제 `codex exec`는 로그인이 없어 돌리지 않음.
+- 남은 한계: 계획·범위 판정은 낱말 목록 근사(`will`·`expected`·`statewide` 등)라 실제 보고서에서 오표시·누락이 생길 수 있다. 수치 없는 일반화는 잡지 못한다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "전기차 충전 인프라 확충 계획은 어디까지 왔나?"   # report_marks.json의 plan_conflict·scope_conflict 문장과 source_conflicts.json을 눈으로 판정
+  ```
+
 ## 2026-10-05 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 10 case·강화 기준): **98.3 → 99.8**. 주장-출처 일치 95.1→98.8, 표시 없는 미검증 주장 97.3→100, 새 항목 본문 내부 일관성 97.3→100. (8 case 이전 끝 99.7은 새 기준에서도 99.7 — 오탐 0.) 상세는 `docs/QUALITY-LOG.md`.
