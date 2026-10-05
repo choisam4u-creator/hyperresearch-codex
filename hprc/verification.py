@@ -411,7 +411,9 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - context: 주장의 수치가 든 원문 문장 어디에도 주장의 문맥 낱말이 하나도 없다(같은 문자 체계일 때만;
       번역 인용을 낱말 비교로 불일치라 단정하지 않는다).
     - causal: 원문이 유보·부정한 인과를 주장이 단정한다.
-    - period: 같은 수치를 원문과 다른 기간 단위(하루·한 달·연간·총계)로 말한다."""
+    - period: 같은 수치를 원문과 다른 기간 단위(하루·한 달·연간·총계)로 말한다.
+    - plan: 원문이 계획·목표·전망으로만 말한 수치를 유보 없이 말한다(계획을 실적처럼).
+    - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -445,6 +447,10 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("causal")
     if _period_conflict(plain, sents):
         found.append("period")
+    if _plan_overclaim(plain, sents):
+        found.append("plan")
+    if _scope_overclaim(plain, sents):
+        found.append("scope")
     return found
 
 
@@ -468,6 +474,13 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
 _CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])\s")
 
 
+def _clause_around(text: str, value: dict) -> tuple[int, str]:
+    """수치가 든 절(쉼표·쌍반점·괄호 등으로 끊음)의 시작 위치와 내용."""
+    start = max((m.end() for m in _CLAUSE_BREAK.finditer(text, 0, value["start"])), default=0)
+    stop = next((m.start() for m in _CLAUSE_BREAK.finditer(text, value["end"])), len(text))
+    return start, text[start:stop]
+
+
 def _periods_of(text: str) -> set[str]:
     return {name for name, pattern in _PERIOD_WORDS.items() if re.search(pattern, text, re.I)}
 
@@ -477,9 +490,7 @@ def _value_period(text: str, value: dict) -> set[str]:
 
     한 문장에 '하루 평균 100명, 총 3,000명'처럼 기간이 다른 수치가 같이 있어도 값마다 제 기간을 붙이려는 것이다
     (PR #14 Codex 리뷰 반영)."""
-    start = max((m.end() for m in _CLAUSE_BREAK.finditer(text, 0, value["start"])), default=0)
-    stop = next((m.start() for m in _CLAUSE_BREAK.finditer(text, value["end"])), len(text))
-    clause = text[start:stop]
+    start, clause = _clause_around(text, value)
     found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
              for name, pattern in _PERIOD_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
     return {min(found)[1]} if found else set()
@@ -512,6 +523,49 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
         if held and all(p and not (p & claim_periods) for p in held):
             return True
     return False
+
+
+# 계획·목표의 실적화: 원문이 앞으로의 계획·목표·전망으로만 말한 수치를 유보 없이 이룬 것처럼 쓰는지 본다.
+# 추정(estimate·추정)을 떼는 경우는 오표시 위험이 커서 아직 표시하지 않는다(백로그).
+_PLAN_WORDS = re.compile(r"\b(?:plan(?:s|ned|ning)?|target(?:s|ed)?|aim(?:s|ed)?|goal|expect(?:s|ed)?|project(?:ed|ion|ions)|"
+                         r"forecast\w*|propos\w*|intend\w*|will)\b|계획|목표|예정|전망|예상|방침", re.I)
+# 범위 일반화: 시범·표본 범위 결과를 전역·전체 결과로 쓰는지 본다.
+_WIDE_SCOPE = re.compile(
+    r"\b(?:nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?(?:city|country|nation|state|region)|"
+    r"(?:all|every) (?:residents?|households?|schools?|districts?|neighbou?rhoods?|branches|users|citizens|workers|employees|"
+    r"cities|regions|counties))\b|전국|전\s?국민|시\s?전역|전역|전 지역|도시 전체|시 전체|"
+    r"모든\s?(?:시민|주민|가구|학교|지역|구|지점|사업장|이용자|노동자|직원)", re.I)
+_NARROW_SCOPE = re.compile(
+    r"\b(?:pilot|sample[sd]?|survey(?:ed)?|respondents?|participat\w*|selected)\b|"
+    r"\b(?:two|three|four|five|six|\d+) (?:districts?|neighbou?rhoods?|branches|schools|sites|cities|counties)\b|"
+    r"시범|표본|응답자|설문|참여한|참가한|선정된|\d+\s?(?:개|곳)\s?(?:구|동|지점|학교|단지|지역)", re.I)
+
+
+def _same_value_spots(sents: list[str], value: dict) -> list[tuple[str, dict]]:
+    return [(s, c) for s in sents for c in _quantity_values(s, _date_like_spans(s))
+            if not c.get("unsupported_unit") and c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])]
+
+
+def _plan_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서는 매번 계획·목표·전망을 말하는 절에만 나오는데, 주장은 그런 유보 없이 말하면 True."""
+    if _PLAN_WORDS.search(plain):
+        return False
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        if value.get("unsupported_unit"):
+            continue
+        spots = _same_value_spots(sents, value)
+        if spots and all(_PLAN_WORDS.search(_clause_around(s, c)[1]) for s, c in spots):
+            return True
+    return False
+
+
+def _scope_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
+    if not _WIDE_SCOPE.search(plain):
+        return False
+    held = list(dict.fromkeys(s for value in _quantity_values(plain, _date_like_spans(plain))
+                              if not value.get("unsupported_unit") for s, _ in _same_value_spots(sents, value)))
+    return bool(held) and all(_NARROW_SCOPE.search(s) and not _WIDE_SCOPE.search(s) for s in held)
 
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
@@ -591,14 +645,15 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - '(판단)'만 붙었지만 어떤 출처에도 없는 수치·날짜를 단정하는 문장에도 '(출처 없음)'
     - 인용이 원문이 유보한 인과를 단정하거나 수치를 원문과 다른 기간 단위로 말하면 '(출처 불일치)'
     - 인용 없는 문장(판단 포함)이 같은 대상의 인용 문장과 반대 방향이거나 출처 수치를 다른 기간으로 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
-                                     "internal_conflict": []}
+                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}

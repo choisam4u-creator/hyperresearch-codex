@@ -226,5 +226,55 @@ class CausalPeriodInternalTests(unittest.TestCase):
         self.assertTrue(changes["causal_conflict"] and changes["internal_conflict"] and changes["period_conflict"])
 
 
+class PlanScopeTests(unittest.TestCase):
+    EN = {"S1": "The office reported that 8,200 heat pumps were installed in 2025. The office plans to reach 20,000 installations by 2028.",
+          "S2": "A pilot survey of 400 households in two counties found that heating bills fell 23 percent."}
+    KO = {"S1": "충전기는 5월 말 기준 1,240기다. 시는 2027년까지 충전기를 3,000기로 늘릴 계획이라고 밝혔다.",
+          "S2": "시범 사업이 진행된 3개 구에서 평균 대기 시간은 18분에서 11분으로 줄었다."}
+
+    def mark(self, body, src, lang="en"):
+        head = "## Answer\n" if lang == "en" else "## 답\n"
+        return mark_report_claims(head + body + "\n", src, lang)
+
+    def test_plan_stated_as_done_is_marked(self):
+        text, changes = self.mark("The program reached 20,000 installations [S1].", self.EN)
+        self.assertIn("installations (source mismatch) [S1].", text)
+        self.assertEqual(1, len(changes["plan_conflict"]))
+
+    def test_plan_kept_as_plan_or_actual_value_is_left_alone(self):
+        for body in ("The office plans to reach 20,000 installations by 2028 [S1].",
+                     "The target is 20,000 installations [S1].",
+                     "The program installed 8,200 heat pumps in 2025 [S1]."):
+            text, _ = self.mark(body, self.EN)
+            self.assertNotIn("(source mismatch)", text, body)
+
+    def test_value_reported_both_as_actual_and_plan_is_left_alone(self):
+        src = {"S1": "Installations reached 500 in 2025. The office plans another 500 next year."}
+        text, _ = self.mark("Installations reached 500 [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_pilot_result_generalized_is_marked(self):
+        text, changes = self.mark("Households statewide saw heating bills fall 23 percent [S2].", self.EN)
+        self.assertIn("(source mismatch)", text)
+        self.assertEqual(1, len(changes["scope_conflict"]))
+        text, _ = self.mark("In a pilot of two counties, heating bills fell 23 percent [S2].", self.EN)
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_wide_scope_backed_by_source_is_left_alone(self):
+        src = {"S1": "A statewide survey of 2,000 households found that bills fell 9 percent."}
+        text, _ = self.mark("Households statewide saw bills fall 9 percent [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_korean_plan_and_scope(self):
+        text, changes = self.mark("시는 충전기를 3,000기로 늘렸다 [S1]. 시 전역의 평균 대기 시간은 18분에서 11분으로 줄었다 [S2].",
+                                  self.KO, "ko")
+        self.assertEqual(2, text.count("(출처 불일치)"))
+        self.assertTrue(changes["plan_conflict"] and changes["scope_conflict"])
+        text, _ = self.mark("시는 2027년까지 충전기를 3,000기로 늘릴 계획이다 [S1]. 시범 사업 3개 구의 대기 시간은 11분으로 줄었다 [S2].",
+                            self.KO, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), self.KO, "ko")[0])   # 다시 돌려도 같다
+
+
 if __name__ == "__main__":
     unittest.main()
