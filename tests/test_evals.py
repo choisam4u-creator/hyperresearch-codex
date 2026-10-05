@@ -56,6 +56,25 @@ class ScoreTests(unittest.TestCase):
         result = score.score(GOOD.replace("- Only one season was measured (judgment)\n", ""), "en", "q?", SOURCES)
         self.assertLess(result["structure"], 100)
 
+    def test_causal_overclaim_against_disclaimer_is_mismatch(self):
+        src = {"S1": {"text": "Ridership rose 12 percent. The report cannot establish that the pass caused the rise.", "cluster": "S1"}}
+        self.assertFalse(score.supported("The pass caused ridership to rise 12 percent [S1].", src["S1"]["text"], "en"))
+        self.assertTrue(score.supported("Ridership rose 12 percent [S1].", src["S1"]["text"], "en"))
+        self.assertTrue(score.supported("Boarding fell 14 percent because riders no longer paid [S1].",
+                                        "Boarding fell 14 percent because riders no longer paid at the door.", "en"))
+
+    def test_period_swap_is_mismatch(self):
+        text = "발급자는 3월 한 달 동안 18,400명이었다."
+        self.assertFalse(score.supported("발급자는 하루 18,400명이었다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("발급자는 3월 한 달 동안 18,400명이었다 [S1].", text, "ko"))
+
+    def test_judgment_contradicting_cited_sentence_lowers_consistency(self):
+        report = GOOD.replace("- Only one season was measured (judgment)",
+                              "- Only one season was measured (judgment)\n- Peak demand at the library increased (judgment)")
+        self.assertLess(score.score(report, "en", "q?", SOURCES)["internal_consistency"], 100)
+        warned = report.replace("increased (judgment)", "increased (judgment) (source mismatch)")
+        self.assertEqual(100.0, score.score(warned, "en", "q?", SOURCES)["internal_consistency"])
+
     def test_failed_run_scores_zero(self):
         self.assertTrue(all(score.score(None, "ko", "q", {})[m] == 0 for m in score.METRICS))
 

@@ -1,0 +1,22 @@
+{
+  "id": "en-tree-canopy",
+  "lang": "en",
+  "baseline_time": "2026-06-15",
+  "prompt": "What did the street tree program achieve?",
+  "flaws": [
+    "causal_overclaim_against_disclaimer",
+    "judgment_contradicts_cited_evidence",
+    "period_swap_in_judgment"
+  ],
+  "sources": {
+    "S1": "A 2026 city forestry report says the street tree program planted 2,300 trees per year from 2022 through 2025. Canopy cover in the program neighborhoods increased from 18 percent to 21 percent. Summer surface temperatures in those neighborhoods averaged 1.5 degrees lower than in comparison neighborhoods.\n\nThe report says the comparison was observational and cannot establish that the new trees caused the temperature difference.",
+    "S2": "A parks department review found that tree maintenance requests rose 30 percent in 2025. Staff said most requests involved trees planted before 2010."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What did the street tree program achieve?\n\n## Answer\nCanopy cover in the program neighborhoods increased from 18 percent to 21 percent [S1]. The new trees caused summer surface temperatures in those neighborhoods to average 1.5 degrees lower than in comparison neighborhoods [S1]. The program reduced tree maintenance requests across the city (judgment).\n\n## Evidence\n- The program planted 2,300 trees per year from 2022 through 2025 [S1].\n- Tree maintenance requests rose 30 percent in 2025 [S2].\n- The program planted 2,300 trees in total (judgment).\n\n## Counter-evidence and limits\n- The comparison was observational and cannot establish that the new trees caused the temperature difference [S1].\n- Most maintenance requests involved trees planted before 2010 [S2].\n\n## Next actions\n- Compare temperature trends before and after planting on matched blocks (judgment)\n\n## Sources\n- [S1] City forestry report\n- [S2] Parks department maintenance review\n"
+      }
+    ]
+  }
+}
