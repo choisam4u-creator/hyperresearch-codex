@@ -10,6 +10,7 @@
   - 개선: `verification.mark_report_claims`가 위 세 경우에 `(출처 불일치)`를 본문에 표시하고 `report_marks.json`에 `causal_conflict`·`period_conflict`·`internal_conflict`로 기록.
   - 백로그: 보고서 내부 모순 항목 완료 표시(인용 문장끼리 상충은 새 항목으로 분리), 인과 표시 범위 실측 항목 추가. CHANGELOG `Unreleased`에 한 줄 추가(백로그 'CHANGELOG와 다음 버전 준비'는 계속 진행 중).
 - 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 514개 통과(Python 3.11, 새 시험 9개). `python -m evals.run --min-total 97` 통과. `compileall` 통과. `python -m evals.walkthrough examples/pipeline-walkthrough` 재생성 결과 변화 없음. 휠 빌드·3.12/3.13·Windows는 클라우드에서 돌리지 않음(CI는 푸시 후 확인 필요). 실제 `codex exec`는 로그인이 없어 돌리지 않음.
+- PR #14(claude/cloud-work → main)를 열었다. CI 결과는 아직 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했다. 대신 PR 본문과 이 기록에 남긴다.
 - 남은 한계: 인과 표시는 원문이 명시적으로 유보할 때만 붙는다. 기간 낱말(`total`, `a day`, `하루`)과 반대 방향 판정은 낱말 근사라 실제 보고서에서 오표시가 생길 수 있다.
 - Mac에서 확인할 것:
   ```bash
