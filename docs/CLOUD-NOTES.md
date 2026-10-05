@@ -2,6 +2,21 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-05 (품질 회차)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 10 case·강화 기준): **98.3 → 99.8**. 주장-출처 일치 95.1→98.8, 표시 없는 미검증 주장 97.3→100, 새 항목 본문 내부 일관성 97.3→100. (8 case 이전 끝 99.7은 새 기준에서도 99.7 — 오탐 0.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-transit-pass`, `en-tree-canopy`) — 원문이 유보한 인과 단정, 판단 문장과 인용 문장의 반대 방향, 기간 단위 바꿔치기. 점수기에 인과·기간 검사와 "본문 내부 일관성" 항목 추가.
+  - 개선: `verification.mark_report_claims`가 위 세 경우에 `(출처 불일치)`를 본문에 표시하고 `report_marks.json`에 `causal_conflict`·`period_conflict`·`internal_conflict`로 기록.
+  - 백로그: 보고서 내부 모순 항목 완료 표시(인용 문장끼리 상충은 새 항목으로 분리), 인과 표시 범위 실측 항목 추가. CHANGELOG `Unreleased`에 한 줄 추가(백로그 'CHANGELOG와 다음 버전 준비'는 계속 진행 중).
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 514개 통과(Python 3.11, 새 시험 9개). `python -m evals.run --min-total 97` 통과. `compileall` 통과. `python -m evals.walkthrough examples/pipeline-walkthrough` 재생성 결과 변화 없음. 휠 빌드·3.12/3.13·Windows는 클라우드에서 돌리지 않음(CI는 푸시 후 확인 필요). 실제 `codex exec`는 로그인이 없어 돌리지 않음.
+- 남은 한계: 인과 표시는 원문이 명시적으로 유보할 때만 붙는다. 기간 낱말(`total`, `a day`, `하루`)과 반대 방향 판정은 낱말 근사라 실제 보고서에서 오표시가 생길 수 있다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "청년 교통패스의 효과는?"   # 결과 폴더 report_marks.json의 causal_conflict·period_conflict·internal_conflict 문장이 실제로 틀린지 눈으로 판정
+  ```
+
 ## 2026-10-04 (품질 회차 2)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 8 case·강화 기준): **97.3 → 99.7**. 주장-출처 일치 87.9→98.4, 표시 없는 미검증 주장 없음 98.6→100. (이전 6 case·옛 기준 끝 점수는 99.2. 새 결함 case는 옛 점수기로 100점이라 기준을 강화했고 기존 case 점수는 변하지 않음.) 상세는 `docs/QUALITY-LOG.md`.
