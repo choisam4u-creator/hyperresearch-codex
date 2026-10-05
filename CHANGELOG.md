@@ -8,6 +8,7 @@
 - Fill an empty limits section with the analyst's conflicts and gaps marked `(judgment)`, or state that none were listed and review is needed.
 - Mark cited sentences `(source mismatch)` when every source sentence holding the same value states the opposite direction, when the number comes from an unrelated source sentence, or when text-similar sources are described as independent; add `(no source)` to `(judgment)` sentences asserting numbers found in no source. Count body marks in `quality.json`, the report header and `hpr status`.
 - Mark `(source mismatch)` when a cited sentence asserts causation that the cited source explicitly disclaims, when a number is restated with a different period (per day, per year, total) than every source sentence holding it, and when an uncited or `(judgment)` sentence states the opposite direction of a cited sentence about the same subject.
+- Mark `(source mismatch)` when a cited sentence states as achieved a number the source gives only as a plan, target or forecast, or generalizes a pilot or sample result to a citywide, statewide or nationwide scope. When sentences citing different sources give opposite directions for the same subject and the limits section does not mention both sources, append a `(judgment)` line noting the disagreement (`source_conflicts.json`).
 - Add the `evals/` fixed-case quality score (`python -m evals.run`) to CI. Fixed-case scores are not a general quality claim.
 
 ## 0.5.0 - 2026-09-26

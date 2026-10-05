@@ -31,7 +31,7 @@ from .run_paths import run_directory
 from .text_select import select
 from .mock import mock_backend
 from .vault import note_body, read_front, sync, write_note
-from .verification import mark_report_claims, verify_report
+from .verification import mark_report_claims, note_source_conflicts, verify_report
 from .untrusted import wrap_source
 from .gap_plan import plan_gaps
 from .evidence import build_evidence_ledger, validate_evidence_ledger
@@ -573,8 +573,15 @@ class Run:
         fixed, limits_filled = fill_empty_limits(fixed, analysis.get("gaps", []), analysis.get("contradictions", []), self.lang)
         if limits_filled:
             atomic_write(self.dir / "limits_filled.json", json.dumps({"rows": limits_filled}, ensure_ascii=False))
+        texts = {s["id"]: note_body(Path(s["path"])) for s in self.sources}
+        # 출처끼리 반대 방향 결과를 한계 절이 다루지 않으면 상충 안내를 덧붙인다(본문 표시는 하지 않음).
+        fixed, conflicts = note_source_conflicts(fixed, texts, self.lang)
+        if conflicts:
+            log = self.dir / "source_conflicts.json"
+            previous = json.loads(log.read_text(encoding="utf-8")).get("pairs", []) if log.exists() else []
+            atomic_write(log, json.dumps({"pairs": previous + conflicts}, ensure_ascii=False))
         # 원문에 없는 수치·날짜와 인용 없는 사실 문장을 본문에 직접 표시한다(검증 절만 보고 놓치지 않게).
-        fixed, marks = mark_report_claims(fixed, {s["id"]: note_body(Path(s["path"])) for s in self.sources}, self.lang)
+        fixed, marks = mark_report_claims(fixed, texts, self.lang)
         if marks["mismatch"] or marks["no_source"]:
             log = self.dir / "report_marks.json"
             previous = json.loads(log.read_text(encoding="utf-8")) if log.exists() else {"mismatch": [], "no_source": []}

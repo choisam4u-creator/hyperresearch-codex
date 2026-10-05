@@ -161,6 +161,58 @@ def period_mismatch(plain: str, source_text: str) -> bool:
     return False
 
 
+# 계획·추정의 실적화와 표본 범위의 일반화(2026-10-05 2회차 기준 강화, QUALITY-LOG 참조).
+# 미래·계획형 유보만 본다. 추정(estimate·추정)을 떼는 것은 다른 결함 유형으로 백로그에 둔다(QUALITY-LOG 참조).
+_HEDGE = re.compile(r"\b(?:plan(?:s|ned|ning)?|target(?:s|ed)?|aim(?:s|ed)?|goal|expect(?:s|ed)?|project(?:ed|ion|ions)|"
+                    r"forecast\w*|propos\w*|intend\w*|will)\b|계획|목표|예정|전망|예상|방침", re.I)
+_WIDE = re.compile(r"\b(?:nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?(?:city|country|nation|state|region)|"
+                   r"(?:all|every) (?:residents?|households?|schools?|districts?|neighbou?rhoods?|branches|users|citizens|"
+                   r"workers|employees|cities|regions|counties))\b|전국|전\s?국민|시\s?전역|전역|전 지역|도시 전체|시 전체|"
+                   r"모든\s?(?:시민|주민|가구|학교|지역|구|지점|사업장|이용자|노동자|직원)", re.I)
+_NARROW = re.compile(r"\b(?:pilot|sample[sd]?|survey(?:ed)?|respondents?|participat\w*|selected)\b|"
+                     r"\b(?:two|three|four|five|six|\d+) (?:districts?|neighbou?rhoods?|branches|schools|sites|cities|counties)\b|"
+                     r"시범|표본|응답자|설문|참여한|참가한|선정된|\d+\s?(?:개|곳)\s?(?:구|동|지점|학교|단지|지역)", re.I)
+
+
+_PROP = re.compile(r"\b(?:and|but|while|whereas)\b|그리고|했고|하고|됐고|되었고|였고|이었고|으며|이며|지만", re.I)
+
+
+def _proposition(text: str, start: int, end: int) -> str:
+    """수치가 든 절에서 접속어로 한 번 더 끊은 명제(실적과 계획이 한 절에 이어질 때, PR #15 리뷰 반영)."""
+    a = max((b.end() for b in _CLAUSE.finditer(text, 0, start)), default=0)
+    a = max([a] + [m.end() for m in _PROP.finditer(text, a, start)])
+    b = next((x.start() for x in _CLAUSE.finditer(text, end)), len(text))
+    b = min([b] + [m.start() for m in _PROP.finditer(text, end, b)])
+    return text[a:b]
+
+
+def hedge_dropped(plain: str, source_text: str) -> bool:
+    """주장 수치가 원문에서는 매번 계획·목표·추정을 말하는 절에만 나오는데 주장은 유보 없이 사실처럼 말하면 True."""
+    if _HEDGE.search(plain):
+        return False
+    sents = _source_sentences(source_text)
+    for m in _NUM.finditer(plain):
+        n = m.group(0).replace(",", "")
+        held = [_proposition(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
+        if held and all(_HEDGE.search(c) for c in held):
+            return True
+    return False
+
+
+def scope_widened(plain: str, source_text: str) -> bool:
+    """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장은 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
+    if not _WIDE.search(plain):
+        return False
+    numbers = set(_numbers(plain))
+    sents = _source_sentences(source_text)
+    if numbers:
+        held = [s for s in sents if numbers & set(_numbers(s))]
+    else:   # 수치 없는 일반화는 같은 대상(문맥 낱말 2개 이상 공유) 원문 문장으로 본다(PR #15 리뷰 반영)
+        terms = _content_terms(_NARROW.sub(" ", _WIDE.sub(" ", plain)))
+        held = [s for s in sents if len(terms & _content_terms(_NARROW.sub(" ", _WIDE.sub(" ", s)))) >= 2]
+    return bool(held) and all(_NARROW.search(s) and not _WIDE.search(s) for s in held)
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -186,6 +238,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-05 기준 강화: 원문이 유보한 인과를 단정하거나, 같은 수치를 다른 기간 단위로 말하면 불일치.
     if causal_unsupported(plain, source_text) or period_mismatch(plain, source_text):
+        return False
+    # 2026-10-05 2회차 기준 강화: 원문의 계획·추정을 실적처럼, 시범·표본 결과를 전역 결과처럼 말하면 불일치.
+    if hedge_dropped(plain, source_text) or scope_widened(plain, source_text):
         return False
     return True
 
