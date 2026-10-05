@@ -63,6 +63,15 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("Boarding fell 14 percent because riders no longer paid [S1].",
                                         "Boarding fell 14 percent because riders no longer paid at the door.", "en"))
 
+    def test_unrelated_causal_sentence_does_not_support_claim(self):
+        text = "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."
+        self.assertFalse(score.supported("The campaign caused traffic growth [S1].", text, "en"))
+
+    def test_period_is_tied_to_each_number(self):
+        text = "The daily average was 100 visitors, for 3,000 visitors in total."
+        self.assertFalse(score.supported("The site drew 3,000 visitors per day [S1].", text, "en"))
+        self.assertTrue(score.supported("The site drew 3,000 visitors in total [S1].", text, "en"))
+
     def test_period_swap_is_mismatch(self):
         text = "발급자는 3월 한 달 동안 18,400명이었다."
         self.assertFalse(score.supported("발급자는 하루 18,400명이었다 [S1].", text, "ko"))

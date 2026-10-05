@@ -465,29 +465,50 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
                  "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
 
 
+_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])\s")
+
+
 def _periods_of(text: str) -> set[str]:
     return {name for name, pattern in _PERIOD_WORDS.items() if re.search(pattern, text, re.I)}
+
+
+def _value_period(text: str, value: dict) -> set[str]:
+    """수치가 든 절(쉼표·쌍반점 등으로 끊음)의 기간 단위. 한 절에 여러 개면 수치에 가장 가까운 것 하나만 본다.
+
+    한 문장에 '하루 평균 100명, 총 3,000명'처럼 기간이 다른 수치가 같이 있어도 값마다 제 기간을 붙이려는 것이다
+    (PR #14 Codex 리뷰 반영)."""
+    start = max((m.end() for m in _CLAUSE_BREAK.finditer(text, 0, value["start"])), default=0)
+    stop = next((m.start() for m in _CLAUSE_BREAK.finditer(text, value["end"])), len(text))
+    clause = text[start:stop]
+    found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
+             for name, pattern in _PERIOD_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
+    return {min(found)[1]} if found else set()
 
 
 def _causal_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 인과를 단정하는데, 인용 원문이 인과를 유보·부정하는 문장을 담고 인과를 긍정하는 문장은 없으면 True."""
     if not _CAUSAL_CLAIM.search(plain) or _CAUSAL_DISCLAIM.search(plain):
         return False
+    # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
+    stems = _causal_stems(plain)
     return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
-            and not any(_CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) for s in sents))
+            and not any(_CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s)
+                        for s in sents))
+
+
+def _causal_stems(text: str) -> set[str]:
+    return _content_stems(_CAUSAL_ANY.sub(" ", text))
 
 
 def _period_conflict(plain: str, sents: list[str]) -> bool:
-    """주장 수치가 든 원문 문장이 모두 기간 단위를 말하고, 그 어느 것도 주장의 기간 단위와 겹치지 않으면 True."""
-    claim_periods = _periods_of(plain)
-    if not claim_periods:
-        return False
+    """주장 수치의 기간 단위가 같은 값이 나오는 원문 자리마다의 기간 단위와 하나도 겹치지 않으면 True(값마다 제 절의 기간)."""
     for value in _quantity_values(plain, _date_like_spans(plain)):
-        if value.get("unsupported_unit"):
+        claim_periods = _value_period(plain, value)
+        if value.get("unsupported_unit") or not claim_periods:
             continue
-        held = [_periods_of(s) for s in sents
-                if any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])
-                       for c in _quantity_values(s, _date_like_spans(s)) if not c.get("unsupported_unit"))]
+        held = [_value_period(s, c) for s in sents for c in _quantity_values(s, _date_like_spans(s))
+                if not c.get("unsupported_unit") and c["dimension"] == value["dimension"]
+                and abs(c["value"]) == abs(value["value"])]
         if held and all(p and not (p & claim_periods) for p in held):
             return True
     return False

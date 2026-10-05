@@ -123,20 +123,39 @@ def _periods(text: str) -> set[str]:
 
 
 def causal_unsupported(plain: str, source_text: str) -> bool:
-    """주장이 인과를 단정하는데 인용 원문에 인과를 말하는(부정·유보하지 않은) 문장이 없으면 True."""
+    """주장이 인과를 단정하는데 인용 원문에 같은 대상(문맥 낱말 공유)의 인과를 말하는(부정·유보하지 않은) 문장이 없으면 True.
+
+    2026-10-05 PR #14 리뷰 반영: 다른 대상의 인과 문장("비 때문에 한 곳이 문을 닫았다")은 근거로 치지 않는다."""
     if not _CAUSAL.search(plain) or _DISCLAIM.search(plain):
         return False
-    return not any(_CAUSAL_SOURCE.search(s) and not _DISCLAIM.search(s) for s in _source_sentences(source_text))
+    terms = _content_terms(_CAUSAL_SOURCE.sub(" ", plain))
+    return not any(_CAUSAL_SOURCE.search(s) and not _DISCLAIM.search(s)
+                   and terms & _content_terms(_CAUSAL_SOURCE.sub(" ", s)) for s in _source_sentences(source_text))
+
+
+_NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")
+_CLAUSE = re.compile(r"[,;:()]")
+
+
+def _number_periods(text: str) -> list[tuple[str, set[str]]]:
+    """수치마다 그 수치가 든 절(쉼표 등으로 끊음)에서 가장 가까운 기간 단위 하나(PR #14 리뷰 반영)."""
+    out = []
+    for m in _NUM.finditer(text):
+        start = max((b.end() for b in _CLAUSE.finditer(text, 0, m.start())), default=0)
+        stop = next((b.start() for b in _CLAUSE.finditer(text, m.end())), len(text))
+        found = [(abs(x.start() + start - m.start()), k) for k, pat in _PERIODS.items()
+                 for x in re.finditer(pat, text[start:stop], re.I)]
+        out.append((m.group(0).replace(",", ""), {min(found)[1]} if found else set()))
+    return out
 
 
 def period_mismatch(plain: str, source_text: str) -> bool:
-    """주장 수치가 든 원문 문장들이 모두 주장과 다른 기간 단위(하루·한 달·연간·총계)를 말하면 True."""
-    claim_periods = _periods(plain)
-    if not claim_periods:
-        return False
-    for n in _numbers(plain):
-        holders = [s for s in _source_sentences(source_text) if n in _numbers(s)]
-        held = [_periods(s) for s in holders]
+    """주장 수치의 기간 단위(하루·한 달·연간·총계)가 원문에서 같은 수치가 나오는 자리마다의 기간 단위와 모두 다르면 True."""
+    held_all = [x for s in _source_sentences(source_text) for x in _number_periods(s)]
+    for n, claim_periods in _number_periods(plain):
+        if not claim_periods:
+            continue
+        held = [p for m, p in held_all if m == n]
         if held and all(p and not (p & claim_periods) for p in held):
             return True
     return False

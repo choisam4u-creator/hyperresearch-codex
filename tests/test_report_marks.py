@@ -185,6 +185,19 @@ class CausalPeriodInternalTests(unittest.TestCase):
         text, _ = self.mark("The pass caused ridership to rise 12 percent in March [S1].", silent)
         self.assertNotIn("(source mismatch)", text)
 
+    def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
+        src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
+        text, changes = self.mark("The campaign caused traffic growth [S1].", src)
+        self.assertIn("(source mismatch) [S1]", text)
+        self.assertEqual(1, len(changes["causal_conflict"]))
+
+    def test_period_is_tied_to_each_number_in_a_sentence(self):
+        src = {"S1": "The daily average was 100 visitors, for 3,000 visitors in total."}
+        text, _ = self.mark("The site drew 3,000 visitors per day [S1].", src)
+        self.assertIn("(source mismatch) [S1]", text)
+        text, _ = self.mark("The site drew 3,000 visitors in total [S1]. The daily average was 100 visitors [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+
     def test_period_swap_is_marked_for_cited_and_judgment(self):
         text, changes = self.mark("The program planted 2,300 trees in total [S2]. It planted 2,300 trees a day (judgment).")
         self.assertEqual(2, text.count("(source mismatch)"))
