@@ -602,6 +602,10 @@ def _with_mismatch(sentence: str, mark: str) -> str:
 
 def _trusted_cited_claims(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str]]]:
     """답·근거·한계 절에서 인용이 있고 원문 대조에 걸리지 않은 문장의 (증감 방향, 문맥 낱말) 목록."""
+    return [(direction, stems) for direction, stems, _ in _trusted_cited_rows(report, source_texts, M)]
+
+
+def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str], tuple[str, ...]]]:
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -621,7 +625,7 @@ def _trusted_cited_claims(report: str, source_texts: dict[str, str], M: dict) ->
             direction = _direction_of(plain)
             if (direction and cited_text.strip() and not _absent_values(piece, cited_text)
                     and not _value_conflicts(piece, cited_text)):
-                out.append((direction, _content_stems(plain)))
+                out.append((direction, _content_stems(plain), tuple(cites)))
     return out
 
 
@@ -720,3 +724,42 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             fixed.append(piece)
         out.append(lead + "".join(fixed))
     return "\n".join(out), changes
+
+
+_CONFLICT_ROW = {"ko": "- 출처끼리 상충: {a}·{b}를 인용한 문장이 같은 대상의 증감을 서로 반대로 말하므로 두 원문의 범위·기간·측정 방식을 확인해야 한다 {j}.",
+                 "en": "- Sources disagree: sentences citing {a} and {b} give opposite directions for the same subject, so check each source's scope, period and method {j}."}
+
+
+def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str = "ko", limit: int = 3) -> tuple[str, list[list[str]]]:
+    """서로 다른 출처를 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상 공유)을 반대 증감 방향으로 말하는데
+    한계 절이 두 출처를 함께 언급하지 않으면, 한계 절 끝에 상충 안내 한 줄을 '(판단)'으로 덧붙인다.
+
+    출처끼리 다른 결과는 정당한 서술이라 본문에 불일치 표시를 하지 않고 독자에게 상충을 알리기만 한다.
+    한계 절이 없으면 아무것도 하지 않는다. 다시 돌려도 같다. 반환: (본문, 덧붙인 출처 쌍 목록)."""
+    M = _MARKS.get(lang, _MARKS["ko"])
+    lines = report.split("\n")
+    limits = M["claims"][2:]
+    index = next((i for i, line in enumerate(lines) if line.strip() in limits), None)
+    if index is None:
+        return report, []
+    end = next((j for j in range(index + 1, len(lines)) if lines[j].startswith("#")), len(lines))
+    section = "\n".join(lines[index + 1:end])
+    rows = _trusted_cited_rows(report, source_texts, M)
+    pairs: list[list[str]] = []
+    for i, (d1, stems1, cites1) in enumerate(rows):
+        for d2, stems2, cites2 in rows[i + 1:]:
+            if d1 == d2 or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
+                continue
+            pair = sorted({cites1[0], cites2[0]}, key=lambda c: int(c[1:]))
+            mentioned = all(re.search(rf"(?<![A-Za-z0-9]){c}(?!\d)", section) for c in pair)
+            if pair not in pairs and not mentioned:
+                pairs.append(pair)
+    pairs = pairs[:limit]
+    if not pairs:
+        return report, []
+    added = [_CONFLICT_ROW.get(lang, _CONFLICT_ROW["ko"]).format(a=a, b=b, j=M["judgment"]) for a, b in pairs]
+    last = end
+    while last > index + 1 and not lines[last - 1].strip():
+        last -= 1
+    lines[last:last] = added
+    return "\n".join(lines), pairs
