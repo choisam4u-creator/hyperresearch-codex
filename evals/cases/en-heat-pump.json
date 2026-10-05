@@ -1,0 +1,21 @@
+{
+ "id": "en-heat-pump",
+ "lang": "en",
+ "baseline_time": "2026-06-30",
+ "prompt": "What has the state heat pump rebate program achieved so far? Cite sources.",
+ "flaws": [
+  "target_stated_as_achieved",
+  "pilot_scope_overgeneralized"
+ ],
+ "sources": {
+  "S1": "The state energy office reported in June 2026 that 8,200 heat pumps were installed under the rebate program in 2025. The office plans to reach 20,000 installations by 2028.",
+  "S2": "A pilot survey of 400 participating households in two counties found that winter heating bills fell 23 percent after installation. The survey did not include households outside the pilot counties."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What has the state heat pump rebate program achieved so far? Cite sources.\n\n## Answer\nThe rebate program installed 8,200 heat pumps in 2025 [S1]. The program reached 20,000 installations [S1]. Households statewide saw winter heating bills fall 23 percent after installation [S2].\n\n## Evidence\n- The office plans to reach 20,000 installations by 2028 [S1].\n- In a pilot survey of 400 households in two counties, winter heating bills fell 23 percent after installation [S2].\n\n## Counter-evidence and limits\n- The survey did not include households outside the pilot counties [S2].\n\n## Next actions\n- Look for billing data from non-pilot counties (judgment)\n\n## Sources\n- [S1] State energy office heat pump rebate report\n- [S2] Pilot county heating bill survey\n"
+   }
+  ]
+ }
+}
