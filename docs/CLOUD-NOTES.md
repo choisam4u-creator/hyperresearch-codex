@@ -11,7 +11,7 @@
   - 백로그 1건: 출처끼리 반대 방향 결과를 한계 절이 다루지 않으면 상충 안내 `(판단)` 한 줄 추가(`note_source_conflicts`, `source_conflicts.json`). 점수기는 재지 않음. 새 백로그 3건(상충 case, 추정치 유보, 오표시율 실측). CHANGELOG `Unreleased` 한 줄.
 - 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 529개 통과(Python 3.11, 새 시험 11개). `python -m evals.run --min-total 97` 통과. `compileall` 통과. `python -m evals.walkthrough examples/pipeline-walkthrough` 재생성 결과 변화 없음. 상충 안내는 임시 case로 실제 파이프라인을 돌려 한계 절 추가·`source_conflicts.json`·점수 무변화를 확인. 휠 빌드·3.12/3.13·Windows는 클라우드에서 돌리지 않음(CI는 푸시 후 확인 필요). 실제 `codex exec`는 로그인이 없어 돌리지 않음.
 - PR #15(claude/cloud-work → main)를 열었다. CI 결과는 아직 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했다. 대신 PR 본문과 이 기록에 남긴다.
-- 남은 한계: 계획·범위 판정은 낱말 목록 근사(`will`·`expected`·`statewide` 등)라 실제 보고서에서 오표시·누락이 생길 수 있다. 수치 없는 일반화는 잡지 못한다.
+- 남은 한계: 계획·범위 판정은 낱말 목록 근사(`will`·`expected`·`statewide` 등)라 실제 보고서에서 오표시·누락이 생길 수 있다. 수치 없는 일반화는 문맥 낱말 근사로만 잡는다. PR #15 Codex 리뷰 3건(한 절 안 실적·계획 구분, 수치 없는 일반화, 한계 절 상충 언급 판정)을 반영했다.
 - Mac에서 확인할 것:
   ```bash
   git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose

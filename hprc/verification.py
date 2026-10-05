@@ -541,6 +541,19 @@ _NARROW_SCOPE = re.compile(
     r"시범|표본|응답자|설문|참여한|참가한|선정된|\d+\s?(?:개|곳)\s?(?:구|동|지점|학교|단지|지역)", re.I)
 
 
+# 한 절 안에서 실적과 계획이 이어질 때("500기를 설치했고 500기를 더 늘릴 계획") 계획 낱말을 제 명제에만 붙이려고
+# 접속어에서도 끊는다(PR #15 Codex 리뷰 반영).
+_PROPOSITION_BREAK = re.compile(r"\b(?:and|but|while|whereas)\b|그리고|했고|하고|됐고|되었고|였고|이었고|으며|이며|지만", re.I)
+
+
+def _proposition_around(text: str, value: dict) -> str:
+    start, clause = _clause_around(text, value)
+    left, right = value["start"] - start, value["end"] - start
+    a = max((m.end() for m in _PROPOSITION_BREAK.finditer(clause, 0, left)), default=0)
+    b = next((m.start() for m in _PROPOSITION_BREAK.finditer(clause, right)), len(clause))
+    return clause[a:b]
+
+
 def _same_value_spots(sents: list[str], value: dict) -> list[tuple[str, dict]]:
     return [(s, c) for s in sents for c in _quantity_values(s, _date_like_spans(s))
             if not c.get("unsupported_unit") and c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])]
@@ -554,18 +567,28 @@ def _plan_overclaim(plain: str, sents: list[str]) -> bool:
         if value.get("unsupported_unit"):
             continue
         spots = _same_value_spots(sents, value)
-        if spots and all(_PLAN_WORDS.search(_clause_around(s, c)[1]) for s, c in spots):
+        if spots and all(_PLAN_WORDS.search(_proposition_around(s, c)) for s, c in spots):
             return True
     return False
 
 
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
-    """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
+    """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
+
+    수치 없는 주장은 같은 대상(문맥 낱말 2개 이상 공유)을 말하는 원문 문장으로 본다(PR #15 Codex 리뷰 반영)."""
     if not _WIDE_SCOPE.search(plain):
         return False
-    held = list(dict.fromkeys(s for value in _quantity_values(plain, _date_like_spans(plain))
-                              if not value.get("unsupported_unit") for s, _ in _same_value_spots(sents, value)))
+    values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
+    if values:
+        held = list(dict.fromkeys(s for value in values for s, _ in _same_value_spots(sents, value)))
+    else:
+        stems = _scope_stems(plain)
+        held = [s for s in sents if len(stems & _scope_stems(s)) >= 2]
     return bool(held) and all(_NARROW_SCOPE.search(s) and not _WIDE_SCOPE.search(s) for s in held)
+
+
+def _scope_stems(text: str) -> set[str]:
+    return _content_stems(_NARROW_SCOPE.sub(" ", _WIDE_SCOPE.sub(" ", text)))
 
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
@@ -751,7 +774,8 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
             if d1 == d2 or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
                 continue
             pair = sorted({cites1[0], cites2[0]}, key=lambda c: int(c[1:]))
-            mentioned = all(re.search(rf"(?<![A-Za-z0-9]){c}(?!\d)", section) for c in pair)
+            # 두 출처를 한 줄에서 함께 다뤄야 상충을 다룬 것으로 본다(따로 떨어진 언급은 치지 않음, PR #15 Codex 리뷰 반영).
+            mentioned = any(all(re.search(rf"(?<![A-Za-z0-9]){c}(?!\d)", row) for c in pair) for row in section.split("\n"))
             if pair not in pairs and not mentioned:
                 pairs.append(pair)
     pairs = pairs[:limit]

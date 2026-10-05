@@ -265,6 +265,28 @@ class PlanScopeTests(unittest.TestCase):
         text, _ = self.mark("Households statewide saw bills fall 9 percent [S1].", src)
         self.assertNotIn("(source mismatch)", text)
 
+    def test_achieved_and_planned_value_in_one_clause_is_left_alone(self):
+        # PR #15 리뷰: 실적과 계획이 한 절에 이어지면 계획 낱말은 뒤 명제에만 붙는다.
+        src = {"S1": "The city has installed 500 chargers and plans to add 500 more."}
+        text, _ = self.mark("The city has installed 500 chargers [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+        src = {"S1": "시는 충전기 500기를 설치했고 500기를 더 늘릴 계획이다."}
+        text, _ = self.mark("시는 충전기 500기를 설치했다 [S1].", src, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        text, _ = self.mark("The city reached 20,000 installations [S1].",
+                            {"S1": "The city installed 8,200 units and plans to reach 20,000 installations."})
+        self.assertIn("(source mismatch)", text)
+
+    def test_qualitative_scope_generalization_is_marked(self):
+        # PR #15 리뷰: 수치 없는 일반화도 같은 대상의 원문 문장이 모두 시범 범위면 표시한다.
+        src = {"S1": "Participating households in a two-county pilot reported lower heating bills."}
+        text, changes = self.mark("Households statewide reported lower heating bills [S1].", src)
+        self.assertIn("(source mismatch)", text)
+        self.assertEqual(1, len(changes["scope_conflict"]))
+        src = {"S1": "Households statewide reported lower heating bills in the annual survey of utilities."}
+        text, _ = self.mark("Households statewide reported lower heating bills [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+
     def test_korean_plan_and_scope(self):
         text, changes = self.mark("시는 충전기를 3,000기로 늘렸다 [S1]. 시 전역의 평균 대기 시간은 18분에서 11분으로 줄었다 [S2].",
                                   self.KO, "ko")

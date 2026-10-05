@@ -31,6 +31,14 @@ class SourceConflictTests(unittest.TestCase):
         report = KO.replace("- 주차 요금은 동결됐다 [S3].\n\n## 다음", "- S1과 S2의 집계가 다르다 (판단).\n\n## 다음")
         self.assertEqual((report, []), note_source_conflicts(report, SRC, "ko"))
 
+    def test_separate_unrelated_mentions_of_each_source_do_not_count(self):
+        # PR #15 리뷰: 한계 절에서 S1·S2가 따로따로 다른 한계로 언급된 것은 상충을 다룬 것이 아니다.
+        report = KO.replace("- 주차 요금은 동결됐다 [S3].\n\n## 다음",
+                            "- S1의 주차 자료는 4월만 다룬다 (판단).\n- S2의 표본은 작다 (판단).\n\n## 다음")
+        text, pairs = note_source_conflicts(report, SRC, "ko")
+        self.assertEqual([["S1", "S2"]], pairs)
+        self.assertIn("출처끼리 상충", text)
+
     def test_same_source_unrelated_subject_or_no_limits_section_is_left_alone(self):
         src = {"S1": "버스 이용 건수는 8% 증가했다. 주차장 이용 대수는 3% 감소했다."}
         report = "## 답\n버스 이용 건수는 8% 증가했다 [S1]. 주차장 이용 대수는 3% 감소했다 [S1].\n\n## 한계\n- 표본이 작다 (판단).\n"

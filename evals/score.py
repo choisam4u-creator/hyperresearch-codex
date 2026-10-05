@@ -174,9 +174,15 @@ _NARROW = re.compile(r"\b(?:pilot|sample[sd]?|survey(?:ed)?|respondents?|partici
                      r"시범|표본|응답자|설문|참여한|참가한|선정된|\d+\s?(?:개|곳)\s?(?:구|동|지점|학교|단지|지역)", re.I)
 
 
-def _clause(text: str, start: int, end: int) -> str:
+_PROP = re.compile(r"\b(?:and|but|while|whereas)\b|그리고|했고|하고|됐고|되었고|였고|이었고|으며|이며|지만", re.I)
+
+
+def _proposition(text: str, start: int, end: int) -> str:
+    """수치가 든 절에서 접속어로 한 번 더 끊은 명제(실적과 계획이 한 절에 이어질 때, PR #15 리뷰 반영)."""
     a = max((b.end() for b in _CLAUSE.finditer(text, 0, start)), default=0)
+    a = max([a] + [m.end() for m in _PROP.finditer(text, a, start)])
     b = next((x.start() for x in _CLAUSE.finditer(text, end)), len(text))
+    b = min([b] + [m.start() for m in _PROP.finditer(text, end, b)])
     return text[a:b]
 
 
@@ -187,7 +193,7 @@ def hedge_dropped(plain: str, source_text: str) -> bool:
     sents = _source_sentences(source_text)
     for m in _NUM.finditer(plain):
         n = m.group(0).replace(",", "")
-        held = [_clause(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
+        held = [_proposition(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
         if held and all(_HEDGE.search(c) for c in held):
             return True
     return False
@@ -198,7 +204,12 @@ def scope_widened(plain: str, source_text: str) -> bool:
     if not _WIDE.search(plain):
         return False
     numbers = set(_numbers(plain))
-    held = [s for s in _source_sentences(source_text) if numbers & set(_numbers(s))]
+    sents = _source_sentences(source_text)
+    if numbers:
+        held = [s for s in sents if numbers & set(_numbers(s))]
+    else:   # 수치 없는 일반화는 같은 대상(문맥 낱말 2개 이상 공유) 원문 문장으로 본다(PR #15 리뷰 반영)
+        terms = _content_terms(_NARROW.sub(" ", _WIDE.sub(" ", plain)))
+        held = [s for s in sents if len(terms & _content_terms(_NARROW.sub(" ", _WIDE.sub(" ", s)))) >= 2]
     return bool(held) and all(_NARROW.search(s) and not _WIDE.search(s) for s in held)
 
 
