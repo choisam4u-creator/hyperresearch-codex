@@ -165,5 +165,53 @@ class ValueConflictMarkTests(unittest.TestCase):
         self.assertIn("(source mismatch) [S1][S3]", en)
 
 
+class CausalPeriodInternalTests(unittest.TestCase):
+    SRC = {"S1": "Ridership rose 12 percent in March. The report cannot establish that the pass caused the rise.",
+           "S2": "The program planted 2,300 trees per year. Maintenance requests for street trees rose 30 percent."}
+
+    def mark(self, body: str, sources=None) -> tuple[str, dict]:
+        return mark_report_claims(f"## Answer\n{body}\n\n## Sources\n- [S1] a\n", sources or self.SRC, "en")
+
+    def test_causal_claim_against_disclaimer_is_marked(self):
+        text, changes = self.mark("The pass caused ridership to rise 12 percent in March [S1].")
+        self.assertIn("(source mismatch) [S1]", text)
+        self.assertEqual(1, len(changes["causal_conflict"]))
+
+    def test_causal_claim_supported_or_without_disclaimer_is_left_alone(self):
+        supported = {"S1": "Boarding time fell 14 percent because riders no longer paid at the door."}
+        text, _ = self.mark("Boarding time fell 14 percent because riders no longer paid [S1].", supported)
+        self.assertNotIn("(source mismatch)", text)
+        silent = {"S1": "Ridership rose 12 percent in March."}     # 인과 낱말이 없을 뿐인 원문은 표시하지 않는다(보수적)
+        text, _ = self.mark("The pass caused ridership to rise 12 percent in March [S1].", silent)
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_period_swap_is_marked_for_cited_and_judgment(self):
+        text, changes = self.mark("The program planted 2,300 trees in total [S2]. It planted 2,300 trees a day (judgment).")
+        self.assertEqual(2, text.count("(source mismatch)"))
+        self.assertEqual(2, len(changes["period_conflict"]))
+        text, _ = self.mark("The program planted 2,300 trees per year [S2].")
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_judgment_contradicting_cited_sentence_is_marked(self):
+        body = "Maintenance requests for street trees rose 30 percent [S2]. The program reduced maintenance requests (judgment)."
+        text, changes = self.mark(body)
+        self.assertIn("reduced maintenance requests (judgment) (source mismatch).", text)
+        self.assertEqual(1, len(changes["internal_conflict"]))
+        self.assertEqual(text, self.mark(text.split("\n", 1)[1].split("\n\n## Sources")[0])[0])   # 다시 돌려도 같다
+
+    def test_unrelated_opposite_direction_is_not_a_contradiction(self):
+        text, _ = self.mark("Maintenance requests for street trees rose 30 percent [S2]. Ticket prices fell (judgment).")
+        self.assertNotIn("(source mismatch)", text)
+
+    def test_korean_causal_period_internal(self):
+        src = {"S1": "발급자는 3월 한 달 동안 18,400명이었다. 이용 건수는 12% 늘었다. 보고서는 이용 증가가 패스 때문인지 구분하지 못했다.",
+               "S2": "도심 주차장 이용 대수는 5% 증가했다."}
+        report = ("## 답\n패스 덕분에 이용 건수가 12% 늘었다 [S1]. 도심 주차장 이용이 감소했다 (판단).\n\n"
+                  "## 근거\n- 도심 주차장 이용 대수는 5% 증가했다 [S2].\n- 발급은 하루 18,400명 규모다 (판단).\n\n## 출처\n- [S1] a\n")
+        text, changes = mark_report_claims(report, src, "ko")
+        self.assertEqual(3, text.count("(출처 불일치)"))
+        self.assertTrue(changes["causal_conflict"] and changes["internal_conflict"] and changes["period_conflict"])
+
+
 if __name__ == "__main__":
     unittest.main()
