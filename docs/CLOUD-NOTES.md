@@ -11,6 +11,7 @@
   - 백로그 1건: 같은 방향·2배 이상 다른 증감 폭 출처 상충(`ko-bike-share` case, 점수기, `note_source_conflicts` 안내 줄). 새 백로그 2건(연도 판정 오표시율, 2배 문턱 적정성). CHANGELOG `Unreleased` 한 줄.
 - 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 554개 통과(시스템 Python 3.11, 새 시험 15개 — 이번에는 `cryptography` 오류 없음, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 기존 15 case 최종 보고서 전후 diff 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
 - PR #17(claude/cloud-work → main)을 열었다. 이전 PR #16은 병합돼 있어 main을 fast-forward한 뒤 시작했다. CI 결과는 아직 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했다. 대신 PR 본문과 이 기록에 남긴다.
+- PR #17 Codex 리뷰 2건(P2)을 54354d4에서 반영했다. 서로 다른 해의 증감 폭은 상충으로 보지 않고, 문장 첫머리의 영어 연도도 연도로 인식한다(코드·점수기, 시험 3개 추가, 557개 통과, 18 case 점수·보고서 변화 없음).
 - 남은 한계: 연도 판정은 명제·문장 단위 근사(비교 연도가 섞인 문장은 모르면 표시 안 함)이고, 퍼센트포인트는 표기만 본다. 증감 폭 상충은 퍼센트 수치·2배 문턱만 본다.
 - Mac에서 확인할 것:
   ```bash
