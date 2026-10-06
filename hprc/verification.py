@@ -350,7 +350,7 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
           "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
                  "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
-_MARK_SPLIT = re.compile(r"(?<=[.!?。])(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
+_MARK_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
                          r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
 
@@ -378,7 +378,8 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
 # 본문 표시용 증감 낱말은 검증 절의 _DIRECTIONS보다 좁게 둔다('늘'·'줄'은 '오늘'·'줄곧'에도 걸린다).
 _UP_MARK = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|늘렸|상승", re.I)
 _DOWN_MARK = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|reduced?|dropped)\b|감소|줄었|줄어|줄였|하락|낮췄|낮아", re.I)
-_SOURCE_SPLIT = re.compile(r"(?<=[.!?。])\s+|\n+")
+# "approx. 3.8"처럼 약어 마침표 뒤에서는 끊지 않는다(추정 낱말이 수치와 한 문장에 남게, PR #16 리뷰 반영).
+_SOURCE_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)\s+|\n+")
 _EN_CONTEXT_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into",
                     "their", "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year",
                     "years", "median", "average", "report", "reports", "notes", "source"}
@@ -475,7 +476,7 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
                  "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
 
 
-_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])\s")
+_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])(?<![Aa]pprox\.)\s")
 
 
 def _clause_around(text: str, value: dict) -> tuple[int, str]:
@@ -582,20 +583,28 @@ _ESTIMATE_WORDS = re.compile(r"\b(?:estimat\w*|preliminary|provisional|unaudited
                              r"(?:about|around|some) (?=\d))|추정|추산|잠정|어림|대략|가량|안팎|내외|약\s?(?=\d)", re.I)
 
 
-def _is_date_number(value: dict) -> bool:
-    """연·월·일 수치와 단위 없는 네 자리 연도(1900~2099)는 날짜라 추정치 판정에서 뺀다."""
+# 네 자리 수가 연도로 쓰이는 자리: 달 이름이나 연도 전치사 바로 뒤(PR #16 리뷰 반영 — 수량 2000명은 연도가 아님).
+_YEAR_LEAD = re.compile(rf"(?:\b(?:{_MONTH_PATTERN}|in|by|since|until|till|from|through|to|during|before|after|of|year|"
+                        r"fiscal|FY)|[-–—~])\s*$", re.I)
+
+
+def _is_date_number(value: dict, text: str) -> bool:
+    """연·월·일 수치와, 연도 자리에 쓰인 단위 없는 네 자리 수(1900~2099)는 날짜라 추정치 판정에서 뺀다."""
     if value["dimension"] in ("년", "월", "일"):
         return True
     return (value["dimension"] == "unitless" and "," not in value["raw"] and value["value"] == int(value["value"])
-            and 1900 <= value["value"] <= 2099)
+            and 1900 <= value["value"] <= 2099 and bool(_YEAR_LEAD.search(text[:value["start"]])))
 
 
 def _estimate_overclaim(plain: str, sents: list[str]) -> bool:
-    """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데, 주장은 그런 유보 없이 말하면 True."""
-    if _ESTIMATE_WORDS.search(plain) or _PLAN_WORDS.search(plain):
-        return False
+    """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데, 주장은 그런 유보 없이 말하면 True.
+
+    유보 낱말은 주장 문장 전체가 아니라 그 수치가 든 명제에서만 본다(PR #16 리뷰 반영)."""
     for value in _quantity_values(plain, _date_like_spans(plain)):
-        if value.get("unsupported_unit") or _is_date_number(value):
+        if value.get("unsupported_unit") or _is_date_number(value, plain):
+            continue
+        own = _proposition_around(plain, value)
+        if _ESTIMATE_WORDS.search(own) or _PLAN_WORDS.search(own):
             continue
         spots = _same_value_spots(sents, value)
         if spots and all(_ESTIMATE_WORDS.search(_proposition_around(s, c)) for s, c in spots):

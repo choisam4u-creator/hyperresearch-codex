@@ -324,6 +324,30 @@ class PlanScopeTests(unittest.TestCase):
         self.assertNotIn("(source estimate)", text)
         self.assertEqual([], changes["estimate_dropped"])
 
+    def test_estimate_hedge_is_scoped_to_its_own_value(self):
+        # PR #16 리뷰: 한 문장의 다른 수치에 붙은 유보가 추정치 수치를 가리지 않는다.
+        text, changes = self.mark("The pilot cost 3.8 million dollars, while the city spent approximately 1.2 million dollars [S2].",
+                                  self.EST)
+        self.assertIn("(source estimate)", text)
+        self.assertEqual(1, len(changes["estimate_dropped"]))
+
+    def test_approx_abbreviation_stays_with_its_value(self):
+        # PR #16 리뷰: "approx." 뒤에서 원문·주장 문장을 끊지 않는다.
+        src = {"S1": "The pilot cost was approx. 3.8 million dollars. Buses ran on 4 routes."}
+        text, _ = self.mark("The pilot cost 3.8 million dollars [S1].", src)
+        self.assertIn("(source estimate)", text)
+        text, _ = self.mark("The pilot cost approx. 3.8 million dollars [S1].", src)
+        self.assertNotIn("(source estimate)", text)
+
+    def test_four_digit_count_is_not_a_year(self):
+        # PR #16 리뷰: 연도 자리가 아닌 네 자리 수량은 추정치 판정에서 빼지 않는다.
+        src = {"S1": "A preliminary count found 2000 people in shelters."}
+        text, _ = self.mark("The county counted 2000 people in shelters [S1].", src)
+        self.assertIn("(source estimate)", text)
+        src = {"S1": "A preliminary count in 2026 found 610 people. Shelters opened in 2026."}
+        text, _ = self.mark("Shelters opened in 2026 [S1].", src)
+        self.assertNotIn("(source estimate)", text)
+
     def test_korean_estimate(self):
         src = {"S1": "시는 2026년 7월 집중호우 재산 피해를 약 420억 원으로 추산했다. 침수 주택은 1,280가구로 집계됐다."}
         text, changes = self.mark("7월 집중호우 재산 피해는 420억 원이었다 [S1]. 침수 주택은 1,280가구로 집계됐다 [S1].", src, "ko")

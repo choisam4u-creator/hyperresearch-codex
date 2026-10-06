@@ -104,6 +104,26 @@ class ScoreTests(unittest.TestCase):
         apart = score.score(body.format(limit="- S1 is a district report (judgment)\n- S2 is an audit (judgment)"), "en", "q?", src)
         self.assertLess(apart["internal_consistency"], 100)
 
+    def test_estimate_scorer_review_cases(self):
+        # PR #16 리뷰: 명제 단위 유보, approx. 약어, 연도가 아닌 네 자리 수량.
+        text = "A memo estimates that the pilot cost 3.8 million dollars. The city spent 1.2 million dollars."
+        self.assertFalse(score.supported("The pilot cost 3.8 million dollars, while the city spent approximately "
+                                         "1.2 million dollars [S1].", text, "en"))
+        self.assertFalse(score.supported("The pilot cost 3.8 million dollars [S1].",
+                                         "The pilot cost was approx. 3.8 million dollars.", "en"))
+        self.assertFalse(score.supported("A count found 2000 people [S1].", "A preliminary count found 2000 people.", "en"))
+
+    def test_repeated_source_conflict_is_counted_once(self):
+        src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
+               "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}
+        up = "Average attendance at participating schools increased 3 percent [S1]."
+        down = "Average attendance at participating schools decreased 1 percent [S2]."
+        body = (f"# Question: q?\n\n## Answer\n{up} {down}\n\n## Evidence\n- {up}\n- {down}\n\n"
+                "## Counter-evidence and limits\n- Only one year (judgment)\n\n## Next actions\n- y (judgment)\n\n"
+                "## Sources\n- [S1] a\n- [S2] b\n")
+        result = score.score(body, "en", "q?", src)
+        self.assertEqual(1, len(result["detail"]["unacknowledged_source_conflicts"]))
+
     def test_judgment_contradicting_cited_sentence_lowers_consistency(self):
         report = GOOD.replace("- Only one season was measured (judgment)",
                               "- Only one season was measured (judgment)\n- Peak demand at the library increased (judgment)")

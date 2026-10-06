@@ -53,7 +53,7 @@ def sentences(block: str, lang: str) -> list[str]:
         if not line or line.startswith("|"):
             continue
         line = re.sub(rf"([.!?])\s*((?:(?:\[S\d+\]|{marks})\s*)+)", lambda m: " " + m.group(2).strip() + m.group(1) + " ", line)
-        out += [s.strip() for s in re.split(r"(?<=[.!?])\s+", line) if s.strip()]
+        out += [s.strip() for s in re.split(r"(?<=[.!?])(?<![Aa]pprox\.)\s+", line) if s.strip()]
     return out
 
 
@@ -85,7 +85,8 @@ _EN_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "whi
 
 
 def _source_sentences(source_text: str) -> list[str]:
-    return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", source_text) if s.strip()]
+    # "approx." 뒤에서는 끊지 않는다(2026-10-06 PR #16 리뷰 반영).
+    return [s.strip() for s in re.split(r"(?<=[.!?])(?<![Aa]pprox\.)\s+|\n+", source_text) if s.strip()]
 
 
 def _direction(text: str) -> str:
@@ -204,19 +205,24 @@ def hedge_dropped(plain: str, source_text: str) -> bool:
 # 추정·잠정치의 확정화(2026-10-06 기준 강화, QUALITY-LOG 참조). 연도·월·일 수치는 날짜라 보지 않는다.
 _ESTIMATE = re.compile(r"\b(?:estimat\w*|preliminary|provisional|unaudited|approximately|approx\.|roughly|nearly|almost|"
                        r"(?:about|around|some) (?=\d))|추정|추산|잠정|어림|대략|가량|안팎|내외|약\s?(?=\d)", re.I)
-_DATE_NUM = re.compile(r"(?<![\d,.])(?:19|20)\d\d(?!\d)(?!\s?(?:%|percent|명|건|원|개|곳|대|가구))|\d{1,2}\s?(?:월|일)(?![가-힣])|\d{4}\s?년")
+# 연도는 달 이름·연도 전치사 바로 뒤의 네 자리 수만 본다(PR #16 리뷰 반영 — "found 2000 people"의 2000은 수량).
+_DATE_NUM = re.compile(r"\d{1,2}\s?(?:월|일)(?![가-힣])|\d{4}\s?년")
+_YEAR_LEAD = re.compile(r"(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December|"
+                        r"in|by|since|until|till|from|through|to|during|before|after|of|year|fiscal|FY)|[-–—~])\s*$", re.I)
 
 
 def estimate_dropped(plain: str, source_text: str) -> bool:
     """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데 주장은 그런 유보 없이 확정처럼 말하면 True."""
-    if _ESTIMATE.search(plain) or _HEDGE.search(plain):
-        return False
     dates = [m.span() for m in _DATE_NUM.finditer(plain)]
     sents = _source_sentences(source_text)
     for m in _NUM.finditer(plain):
-        if any(a <= m.start() < b for a, b in dates):
-            continue
         n = m.group(0).replace(",", "")
+        if any(a <= m.start() < b for a, b in dates) or (
+                re.fullmatch(r"(?:19|20)\d\d", n) and "," not in m.group(0) and _YEAR_LEAD.search(plain[:m.start()])):
+            continue
+        own = _proposition(plain, m.start(), m.end())   # 유보 낱말은 그 수치가 든 명제에서만 본다(PR #16 리뷰 반영)
+        if _ESTIMATE.search(own) or _HEDGE.search(own):
+            continue
         held = [_proposition(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
         if held and all(_ESTIMATE.search(c) for c in held):
             return True
@@ -345,14 +351,18 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     limit_lines = "\n".join(parts.get(x, "") for x in h["limits"]).splitlines()
     trusted = [(c, set(CITE.findall(c))) for c in cited if MARKERS[lang][2] not in c and c not in mismatched
                and _direction(_plain(c, lang))]
-    unacknowledged = []
+    unacknowledged, seen_pairs = [], set()
     for i, (a, ids_a) in enumerate(trusted):
         for b, ids_b in trusted[i + 1:]:
             if (ids_a & ids_b or _direction(_plain(a, lang)) == _direction(_plain(b, lang))
                     or len(_terms(a) & _terms(b)) < 2):
                 continue
             pair = (min(ids_a, key=lambda x: int(x[1:])), min(ids_b, key=lambda x: int(x[1:])))
+            pair = tuple(sorted(pair, key=lambda x: int(x[1:])))
+            if pair in seen_pairs:   # 같은 출처 쌍은 문장이 반복돼도 한 번만 센다(PR #16 리뷰 반영)
+                continue
             if not any(all(re.search(rf"(?<![A-Za-z0-9]){x}(?!\d)", row) for x in pair) for row in limit_lines):
+                seen_pairs.add(pair)
                 unacknowledged.append(f"{a} <> {b}")
     detail["unacknowledged_source_conflicts"] = unacknowledged
     internal_consistency = 1 - min(len(claims), len(contradictions) + len(unacknowledged)) / len(claims) if claims else 0.0
