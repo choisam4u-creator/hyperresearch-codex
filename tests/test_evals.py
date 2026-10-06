@@ -91,6 +91,19 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("침수 주택은 1,280가구로 집계됐다 [S1].", text, "ko"))
         self.assertTrue(score.supported("7월 피해는 420억 원이었다 (원문 추정치) [S1].", text, "ko"))
 
+    def test_unacknowledged_source_conflict_lowers_consistency(self):
+        src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
+               "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}
+        body = ("# Question: q?\n\n## Answer\nAverage attendance at participating schools increased 3 percent [S1]. "
+                "Average attendance at participating schools decreased 1 percent [S2].\n\n## Evidence\n- x [S1].\n\n"
+                "## Counter-evidence and limits\n{limit}\n\n## Next actions\n- y (judgment)\n\n## Sources\n- [S1] a\n- [S2] b\n")
+        missing = score.score(body.format(limit="- Only one year was measured (judgment)"), "en", "q?", src)
+        self.assertLess(missing["internal_consistency"], 100)
+        noted = score.score(body.format(limit="- S1 and S2 disagree on attendance (judgment)"), "en", "q?", src)
+        self.assertEqual(100.0, noted["internal_consistency"])
+        apart = score.score(body.format(limit="- S1 is a district report (judgment)\n- S2 is an audit (judgment)"), "en", "q?", src)
+        self.assertLess(apart["internal_consistency"], 100)
+
     def test_judgment_contradicting_cited_sentence_lowers_consistency(self):
         report = GOOD.replace("- Only one season was measured (judgment)",
                               "- Only one season was measured (judgment)\n- Peak demand at the library increased (judgment)")

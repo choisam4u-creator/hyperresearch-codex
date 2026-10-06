@@ -1,0 +1,20 @@
+{
+ "id": "en-school-meals",
+ "lang": "en",
+ "baseline_time": "2026-07-31",
+ "prompt": "Did free school meals change attendance at participating schools? Cite sources.",
+ "flaws": [
+  "source_conflict_not_acknowledged"
+ ],
+ "sources": {
+  "S1": "A district evaluation found that average attendance at the 12 participating schools increased 3 percent in the year after free school meals began. The evaluation did not adjust for enrollment changes.",
+  "S2": "A state audit of the same program found that average attendance at participating schools decreased 1 percent over the same year after adjusting for enrollment changes. The audit used state attendance records."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did free school meals change attendance at participating schools? Cite sources.\n\n## Answer\nAverage attendance at the 12 participating schools increased 3 percent in the year after free school meals began [S1]. A state audit found that average attendance at participating schools decreased 1 percent after adjusting for enrollment changes [S2].\n\n## Evidence\n- The audit used state attendance records [S2].\n\n## Counter-evidence and limits\n- The district evaluation did not adjust for enrollment changes [S1].\n\n## Next actions\n- Compare the two attendance datasets school by school (judgment)\n\n## Sources\n- [S1] District free meals evaluation\n- [S2] State audit of the free meals program\n"
+   }
+  ]
+ }
+}

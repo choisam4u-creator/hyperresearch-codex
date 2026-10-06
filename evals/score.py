@@ -340,7 +340,22 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
                 contradictions.append(s)
                 break
     detail["contradictions"] = contradictions
-    internal_consistency = 1 - len(contradictions) / len(claims) if claims else 0.0
+    # 출처끼리 상충(2026-10-06 추가): 서로 다른 출처만 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상)을 반대 증감 방향으로
+    # 말하는데 한계 절의 어느 한 줄도 두 출처를 함께 언급하지 않으면, 독자가 상충을 모른 채 읽는다고 보고 감점한다.
+    limit_lines = "\n".join(parts.get(x, "") for x in h["limits"]).splitlines()
+    trusted = [(c, set(CITE.findall(c))) for c in cited if MARKERS[lang][2] not in c and c not in mismatched
+               and _direction(_plain(c, lang))]
+    unacknowledged = []
+    for i, (a, ids_a) in enumerate(trusted):
+        for b, ids_b in trusted[i + 1:]:
+            if (ids_a & ids_b or _direction(_plain(a, lang)) == _direction(_plain(b, lang))
+                    or len(_terms(a) & _terms(b)) < 2):
+                continue
+            pair = (min(ids_a, key=lambda x: int(x[1:])), min(ids_b, key=lambda x: int(x[1:])))
+            if not any(all(re.search(rf"(?<![A-Za-z0-9]){x}(?!\d)", row) for x in pair) for row in limit_lines):
+                unacknowledged.append(f"{a} <> {b}")
+    detail["unacknowledged_source_conflicts"] = unacknowledged
+    internal_consistency = 1 - min(len(claims), len(contradictions) + len(unacknowledged)) / len(claims) if claims else 0.0
 
     def filled(name: str) -> bool:   # 제목만 있고 내용이 빈 절은 구조로 치지 않는다
         return bool(parts.get(name, "").strip())
