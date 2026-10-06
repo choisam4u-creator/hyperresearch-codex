@@ -180,12 +180,17 @@ _NARROW = re.compile(r"\b(?:pilot|sample[sd]?|survey(?:ed)?|respondents?|partici
 _PROP = re.compile(r"\b(?:and|but|while|whereas)\b|그리고|했고|하고|됐고|되었고|였고|이었고|으며|이며|지만", re.I)
 
 
-def _proposition(text: str, start: int, end: int) -> str:
-    """수치가 든 절에서 접속어로 한 번 더 끊은 명제(실적과 계획이 한 절에 이어질 때, PR #15 리뷰 반영)."""
+def _proposition_span(text: str, start: int, end: int) -> tuple[int, int]:
+    """수치가 든 절에서 접속어로 한 번 더 끊은 명제의 범위(실적과 계획이 한 절에 이어질 때, PR #15 리뷰 반영)."""
     a = max((b.end() for b in _CLAUSE.finditer(text, 0, start)), default=0)
     a = max([a] + [m.end() for m in _PROP.finditer(text, a, start)])
     b = next((x.start() for x in _CLAUSE.finditer(text, end)), len(text))
     b = min([b] + [m.start() for m in _PROP.finditer(text, end, b)])
+    return a, b
+
+
+def _proposition(text: str, start: int, end: int) -> str:
+    a, b = _proposition_span(text, start, end)
     return text[a:b]
 
 
@@ -243,6 +248,76 @@ def scope_widened(plain: str, source_text: str) -> bool:
     return bool(held) and all(_NARROW.search(s) and not _WIDE.search(s) for s in held)
 
 
+# 기준 연도와 퍼센트·퍼센트포인트(2026-10-06 2회차 기준 강화, QUALITY-LOG 참조).
+# 연도는 '2025년'이나 연도 전치사(between 포함)·달 이름 바로 뒤의 네 자리 수로 본다. 수치의 연도는 그 수치가 든 명제에
+# 연도가 하나뿐이면 그것, 명제에 없으면 문장 전체에 연도가 하나뿐일 때 그것이다. 둘 이상이거나 없으면 모른다고 본다.
+_YEAR_TOKEN = re.compile(r"(?<![\d,.])((?:19|20)\d\d)(?!\d|,\d|\.\d)")
+_YEAR_AFTER = re.compile(r"\band\s*$", re.I)
+
+
+def _year_spans(text: str) -> list[tuple[str, int, int]]:
+    out: list[tuple[str, int, int]] = []
+    for m in _YEAR_TOKEN.finditer(text):
+        before = text[:m.start()]
+        # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
+        if (re.match(r"\s?년", text[m.end():]) or _YEAR_LEAD.search(before) or re.search(r"\bbetween\s*$", before, re.I)
+                or (out and _YEAR_AFTER.search(before))):
+            out.append((m.group(1), m.start(), m.end()))
+    return out
+
+
+def _value_years(text: str) -> list[tuple[str, str | None]]:
+    """연도가 아닌 수치마다 (수치, 그 수치의 기준 연도 또는 None)."""
+    years = _year_spans(text)
+    spans = [(a, b) for _, a, b in years] + [m.span() for m in re.finditer(r"\d{1,2}\s?(?:월|일)(?![가-힣])", text)]
+    out = []
+    for m in _NUM.finditer(text):
+        if any(a <= m.start() < b for a, b in spans):
+            continue
+        lo, hi = _proposition_span(text, m.start(), m.end())
+        mine = {y for y, a, _ in years if lo <= a < hi}
+        if not mine:
+            mine = {y for y, _, _ in years}
+        out.append((m.group(0).replace(",", ""), next(iter(mine)) if len(mine) == 1 else None))
+    return out
+
+
+def year_moved(plain: str, source_text: str) -> bool:
+    """주장 수치의 기준 연도가 원문에서 같은 수치가 나오는 자리마다의 기준 연도(모두 알려짐)와 하나도 같지 않으면 True."""
+    held_all = [x for s in _source_sentences(source_text) for x in _value_years(s)]
+    for n, year in _value_years(plain):
+        if year is None:
+            continue
+        held = [y for m, y in held_all if m == n]
+        if held and all(y is not None and y != year for y in held):
+            return True
+    return False
+
+
+_PP = re.compile(r"\s*(?:%\s?p\b|%\s?포인트|퍼센트\s?포인트|%\s?points?\b|percentage[- ]points?\b|pp\b)", re.I)
+_PCT = re.compile(r"\s*(?:%|퍼센트|percent\b|per cent\b)", re.I)
+
+
+def _percent_kinds(text: str) -> list[tuple[str, str]]:
+    out = []
+    for m in _NUM.finditer(text):
+        rest = text[m.end():]
+        out.append((m.group(0).replace(",", ""), "pp" if _PP.match(rest) else "pct" if _PCT.match(rest) else ""))
+    return out
+
+
+def percent_point_swapped(plain: str, source_text: str) -> bool:
+    """주장이 퍼센트(%)로 말한 수치를 원문은 매번 퍼센트포인트로만 말하거나, 그 반대면 True(상대 변화와 차이는 다른 값이다)."""
+    held_all = _percent_kinds(source_text)
+    for n, kind in _percent_kinds(plain):
+        if not kind:
+            continue
+        held = [k for m, k in held_all if m == n]
+        if held and all(k and k != kind for k in held):
+            return True
+    return False
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -274,6 +349,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-06 기준 강화: 원문의 추정·잠정치를 유보 없이 확정 사실처럼 말하면 불일치('(원문 추정치)' 표시는 경고로 인정).
     if ESTIMATE_MARK[lang] not in sentence and estimate_dropped(plain, source_text):
+        return False
+    # 2026-10-06 2회차 기준 강화: 원문 수치를 다른 기준 연도의 값으로 옮기거나, 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 불일치.
+    if year_moved(plain, source_text) or percent_point_swapped(plain, source_text):
         return False
     return True
 
