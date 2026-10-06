@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-06 (품질 회차)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 14 case·강화 기준): **98.9 → 99.9**. 주장-출처 일치 93.3→99.1. (12 case 이전 끝 99.8, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상충 case를 더한 15 case 최종 99.9(상충 안내를 끈 코드는 99.6). 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-flood-damage`, `en-homeless-count`) — 원문의 추정·잠정치를 확정 사실처럼 씀. 점수기 주장-출처 일치에 추정치 검사 추가(연·월·일 제외). 기존 en-fare-free-bus 1문장이 새로 감점(의도).
+  - 개선: `verification._estimate_overclaim` → 인용 문장에 약한 표시 `(원문 추정치)`·`(source estimate)`, `report_marks.json`의 `estimate_dropped`, `quality.json`의 `marks.estimate`·머리 주석·`hpr status`(0이면 생략), low 안내(검토 요구 아님).
+  - 백로그 1건: 출처끼리 상충 case(`en-school-meals`)와 본문 내부 일관성 기준 → `note_source_conflicts`를 evals가 처음 잰다. 백로그 2건 완료, 새 항목 2건(추정치 오표시율 실측, 같은 방향·다른 값 상충). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 539개 통과(Python 3.11 venv, 새 시험 7개). 시스템 python에서는 `cryptography` 패닉(pyo3)으로 doctor 시험 10개가 오류. 변경 전 코드에서도 같아 환경 문제로 보고 venv로 돌렸다. `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성(`marks.estimate: 0`만 바뀜). 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`도 로그인이 없어 돌리지 않았다.
+- PR #16(claude/cloud-work → main)을 열었다. CI 결과는 아직 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 추정 낱말(`about`·`nearly`·`약`·`내외`)은 실적 어림수에도 쓰여, 실제 보고서에서 오표시가 생길 수 있다. 상충 기준은 반대 방향만 본다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "지난여름 집중호우 피해 규모는?"   # report_marks.json의 estimate_dropped 문장이 실제로 원문 추정치인지 눈으로 판정
+  ```
+
 ## 2026-10-05 (품질 회차 2)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 12 case·강화 기준): **98.9 → 99.8**. 주장-출처 일치 93.4→99.0. (10 case 이전 끝 99.8, 새 case를 옛 기준으로 재면 99.8 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
