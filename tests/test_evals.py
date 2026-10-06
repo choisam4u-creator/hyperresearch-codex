@@ -143,7 +143,7 @@ class UnknownCiteTests(unittest.TestCase):
             out = Path(tmp) / "ko-heat-shelter/research/runs/eval"
             quality = json.loads((out / "quality.json").read_text(encoding="utf-8"))
             final = (out / "final_report.md").read_text(encoding="utf-8")
-        self.assertEqual({"no_source": 2, "mismatch": 2}, quality["marks"])
+        self.assertEqual({"no_source": 2, "mismatch": 2, "estimate": 0}, quality["marks"])
         self.assertIn("본문 표시 출처 없음 2·출처 불일치 2개", final)
         self.assertEqual("review_required", quality["status"])
         self.assertIn("source_mismatch_marked", {i["kind"] for i in quality["issues"]})

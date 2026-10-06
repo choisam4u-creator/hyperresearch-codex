@@ -344,11 +344,14 @@ def verify_report(report: str, source_texts: dict[str, str], citation_checks: li
     return {"status": "review_required" if issues else "passed", "issues": issues, "scope": scope}
 
 
-_MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismatch": "(출처 불일치)", "sources": "## 출처",
+_MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismatch": "(출처 불일치)", "estimate": "(원문 추정치)",
+                 "sources": "## 출처",
                  "claims": ("## 답", "## 근거", "## 반대 근거와 한계", "## 한계")},
-          "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)", "sources": "## Sources",
+          "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
+                 "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
-_MARK_SPLIT = re.compile(r"(?<=[.!?。])(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|judgment|no source|source mismatch)\))")
+_MARK_SPLIT = re.compile(r"(?<=[.!?。])(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
+                         r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
 
 
@@ -383,7 +386,8 @@ _EN_CONTEXT_STOP = {"that", "with", "from", "this", "were", "have", "been", "tha
 
 def _plain_claim(sentence: str) -> str:
     text = _CITE_ID.sub("", sentence)
-    text = re.sub(r"\((?:S\d+[:·][^)]*|판단|출처 없음|출처 불일치|judgment|no source|source mismatch)\)", "", text)
+    text = re.sub(r"\((?:S\d+[:·][^)]*|판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|source estimate)\)",
+                  "", text)
     return text.strip()
 
 
@@ -572,6 +576,33 @@ def _plan_overclaim(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 추정·잠정치의 확정화: 원문이 추정·추산·잠정치로만 말한 수치를 유보 없이 확정 사실처럼 쓰는지 본다.
+# 틀린 값은 아니므로 '(출처 불일치)'보다 약한 '(원문 추정치)'를 붙인다(2026-10-06 품질 회차).
+_ESTIMATE_WORDS = re.compile(r"\b(?:estimat\w*|preliminary|provisional|unaudited|approximately|approx\.|roughly|nearly|almost|"
+                             r"(?:about|around|some) (?=\d))|추정|추산|잠정|어림|대략|가량|안팎|내외|약\s?(?=\d)", re.I)
+
+
+def _is_date_number(value: dict) -> bool:
+    """연·월·일 수치와 단위 없는 네 자리 연도(1900~2099)는 날짜라 추정치 판정에서 뺀다."""
+    if value["dimension"] in ("년", "월", "일"):
+        return True
+    return (value["dimension"] == "unitless" and "," not in value["raw"] and value["value"] == int(value["value"])
+            and 1900 <= value["value"] <= 2099)
+
+
+def _estimate_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데, 주장은 그런 유보 없이 말하면 True."""
+    if _ESTIMATE_WORDS.search(plain) or _PLAN_WORDS.search(plain):
+        return False
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        if value.get("unsupported_unit") or _is_date_number(value):
+            continue
+        spots = _same_value_spots(sents, value)
+        if spots and all(_ESTIMATE_WORDS.search(_proposition_around(s, c)) for s, c in spots):
+            return True
+    return False
+
+
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
 
@@ -675,12 +706,13 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
+    estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
-                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": []}
+                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
@@ -726,7 +758,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                         changes[f"{kind}_conflict"].append(piece.strip())
                     fixed.append(_with_mark(piece, M["mismatch"]))
                     continue
-            if index % 2 or not piece.strip() or any(m in piece for m in marks):
+            if index % 2 or not piece.strip() or any(m in piece for m in marks + (estimate_mark,)):
                 fixed.append(piece)
                 continue
             cites = list(dict.fromkeys(_CITE_ID.findall(piece)))
@@ -740,6 +772,10 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                     for kind in conflicts:
                         changes[f"{kind}_conflict"].append(piece.strip())
                     piece = _with_mismatch(piece, M["mismatch"])
+                elif cited_text.strip() and _estimate_overclaim(
+                        _plain_claim(piece), [x.strip() for x in _SOURCE_SPLIT.split(cited_text) if x.strip()]):
+                    changes["estimate_dropped"].append(piece.strip())
+                    piece = _with_mismatch(piece, estimate_mark)
             elif (claim_section and not piece.rstrip().endswith(":")
                   and len(re.sub(r"\W", "", piece)) >= 8):
                 changes["no_source"].append(piece.strip())

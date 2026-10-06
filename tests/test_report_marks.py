@@ -297,6 +297,41 @@ class PlanScopeTests(unittest.TestCase):
         self.assertNotIn("(출처 불일치)", text)
         self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), self.KO, "ko")[0])   # 다시 돌려도 같다
 
+    EST = {"S1": "The county's preliminary count found 2,140 people in January 2026. The count recorded 610 people in shelters.",
+           "S2": "A memo estimates that the pilot cost 3.8 million dollars, and the city spent 1.2 million dollars on buses."}
+
+    def test_estimate_stated_as_fact_gets_weak_mark(self):
+        text, changes = self.mark("The county counted 2,140 people in January 2026 [S1].", self.EST)
+        self.assertIn("in January 2026 (source estimate) [S1].", text)
+        self.assertNotIn("(source mismatch)", text)
+        self.assertEqual(1, len(changes["estimate_dropped"]))
+        self.assertEqual([], changes["mismatch"])
+        self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), self.EST)[0])   # 다시 돌려도 같다
+
+    def test_hedged_estimate_actual_value_and_date_are_left_alone(self):
+        for body in ("A preliminary count found 2,140 people [S1].",
+                     "The pilot cost an estimated 3.8 million dollars [S2].",
+                     "The pilot cost about 3.8 million dollars [S2].",
+                     "The count recorded 610 people in shelters [S1].",
+                     "The city spent 1.2 million dollars on buses [S2]."):
+            text, changes = self.mark(body, self.EST)
+            self.assertNotIn("(source estimate)", text, body)
+            self.assertEqual([], changes["estimate_dropped"], body)
+
+    def test_mismatch_takes_priority_over_estimate(self):
+        text, changes = self.mark("The pilot cost 3.8 million dollars and rose 9 percent [S2].", self.EST)
+        self.assertIn("(source mismatch)", text)
+        self.assertNotIn("(source estimate)", text)
+        self.assertEqual([], changes["estimate_dropped"])
+
+    def test_korean_estimate(self):
+        src = {"S1": "시는 2026년 7월 집중호우 재산 피해를 약 420억 원으로 추산했다. 침수 주택은 1,280가구로 집계됐다."}
+        text, changes = self.mark("7월 집중호우 재산 피해는 420억 원이었다 [S1]. 침수 주택은 1,280가구로 집계됐다 [S1].", src, "ko")
+        self.assertEqual(1, text.count("(원문 추정치)"))
+        self.assertIn("420억 원이었다 (원문 추정치) [S1].", text)
+        text, _ = self.mark("재산 피해는 약 420억 원으로 추산됐다 [S1].", src, "ko")
+        self.assertNotIn("(원문 추정치)", text)
+
 
 if __name__ == "__main__":
     unittest.main()
