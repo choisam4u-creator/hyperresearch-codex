@@ -125,6 +125,21 @@ class ScoreTests(unittest.TestCase):
         apart = score.score(body.format(limit="- S1 is a district report (judgment)\n- S2 is an audit (judgment)"), "en", "q?", src)
         self.assertLess(apart["internal_consistency"], 100)
 
+    def test_unacknowledged_magnitude_gap_lowers_consistency(self):
+        src = {"S1": {"text": "Bike-share trips increased 8 percent in 2025.", "cluster": "S1"},
+               "S2": {"text": "Bike-share trips increased {v} in 2025.", "cluster": "S2"}}
+        body = ("# Question: q?\n\n## Answer\nBike-share trips increased 8 percent in 2025 [S1]. "
+                "Bike-share trips increased {v} in 2025 [S2].\n\n## Evidence\n- x [S1].\n\n"
+                "## Counter-evidence and limits\n{limit}\n\n## Next actions\n- y (judgment)\n\n## Sources\n- [S1] a\n- [S2] b\n")
+
+        def run(v: str, limit: str) -> float:
+            s = {k: dict(x, text=x["text"].format(v=v)) for k, x in src.items()}
+            return score.score(body.format(v=v, limit=limit), "en", "q?", s)["internal_consistency"]
+        self.assertLess(run("31 percent", "- Small sample (judgment)"), 100)
+        self.assertEqual(100.0, run("31 percent", "- S1 and S2 count different trips (judgment)"))
+        self.assertEqual(100.0, run("12 percent", "- Small sample (judgment)"))          # 2배 미만
+        self.assertEqual(100.0, run("31 percentage points", "- Small sample (judgment)"))  # 종류가 다르면 비교하지 않는다
+
     def test_estimate_scorer_review_cases(self):
         # PR #16 리뷰: 명제 단위 유보, approx. 약어, 연도가 아닌 네 자리 수량.
         text = "A memo estimates that the pilot cost 3.8 million dollars. The city spent 1.2 million dollars."

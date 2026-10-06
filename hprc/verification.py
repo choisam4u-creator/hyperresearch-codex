@@ -751,10 +751,10 @@ def _with_mismatch(sentence: str, mark: str) -> str:
 
 def _trusted_cited_claims(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str]]]:
     """답·근거·한계 절에서 인용이 있고 원문 대조에 걸리지 않은 문장의 (증감 방향, 문맥 낱말) 목록."""
-    return [(direction, stems) for direction, stems, _ in _trusted_cited_rows(report, source_texts, M)]
+    return [(direction, stems) for direction, stems, _, _ in _trusted_cited_rows(report, source_texts, M)]
 
 
-def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str], tuple[str, ...]]]:
+def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str], tuple[str, ...], str]]:
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -774,7 +774,7 @@ def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> l
             direction = _direction_of(plain)
             if (direction and cited_text.strip() and not _absent_values(piece, cited_text)
                     and not _value_conflicts(piece, cited_text)):
-                out.append((direction, _content_stems(plain), tuple(cites)))
+                out.append((direction, _content_stems(plain), tuple(cites), plain))
     return out
 
 
@@ -884,11 +884,28 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
 
 _CONFLICT_ROW = {"ko": "- 출처끼리 상충: {a}·{b}를 인용한 문장이 같은 대상의 증감을 서로 반대로 말하므로 두 원문의 범위·기간·측정 방식을 확인해야 한다 {j}.",
                  "en": "- Sources disagree: sentences citing {a} and {b} give opposite directions for the same subject, so check each source's scope, period and method {j}."}
+_MAGNITUDE_ROW = {"ko": "- 출처끼리 증감 폭이 크게 다름: {a}·{b}를 인용한 문장이 같은 대상의 증감 폭을 {x}·{y}로 말하므로 두 원문의 범위·기간·측정 방식을 확인해야 한다 {j}.",
+                  "en": "- Sources differ in size: sentences citing {a} and {b} give {x} and {y} for the same subject's change, so check each source's scope, period and method {j}."}
+
+
+def _magnitude_gap(a: str, b: str) -> tuple[str, str] | None:
+    """같은 방향 두 문장이 퍼센트(또는 퍼센트포인트) 수치를 하나씩만 말하고, 같은 종류인데 큰 값이 작은 값의 2배 이상이면
+    두 수치 표기를 돌려준다. 2배는 집계 범위·방법이 다를 때 생기는 차이로 보고 반올림 정도의 차이는 세지 않으려는 문턱이다."""
+    pa = [(n, k) for n, k in _percent_kinds(a) if k]
+    pb = [(n, k) for n, k in _percent_kinds(b) if k]
+    if len(pa) != 1 or len(pb) != 1 or pa[0][1] != pb[0][1]:
+        return None
+    lo, hi = sorted((pa[0][0], pb[0][0]))
+    if lo <= 0 or hi < 2 * lo:
+        return None
+    unit = "%p" if pa[0][1] == "pp" else "%"
+    return f"{pa[0][0].normalize():f}{unit}", f"{pb[0][0].normalize():f}{unit}"
 
 
 def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str = "ko", limit: int = 3) -> tuple[str, list[list[str]]]:
-    """서로 다른 출처를 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상 공유)을 반대 증감 방향으로 말하는데
-    한계 절이 두 출처를 함께 언급하지 않으면, 한계 절 끝에 상충 안내 한 줄을 '(판단)'으로 덧붙인다.
+    """서로 다른 출처를 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상 공유)을 반대 증감 방향으로 말하거나, 같은 방향이라도
+    증감 폭(퍼센트 하나씩)을 2배 이상 다르게 말하는데 한계 절이 두 출처를 함께 언급하지 않으면, 한계 절 끝에 안내 한 줄을
+    '(판단)'으로 덧붙인다.
 
     출처끼리 다른 결과는 정당한 서술이라 본문에 불일치 표시를 하지 않고 독자에게 상충을 알리기만 한다.
     한계 절이 없으면 아무것도 하지 않는다. 다시 돌려도 같다. 반환: (본문, 덧붙인 출처 쌍 목록)."""
@@ -902,19 +919,26 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     section = "\n".join(lines[index + 1:end])
     rows = _trusted_cited_rows(report, source_texts, M)
     pairs: list[list[str]] = []
-    for i, (d1, stems1, cites1) in enumerate(rows):
-        for d2, stems2, cites2 in rows[i + 1:]:
-            if d1 == d2 or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
+    rows_by_pair: dict[tuple[str, ...], str] = {}
+    for i, (d1, stems1, cites1, plain1) in enumerate(rows):
+        for d2, stems2, cites2, plain2 in rows[i + 1:]:
+            gap = _magnitude_gap(plain1, plain2) if d1 == d2 else None
+            if (d1 == d2 and not gap) or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
                 continue
             pair = sorted({cites1[0], cites2[0]}, key=lambda c: int(c[1:]))
             # 두 출처를 한 줄에서 함께 다뤄야 상충을 다룬 것으로 본다(따로 떨어진 언급은 치지 않음, PR #15 Codex 리뷰 반영).
             mentioned = any(all(re.search(rf"(?<![A-Za-z0-9]){c}(?!\d)", row) for c in pair) for row in section.split("\n"))
             if pair not in pairs and not mentioned:
                 pairs.append(pair)
+                if gap:
+                    x, y = gap if int(cites1[0][1:]) <= int(cites2[0][1:]) else gap[::-1]
+                    rows_by_pair[tuple(pair)] = _MAGNITUDE_ROW.get(lang, _MAGNITUDE_ROW["ko"]).format(
+                        a=pair[0], b=pair[1], x=x, y=y, j=M["judgment"])
     pairs = pairs[:limit]
     if not pairs:
         return report, []
-    added = [_CONFLICT_ROW.get(lang, _CONFLICT_ROW["ko"]).format(a=a, b=b, j=M["judgment"]) for a, b in pairs]
+    added = [rows_by_pair.get(tuple(p)) or _CONFLICT_ROW.get(lang, _CONFLICT_ROW["ko"]).format(a=p[0], b=p[1], j=M["judgment"])
+             for p in pairs]
     last = end
     while last > index + 1 and not lines[last - 1].strip():
         last -= 1

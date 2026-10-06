@@ -319,6 +319,19 @@ def percent_point_swapped(plain: str, source_text: str) -> bool:
     return False
 
 
+def magnitude_gap(a: str, b: str) -> bool:
+    """같은 방향 두 문장이 퍼센트(또는 퍼센트포인트) 수치를 하나씩만 말하고, 같은 종류인데 큰 값이 작은 값의 2배 이상이면 True.
+
+    같은 대상의 증감 폭을 출처마다 크게 다르게 말하는 경우(2026-10-06 2회차 추가)다. 2배는 집계 범위·방법이 다를 때
+    생기는 차이로 보고, 반올림 정도의 작은 차이는 세지 않으려는 문턱이다."""
+    pa = [(float(n), k) for n, k in _percent_kinds(a) if k]
+    pb = [(float(n), k) for n, k in _percent_kinds(b) if k]
+    if len(pa) != 1 or len(pb) != 1 or pa[0][1] != pb[0][1]:
+        return False
+    lo, hi = sorted((pa[0][0], pb[0][0]))
+    return lo > 0 and hi >= 2 * lo
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -427,14 +440,16 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     detail["contradictions"] = contradictions
     # 출처끼리 상충(2026-10-06 추가): 서로 다른 출처만 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상)을 반대 증감 방향으로
     # 말하는데 한계 절의 어느 한 줄도 두 출처를 함께 언급하지 않으면, 독자가 상충을 모른 채 읽는다고 보고 감점한다.
+    # 같은 방향이라도 증감 폭(퍼센트 하나씩)이 2배 이상 다르면 같은 상충으로 본다(2026-10-06 2회차 추가).
     limit_lines = "\n".join(parts.get(x, "") for x in h["limits"]).splitlines()
     trusted = [(c, set(CITE.findall(c))) for c in cited if MARKERS[lang][2] not in c and c not in mismatched
                and _direction(_plain(c, lang))]
     unacknowledged, seen_pairs = [], set()
     for i, (a, ids_a) in enumerate(trusted):
         for b, ids_b in trusted[i + 1:]:
-            if (ids_a & ids_b or _direction(_plain(a, lang)) == _direction(_plain(b, lang))
-                    or len(_terms(a) & _terms(b)) < 2):
+            if (ids_a & ids_b or len(_terms(a) & _terms(b)) < 2
+                    or (_direction(_plain(a, lang)) == _direction(_plain(b, lang))
+                        and not magnitude_gap(_plain(a, lang), _plain(b, lang)))):
                 continue
             pair = (min(ids_a, key=lambda x: int(x[1:])), min(ids_b, key=lambda x: int(x[1:])))
             pair = tuple(sorted(pair, key=lambda x: int(x[1:])))
