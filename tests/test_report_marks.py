@@ -357,5 +357,42 @@ class PlanScopeTests(unittest.TestCase):
         self.assertNotIn("(원문 추정치)", text)
 
 
+    YEAR = {"S1": "2023년 분리배출 교육 참여 가구는 12,000가구였고, 2025년에는 18,500가구로 늘었다.",
+            "S2": "In 2023, the subsidy program enrolled 41,000 households. Enrollment reached 56,000 households in 2025."}
+
+    def test_value_moved_to_other_year_is_marked(self):
+        text, changes = self.mark("The subsidy program enrolled 41,000 households in 2025 [S2].", self.YEAR)
+        self.assertIn("in 2025 (source mismatch) [S2].", text)
+        self.assertEqual(1, len(changes["year_conflict"]))
+        text, changes = self.mark("2025년 분리배출 교육 참여 가구는 12,000가구였다 [S1].", self.YEAR, "ko")
+        self.assertIn("(출처 불일치)", text)
+        self.assertEqual(1, len(changes["year_conflict"]))
+
+    def test_matching_or_unknown_year_is_left_alone(self):
+        for body in ("In 2023, the subsidy program enrolled 41,000 households [S2].",
+                     "Enrollment reached 56,000 households in 2025 [S2].",
+                     "The subsidy program enrolled 41,000 households [S2]."):
+            text, _ = self.mark(body, self.YEAR)
+            self.assertNotIn("(source mismatch)", text, body)
+        src = {"S1": "Access rose from 71 percent in 2022 to 78 percent in 2025, an increase of 7 percentage points."}
+        text, _ = self.mark("In 2025, access rose by 7 percentage points [S1].", src)
+        self.assertNotIn("(source mismatch)", text)   # 원문 자리의 연도가 둘 이상이면 모른다고 본다
+        text, _ = self.mark("2023~2025년 교육 참여 가구는 18,500가구로 늘었다 [S1].", self.YEAR, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+
+    def test_percent_point_swapped_with_percent_is_marked(self):
+        src = {"S1": "재활용률은 2022년 41%에서 2025년 47%로 6%포인트 올랐다.", "S2": "Monthly bills fell by 12 percent on average."}
+        text, changes = self.mark("재활용률은 6% 올랐다 [S1].", src, "ko")
+        self.assertIn("6% 올랐다 (출처 불일치) [S1].", text)
+        self.assertEqual(1, len(changes["unit_conflict"]))
+        text, changes = self.mark("Monthly bills fell by 12 percentage points [S2].", src)
+        self.assertIn("(source mismatch)", text)
+        self.assertEqual(1, len(changes["unit_conflict"]))
+        for body, lang in (("재활용률은 6%포인트 올랐다 [S1].", "ko"), ("재활용률은 6%p 올랐다 [S1].", "ko"),
+                           ("Monthly bills fell by 12 percent [S2].", "en")):
+            text, _ = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+        self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), src)[0])   # 다시 돌려도 같다
+
 if __name__ == "__main__":
     unittest.main()

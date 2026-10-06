@@ -26,9 +26,10 @@ _KOREAN_DATE_LIKE = re.compile(
 )
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
-_UNITS = ("percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
-          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
+_UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
+          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
+# "%p"·"%포인트"·"percentage points"도 퍼센트 차원의 값으로 읽는다. 퍼센트와 퍼센트포인트의 구분은 _percent_point_conflict가 따로 본다.
 _QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
                        "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
 _CONTEXT_WORD = re.compile(r"[A-Za-z가-힣]{2,}")
@@ -54,7 +55,8 @@ _UNIT_SCALE = {
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
     "개": ("count_item", Decimal("1")), "곳": ("count_place", Decimal("1")), "개소": ("count_place", Decimal("1")),
     "대": ("count_vehicle", Decimal("1")), "회": ("count_occurrence", Decimal("1")), "종": ("count_type", Decimal("1")),
-    "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
+    "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "%p": ("percent", Decimal("1")),
+    "percentage point": ("percent", Decimal("1")), "percentage points": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
     "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
 }
@@ -145,6 +147,9 @@ def _date_like_spans(text: str) -> list[dict]:
     return [{"raw": raw, "start": start, "end": end} for start, end, raw in sorted(spans)]
 
 
+_YEAR_RANGE_HEAD = re.compile(r"\s*[~–—-]\s*(?:19|20)\d\d\s*년")
+
+
 def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
     values = []
     excluded_spans = [(item["start"], item["end"]) for item in excluded]
@@ -160,6 +165,8 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         except InvalidOperation:
             continue
         unit = split.group(2).strip().lower()
+        if not unit and _YEAR_RANGE_HEAD.match(text, match.end()) and re.fullmatch(r"(?:19|20)\d\d", raw):
+            unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
         item = {"raw": raw, "value": number * scale, "dimension": dimension,
                 "start": match.start(), "end": match.end()}
@@ -418,7 +425,9 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - causal: 원문이 유보·부정한 인과를 주장이 단정한다.
     - period: 같은 수치를 원문과 다른 기간 단위(하루·한 달·연간·총계)로 말한다.
     - plan: 원문이 계획·목표·전망으로만 말한 수치를 유보 없이 말한다(계획을 실적처럼).
-    - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다."""
+    - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다.
+    - year: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 말한다(원문 자리마다 연도가 분명할 때만).
+    - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -456,6 +465,10 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("plan")
     if _scope_overclaim(plain, sents):
         found.append("scope")
+    if _year_conflict(plain, sents):
+        found.append("year")
+    if _percent_point_conflict(plain, sents):
+        found.append("unit")
     return found
 
 
@@ -612,6 +625,79 @@ def _estimate_overclaim(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 기준 연도 옮김: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 쓰는지 본다(2026-10-06 2회차 품질 회차).
+# 수치의 연도는 그 수치가 든 명제에 연도가 하나뿐이면 그것, 명제에 없으면 문장 전체에 연도가 하나뿐일 때 그것이다.
+# 범위("2022~2025년")나 연도가 둘 이상이면 모른다고 보고 표시하지 않는다.
+_YEAR_TOKEN = re.compile(r"(?<![\d,.])((?:19|20)\d\d)(?!\d|,\d|\.\d)")
+
+
+def _year_spans(text: str) -> list[tuple[int, int, int]]:
+    out: list[tuple[int, int, int]] = []
+    for m in _YEAR_TOKEN.finditer(text):
+        before = text[:m.start()]
+        # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
+        if (re.match(r"\s?년", text[m.end():]) or _YEAR_RANGE_HEAD.match(text, m.end()) or _YEAR_LEAD.search(before)
+                or re.search(r"\bbetween\s*$", before, re.I)
+                or (out and re.search(r"\band\s*$", before, re.I))):
+            out.append((int(m.group(1)), m.start(), m.end()))
+    return out
+
+
+def _value_year(text: str, value: dict, years: list[tuple[int, int, int]]) -> int | None:
+    start, clause = _clause_around(text, value)
+    own = _proposition_around(text, value)
+    lo = start + clause.find(own)
+    mine = {y for y, a, _ in years if lo <= a < lo + len(own)} or {y for y, _, _ in years}
+    return next(iter(mine)) if len(mine) == 1 else None
+
+
+def _year_values(text: str) -> list[tuple[dict, int | None]]:
+    years = _year_spans(text)
+    return [(v, _value_year(text, v, years)) for v in _quantity_values(text, _date_like_spans(text))
+            if not v.get("unsupported_unit") and v["dimension"] not in ("년", "월", "일")
+            and not any(a <= v["start"] < b for _, a, b in years)]
+
+
+def _year_conflict(plain: str, sents: list[str]) -> bool:
+    """주장 수치의 기준 연도가 같은 값이 나오는 원문 자리마다의 기준 연도(모두 알려짐)와 하나도 같지 않으면 True."""
+    held_all = [x for s in sents for x in _year_values(s)]
+    for value, year in _year_values(plain):
+        if year is None:
+            continue
+        held = [y for c, y in held_all if c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])]
+        if held and all(y is not None and y != year for y in held):
+            return True
+    return False
+
+
+# 퍼센트와 퍼센트포인트: 41%→47%는 6%포인트 오른 것이지 6% 오른 것이 아니다. 원문이 한쪽으로만 말한 수치를
+# 다른 쪽으로 쓰면 다른 값이다. "6%포인트"는 수치 추출에서 6%와 같은 값으로 잡혀 위 대조를 통과하므로 따로 본다.
+_PERCENT_POINT = re.compile(r"\s*(?:%\s?p\b|%\s?포인트|퍼센트\s?포인트|%\s?points?\b|percentage[- ]points?\b|pp\b)", re.I)
+_PERCENT = re.compile(r"\s*(?:%|퍼센트|percent\b|per cent\b)", re.I)
+_PLAIN_NUMBER = re.compile(r"(?<![A-Za-z0-9.,])\d+(?:,\d{3})*(?:\.\d+)?")
+
+
+def _percent_kinds(text: str) -> list[tuple[Decimal, str]]:
+    out = []
+    for m in _PLAIN_NUMBER.finditer(text):
+        rest = text[m.end():]
+        kind = "pp" if _PERCENT_POINT.match(rest) else "pct" if _PERCENT.match(rest) else ""
+        out.append((Decimal(m.group(0).replace(",", "")), kind))
+    return out
+
+
+def _percent_point_conflict(plain: str, sents: list[str]) -> bool:
+    """주장이 퍼센트로 말한 수치를 원문은 매번 퍼센트포인트로만 말하거나, 그 반대면 True."""
+    held_all = [x for s in sents for x in _percent_kinds(s)]
+    for number, kind in _percent_kinds(plain):
+        if not kind:
+            continue
+        held = [k for n, k in held_all if n == number]
+        if held and all(k and k != kind for k in held):
+            return True
+    return False
+
+
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
 
@@ -713,15 +799,17 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용이 원문이 유보한 인과를 단정하거나 수치를 원문과 다른 기간 단위로 말하면 '(출처 불일치)'
     - 인용 없는 문장(판단 포함)이 같은 대상의 인용 문장과 반대 방향이거나 출처 수치를 다른 기간으로 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
+    - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
-                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "estimate_dropped": []}
+                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
+                                     "unit_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}

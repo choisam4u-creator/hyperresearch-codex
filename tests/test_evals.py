@@ -91,6 +91,27 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("침수 주택은 1,280가구로 집계됐다 [S1].", text, "ko"))
         self.assertTrue(score.supported("7월 피해는 420억 원이었다 (원문 추정치) [S1].", text, "ko"))
 
+    def test_value_moved_to_other_year_is_mismatch(self):
+        text = "2023년 교육 참여 가구는 12,000가구였고, 2025년에는 18,500가구로 늘었다. In 2023, the program enrolled 41,000 households."
+        self.assertFalse(score.supported("2025년 교육 참여 가구는 12,000가구였다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("2023년 교육 참여 가구는 12,000가구였다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("교육 참여 가구는 12,000가구였다 [S1].", text, "ko"))   # 연도 없는 주장은 보지 않는다
+        self.assertFalse(score.supported("The program enrolled 41,000 households in 2025 [S1].", text, "en"))
+        self.assertTrue(score.supported("In 2023, the program enrolled 41,000 households [S1].", text, "en"))
+
+    def test_year_unknown_in_source_is_not_judged(self):
+        text = "Access rose from 71 percent in 2022 to 78 percent in 2025, an increase of 7 percentage points."
+        self.assertTrue(score.supported("In 2025, access rose by 7 percentage points [S1].", text, "en"))
+        text = "The program enrolled 41,000 households in 2023. It again enrolled 41,000 households in 2025."
+        self.assertTrue(score.supported("The program enrolled 41,000 households in 2025 [S1].", text, "en"))
+
+    def test_percent_and_percentage_point_are_not_interchangeable(self):
+        text = "재활용률은 41%에서 47%로 6%포인트 올랐다. Monthly bills fell by 12 percent."
+        self.assertFalse(score.supported("재활용률은 6% 올랐다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("재활용률은 6%포인트 올랐다 [S1].", text, "ko"))
+        self.assertFalse(score.supported("Monthly bills fell by 12 percentage points [S1].", text, "en"))
+        self.assertTrue(score.supported("Monthly bills fell by 12 percent [S1].", text, "en"))
+
     def test_unacknowledged_source_conflict_lowers_consistency(self):
         src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
                "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}

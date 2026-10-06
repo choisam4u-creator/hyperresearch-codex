@@ -260,7 +260,8 @@ def _year_spans(text: str) -> list[tuple[str, int, int]]:
     for m in _YEAR_TOKEN.finditer(text):
         before = text[:m.start()]
         # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
-        if (re.match(r"\s?년", text[m.end():]) or _YEAR_LEAD.search(before) or re.search(r"\bbetween\s*$", before, re.I)
+        if (re.match(r"\s?년|\s*[~–—-]\s*(?:19|20)\d\d\s*년", text[m.end():]) or _YEAR_LEAD.search(before)
+                or re.search(r"\bbetween\s*$", before, re.I)
                 or (out and _YEAR_AFTER.search(before))):
             out.append((m.group(1), m.start(), m.end()))
     return out
