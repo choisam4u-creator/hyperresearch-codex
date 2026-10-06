@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-06 (품질 회차 2)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 18 case·강화 기준): **99.3 → 99.9**. 주장-출처 일치 97.0→99.3, 본문 내부 일관성 98.6→100. (15 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-recycling-rate`, `en-broadband-access`) — 수치를 다른 기준 연도로 옮김, 퍼센트포인트를 퍼센트로 씀. 점수기 주장-출처 일치에 두 검사 추가(기존 15 case 오탐 0).
+  - 개선: `verification._year_conflict`·`_percent_point_conflict` → `(출처 불일치)`(`year_conflict`·`unit_conflict`). 옛 코드 오표시 2건 수정("6%p"를 단위 없는 6으로 읽음, "2023~2025년"의 2023을 수량으로 읽음).
+  - 백로그 1건: 같은 방향·2배 이상 다른 증감 폭 출처 상충(`ko-bike-share` case, 점수기, `note_source_conflicts` 안내 줄). 새 백로그 2건(연도 판정 오표시율, 2배 문턱 적정성). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 554개 통과(시스템 Python 3.11, 새 시험 15개 — 이번에는 `cryptography` 오류 없음, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 기존 15 case 최종 보고서 전후 diff 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)을 열었다. 이전 PR #16은 병합돼 있어 main을 fast-forward한 뒤 시작했다. CI 결과는 아직 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했다. 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 연도 판정은 명제·문장 단위 근사(비교 연도가 섞인 문장은 모르면 표시 안 함)이고, 퍼센트포인트는 표기만 본다. 증감 폭 상충은 퍼센트 수치·2배 문턱만 본다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "최근 3년 재활용률은 몇 %포인트 올랐나?"   # report_marks.json의 year_conflict·unit_conflict 문장과 한계 절 '증감 폭' 안내를 눈으로 판정
+  ```
+
 ## 2026-10-06 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 14 case·강화 기준): **98.9 → 99.9**. 주장-출처 일치 93.3→99.1. (12 case 이전 끝 99.8, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상충 case를 더한 15 case 최종 99.9(상충 안내를 끈 코드는 99.6). 상세는 `docs/QUALITY-LOG.md`.
