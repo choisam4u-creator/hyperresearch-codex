@@ -260,8 +260,10 @@ def _year_spans(text: str) -> list[tuple[str, int, int]]:
     for m in _YEAR_TOKEN.finditer(text):
         before = text[:m.start()]
         # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
+        # 문장 첫머리의 네 자리 수("2023 enrollment reached …")도 연도로 본다(PR #17 리뷰 반영).
         if (re.match(r"\s?년|\s*[~–—-]\s*(?:19|20)\d\d\s*년", text[m.end():]) or _YEAR_LEAD.search(before)
                 or re.search(r"\bbetween\s*$", before, re.I)
+                or (re.search(r"(?:^|[.!?]\s+)\s*$", before) and re.match(r"\s+[A-Za-z]", text[m.end():]))
                 or (out and _YEAR_AFTER.search(before))):
             out.append((m.group(1), m.start(), m.end()))
     return out
@@ -324,6 +326,9 @@ def magnitude_gap(a: str, b: str) -> bool:
 
     같은 대상의 증감 폭을 출처마다 크게 다르게 말하는 경우(2026-10-06 2회차 추가)다. 2배는 집계 범위·방법이 다를 때
     생기는 차이로 보고, 반올림 정도의 작은 차이는 세지 않으려는 문턱이다."""
+    ya, yb = {y for y, _, _ in _year_spans(a)}, {y for y, _, _ in _year_spans(b)}
+    if ya and yb and not ya & yb:   # 서로 다른 해의 증감 폭은 상충이 아니다(PR #17 리뷰 반영)
+        return False
     pa = [(float(n), k) for n, k in _percent_kinds(a) if k]
     pb = [(float(n), k) for n, k in _percent_kinds(b) if k]
     if len(pa) != 1 or len(pb) != 1 or pa[0][1] != pb[0][1]:

@@ -81,6 +81,13 @@ class SourceConflictTests(unittest.TestCase):
         src = dict(self.BIKE, S2=self.BIKE["S2"].replace("31%", "31%포인트"))
         self.assertEqual([], note_source_conflicts(self.bike("31%포인트"), src, "ko")[1])   # 퍼센트와 퍼센트포인트는 비교하지 않는다
 
+    def test_magnitude_gap_in_different_years_is_left_alone(self):
+        # PR #17 리뷰: 서로 다른 해의 증감 폭은 상충이 아니다.
+        src = {"S1": "Bike-share trips increased 8 percent in 2023.", "S2": "Bike-share trips increased 31 percent in 2025."}
+        report = ("## Answer\nBike-share trips increased 8 percent in 2023 [S1]. Bike-share trips increased 31 percent in 2025 [S2].\n\n"
+                  "## Limits\n- Small sample (judgment).\n")
+        self.assertEqual((report, []), note_source_conflicts(report, src, "en"))
+
     def test_english_magnitude_row(self):
         src = {"S1": "Bike-share trips increased 8 percent in 2025.", "S2": "Bike-share trips increased 31 percent in 2025."}
         report = ("## Answer\nBike-share trips increased 8 percent in 2025 [S1]. Bike-share trips increased 31 percent in 2025 [S2].\n\n"

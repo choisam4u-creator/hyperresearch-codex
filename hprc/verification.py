@@ -631,13 +631,17 @@ def _estimate_overclaim(plain: str, sents: list[str]) -> bool:
 _YEAR_TOKEN = re.compile(r"(?<![\d,.])((?:19|20)\d\d)(?!\d|,\d|\.\d)")
 
 
+_SENTENCE_HEAD = re.compile(r"(?:^|[.!?]\s+)\s*$")
+
+
 def _year_spans(text: str) -> list[tuple[int, int, int]]:
     out: list[tuple[int, int, int]] = []
     for m in _YEAR_TOKEN.finditer(text):
         before = text[:m.start()]
         # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
+        # 문장 첫머리의 네 자리 수("2023 enrollment reached …")도 연도로 본다(PR #17 리뷰 반영).
         if (re.match(r"\s?년", text[m.end():]) or _YEAR_RANGE_HEAD.match(text, m.end()) or _YEAR_LEAD.search(before)
-                or re.search(r"\bbetween\s*$", before, re.I)
+                or re.search(r"\bbetween\s*$", before, re.I) or (_SENTENCE_HEAD.search(before) and re.match(r"\s+[A-Za-z]", text[m.end():]))
                 or (out and re.search(r"\band\s*$", before, re.I))):
             out.append((int(m.group(1)), m.start(), m.end()))
     return out
@@ -923,6 +927,9 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     for i, (d1, stems1, cites1, plain1) in enumerate(rows):
         for d2, stems2, cites2, plain2 in rows[i + 1:]:
             gap = _magnitude_gap(plain1, plain2) if d1 == d2 else None
+            years1, years2 = {y for y, _, _ in _year_spans(plain1)}, {y for y, _, _ in _year_spans(plain2)}
+            if gap and years1 and years2 and not years1 & years2:
+                gap = None   # 서로 다른 해의 증감 폭은 상충이 아니다(PR #17 리뷰 반영)
             if (d1 == d2 and not gap) or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
                 continue
             pair = sorted({cites1[0], cites2[0]}, key=lambda c: int(c[1:]))

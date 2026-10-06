@@ -99,6 +99,14 @@ class ScoreTests(unittest.TestCase):
         self.assertFalse(score.supported("The program enrolled 41,000 households in 2025 [S1].", text, "en"))
         self.assertTrue(score.supported("In 2023, the program enrolled 41,000 households [S1].", text, "en"))
 
+    def test_sentence_initial_year_and_year_aware_magnitude(self):
+        # PR #17 리뷰: 문장 첫머리 연도, 서로 다른 해의 증감 폭은 상충이 아님.
+        text = "2023 enrollment reached 41,000. 2025 enrollment reached 56,000."
+        self.assertFalse(score.supported("In 2025 enrollment reached 41,000 [S1].", text, "en"))
+        self.assertTrue(score.supported("In 2023 enrollment reached 41,000 [S1].", text, "en"))
+        self.assertFalse(score.magnitude_gap("Trips increased 8 percent in 2023.", "Trips increased 31 percent in 2025."))
+        self.assertTrue(score.magnitude_gap("Trips increased 8 percent in 2025.", "Trips increased 31 percent in 2025."))
+
     def test_year_unknown_in_source_is_not_judged(self):
         text = "Access rose from 71 percent in 2022 to 78 percent in 2025, an increase of 7 percentage points."
         self.assertTrue(score.supported("In 2025, access rose by 7 percentage points [S1].", text, "en"))

@@ -380,6 +380,15 @@ class PlanScopeTests(unittest.TestCase):
         text, _ = self.mark("2023~2025년 교육 참여 가구는 18,500가구로 늘었다 [S1].", self.YEAR, "ko")
         self.assertNotIn("(출처 불일치)", text)
 
+    def test_sentence_initial_english_year_is_a_year(self):
+        # PR #17 리뷰: 문장 첫머리 연도도 연도로 본다.
+        src = {"S1": "2023 enrollment reached 41,000. 2025 enrollment reached 56,000."}
+        text, changes = self.mark("In 2025 enrollment reached 41,000 [S1].", src)
+        self.assertIn("(source mismatch)", text)
+        self.assertEqual(1, len(changes["year_conflict"]))
+        text, _ = self.mark("In 2023 enrollment reached 41,000 [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+
     def test_percent_point_swapped_with_percent_is_marked(self):
         src = {"S1": "재활용률은 2022년 41%에서 2025년 47%로 6%포인트 올랐다.", "S2": "Monthly bills fell by 12 percent on average."}
         text, changes = self.mark("재활용률은 6% 올랐다 [S1].", src, "ko")
