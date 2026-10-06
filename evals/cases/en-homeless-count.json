@@ -1,0 +1,21 @@
+{
+ "id": "en-homeless-count",
+ "lang": "en",
+ "baseline_time": "2026-03-31",
+ "prompt": "How many people were experiencing homelessness in the county this winter? Cite sources.",
+ "flaws": [
+  "preliminary_stated_as_final",
+  "estimate_stated_as_fact"
+ ],
+ "sources": {
+  "S1": "The county's preliminary point-in-time count found 2,140 people experiencing homelessness in January 2026. Final figures are due in May. The count recorded 610 people in emergency shelters.",
+  "S2": "A nonprofit analysis estimates that 35 percent of unsheltered people had been homeless for more than a year. The analysis interviewed 220 people at outreach sites."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How many people were experiencing homelessness in the county this winter? Cite sources.\n\n## Answer\nThe county counted 2,140 people experiencing homelessness in January 2026 [S1]. The count recorded 610 people in emergency shelters [S1].\n\n## Evidence\n- 35 percent of unsheltered people had been homeless for more than a year [S2].\n- A preliminary count found 2,140 people experiencing homelessness [S1].\n- The analysis interviewed 220 people at outreach sites [S2].\n\n## Counter-evidence and limits\n- Final figures are due in May [S1].\n\n## Next actions\n- Recheck the total when the final May figures are published (judgment)\n\n## Sources\n- [S1] County point-in-time count summary\n- [S2] Nonprofit unsheltered population analysis\n"
+   }
+  ]
+ }
+}

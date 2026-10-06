@@ -8,6 +8,8 @@ from pathlib import Path
 
 CITE = re.compile(r"\[(S\d+)\]")
 MARKERS = {"ko": ("(판단)", "(출처 없음)", "(출처 불일치)"), "en": ("(judgment)", "(no source)", "(source mismatch)")}
+# 원문의 추정·잠정치를 확정 사실처럼 쓴 문장에 붙는 약한 경고(2026-10-06 기준 강화). 이 결함에만 경고로 인정한다.
+ESTIMATE_MARK = {"ko": "(원문 추정치)", "en": "(source estimate)"}
 HEAD = {
     "ko": {"question": "# 질문: ", "answer": "## 답", "evidence": "## 근거", "limits": ("## 반대 근거와 한계", "## 한계"),
            "sources": "## 출처", "next": "## 다음 행동", "end": "## 검증 상태"},
@@ -60,7 +62,7 @@ def _plain(sentence: str, lang: str) -> str:
     text = CITE.sub("", sentence)
     text = re.sub(r"\(S\d+[:·][^)]*\)", "", text)
     text = re.sub(r"\bS\d+\b", "", text)
-    for marker in MARKERS[lang]:
+    for marker in MARKERS[lang] + (ESTIMATE_MARK[lang],):
         text = text.replace(marker, "")
     return text.strip()
 
@@ -199,6 +201,28 @@ def hedge_dropped(plain: str, source_text: str) -> bool:
     return False
 
 
+# 추정·잠정치의 확정화(2026-10-06 기준 강화, QUALITY-LOG 참조). 연도·월·일 수치는 날짜라 보지 않는다.
+_ESTIMATE = re.compile(r"\b(?:estimat\w*|preliminary|provisional|unaudited|approximately|approx\.|roughly|nearly|almost|"
+                       r"(?:about|around|some) (?=\d))|추정|추산|잠정|어림|대략|가량|안팎|내외|약\s?(?=\d)", re.I)
+_DATE_NUM = re.compile(r"(?<![\d,.])(?:19|20)\d\d(?!\d)(?!\s?(?:%|percent|명|건|원|개|곳|대|가구))|\d{1,2}\s?(?:월|일)(?![가-힣])|\d{4}\s?년")
+
+
+def estimate_dropped(plain: str, source_text: str) -> bool:
+    """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데 주장은 그런 유보 없이 확정처럼 말하면 True."""
+    if _ESTIMATE.search(plain) or _HEDGE.search(plain):
+        return False
+    dates = [m.span() for m in _DATE_NUM.finditer(plain)]
+    sents = _source_sentences(source_text)
+    for m in _NUM.finditer(plain):
+        if any(a <= m.start() < b for a, b in dates):
+            continue
+        n = m.group(0).replace(",", "")
+        held = [_proposition(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
+        if held and all(_ESTIMATE.search(c) for c in held):
+            return True
+    return False
+
+
 def scope_widened(plain: str, source_text: str) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장은 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
     if not _WIDE.search(plain):
@@ -241,6 +265,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-05 2회차 기준 강화: 원문의 계획·추정을 실적처럼, 시범·표본 결과를 전역 결과처럼 말하면 불일치.
     if hedge_dropped(plain, source_text) or scope_widened(plain, source_text):
+        return False
+    # 2026-10-06 기준 강화: 원문의 추정·잠정치를 유보 없이 확정 사실처럼 말하면 불일치('(원문 추정치)' 표시는 경고로 인정).
+    if ESTIMATE_MARK[lang] not in sentence and estimate_dropped(plain, source_text):
         return False
     return True
 

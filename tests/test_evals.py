@@ -77,6 +77,20 @@ class ScoreTests(unittest.TestCase):
         self.assertFalse(score.supported("발급자는 하루 18,400명이었다 [S1].", text, "ko"))
         self.assertTrue(score.supported("발급자는 3월 한 달 동안 18,400명이었다 [S1].", text, "ko"))
 
+    def test_estimate_stated_as_fact_is_mismatch_unless_hedged_or_marked(self):
+        text = "A budget memo estimates that the pilot cost 3.8 million dollars. The pilot ran on 4 routes in 2025."
+        self.assertFalse(score.supported("The pilot cost 3.8 million dollars [S1].", text, "en"))
+        self.assertTrue(score.supported("The pilot cost an estimated 3.8 million dollars [S1].", text, "en"))
+        self.assertTrue(score.supported("The pilot cost 3.8 million dollars (source estimate) [S1].", text, "en"))
+        self.assertTrue(score.supported("The pilot ran on 4 routes in 2025 [S1].", text, "en"))
+
+    def test_estimate_check_ignores_dates_and_actual_values(self):
+        text = "시는 2026년 7월 피해를 약 420억 원으로 추산했다. 침수 주택은 1,280가구로 집계됐다."
+        self.assertFalse(score.supported("7월 피해는 420억 원이었다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("7월 피해는 약 420억 원으로 추산됐다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("침수 주택은 1,280가구로 집계됐다 [S1].", text, "ko"))
+        self.assertTrue(score.supported("7월 피해는 420억 원이었다 (원문 추정치) [S1].", text, "ko"))
+
     def test_judgment_contradicting_cited_sentence_lowers_consistency(self):
         report = GOOD.replace("- Only one season was measured (judgment)",
                               "- Only one season was measured (judgment)\n- Peak demand at the library increased (judgment)")
