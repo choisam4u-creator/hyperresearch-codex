@@ -8,6 +8,8 @@ from pathlib import Path
 
 CITE = re.compile(r"\[(S\d+)\]")
 MARKERS = {"ko": ("(판단)", "(출처 없음)", "(출처 불일치)"), "en": ("(judgment)", "(no source)", "(source mismatch)")}
+# 원문의 추정·잠정치를 확정 사실처럼 쓴 문장에 붙는 약한 경고(2026-10-06 기준 강화). 이 결함에만 경고로 인정한다.
+ESTIMATE_MARK = {"ko": "(원문 추정치)", "en": "(source estimate)"}
 HEAD = {
     "ko": {"question": "# 질문: ", "answer": "## 답", "evidence": "## 근거", "limits": ("## 반대 근거와 한계", "## 한계"),
            "sources": "## 출처", "next": "## 다음 행동", "end": "## 검증 상태"},
@@ -51,7 +53,7 @@ def sentences(block: str, lang: str) -> list[str]:
         if not line or line.startswith("|"):
             continue
         line = re.sub(rf"([.!?])\s*((?:(?:\[S\d+\]|{marks})\s*)+)", lambda m: " " + m.group(2).strip() + m.group(1) + " ", line)
-        out += [s.strip() for s in re.split(r"(?<=[.!?])\s+", line) if s.strip()]
+        out += [s.strip() for s in re.split(r"(?<=[.!?])(?<![Aa]pprox\.)\s+", line) if s.strip()]
     return out
 
 
@@ -60,7 +62,7 @@ def _plain(sentence: str, lang: str) -> str:
     text = CITE.sub("", sentence)
     text = re.sub(r"\(S\d+[:·][^)]*\)", "", text)
     text = re.sub(r"\bS\d+\b", "", text)
-    for marker in MARKERS[lang]:
+    for marker in MARKERS[lang] + (ESTIMATE_MARK[lang],):
         text = text.replace(marker, "")
     return text.strip()
 
@@ -83,7 +85,8 @@ _EN_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "whi
 
 
 def _source_sentences(source_text: str) -> list[str]:
-    return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", source_text) if s.strip()]
+    # "approx." 뒤에서는 끊지 않는다(2026-10-06 PR #16 리뷰 반영).
+    return [s.strip() for s in re.split(r"(?<=[.!?])(?<![Aa]pprox\.)\s+|\n+", source_text) if s.strip()]
 
 
 def _direction(text: str) -> str:
@@ -199,6 +202,33 @@ def hedge_dropped(plain: str, source_text: str) -> bool:
     return False
 
 
+# 추정·잠정치의 확정화(2026-10-06 기준 강화, QUALITY-LOG 참조). 연도·월·일 수치는 날짜라 보지 않는다.
+_ESTIMATE = re.compile(r"\b(?:estimat\w*|preliminary|provisional|unaudited|approximately|approx\.|roughly|nearly|almost|"
+                       r"(?:about|around|some) (?=\d))|추정|추산|잠정|어림|대략|가량|안팎|내외|약\s?(?=\d)", re.I)
+# 연도는 달 이름·연도 전치사 바로 뒤의 네 자리 수만 본다(PR #16 리뷰 반영 — "found 2000 people"의 2000은 수량).
+_DATE_NUM = re.compile(r"\d{1,2}\s?(?:월|일)(?![가-힣])|\d{4}\s?년")
+_YEAR_LEAD = re.compile(r"(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December|"
+                        r"in|by|since|until|till|from|through|to|during|before|after|of|year|fiscal|FY)|[-–—~])\s*$", re.I)
+
+
+def estimate_dropped(plain: str, source_text: str) -> bool:
+    """주장 수치가 원문에서는 매번 추정·잠정치를 말하는 명제에만 나오는데 주장은 그런 유보 없이 확정처럼 말하면 True."""
+    dates = [m.span() for m in _DATE_NUM.finditer(plain)]
+    sents = _source_sentences(source_text)
+    for m in _NUM.finditer(plain):
+        n = m.group(0).replace(",", "")
+        if any(a <= m.start() < b for a, b in dates) or (
+                re.fullmatch(r"(?:19|20)\d\d", n) and "," not in m.group(0) and _YEAR_LEAD.search(plain[:m.start()])):
+            continue
+        own = _proposition(plain, m.start(), m.end())   # 유보 낱말은 그 수치가 든 명제에서만 본다(PR #16 리뷰 반영)
+        if _ESTIMATE.search(own) or _HEDGE.search(own):
+            continue
+        held = [_proposition(s, x.start(), x.end()) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
+        if held and all(_ESTIMATE.search(c) for c in held):
+            return True
+    return False
+
+
 def scope_widened(plain: str, source_text: str) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장은 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
     if not _WIDE.search(plain):
@@ -241,6 +271,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-05 2회차 기준 강화: 원문의 계획·추정을 실적처럼, 시범·표본 결과를 전역 결과처럼 말하면 불일치.
     if hedge_dropped(plain, source_text) or scope_widened(plain, source_text):
+        return False
+    # 2026-10-06 기준 강화: 원문의 추정·잠정치를 유보 없이 확정 사실처럼 말하면 불일치('(원문 추정치)' 표시는 경고로 인정).
+    if ESTIMATE_MARK[lang] not in sentence and estimate_dropped(plain, source_text):
         return False
     return True
 
@@ -313,7 +346,26 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
                 contradictions.append(s)
                 break
     detail["contradictions"] = contradictions
-    internal_consistency = 1 - len(contradictions) / len(claims) if claims else 0.0
+    # 출처끼리 상충(2026-10-06 추가): 서로 다른 출처만 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상)을 반대 증감 방향으로
+    # 말하는데 한계 절의 어느 한 줄도 두 출처를 함께 언급하지 않으면, 독자가 상충을 모른 채 읽는다고 보고 감점한다.
+    limit_lines = "\n".join(parts.get(x, "") for x in h["limits"]).splitlines()
+    trusted = [(c, set(CITE.findall(c))) for c in cited if MARKERS[lang][2] not in c and c not in mismatched
+               and _direction(_plain(c, lang))]
+    unacknowledged, seen_pairs = [], set()
+    for i, (a, ids_a) in enumerate(trusted):
+        for b, ids_b in trusted[i + 1:]:
+            if (ids_a & ids_b or _direction(_plain(a, lang)) == _direction(_plain(b, lang))
+                    or len(_terms(a) & _terms(b)) < 2):
+                continue
+            pair = (min(ids_a, key=lambda x: int(x[1:])), min(ids_b, key=lambda x: int(x[1:])))
+            pair = tuple(sorted(pair, key=lambda x: int(x[1:])))
+            if pair in seen_pairs:   # 같은 출처 쌍은 문장이 반복돼도 한 번만 센다(PR #16 리뷰 반영)
+                continue
+            if not any(all(re.search(rf"(?<![A-Za-z0-9]){x}(?!\d)", row) for x in pair) for row in limit_lines):
+                seen_pairs.add(pair)
+                unacknowledged.append(f"{a} <> {b}")
+    detail["unacknowledged_source_conflicts"] = unacknowledged
+    internal_consistency = 1 - min(len(claims), len(contradictions) + len(unacknowledged)) / len(claims) if claims else 0.0
 
     def filled(name: str) -> bool:   # 제목만 있고 내용이 빈 절은 구조로 치지 않는다
         return bool(parts.get(name, "").strip())

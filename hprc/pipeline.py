@@ -582,7 +582,7 @@ class Run:
             atomic_write(log, json.dumps({"pairs": previous + conflicts}, ensure_ascii=False))
         # 원문에 없는 수치·날짜와 인용 없는 사실 문장을 본문에 직접 표시한다(검증 절만 보고 놓치지 않게).
         fixed, marks = mark_report_claims(fixed, texts, self.lang)
-        if marks["mismatch"] or marks["no_source"]:
+        if marks["mismatch"] or marks["no_source"] or marks["estimate_dropped"]:
             log = self.dir / "report_marks.json"
             previous = json.loads(log.read_text(encoding="utf-8")) if log.exists() else {"mismatch": [], "no_source": []}
             atomic_write(log, json.dumps({k: previous.get(k, []) + v for k, v in marks.items()}, ensure_ascii=False, indent=2))
@@ -1373,7 +1373,13 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         # 여러 실행을 비교할 수 있게 본문에 실제로 남은 표시 수를 요약에 둔다(hpr status·머리 주석).
         no_source_mark, mismatch_mark = (("(출처 없음)", "(출처 불일치)") if self.lang == "ko"
                                          else ("(no source)", "(source mismatch)"))
-        quality["marks"] = {"no_source": report.count(no_source_mark), "mismatch": report.count(mismatch_mark)}
+        quality["marks"] = {"no_source": report.count(no_source_mark), "mismatch": report.count(mismatch_mark),
+                            "estimate": report.count("(원문 추정치)" if self.lang == "ko" else "(source estimate)")}
+        if quality["marks"]["estimate"]:
+            # 값은 원문에 있으나 원문은 추정·잠정치로 말한 문장이다. 틀린 값이 아니므로 검토 요구로 올리지 않고 알리기만 한다.
+            quality["issues"].append({"kind": "estimate_marked", "severity": "low", "line": None,
+                                      "message": (f"원문이 추정·잠정치로 말한 수치를 확정처럼 쓴 문장 {quality['marks']['estimate']}개에 '(원문 추정치)'를 표시했습니다."
+                                                  if self.lang == "ko" else f"Marked {quality['marks']['estimate']} sentence(s) that state a source's estimate or preliminary figure as settled '(source estimate)'.")})
         if quality["marks"]["mismatch"]:
             # 수치가 없는 방향·독립성 불일치는 verify_report가 못 볼 수 있으므로 본문 표시만으로도 검토를 요구한다.
             quality["issues"].append({"kind": "source_mismatch_marked", "severity": "medium", "line": None,
@@ -1394,7 +1400,7 @@ SEMANTIC_EVIDENCE_V1: For each sampled sentence, identify every atomic factual a
         price = (f"요금 상한 미확정 (측정분 ≈${cost['usd_upper']}) · 미측정 {cost['unknown_calls']}회"
                  if cost["unknown_calls"] else f"요금 상한 ≈${cost['usd_upper']}")
         header = ["<!-- hyperresearch-codex " + self.tier + " -->",
-                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(관계 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 본문 표시 출처 없음 {quality['marks']['no_source']}·출처 불일치 {quality['marks']['mismatch']}개 · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
+                  f"<!-- run: {self.run_id} · 출처 {len(self.sources)}개(관계 묶음 {groups}, 실제 인용 {len(self.relevant)}) · 지적 {len(findings)}개 · 인용표본 {sample_count}개 중 미지지 {len(bad)}개 · 판단 표시 {judgment_sentences(report, self.lang)}개 · 본문 표시 출처 없음 {quality['marks']['no_source']}·출처 불일치 {quality['marks']['mismatch']}개" + (f"·원문 추정치 {quality['marks']['estimate']}개" if quality['marks']['estimate'] else "") + f" · 린트 {problems or 'OK'} · 모델 호출 {len(self.m.data['usage'])}회 · 토큰 in {cost['input']:,} (캐시 {cost['cached']:,}) / out {cost['output']:,} · {price}" + (f" · 경고 {warns}" if warns else "") + " -->", ""]
         U = self.U
         prov = ["", U["provenance"], "", U["cols"], "|---|---|---|---|---|---|---|---|"]
         for s in self.sources:
