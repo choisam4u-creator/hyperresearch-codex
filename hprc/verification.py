@@ -34,9 +34,91 @@ _UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "m
 # "1.6 million"과 "1,600,000"은 같은 값으로 본다. "만큼"·"만에"의 '만'은 자릿수가 아니다.
 _MAGNITUDES = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
                "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
-_MAGNITUDE = r"(?:\s*(?:십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에(?![가-힣]))|\s+(?:thousand|million|billion|trillion)(?![A-Za-z]))"
-_QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?" + _MAGNITUDE + r"?(?:\s*(?:" +
-                       "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
+# 수치 하나를 읽는 순서(2026-10-07 2회차): 숫자 → 한국어 복합 자릿수("1억 2천만", "4천5백만", "3만 5천", "1조 5,000억") 또는
+# 영어 자릿수 낱말·약어("3.8 million", "$3.8M", "2.5bn", "12k") → 단위. 같은 값의 다른 표기를 같은 값으로 읽어 맞는 환산에
+# '(출처 불일치)'가 붙지 않게 하고, 약어로 바꾼 자릿수("4.6 million"→"$4.6bn")도 값으로 비교한다. 소문자 m·b는 통화 기호
+# 바로 뒤 숫자에만 자릿수로 본다(그 밖의 "3.8 m"은 미터). 대문자 M·B·K와 k는 숫자에 붙어 있고 뒤에 영문자가 없을 때만
+# 자릿수다("5MB"는 단위 MB).
+_NUMBER_START = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?")
+_NUMBER_PART = re.compile(r"\d+(?:,\d{3})*(?:\.\d+)?")
+_KO_BIG = {"만": 10**4, "억": 10**8, "조": 10**12}
+_KO_SMALL = {"천": 1000, "백": 100, "십": 10}
+_KO_TOKEN = re.compile(r"(\s?\d+(?:,\d{3})*(?:\.\d+)?)?(\s?)([천백십만억조])")
+_EN_MAGNITUDE = re.compile(r"\s+(thousand|million|billion|trillion)(?![A-Za-z])|(\s?(?:bn|mn|mln|tn)|[KMBk])(?![A-Za-z])", re.I)
+_EN_ABBREVIATIONS = {"k": 10**3, "m": 10**6, "mn": 10**6, "mln": 10**6, "b": 10**9, "bn": 10**9, "tn": 10**12}
+_CURRENCY_LEAD = re.compile(r"[$€£₩]\s?$")
+_UNIT_TAIL = re.compile(r"\s*(?:" + "|".join(re.escape(unit) for unit in _UNITS) + r")(?![A-Za-z0-9])", re.IGNORECASE)
+
+
+def _korean_compound(text: str, pos: int, first: Decimal) -> tuple[Decimal, int] | None:
+    """숫자 바로 뒤의 한국어 자릿수 묶음을 읽어 (값, 끝 위치)를 돌려준다. 자릿수가 없으면 None.
+
+    큰 자릿수(조·억·만)는 내림차순, 묶음 안의 작은 자릿수(천·백·십)도 내림차순이어야 이어 읽는다. "만큼"·"만에"의 '만',
+    낱말 첫 글자인 '십'·'백'(예: "10 백신")은 자릿수가 아니다."""
+    total, group, pending, end = Decimal(0), Decimal(0), first, pos
+    last_big, last_small, used = 10**13, 10**4, False
+    while True:
+        m = _KO_TOKEN.match(text, end)
+        if not m:
+            break
+        number, space, unit = m.group(1), m.group(2), m.group(3)
+        after = text[m.end():m.end() + 1]
+        if number is not None:
+            if pending is not None:
+                break   # 숫자 두 개가 자릿수 없이 이어짐
+            pending = Decimal(number.strip().replace(",", ""))
+            if number[0].isspace() and not used:
+                break
+        if unit == "만" and re.match(r"큼|에(?![가-힣])", text[m.end():]):
+            break
+        if unit in _KO_SMALL:
+            # 작은 자릿수는 숫자에 붙어 있어야 하고, 뒤가 다른 낱말이면 자릿수가 아니다("10 백신", "5천안").
+            if space or (re.match(r"[가-힣]", after) and after not in "천백십만억조명원곳개건대회종배가"):
+                break
+            if _KO_SMALL[unit] >= last_small or pending is None:
+                break
+            group += pending * _KO_SMALL[unit]
+            last_small, pending = _KO_SMALL[unit], None
+        else:
+            value = _KO_BIG[unit]
+            if value >= last_big:
+                break
+            group += pending or 0
+            if group == 0:
+                break
+            total += group * value
+            group, pending, last_big, last_small = Decimal(0), None, value, 10**4
+        used, end = True, m.end()
+    if not used:
+        return None
+    return total + group + (pending or 0), end
+
+
+def _read_number(text: str, match: re.Match) -> tuple[Decimal, int] | None:
+    """숫자 하나와 뒤따르는 자릿수를 읽어 (값, 끝 위치)를 돌려준다."""
+    try:
+        number = Decimal(match.group(0).replace(",", ""))
+    except InvalidOperation:
+        return None
+    end = match.end()
+    compound = _korean_compound(text, end, number)
+    if compound:
+        return compound
+    en = _EN_MAGNITUDE.match(text, end)
+    if en:
+        if en.group(1):
+            return number * _MAGNITUDES[en.group(1).lower()], en.end()
+        abbr = en.group(2).strip()
+        if abbr in ("K", "k", "M", "B") or abbr.lower() in ("bn", "mn", "mln", "tn"):
+            return number * _EN_ABBREVIATIONS[abbr.lower()], en.end()
+    lead = _CURRENCY_LEAD.search(text, 0, match.start())
+    if lead:
+        cur = re.match(r"([mb])(?![A-Za-z])", text[end:])
+        if cur:
+            return number * _EN_ABBREVIATIONS[cur.group(1)], end + 1
+    return number, end
+
+
 _CONTEXT_WORD = re.compile(r"[A-Za-z가-힣]{2,}")
 _CONTEXT_STOP = {"the", "and", "for", "with", "that", "this", "from", "was", "were", "are", "is", "to", "of", "in", "on", "by",
                  "이다", "있다", "한다", "된다", "그리고", "또는", "대한", "따른", "measured",
@@ -158,29 +240,33 @@ _YEAR_RANGE_HEAD = re.compile(r"\s*[~–—-]\s*(?:19|20)\d\d\s*년")
 def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
     values = []
     excluded_spans = [(item["start"], item["end"]) for item in excluded]
-    for match in _QUANTITY.finditer(text):
+    pos = 0
+    while True:
+        match = _NUMBER_START.search(text, pos)
+        if not match:
+            break
+        pos = match.end()
         if any(start <= match.start() < end for start, end in excluded_spans):
             continue
-        raw = match.group(0)
-        split = re.match(r"([-+]?\d+(?:,\d{3})*(?:\.\d+)?)(" + _MAGNITUDE + r"?)(.*)", raw, re.IGNORECASE)
-        if not split:
+        read = _read_number(text, match)
+        if not read:
             continue
-        try:
-            number = Decimal(split.group(1).replace(",", ""))
-        except InvalidOperation:
-            continue
-        if split.group(2).strip():
-            number *= _MAGNITUDES[split.group(2).strip().lower()]
-        unit = split.group(3).strip().lower()
-        if not unit and _YEAR_RANGE_HEAD.match(text, match.end()) and re.fullmatch(r"(?:19|20)\d\d", raw):
+        number, end = read
+        unit_match = _UNIT_TAIL.match(text, end)
+        unit = unit_match.group(0).strip().lower() if unit_match else ""
+        stop = unit_match.end() if unit_match else end
+        if re.match(r"[A-Za-z0-9]", text[stop:stop + 1]):
+            continue   # "4.2xyz"처럼 영문·숫자가 바로 붙은 수는 수량으로 읽지 않는다
+        pos = stop
+        raw = text[match.start():stop]
+        if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
-        item = {"raw": raw, "value": number * scale, "dimension": dimension,
-                "start": match.start(), "end": match.end()}
+        item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop}
         # mW/MW는 대소문자에 따라 배율이 달라 지원하지 않는다.
         # 공백 유무와 관계없이 추출하되 근거 일치에는 사용하지 않는다.
         if unit in {"mw", "mwh"}:
-            item["unsupported_unit"] = split.group(3).strip()
+            item["unsupported_unit"] = unit_match.group(0).strip()
         values.append(item)
     return values
 

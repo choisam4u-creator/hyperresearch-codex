@@ -422,6 +422,28 @@ class PlanScopeTests(unittest.TestCase):
         self.assertNotIn("(출처 불일치)", text)
         self.assertEqual([3, 20000, 3], [int(v["value"]) for v in _quantity_values("3만큼, 2만 명, 3년 만에", [])])
 
+    def test_abbreviated_and_compound_numbers_are_read_as_values(self):
+        src = {"S1": "The dredging project cost 4.6 million dollars. The federal share was 3.8 million dollars. "
+                     "The harbor had 12,000 vessel calls. A berth repair budget of 2.5 billion won is listed.",
+               "S2": "2025년 지원 사업 예산은 1.2억 원이었다. 이용자는 35,000명이었다. 도서 구입비로 4천5백만 원이 쓰였다."}
+        for body, lang in (("The dredging project cost $4.6bn [S1].", "en"), ("The federal share was $3.8B [S1].", "en"),
+                           ("도서 구입비로 5천4백만 원이 쓰였다 [S2].", "ko"), ("지원 사업 예산은 1억 2천 원이었다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+        for body, lang in (("The federal share was $3.8M [S1].", "en"), ("The federal share was $3.8m [S1].", "en"),
+                           ("The harbor had 12k vessel calls [S1].", "en"),
+                           ("A berth repair budget of 2.5bn won is listed [S1].", "en"),
+                           ("지원 사업 예산은 1억 2천만 원이었다 [S2].", "ko"), ("이용자는 3만 5천 명이었다 [S2].", "ko"),
+                           ("도서 구입비로 4,500만 원이 쓰였다 [S2].", "ko")):
+            text, _ = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+
+    def test_abbreviation_does_not_swallow_units_or_words(self):
+        values = _quantity_values("5MB, 3.8 m, 18.4kW, 10 백신, 5천안, 3 만 명, 1조 5,000억 원", [])
+        self.assertEqual([("5", "data_decimal"), ("3.8", "length"), ("18400.0", "power"), ("10", "unitless"),
+                          ("5", "unitless"), ("30000", "명"), ("1500000000000", "KRW")],
+                         [(str(v["value"]), v["dimension"]) for v in values])
+
 
 if __name__ == "__main__":
     unittest.main()
