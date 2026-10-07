@@ -56,6 +56,14 @@ class ScoreTests(unittest.TestCase):
         result = score.score(GOOD.replace("- Only one season was measured (judgment)\n", ""), "en", "q?", SOURCES)
         self.assertLess(result["structure"], 100)
 
+    def test_magnitude_word_swap_is_mismatch_and_equal_value_is_supported(self):
+        en, ko = "The state awarded a 4.2 million dollar grant.", "정비 사업에 420억 원이 투입됐다. 주변에는 12만 가구가 산다."
+        self.assertFalse(score.supported("The state awarded a 4.2 billion dollar grant [S1].", en, "en"))
+        self.assertFalse(score.supported("정비 사업에 420만 원이 투입됐다 [S1].", ko, "ko"))
+        self.assertTrue(score.supported("The state awarded a 4,200,000 dollar grant [S1].", en, "en"))
+        self.assertTrue(score.supported("주변에는 120,000가구가 산다 [S1].", ko, "ko"))
+        self.assertTrue(score.supported("정비 사업에 420억 원이 투입됐다 [S1].", ko, "ko"))
+
     def test_causal_overclaim_against_disclaimer_is_mismatch(self):
         src = {"S1": {"text": "Ridership rose 12 percent. The report cannot establish that the pass caused the rise.", "cluster": "S1"}}
         self.assertFalse(score.supported("The pass caused ridership to rise 12 percent [S1].", src["S1"]["text"], "en"))

@@ -30,7 +30,12 @@ _UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "m
           "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 # "%p"·"%포인트"·"percentage points"도 퍼센트 차원의 값으로 읽는다. 퍼센트와 퍼센트포인트의 구분은 _percent_point_conflict가 따로 본다.
-_QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
+# 자릿수 낱말: "420억 원"과 "420만 원", "4.2 million"과 "4.2 billion"은 숫자 글자가 같아도 다른 값이다. 값에 곱해 비교하므로
+# "1.6 million"과 "1,600,000"은 같은 값으로 본다. "만큼"·"만에"의 '만'은 자릿수가 아니다.
+_MAGNITUDES = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
+               "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
+_MAGNITUDE = r"(?:\s*(?:십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에(?![가-힣]))|\s+(?:thousand|million|billion|trillion)(?![A-Za-z]))"
+_QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?" + _MAGNITUDE + r"?(?:\s*(?:" +
                        "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
 _CONTEXT_WORD = re.compile(r"[A-Za-z가-힣]{2,}")
 _CONTEXT_STOP = {"the", "and", "for", "with", "that", "this", "from", "was", "were", "are", "is", "to", "of", "in", "on", "by",
@@ -157,14 +162,16 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         if any(start <= match.start() < end for start, end in excluded_spans):
             continue
         raw = match.group(0)
-        split = re.match(r"([-+]?\d+(?:,\d{3})*(?:\.\d+)?)(.*)", raw)
+        split = re.match(r"([-+]?\d+(?:,\d{3})*(?:\.\d+)?)(" + _MAGNITUDE + r"?)(.*)", raw, re.IGNORECASE)
         if not split:
             continue
         try:
             number = Decimal(split.group(1).replace(",", ""))
         except InvalidOperation:
             continue
-        unit = split.group(2).strip().lower()
+        if split.group(2).strip():
+            number *= _MAGNITUDES[split.group(2).strip().lower()]
+        unit = split.group(3).strip().lower()
         if not unit and _YEAR_RANGE_HEAD.match(text, match.end()) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
@@ -173,7 +180,7 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         # mW/MW는 대소문자에 따라 배율이 달라 지원하지 않는다.
         # 공백 유무와 관계없이 추출하되 근거 일치에는 사용하지 않는다.
         if unit in {"mw", "mwh"}:
-            item["unsupported_unit"] = split.group(2).strip()
+            item["unsupported_unit"] = split.group(3).strip()
         values.append(item)
     return values
 

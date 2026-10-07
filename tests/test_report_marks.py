@@ -1,7 +1,7 @@
 import unittest
 
 from hprc.citation_sampling import select_samples
-from hprc.verification import mark_report_claims
+from hprc.verification import _quantity_values, mark_report_claims
 
 
 KO = """# 질문: 냉방 시범사업 효과는?
@@ -402,6 +402,26 @@ class PlanScopeTests(unittest.TestCase):
             text, _ = self.mark(body, src, lang)
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
         self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), src)[0])   # 다시 돌려도 같다
+    def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
+        src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
+               "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
+        for body, lang in (("정비 사업에 420만 원이 투입됐다 [S1].", "ko"),
+                           ("The state awarded a 4.2 billion dollar grant [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["mismatch"]), body)
+        for body, lang in (("정비 사업에 420억 원이 투입됐다 [S1].", "ko"), ("정비 구간 주변에는 120,000가구가 산다 [S1].", "ko"),
+                           ("Annual ridership was 1,600,000 trips [S2].", "en"),
+                           ("The state awarded a 4.2 million dollar grant [S2].", "en")):
+            text, _ = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+
+    def test_man_particle_is_not_a_magnitude(self):
+        src = {"S1": "정비 공사는 3년 만에 끝났다. 신고는 17건이었다."}
+        text, _ = self.mark("신고는 17건이었다 [S1].", src, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        self.assertEqual([3, 20000, 3], [int(v["value"]) for v in _quantity_values("3만큼, 2만 명, 3년 만에", [])])
+
 
 if __name__ == "__main__":
     unittest.main()

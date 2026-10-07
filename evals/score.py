@@ -342,7 +342,7 @@ def magnitude_gap(a: str, b: str) -> bool:
 # "1,600,000", "12만"↔"120,000")은 같은 수치로 본다.
 _MAG_WORDS = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
               "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
-_MAG = re.compile(r"\s*(십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에\b)|\s+(thousand|million|billion|trillion)\b", re.I)
+_MAG = re.compile(r"\s*(십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에(?![가-힣]))|\s+(thousand|million|billion|trillion)(?![A-Za-z])", re.I)
 
 
 def _scaled(text: str) -> list[tuple[str, int, float]]:
