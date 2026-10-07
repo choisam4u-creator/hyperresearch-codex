@@ -2,6 +2,23 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-07 (품질 회차 2)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 22 case·7항목 기준): **99.3 → 99.9**. 새 항목 잘못 붙은 경고 없음 95.5→100. (20 case·6항목 이전 끝 99.9, 새 항목만 더하면 99.9, 새 case를 옛 표기 점수기로 재면 99.8 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 새 항목 **잘못 붙은 경고 없음** — 표시를 떼도 점수기 대조를 통과하는 인용 문장에 `(출처 불일치)`·`(원문 추정치)`가 붙으면 감점(경고를 남발해도 주장-출처 일치가 오르던 맹점). 지난 회차 개선 전 코드를 이 항목으로 재면 97.8.
+  - 평가 강화: case 2개(`en-port-dredging`, `ko-library-budget`) — 자릿수 약어($3.8M·2.5bn·12k)와 한국어 복합 표기(1억 2천만·4천5백만·3만 5천). 점수기가 이 표기를 값으로 읽는다(같은 값은 일치 — 넓히는 쪽, 이유는 QUALITY-LOG).
+  - 개선: `verification._quantity_values`가 약어·복합 표기를 한 값으로 읽는다. 옛 코드가 맞는 환산 4문장에 붙이던 `(출처 불일치)` 제거, 바꾼 2문장은 정확한 값으로 표시. 기존 20 case 최종 보고서 diff 없음.
+  - 백로그 1건 완료(약어·복합 표기), 새 항목 2건(약어 오인 실측, 경고 정확도 범위를 판단·출처 없음 표시로 확장). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 564개 통과(시스템 Python 3.11, 새 시험 4개 — 코드 시험 2개는 옛 코드에서 실패 확인, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)이 아직 열려 있어 같은 브랜치에 이어 푸시하고 PR 본문에 이번 회차 표를 더했다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 숫자에 붙은 대문자 M·B·K는 자릿수로 읽어 제품명 같은 드문 표기를 오인할 수 있다. 새 항목은 인용 문장의 경고만 본다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "항만 준설 사업비와 연방 분담금은 얼마였나?"   # report_marks.json의 mismatch에 $3.8M·1억 2천만 같은 맞는 환산이 들어가지 않았는지 눈으로 판정
+  ```
+
 ## 2026-10-07 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 20 case·강화 기준): **99.1 → 99.9**. 주장-출처 일치 94.9→99.4. (18 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
