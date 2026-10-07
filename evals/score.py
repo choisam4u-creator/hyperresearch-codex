@@ -17,9 +17,10 @@ HEAD = {
            "limits": ("## Counter-evidence and limits", "## Limits"), "sources": "## Sources", "next": "## Next actions",
            "end": "## Verification status"},
 }
-METRICS = ("citation_validity", "claim_source_match", "duplicate_sources", "unmarked_unverified", "internal_consistency",
-           "structure")
-LABELS = {"citation_validity": "인용 유효성", "claim_source_match": "주장-출처 일치", "duplicate_sources": "중복 출처 없음",
+METRICS = ("citation_validity", "claim_source_match", "false_warnings", "duplicate_sources", "unmarked_unverified",
+           "internal_consistency", "structure")
+LABELS = {"citation_validity": "인용 유효성", "claim_source_match": "주장-출처 일치",
+          "false_warnings": "잘못 붙은 경고 없음", "duplicate_sources": "중복 출처 없음",
           "unmarked_unverified": "표시 없는 미검증 주장 없음", "internal_consistency": "본문 내부 일관성",
           "structure": "보고서 구조"}
 
@@ -438,6 +439,27 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     detail["mismatched"] = mismatched
     claim_source_match = 1 - len(mismatched) / len(cited) if cited else 0.0
 
+    # 잘못 붙은 경고(2026-10-07 2회차 추가): '(출처 불일치)'·'(원문 추정치)'가 붙은 인용 문장이 표시를 떼고도 이 점수기의
+    # 엄격한 대조를 모두 통과하면, 맞는 문장에 경고를 붙여 독자의 신뢰를 깎은 것으로 본다. 위 일치 항목은 경고가 붙은 문장을
+    # 통과로 세므로 경고를 남발해도 점수가 오르던 맹점을 막는다. 점수기 대조가 엄격하므로 이 수는 오표시의 하한이다.
+    warn_marks = (MARKERS[lang][2], ESTIMATE_MARK[lang])
+    false_warned = []
+    for s in cited:
+        if not any(m in s for m in warn_marks):
+            continue
+        ids = [c for c in CITE.findall(s) if c in sources]
+        # 같은 관계 묶음 출처만 함께 인용한 문장의 경고는 '독립 출처' 주장 때문일 수 있고, 이 점수기의 대조는 독립성을 보지
+        # 않으므로(중복 출처 항목이 본다) 세지 않는다(en-library-hours의 independence_conflict는 맞는 경고다).
+        if len(set(ids)) >= 2 and len({sources[c].get("cluster", c) for c in ids}) == 1:
+            continue
+        bare = s
+        for m in warn_marks:
+            bare = bare.replace(m, "")
+        if ids and supported(bare, "\n".join(sources[c]["text"] for c in ids), lang):
+            false_warned.append(s)
+    detail["false_warnings"] = false_warned
+    false_warnings = 1 - len(false_warned) / len(cited) if cited else 1.0
+
     rows = CITE.findall(parts.get(src_heading, "")) if src_heading else []
     multi = [s for s in cited if len(set(CITE.findall(s))) >= 2]
     # 독자에게 '독립 출처가 아닐 수 있음'을 알린 겹침 인용은 감점하지 않는다(2026-10-03 기준 변경, QUALITY-LOG 참조).
@@ -508,5 +530,6 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
     structure = sum(checks) / len(checks)
 
     return {"citation_validity": round(100 * citation_validity, 1), "claim_source_match": round(100 * claim_source_match, 1),
+            "false_warnings": round(100 * false_warnings, 1),
             "duplicate_sources": round(100 * duplicate_sources, 1), "unmarked_unverified": round(100 * unmarked_unverified, 1),
             "internal_consistency": round(100 * internal_consistency, 1), "structure": round(100 * structure, 1), "failed": False, "detail": detail}

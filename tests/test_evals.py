@@ -52,6 +52,14 @@ class ScoreTests(unittest.TestCase):
         result = score.score(GOOD.replace("12 buildings [S1]", "12 buildings [S1][S2]"), "en", "q?", SOURCES)
         self.assertLess(result["duplicate_sources"], 100)
 
+    def test_warning_on_supported_sentence_is_false_warning(self):
+        warned = GOOD.replace("12 buildings [S1]", "12 buildings (source mismatch) [S1]")
+        result = score.score(warned, "en", "q?", SOURCES)
+        self.assertLess(result["false_warnings"], 100)
+        self.assertEqual(100.0, result["claim_source_match"])   # 경고가 붙어 일치 항목은 통과로 센다(그래서 따로 잰다)
+        wrong = GOOD.replace("12 buildings [S1]", "15 buildings (source mismatch) [S1]")
+        self.assertEqual(100.0, score.score(wrong, "en", "q?", SOURCES)["false_warnings"])
+
     def test_empty_section_does_not_count_as_structure(self):
         result = score.score(GOOD.replace("- Only one season was measured (judgment)\n", ""), "en", "q?", SOURCES)
         self.assertLess(result["structure"], 100)
