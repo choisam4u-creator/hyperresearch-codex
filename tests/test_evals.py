@@ -72,6 +72,15 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("주변에는 120,000가구가 산다 [S1].", ko, "ko"))
         self.assertTrue(score.supported("정비 사업에 420억 원이 투입됐다 [S1].", ko, "ko"))
 
+    def test_abbreviated_and_compound_numbers_are_compared_by_value(self):
+        en = "The federal share was 3.8 million dollars. The harbor had 12,000 vessel calls."
+        ko = "\n# replay x S1\n\n지원 사업 예산은 1.2억 원이었다. 도서 구입비로 4천5백만 원이 쓰였다."
+        self.assertTrue(score.supported("The federal share was $3.8M [S1].", en, "en"))
+        self.assertTrue(score.supported("The harbor had 12k vessel calls [S1].", en, "en"))
+        self.assertFalse(score.supported("The federal share was $3.8bn [S1].", en, "en"))
+        self.assertTrue(score.supported("지원 사업 예산은 1억 2천만 원이었다 [S1].", ko, "ko"))   # 머리 줄의 S1을 토막 숫자 1로 찾지 않는다
+        self.assertFalse(score.supported("도서 구입비로 5천4백만 원이 쓰였다 [S1].", ko, "ko"))
+
     def test_causal_overclaim_against_disclaimer_is_mismatch(self):
         src = {"S1": {"text": "Ridership rose 12 percent. The report cannot establish that the pass caused the rise.", "cluster": "S1"}}
         self.assertFalse(score.supported("The pass caused ridership to rise 12 percent [S1].", src["S1"]["text"], "en"))

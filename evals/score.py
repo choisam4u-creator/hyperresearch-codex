@@ -341,19 +341,56 @@ def magnitude_gap(a: str, b: str) -> bool:
 # 자릿수 낱말(2026-10-07 기준 강화, QUALITY-LOG 참조). "420억 원"을 "420만 원"으로, "4.2 million"을 "4.2 billion"으로
 # 바꿔도 숫자 글자는 같아 옛 기준이 통과시켰다. 값은 숫자×자릿수로 비교하고, 같은 값을 다르게 쓴 것("1.6 million"↔
 # "1,600,000", "12만"↔"120,000")은 같은 수치로 본다.
+# 2026-10-07 2회차: 약어(M·bn·mn·k, 통화 기호 뒤 m·b)와 한국어 복합 표기("1억 2천만", "4천5백만", "3만 5천")도 값으로 읽는다.
+# 바꾼 약어("4.6 million"→"$4.6bn")는 불일치, 같은 값("$3.8M"↔"3.8 million", "1억 2천만"↔"1.2억")은 일치.
 _MAG_WORDS = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
-              "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
-_MAG = re.compile(r"\s*(십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에(?![가-힣]))|\s+(thousand|million|billion|trillion)(?![A-Za-z])", re.I)
+              "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12,
+              "k": 10**3, "m": 10**6, "mn": 10**6, "mln": 10**6, "b": 10**9, "bn": 10**9, "tn": 10**12}
+_MAG = re.compile(r"\s*(십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에(?![가-힣]))|\s+(thousand|million|billion|trillion)(?![A-Za-z])|"
+                  r"(\s?(?:bn|mn|mln|tn)|[KMBk])(?![A-Za-z])", re.I)
+# 한국어 복합 표기: 숫자+자릿수 토막이 둘 이상 이어진 것. 큰 자릿수(조·억·만)는 내림차순으로만 잇는다.
+_KO_COMPOUND = re.compile(r"\d[\d,]*(?:\.\d+)?(?:[천백십](?:\d[\d,]*(?:\.\d+)?[천백십])*)?[조억만]?"
+                          r"(?:\s?\d[\d,]*(?:\.\d+)?(?:[천백십](?:\d[\d,]*(?:\.\d+)?[천백십])*)?[조억만]?)*")
+
+
+def _ko_compound_value(raw: str) -> float | None:
+    """"1억 2천만"·"4천5백만"·"3만 5천" 같은 복합 표기의 값. 토막이 하나뿐이거나 순서가 맞지 않으면 None."""
+    parts = re.findall(r"(\d[\d,]*(?:\.\d+)?)([천백십]?)|([조억만])", raw.replace(" ", ""))
+    total, group, last_big, pieces = 0.0, 0.0, 10**13, 0
+    for num, small, big in parts:
+        if big:
+            if group == 0 or _MAG_WORDS[big] >= last_big:
+                return None
+            total, group, last_big = total + group * _MAG_WORDS[big], 0.0, _MAG_WORDS[big]
+            pieces += 1
+        else:
+            group += float(num.replace(",", "")) * ({"천": 1000, "백": 100, "십": 10}[small] if small else 1)
+            pieces += 1 if small else 0
+    return round(total + group, 6) if pieces >= 2 else None
 
 
 def _scaled(text: str) -> list[tuple[str, int, float]]:
-    """수치마다 (숫자 글자, 자릿수 배율, 값)."""
-    out = []
-    for m in _NUM.finditer(text):
+    """수치마다 (숫자 글자, 자릿수 배율, 값). 한국어 복합 표기는 (표기 전체, 1, 값) 하나로 센다."""
+    out, pos = [], 0
+    while (m := _NUM.search(text, pos)):
+        compound = _KO_COMPOUND.match(text, m.start())
+        value = _ko_compound_value(compound.group(0)) if compound and not re.match(r"큼|에(?![가-힣])", text[compound.end():]) else None
+        if value is not None:
+            out.append((compound.group(0).replace(" ", ""), 1, value))
+            pos = compound.end()
+            continue
         mag = _MAG.match(text, m.end())
-        factor = _MAG_WORDS[(mag.group(1) or mag.group(2)).lower()] if mag else 1
+        word = (mag.group(1) or mag.group(2) or mag.group(3)).strip() if mag else ""
+        if word in ("K", "k", "M", "B") or word.lower() in ("bn", "mn", "mln", "tn"):
+            word = word.lower()
+        elif word and word not in _MAG_WORDS and word.lower() not in _MAG_WORDS:
+            word = ""
+        if not word and re.search(r"[$€£₩]\s?$", text[:m.start()]) and re.match(r"[mb](?![A-Za-z])", text[m.end():]):
+            word = text[m.end()]
+        factor = _MAG_WORDS[word.lower()] if word else 1
         digits = m.group(0).replace(",", "")
         out.append((digits, factor, round(float(digits) * factor, 6)))
+        pos = m.end()
     return out
 
 
@@ -375,7 +412,8 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
     주장과 가장 가까운 원문 문장(숫자가 있으면 그 숫자가 든 문장)과 증감 방향이 반대면 안 된다."""
     plain = _plain(sentence, lang)
     source_numbers = set(_numbers(source_text))
-    numbers = _numbers(plain)
+    # 문맥 대조에 쓰는 숫자 글자. 한국어 복합 표기("1억 2천만")는 값으로 이미 대조했으므로 토막 숫자(1·2)로 원문 문장을 찾지 않는다.
+    numbers = [n for n, _, _ in _scaled(plain) if re.fullmatch(r"[\d.]+", n)]
     source_values = {v for _, _, v in _scaled(source_text)}
     if any(n not in source_numbers and v not in source_values for n, _, v in _scaled(plain)):
         return False
