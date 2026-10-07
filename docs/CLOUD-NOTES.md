@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-07 (품질 회차)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 20 case·강화 기준): **99.1 → 99.9**. 주장-출처 일치 94.9→99.4. (18 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-sewer-upgrade`, `en-bus-grant`) — 숫자는 같고 자릿수 낱말만 바꿈("420억 원"→"420만 원", "4.2 million"→"4.2 billion"). 점수기가 수치를 숫자×자릿수로 비교(같은 값의 다른 표기는 인정 — 넓히는 쪽이라 이유를 QUALITY-LOG에 적음, 기존 18 case 점수 변화 없음).
+  - 개선: `verification._quantity_values`가 천·만·억·조·thousand·million·billion·trillion을 값에 곱한다. 바꿔치기 4문장에 `(출처 불일치)`, 옛 코드가 맞는 환산 2문장("120,000가구", "1,600,000 trips")에 붙이던 오표시 제거. 기존 18 case 최종 보고서 diff 없음.
+  - 백로그 1건: ko-cooling-pilot 남은 감점 검토 → 원문에 없는 작성자 추론을 인용만 달아 쓴 것이라 감점이 맞음, 기준 유지. 새 백로그 1건(약어 M·bn·복합 표기·'만' 조사 오인 실측). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 560개 통과(시스템 Python 3.11, 새 시험 3개, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)이 아직 열려 있어 같은 브랜치에 이어 푸시하고 PR 본문에 이번 회차 표를 더했다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 약어(M·bn·k)와 "1억 2천만"↔"1.2억" 같은 복합 표기 환산은 보지 않는다. '만'이 조사로 쓰인 드문 경우를 자릿수로 읽을 수 있다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "노후 하수관 정비 사업비는 얼마였나?"   # report_marks.json의 mismatch 중 금액 문장이 자릿수(억·만)를 원문대로 썼는지 눈으로 판정
+  ```
+
 ## 2026-10-06 (품질 회차 2)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 18 case·강화 기준): **99.3 → 99.9**. 주장-출처 일치 97.0→99.3, 본문 내부 일관성 98.6→100. (15 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
