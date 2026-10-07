@@ -337,6 +337,36 @@ def magnitude_gap(a: str, b: str) -> bool:
     return lo > 0 and hi >= 2 * lo
 
 
+# 자릿수 낱말(2026-10-07 기준 강화, QUALITY-LOG 참조). "420억 원"을 "420만 원"으로, "4.2 million"을 "4.2 billion"으로
+# 바꿔도 숫자 글자는 같아 옛 기준이 통과시켰다. 값은 숫자×자릿수로 비교하고, 같은 값을 다르게 쓴 것("1.6 million"↔
+# "1,600,000", "12만"↔"120,000")은 같은 수치로 본다.
+_MAG_WORDS = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
+              "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
+_MAG = re.compile(r"\s*(십만|백만|천만|십억|백억|천억|천|만|억|조)(?!큼|에\b)|\s+(thousand|million|billion|trillion)\b", re.I)
+
+
+def _scaled(text: str) -> list[tuple[str, int, float]]:
+    """수치마다 (숫자 글자, 자릿수 배율, 값)."""
+    out = []
+    for m in _NUM.finditer(text):
+        mag = _MAG.match(text, m.end())
+        factor = _MAG_WORDS[(mag.group(1) or mag.group(2)).lower()] if mag else 1
+        digits = m.group(0).replace(",", "")
+        out.append((digits, factor, round(float(digits) * factor, 6)))
+    return out
+
+
+def magnitude_swapped(plain: str, source_text: str) -> bool:
+    """주장 수치의 숫자 글자는 원문에 있는데 자릿수 낱말이 원문의 같은 숫자 자리마다 다르고, 같은 값도 원문에 없으면 True."""
+    held_all = _scaled(source_text)
+    values = {v for _, _, v in held_all}
+    for n, factor, value in _scaled(plain):
+        held = [f for m, f, _ in held_all if m == n]
+        if held and all(f != factor for f in held) and value not in values:
+            return True
+    return False
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -345,7 +375,11 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
     plain = _plain(sentence, lang)
     source_numbers = set(_numbers(source_text))
     numbers = _numbers(plain)
-    if any(n not in source_numbers for n in numbers):
+    source_values = {v for _, _, v in _scaled(source_text)}
+    if any(n not in source_numbers and v not in source_values for n, _, v in _scaled(plain)):
+        return False
+    # 2026-10-07 기준 강화: 숫자는 같아도 자릿수 낱말(만·억·million·billion)이 원문과 다르면 불일치.
+    if magnitude_swapped(plain, source_text):
         return False
     grams = _bigrams(plain)
     if grams and len(grams & _bigrams(source_text)) / len(grams) < 0.5:
