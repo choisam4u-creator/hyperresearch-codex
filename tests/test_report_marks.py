@@ -402,6 +402,25 @@ class PlanScopeTests(unittest.TestCase):
             text, _ = self.mark(body, src, lang)
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
         self.assertEqual(text, self.mark(text.split("\n", 1)[1].strip(), src)[0])   # 다시 돌려도 같다
+    def test_upper_bound_or_range_endpoint_stated_as_value_is_marked(self):
+        # 2026-10-08 품질 회차: 원문의 상한·범위 끝값을 대표값처럼 쓰면 '(출처 불일치)'.
+        src = {"S1": "공사 뒤 난방비는 건물별로 최대 30% 줄었다. 단열 개선은 에너지 사용량을 10~20% 줄인다. "
+                     "태양광 설치율은 10%에서 18%로 늘었다.",
+               "S2": "Traffic fell by up to 25 percent at peak hours. Pollution fell by between 8 and 12 percent. "
+                     "Daily cyclists rose from 9,000 to 14,000."}
+        for body, lang in (("난방비는 30% 줄었다 [S1].", "ko"), ("에너지 사용량을 20% 줄인다 [S1].", "ko"),
+                           ("Traffic fell by 25 percent [S2].", "en"), ("Pollution fell by 12 percent [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["bound_conflict"]), body)
+        for body, lang in (("난방비는 최대 30% 줄었다 [S1].", "ko"), ("에너지 사용량을 10~20% 줄인다 [S1].", "ko"),
+                           ("태양광 설치율은 18%로 늘었다 [S1].", "ko"), ("Traffic fell by up to 25 percent [S2].", "en"),
+                           ("Pollution fell by 8 to 12 percent [S2].", "en"), ("Daily cyclists rose to 14,000 [S2].", "en"),
+                           ("Daily cyclists rose from 9,000 [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual([], changes["bound_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

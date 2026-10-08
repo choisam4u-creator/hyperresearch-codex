@@ -520,7 +520,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - plan: 원문이 계획·목표·전망으로만 말한 수치를 유보 없이 말한다(계획을 실적처럼).
     - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다.
     - year: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 말한다(원문 자리마다 연도가 분명할 때만).
-    - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다."""
+    - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다.
+    - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -562,6 +563,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("year")
     if _percent_point_conflict(plain, sents):
         found.append("unit")
+    if _bound_overclaim(plain, sents):
+        found.append("bound")
     return found
 
 
@@ -795,6 +798,40 @@ def _percent_point_conflict(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 상한·범위 끝값의 대표값화: 원문이 "최대 30%"·"up to 25 percent"처럼 상한으로만, "10~20%"·"between 8 and 12 percent"처럼
+# 범위의 끝값으로만 말한 수치를 주장이 상한·범위 표시 없이 쓰는지 본다(2026-10-08 품질 회차). "from 9,000 to 14,000"·
+# "10%에서 18%로"는 변화 전후 값이라 범위로 보지 않는다.
+_BOUND_LEAD = re.compile(r"\b(?:up to|as (?:much|many|high|low|few|little) as|at (?:most|least)|a (?:maximum|minimum) of|"
+                         r"no (?:more|less|fewer) than|more than|less than|fewer than|over|under|peak(?:ed|ing)? (?:at|of)|"
+                         r"between|range[sd]? from|ranging from)\s*$|(?:최대|최고|최소|많게는|적게는|최저)\s*$", re.I)
+_BOUND_TAIL = re.compile(r"\s*(?:이상|이하|미만|초과|까지|이내|안쪽)")
+_RANGE_BEFORE = re.compile(r"\d[\d,.]*\s*(?:%|percent|퍼센트|명|원|가구|곳)?\s*(?:~|–|—|-|\bto\b|\band\b)\s*$", re.I)
+_RANGE_AFTER = re.compile(r"\s*(?:~|–|—|-|\bto\b)\s*\d", re.I)
+_CHANGE_FROM = re.compile(r"\bfrom\s*$", re.I)
+
+
+def _bounded_value(text: str, value: dict) -> bool:
+    """수치가 상한·하한 낱말 뒤에 있거나 범위의 끝값이면 True("from X to Y"의 변화 전후 값은 뺀다)."""
+    before = text[max(0, value["start"] - 40):value["start"]]
+    if _BOUND_LEAD.search(before) or _BOUND_TAIL.match(text, value["end"]):
+        return True
+    prev = _RANGE_BEFORE.search(before)
+    if prev and not _CHANGE_FROM.search(before[:prev.start()]):
+        return True
+    return bool(_RANGE_AFTER.match(text, value["end"])) and not _CHANGE_FROM.search(before)
+
+
+def _bound_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서는 매번 상한·범위 끝값으로만 나오는데, 주장은 상한·범위 표시 없이 말하면 True."""
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        if value.get("unsupported_unit") or _is_date_number(value, plain) or _bounded_value(plain, value):
+            continue
+        spots = _same_value_spots(sents, value)
+        if spots and all(_bounded_value(s, c) for s, c in spots):
+            return True
+    return False
+
+
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
 
@@ -897,16 +934,17 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 없는 문장(판단 포함)이 같은 대상의 인용 문장과 반대 방향이거나 출처 수치를 다른 기간으로 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
     - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
-                                     "unit_conflict": [], "estimate_dropped": []}
+                                     "unit_conflict": [], "bound_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
