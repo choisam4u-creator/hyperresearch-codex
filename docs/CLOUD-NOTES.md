@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-08 (품질 회차)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 24 case·강화 기준): **99.6 → 99.9**. 주장-출처 일치 97.2→99.5. (22 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-insulation-retrofit`, `en-congestion-charge`) — 원문의 상한("최대 30%"·"up to 25 percent")과 범위 끝값("10~20%"·"between 8 and 12 percent")을 대표값처럼 씀. 변화 전후 값("from 9,000 to 14,000")은 맞는 문장으로 넣어 오탐 확인. 점수기 `bound_dropped` 추가(기존 22 case 오탐 0).
+  - 개선: `verification._bound_overclaim` → 인용 문장에 `(출처 불일치)`, `report_marks.json`의 `bound_conflict`. 기존 22 case 최종 보고서 diff 없음.
+  - 백로그 1건: '잘못 붙은 경고 없음'을 인용 없는·판단 문장의 `(출처 불일치)`·`(출처 없음)`까지 확장(분모를 절 문장 전체로). 새 백로그 2건(상한 판정 오표시율 실측, 하한 표시 강도). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 566개 통과(시스템 Python 3.11, 새 시험 2개 — 둘 다 옛 코드·옛 점수기에서 실패 확인, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)이 아직 열려 있어 같은 브랜치에 이어 푸시하고 PR 본문에 이번 회차 표를 더했다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 상한·범위 판정은 낱말·기호 근사(`over`·`under`·`-`)다. 하한을 뗀 과소 진술도 강한 표시를 받는다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "혼잡통행료 도입 뒤 도심 교통량과 대기오염은 얼마나 줄었나?"   # report_marks.json의 bound_conflict 문장이 실제로 원문 상한·범위 끝값인지 눈으로 판정
+  ```
+
 ## 2026-10-07 (품질 회차 2)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 22 case·7항목 기준): **99.3 → 99.9**. 새 항목 잘못 붙은 경고 없음 95.5→100. (20 case·6항목 이전 끝 99.9, 새 항목만 더하면 99.9, 새 case를 옛 표기 점수기로 재면 99.8 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
