@@ -14,6 +14,7 @@
 - Compare numbers with their magnitude word (천·만·억·조, thousand·million·billion·trillion): mark `(source mismatch)` when a cited sentence keeps the digits but changes the magnitude (`420억 원` → `420만 원`, `4.2 million` → `4.2 billion`), and stop flagging the same value written another way (`1.6 million` ↔ `1,600,000`, `12만` ↔ `120,000`).
 - Read magnitude abbreviations (`$3.8M`, `2.5bn`, `12k`; lowercase `m`/`b` only right after a currency sign) and Korean compound numbers (`1억 2천만`, `4천5백만`, `3만 5천`) as single values, so correct conversions are no longer flagged `(source mismatch)` and changed magnitudes are reported with the exact value. The evals score gains a "false warnings" metric that counts warnings placed on sentences the scorer finds supported.
 - Mark `(source mismatch)` when a cited sentence states a number the source gives only as an upper or lower bound (`up to 25 percent`, `최대 30%`) or as a range endpoint (`10~20%`, `between 8 and 12 percent`) without the bound; before/after values (`from 9,000 to 14,000`) are not ranges. Recorded as `bound_conflict` in `report_marks.json`.
+- Mark `(source mismatch)` when a cited sentence moves a number to a different subject listed alongside it in the source (`night bus riders rose 18%, last-train riders 4%` → `last-train riders rose 18%`); recorded as `subject_conflict`. Lower bounds after a counter word (`300가구 이상`) are now read as bounds too.
 - Add the `evals/` fixed-case quality score (`python -m evals.run`) to CI. Fixed-case scores are not a general quality claim.
 
 ## 0.5.0 - 2026-09-26

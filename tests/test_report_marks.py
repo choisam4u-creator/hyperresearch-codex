@@ -421,6 +421,20 @@ class PlanScopeTests(unittest.TestCase):
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
             self.assertEqual([], changes["bound_conflict"], body)
 
+    def test_lower_bound_dropped_is_marked_like_upper_bound(self):
+        # 2026-10-08 2회차 검토: 하한("최소"·"이상"·"at least"·"more than")을 뗀 수치도 정확한 값처럼 읽히므로 상한과 같은
+        # '(출처 불일치)'를 붙인다. 세는 말 뒤 하한("300가구 이상")도 본다.
+        src = {"S1": "행사에는 최소 2,000명이 참여했다. 신청 가구는 300가구 이상이었다. At least 1,500 people joined. "
+                     "More than 40 percent of riders were students."}
+        for body, lang in (("행사에는 2,000명이 참여했다 [S1].", "ko"), ("신청 가구는 300가구였다 [S1].", "ko"),
+                           ("1,500 people joined [S1].", "en"), ("40 percent of riders were students [S1].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["bound_conflict"]), body)
+        for body, lang in (("행사에는 최소 2,000명이 참여했다 [S1].", "ko"), ("신청 가구는 300가구 이상이었다 [S1].", "ko"),
+                           ("At least 1,500 people joined [S1].", "en"), ("More than 40 percent of riders were students [S1].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["bound_conflict"], body)
+
     def test_value_moved_to_parallel_subject_is_marked(self):
         # 2026-10-08 2회차 품질 회차: 원문 한 대상의 수치를 나란히 나오는 다른 대상의 값으로 옮기면 '(출처 불일치)'.
         src = {"S1": "1년 동안 심야버스 이용객은 18% 늘었고 지하철 막차 이용객은 4% 늘었다. 시범 지역 주민의 30%가 버스를 탄다. "

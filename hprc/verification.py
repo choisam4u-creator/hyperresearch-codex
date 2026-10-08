@@ -807,7 +807,8 @@ def _percent_point_conflict(plain: str, sents: list[str]) -> bool:
 _BOUND_LEAD = re.compile(r"\b(?:up to|as (?:much|many|high|low|few|little) as|at (?:most|least)|a (?:maximum|minimum) of|"
                          r"no (?:more|less|fewer) than|more than|less than|fewer than|over|under|peak(?:ed|ing)? (?:at|of)|"
                          r"between|range[sd]? from|ranging from)\s*$|(?:최대|최고|최소|많게는|적게는|최저)\s*$", re.I)
-_BOUND_TAIL = re.compile(r"\s*(?:이상|이하|미만|초과|까지|이내|안쪽)")
+# 단위로 읽지 않는 세는 말("300가구 이상")을 건너 하한·상한 낱말을 본다(2026-10-08 2회차 — 점수기는 이미 보던 자리).
+_BOUND_TAIL = re.compile(r"\s*(?:가구|곳|명|원|개|건|대|회)?\s*(?:이상|이하|미만|초과|까지|이내|안쪽)")
 _RANGE_BEFORE = re.compile(r"\d[\d,.]*\s*(?:%|percent|퍼센트|명|원|가구|곳)?\s*(?:~|–|—|-|\bto\b|\band\b)\s*$", re.I)
 _RANGE_AFTER = re.compile(r"\s*(?:~|–|—|-|\bto\b)\s*\d", re.I)
 _CHANGE_FROM = re.compile(r"\bfrom\s*$", re.I)
