@@ -1,0 +1,22 @@
+{
+ "id": "en-congestion-charge",
+ "lang": "en",
+ "baseline_time": "2026-09-30",
+ "prompt": "How much did the congestion charge reduce traffic and pollution in the central zone?",
+ "flaws": [
+  "upper_bound_stated_as_typical",
+  "range_endpoint_stated_as_value",
+  "change_from_to_endpoint_ok"
+ ],
+ "sources": {
+  "S1": "According to the transport department, the congestion charge cut weekday traffic in the central zone by up to 25 percent at peak hours. Bus journey times in the zone fell by 6 percent.",
+  "S2": "A review of 40 monitoring stations found that air pollution near zone boundaries fell by between 8 and 12 percent in the first year. Daily cyclists entering the zone rose from 9,000 to 14,000."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How much did the congestion charge reduce traffic and pollution in the central zone?\n\n## Answer\nThe congestion charge cut weekday traffic in the central zone by 25 percent [S1]. Bus journey times in the zone fell by 6 percent [S1].\n\n## Evidence\n- Air pollution near zone boundaries fell by 12 percent in the first year [S2].\n- The transport department says the charge cut weekday traffic in the central zone by up to 25 percent at peak hours [S1].\n- A review found that air pollution near zone boundaries fell by between 8 and 12 percent in the first year [S2].\n- Daily cyclists entering the zone rose to 14,000 [S2].\n\n## Counter-evidence and limits\n- The review covered 40 monitoring stations [S2].\n- Effects outside peak hours are not reported by these sources (judgment)\n\n## Next actions\n- Ask the transport department for the average reduction across all hours (judgment)\n\n## Sources\n- [S1] Transport department congestion charge results\n- [S2] Air quality and cycling review\n"
+   }
+  ]
+ }
+}

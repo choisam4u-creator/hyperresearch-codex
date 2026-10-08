@@ -235,6 +235,44 @@ def estimate_dropped(plain: str, source_text: str) -> bool:
     return False
 
 
+# 상한·범위 끝값의 대표값화(2026-10-08 기준 강화, QUALITY-LOG 참조). 원문이 "최대 30%"·"up to 25 percent"처럼 상한으로만,
+# 또는 "10~20%"·"between 8 and 12 percent"처럼 범위의 끝값으로만 말한 수치를 주장이 상한·범위 표시 없이 쓰면 불일치.
+# "from 9,000 to 14,000"·"10%에서 18%로"는 변화 전후 값이라 범위로 보지 않는다.
+_BOUND = re.compile(r"\b(?:up to|as (?:much|many|high|low|few|little) as|at (?:most|least)|a (?:maximum|minimum) of|"
+                    r"no (?:more|less|fewer) than|more than|less than|fewer than|over|under|peak(?:ed|ing)? (?:at|of)|"
+                    r"between|range[sd]? from|ranging from)\s*$|(?:최대|최고|최소|많게는|적게는|최저)\s*$", re.I)
+_RANGE_TAIL = re.compile(r"\s*(?:%|percent|퍼센트|명|원|가구|곳)?\s*(?:~|–|—|-|\bto\b|\band\b)\s*$", re.I)
+_RANGE_HEAD = re.compile(r"\s*(?:%|percent|퍼센트|명|원|가구|곳)?\s*(?:~|–|—|-|\bto\b)\s*\d", re.I)
+_BOUND_AFTER = re.compile(r"\s*(?:%|퍼센트|명|원|가구|곳)?\s*(?:이상|이하|미만|초과|까지|이내|안쪽)", re.I)
+
+
+def _bounded_at(text: str, start: int, end: int) -> bool:
+    """수치가 상한·하한 낱말 뒤에 있거나, 범위("10~20%", "8 and 12", "between …")의 끝값이면 True. "from X to Y"는 변화라 뺀다."""
+    before = text[max(0, start - 40):start]
+    if _BOUND.search(before) or _BOUND_AFTER.match(text, end):
+        return True
+    prev = re.search(r"(\d[\d,.]*)" + _RANGE_TAIL.pattern, before, re.I)
+    if prev and not re.search(r"\bfrom\s*$", before[:prev.start()], re.I):
+        return True
+    return bool(_RANGE_HEAD.match(text, end)) and not re.search(r"\bfrom\s*$", before, re.I)
+
+
+def bound_dropped(plain: str, source_text: str) -> bool:
+    """주장 수치가 원문에서는 매번 상한·범위 끝값으로만 나오는데 주장은 그 수치를 상한·범위 표시 없이 말하면 True."""
+    dates = [m.span() for m in _DATE_NUM.finditer(plain)]
+    sents = _source_sentences(source_text)
+    for m in _NUM.finditer(plain):
+        n = m.group(0).replace(",", "")
+        if any(a <= m.start() < b for a, b in dates) or re.fullmatch(r"(?:19|20)\d\d", n):
+            continue
+        if _bounded_at(plain, m.start(), m.end()):
+            continue
+        held = [(s, x) for s in sents for x in _NUM.finditer(s) if x.group(0).replace(",", "") == n]
+        if held and all(_bounded_at(s, x.start(), x.end()) for s, x in held):
+            return True
+    return False
+
+
 def scope_widened(plain: str, source_text: str) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장은 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
     if not _WIDE.search(plain):
@@ -444,6 +482,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-06 2회차 기준 강화: 원문 수치를 다른 기준 연도의 값으로 옮기거나, 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 불일치.
     if year_moved(plain, source_text) or percent_point_swapped(plain, source_text):
+        return False
+    # 2026-10-08 기준 강화: 원문이 상한·범위 끝값으로만 말한 수치를 상한·범위 표시 없이 대표값처럼 말하면 불일치.
+    if bound_dropped(plain, source_text):
         return False
     return True
 
