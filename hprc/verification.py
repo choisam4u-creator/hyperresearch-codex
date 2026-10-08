@@ -521,7 +521,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다.
     - year: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 말한다(원문 자리마다 연도가 분명할 때만).
     - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다.
-    - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다."""
+    - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다.
+    - subject: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -565,6 +566,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("unit")
     if _bound_overclaim(plain, sents):
         found.append("bound")
+    if _subject_swap(plain, sents):
+        found.append("subject")
     return found
 
 
@@ -832,6 +835,70 @@ def _bound_overclaim(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 대상 바꿈: 원문이 "심야버스 이용객 18%, 지하철 막차 이용객 4%"처럼 같은 종류 수치를 여러 대상에 나란히 말할 때, 주장이 한
+# 대상의 수치를 다른 대상의 값으로 옮겨 쓰는지 본다(2026-10-08 2회차 품질 회차). 값은 원문에 있으므로 수치 대조를 통과하고, 문맥 낱말도
+# 같은 문장 안에서 겹쳐 지금까지는 표시되지 않았다. 수치의 대상 낱말은 그 수치가 든 명제에서 앞 수치 뒤부터 그 수치까지로 근사한다
+# (한국어·영어 모두 대상이 수치 앞에 온다). 앞 수치와 변화·범위로 이어진 수치("10%에서 18%로", "지난해 18분에서 올해 11분으로")는
+# 그 앞까지 거슬러 올라간다.
+_LABEL_STOP = {"the", "and", "for", "was", "are", "its", "has", "had", "not", "but", "all", "per", "new", "one", "two", "who",
+               "percent", "에서", "에는", "에도", "으로", "부터", "까지", "에게"}
+_LINKED_VALUE = re.compile(r"^\s*(?:%|퍼센트|percent|[가-힣]{1,2})?(?:\s*[가-힣A-Za-z]{1,4}){0,2}\s*(?:에서|부터|~|–|-|\bto\b|\band\b)"
+                           r"(?:\s+[가-힣A-Za-z]{1,4}){0,2}\s*$", re.I)
+
+
+def _subject_terms(text: str, value: dict, values: list[dict]) -> set[str]:
+    """수치 앞, 같은 명제 안에서 앞 수치(와 거기 붙은 단위·조사) 뒤부터 수치까지의 낱말."""
+    start, clause = _clause_around(text, value)
+    left = value["start"] - start
+    a = max((m.end() for m in _PROPOSITION_BREAK.finditer(clause, 0, left)), default=0) + start
+    cut = value["start"]
+    for prev in sorted((v for v in values if a <= v["start"] and v["end"] <= cut), key=lambda v: v["start"], reverse=True):
+        if prev["end"] > cut:
+            continue
+        if not _LINKED_VALUE.match(text[prev["end"]:cut]):
+            a = prev["end"] + len(re.match(r"\S*", text[prev["end"]:cut]).group(0))
+            break
+        cut = prev["start"]
+    head = _UP_MARK.sub(" ", _DOWN_MARK.sub(" ", text[a:cut]))
+    english = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", head)} - _EN_CONTEXT_STOP - _CONTEXT_STOP - _LABEL_STOP
+    return english | ({w[:2] for w in re.findall(r"[가-힣]{2,}", head)} - _LABEL_STOP)
+
+
+def _value_kind(value: dict, text: str) -> tuple[str, bool]:
+    """같은 종류 수치: 차원이 같고 퍼센트포인트 여부도 같다."""
+    return value["dimension"], bool(_PERCENT_POINT.search(value["raw"]) or _PERCENT_POINT.match(text, value["end"]))
+
+
+def _subject_swap(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서 나오는 자리마다, 그 자리의 대상 낱말은 주장에 없고 같은 종류 다른 수치 자리의 대상 낱말이 주장에 더
+    많이 있으면 True(주장이 수치를 원문의 다른 대상으로 옮겨 붙임)."""
+    claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
+    spots = [(s, v, vals) for s in sents
+             for vals in [[v for v in _quantity_values(s, _date_like_spans(s)) if not v.get("unsupported_unit")]] for v in vals]
+    for value in claim_values:
+        if _is_date_number(value, plain):
+            continue
+        mine = _subject_terms(plain, value, claim_values)
+        kind = _value_kind(value, plain)
+        held = [(s, v, vals) for s, v, vals in spots if v["dimension"] == value["dimension"] and abs(v["value"]) == abs(value["value"])]
+        if not mine or not held or any(_scripts(s) != _scripts(plain) for s, _, _ in held):
+            continue
+
+        def moved(s: str, v: dict, vals: list[dict]) -> bool:
+            own = _subject_terms(s, v, vals)
+            for s2, w, vals2 in spots:
+                if abs(w["value"]) == abs(value["value"]) or _value_kind(w, s2) != kind or _is_date_number(w, s2):
+                    continue
+                other = _subject_terms(s2, w, vals2)
+                toward, away = mine & (other - own), mine & (own - other)
+                if own - other and toward and len(toward) > len(away):
+                    return True
+            return False
+        if all(moved(s, v, vals) for s, v, vals in held):
+            return True
+    return False
+
+
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
 
@@ -935,16 +1002,18 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
     - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
-                                     "unit_conflict": [], "bound_conflict": [], "estimate_dropped": []}
+                                     "unit_conflict": [], "bound_conflict": [], "subject_conflict": [],
+                                     "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}

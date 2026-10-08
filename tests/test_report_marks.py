@@ -421,6 +421,25 @@ class PlanScopeTests(unittest.TestCase):
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
             self.assertEqual([], changes["bound_conflict"], body)
 
+    def test_value_moved_to_parallel_subject_is_marked(self):
+        # 2026-10-08 2회차 품질 회차: 원문 한 대상의 수치를 나란히 나오는 다른 대상의 값으로 옮기면 '(출처 불일치)'.
+        src = {"S1": "1년 동안 심야버스 이용객은 18% 늘었고 지하철 막차 이용객은 4% 늘었다. 시범 지역 주민의 30%가 버스를 탄다. "
+                     "급속 충전기 평균 대기 시간은 지난해 18분에서 올해 11분으로 줄었다. 버스 이용객은 12% 늘었다.",
+               "S2": "Leak repairs reported by customers rose 40 percent, and billing complaints rose 15 percent. "
+                     "Average household water use fell 9 percent, while commercial water use fell 3 percent."}
+        for body, lang in (("1년 동안 지하철 막차 이용객이 18% 늘었다 [S1].", "ko"),
+                           ("Billing complaints rose 40 percent [S2].", "en"), ("Commercial water use fell 9 percent [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, lang in (("1년 동안 심야버스 이용객은 18% 늘었다 [S1].", "ko"), ("지하철 막차 이용객은 4% 늘었다 [S1].", "ko"),
+                           ("시범 지역 버스 이용객이 12% 늘었다 [S1].", "ko"),
+                           ("급속 충전기 평균 대기 시간이 18분에서 11분으로 줄었다 [S1].", "ko"),
+                           ("Leak repairs rose 40 percent [S2].", "en"), ("Household water use fell 9 percent [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
