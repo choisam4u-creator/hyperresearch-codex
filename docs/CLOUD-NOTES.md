@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-08 (품질 회차 2)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 26 case·강화 기준): **99.6 → 99.9**. 주장-출처 일치 97.3→99.5. (24 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-night-bus`, `en-water-meters`) — 원문에 나란히 나오는 두 대상 중 한 대상의 수치를 다른 대상의 값으로 옮김(심야버스 18%→지하철 막차, household 9%→commercial). 점수기 `subject_swapped` 추가(기존 24 case 오탐 0, 처음 오탐 4건은 대상 낱말 근사를 고쳐 없앰).
+  - 개선: `verification._subject_swap` → 인용 문장에 `(출처 불일치)`, `report_marks.json`의 `subject_conflict`. 첫 구현의 오표시 1건(ko-ev-charging "18분에서 11분으로")을 '잘못 붙은 경고 없음' 항목이 잡아 고침. 기존 24 case 최종 보고서 diff 없음.
+  - 백로그 1건: 하한 표시 강도 검토 → 강한 표시 유지, 그 과정에서 세는 말 뒤 하한("300가구 이상")을 코드가 못 읽던 결함 수정. 새 백로그 2건(대상 바꿈 오표시율 실측, 1인당↔총계 바꿈 — 지금 점수기·코드 모두 통과시킴). CHANGELOG `Unreleased` 한 줄.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 569개 통과(시스템 Python 3.11, 새 시험 3개 — 모두 옛 코드·옛 점수기에서 실패 확인, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)에 이어 푸시하고 PR 본문에 이번 회차 표를 더한다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 대상 낱말은 "앞 수치 뒤부터 그 수치까지" 위치 근사라 대상이 수치 뒤에 오거나 생략된 문장, 동의어로 바꾼 대상은 놓친다.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "심야버스 노선 확대 뒤 심야 교통 이용과 시민 만족도는 어떻게 바뀌었나?"   # report_marks.json의 subject_conflict 문장이 실제로 다른 대상의 수치인지 눈으로 판정
+  ```
+
 ## 2026-10-08 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 24 case·강화 기준): **99.6 → 99.9**. 주장-출처 일치 97.2→99.5. (22 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
