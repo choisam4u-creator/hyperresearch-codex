@@ -156,6 +156,17 @@ class ScoreTests(unittest.TestCase):
         self.assertFalse(score.supported("Monthly bills fell by 12 percentage points [S1].", text, "en"))
         self.assertTrue(score.supported("Monthly bills fell by 12 percent [S1].", text, "en"))
 
+    def test_value_moved_to_parallel_subject_is_mismatch(self):
+        # 2026-10-08 2회차 기준 강화: 같은 종류 수치가 나란히 나오는 원문에서 한 대상의 수치를 다른 대상의 값으로 옮기면 불일치.
+        ko = "1년 동안 심야버스 이용객은 18% 늘었고 지하철 막차 이용객은 4% 늘었다. 버스 이용객은 12% 늘었다. 시범 지역 주민의 30%가 버스를 탄다."
+        en = "Average household water use fell 9 percent, while commercial water use fell 3 percent. Daily cyclists rose from 9,000 last year to 14,000."
+        self.assertFalse(score.supported("1년 동안 지하철 막차 이용객이 18% 늘었다 [S1].", ko, "ko"))
+        self.assertFalse(score.supported("Commercial water use fell 9 percent [S1].", en, "en"))
+        self.assertTrue(score.supported("1년 동안 심야버스 이용객은 18% 늘었다 [S1].", ko, "ko"))
+        self.assertTrue(score.supported("시범 지역 버스 이용객이 12% 늘었다 [S1].", ko, "ko"))   # 다른 대상 낱말을 더해도 제 대상이 있으면 통과
+        self.assertTrue(score.supported("Household water use fell 9 percent [S1].", en, "en"))
+        self.assertTrue(score.supported("Daily cyclists rose to 14,000 [S1].", en, "en"))   # 변화 전후 값은 같은 대상
+
     def test_unacknowledged_source_conflict_lowers_consistency(self):
         src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
                "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}

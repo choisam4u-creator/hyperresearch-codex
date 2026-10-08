@@ -273,6 +273,68 @@ def bound_dropped(plain: str, source_text: str) -> bool:
     return False
 
 
+# 대상 바꿈(2026-10-08 2회차 기준 강화, QUALITY-LOG 참조). 원문이 "심야버스 이용객 18%, 지하철 막차 이용객 4%"처럼 같은 종류
+# 수치를 여러 대상에 나란히 말할 때, 주장이 한 대상의 수치를 다른 대상의 값으로 옮겨 쓰면 불일치. 수치의 대상 낱말은 그 수치가 든
+# 명제에서 앞 수치 뒤부터 그 수치까지(한국어·영어 모두 대상이 수치 앞에 온다)로 근사한다. 영어 낱말은 3글자 이상("bus")을 본다.
+_LABEL_STOP = {"the", "and", "for", "was", "are", "its", "has", "had", "not", "but", "all", "per", "new", "one", "two", "who",
+               "percent", "rose", "fell", "grew", "dropped", "declined", "에서", "에는", "에도", "으로", "부터", "까지", "에게"}
+_KIND = re.compile(r"\s*(%\s?p\b|%\s?포인트|퍼센트\s?포인트|percentage[- ]points?\b|%|퍼센트|percent\b|[가-힣]+|[A-Za-z]+)?", re.I)
+# 다른 낱말에 붙은 숫자("S1")와 한국어 복합 표기의 토막("1억 2천만"의 1·2)은 대상 비교에서 뺀다.
+_QNUM = re.compile(r"(?<![A-Za-z0-9.,])\d[\d,]*(?:\.\d+)?(?![천백십만억조]\s?\d)(?<![천백십만억조]\s\d)")
+# 앞 수치와 변화·범위로 이어진 수치("10%에서 18%로", "from 9,000 to 14,000", "10~20%")는 앞 수치와 같은 대상이다.
+_LINKED = re.compile(r"^\s*(?:%|퍼센트|percent|[가-힣]{1,2})?(?:\s*[가-힣A-Za-z]{1,4}){0,2}\s*(?:에서|부터|~|–|-|\bto\b|\band\b)"
+                     r"(?:\s+[가-힣A-Za-z]{1,4}){0,2}\s*$", re.I)
+
+
+def _label(text: str, start: int, end: int) -> set[str]:
+    a, _ = _proposition_span(text, start, end)
+    cut = start
+    for prev in reversed([x for x in _QNUM.finditer(text, a, start) if x.end() <= start]):
+        if not _LINKED.match(text[prev.end():cut]):
+            a = prev.end()
+            a += len(re.match(r"\S*", text[a:cut]).group(0))   # 앞 수치에 붙은 단위·조사("2025년에는")는 대상이 아니다
+            break
+        cut = prev.start()
+    head = _UP.sub(" ", _DOWN.sub(" ", text[a:cut]))
+    words = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", head)} - _EN_STOP - _LABEL_STOP
+    return words | ({w[:2] for w in re.findall(r"[가-힣]{2,}", head)} - _LABEL_STOP)
+
+
+def _kind(text: str, end: int) -> str:
+    m = _KIND.match(text, end)
+    k = (m.group(1) or "").lower() if m else ""
+    return "pct" if k in ("%", "퍼센트", "percent") else "pp" if k and ("p" in k[1:2] or "포인트" in k or "point" in k) else k[:2]
+
+
+def subject_swapped(plain: str, source_text: str) -> bool:
+    """주장 수치가 원문에서 나오는 자리마다, 그 자리 대상 낱말은 주장에 없고 같은 종류의 다른 수치 자리 대상 낱말이 주장에 더 많으면 True."""
+    dates = [m.span() for m in _DATE_NUM.finditer(plain)]
+    sents = _source_sentences(source_text)
+    spots = [(s, x) for s in sents for x in _QNUM.finditer(s)]
+    for m in _QNUM.finditer(plain):
+        n = m.group(0).replace(",", "")
+        if any(a <= m.start() < b for a, b in dates) or re.fullmatch(r"(?:19|20)\d\d", n):
+            continue
+        mine = _label(plain, m.start(), m.end())
+        kind = _kind(plain, m.end())
+        held = [(s, x) for s, x in spots if x.group(0).replace(",", "") == n]
+        if not mine or not held:
+            continue
+
+        def moved(s: str, x: re.Match) -> bool:
+            own = _label(s, x.start(), x.end())
+            for s2, y in spots:
+                if y.group(0).replace(",", "") == n or _kind(s2, y.end()) != kind:
+                    continue
+                other = _label(s2, y.start(), y.end())
+                if own - other and mine & (other - own) and len(mine & (other - own)) > len(mine & (own - other)):
+                    return True
+            return False
+        if all(moved(s, x) for s, x in held):
+            return True
+    return False
+
+
 def scope_widened(plain: str, source_text: str) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장은 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True."""
     if not _WIDE.search(plain):
@@ -485,6 +547,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-08 기준 강화: 원문이 상한·범위 끝값으로만 말한 수치를 상한·범위 표시 없이 대표값처럼 말하면 불일치.
     if bound_dropped(plain, source_text):
+        return False
+    # 2026-10-08 2회차 기준 강화: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 옮기면 불일치.
+    if subject_swapped(plain, source_text):
         return False
     return True
 
