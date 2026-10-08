@@ -536,8 +536,6 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
             bare = bare.replace(m, "")
         if ids and supported(bare, "\n".join(sources[c]["text"] for c in ids), lang):
             false_warned.append(s)
-    detail["false_warnings"] = false_warned
-    false_warnings = 1 - len(false_warned) / len(cited) if cited else 1.0
 
     rows = CITE.findall(parts.get(src_heading, "")) if src_heading else []
     multi = [s for s in cited if len(set(CITE.findall(s))) >= 2]
@@ -578,6 +576,28 @@ def score(final: str | None, lang: str, prompt: str, sources: dict[str, dict]) -
                 contradictions.append(s)
                 break
     detail["contradictions"] = contradictions
+
+    # 잘못 붙은 경고의 범위 확장(2026-10-08): 인용 없는 문장(판단 포함)의 '(출처 불일치)'는 같은 대상의 인용 문장과 반대
+    # 방향이거나(위 내부 일관성 대조) 출처 수치를 다른 기간으로 말할 때만 맞는 경고다. '(판단)' 문장의 '(출처 없음)'은 어떤 출처에도
+    # 없는 수치를 담거나 기간을 바꿀 때만 맞다. 표시를 떼고 이 대조를 모두 통과하면 잘못 붙은 경고로 센다. 판단 표시 없는
+    # 인용 없는 문장의 '(출처 없음)'은 정의상 맞는 표시라 세지 않는다. 분모는 인용 문장에서 답·근거·한계 절 문장 전체로 넓혔다.
+    for s in claims:
+        if CITE.search(s):
+            continue
+        bare = s.replace(MARKERS[lang][2], "").replace(MARKERS[lang][1], "")
+        plain = _plain(bare, lang)
+        judged_no_source = MARKERS[lang][0] in s and MARKERS[lang][1] in s
+        if MARKERS[lang][2] not in s and not judged_no_source:
+            continue
+        opposite = _direction(plain) and any(
+            MARKERS[lang][2] not in c and _direction(_plain(c, lang)) not in ("", _direction(plain))
+            and len(_terms(bare) & _terms(c)) >= 2 for c in cited)
+        absent = any(n not in all_numbers for n in _numbers(plain))
+        if not (opposite or period_mismatch(plain, all_text) or (judged_no_source and absent)
+                or (MARKERS[lang][2] in s and absent)):
+            false_warned.append(s)
+    detail["false_warnings"] = false_warned
+    false_warnings = 1 - len(false_warned) / len(claims) if claims else 1.0
     # 출처끼리 상충(2026-10-06 추가): 서로 다른 출처만 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상)을 반대 증감 방향으로
     # 말하는데 한계 절의 어느 한 줄도 두 출처를 함께 언급하지 않으면, 독자가 상충을 모른 채 읽는다고 보고 감점한다.
     # 같은 방향이라도 증감 폭(퍼센트 하나씩)이 2배 이상 다르면 같은 상충으로 본다(2026-10-06 2회차 추가).

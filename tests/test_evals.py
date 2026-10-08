@@ -60,6 +60,17 @@ class ScoreTests(unittest.TestCase):
         wrong = GOOD.replace("12 buildings [S1]", "15 buildings (source mismatch) [S1]")
         self.assertEqual(100.0, score.score(wrong, "en", "q?", SOURCES)["false_warnings"])
 
+    def test_warning_on_uncited_sentence_counts_only_when_wrong(self):
+        # 2026-10-08: 인용 없는·판단 문장의 '(출처 불일치)'·'(출처 없음)'도 잘못 붙었는지 잰다.
+        line = "- Only one season was measured (judgment)"
+        for wrong in ("- Only one season was measured (judgment) (source mismatch)",
+                      "- The pilot covered 12 buildings (judgment) (no source)"):
+            self.assertLess(score.score(GOOD.replace(line, wrong), "en", "q?", SOURCES)["false_warnings"], 100, wrong)
+        for right in ("- Peak demand rose at the library (judgment) (source mismatch)",
+                      "- The pilot covered 40 buildings (judgment) (no source)",
+                      "- Only one season was measured (no source)"):
+            self.assertEqual(100.0, score.score(GOOD.replace(line, right), "en", "q?", SOURCES)["false_warnings"], right)
+
     def test_empty_section_does_not_count_as_structure(self):
         result = score.score(GOOD.replace("- Only one season was measured (judgment)\n", ""), "en", "q?", SOURCES)
         self.assertLess(result["structure"], 100)
