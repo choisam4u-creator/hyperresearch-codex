@@ -235,6 +235,7 @@ def _date_like_spans(text: str) -> list[dict]:
 
 
 _YEAR_RANGE_HEAD = re.compile(r"\s*[~–—-]\s*(?:19|20)\d\d\s*년")
+_PER_UNIT_TAIL = re.compile(r"\s?(?:인|명|가구|세대|곳|개소)당")
 
 
 def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
@@ -259,6 +260,8 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
             continue   # "4.2xyz"처럼 영문·숫자가 바로 붙은 수는 수량으로 읽지 않는다
         pos = stop
         raw = text[match.start():stop]
+        if raw == "1" and _PER_UNIT_TAIL.match(text, stop):
+            continue   # "1인당"·"1가구당"의 1은 기준을 말하는 낱말이지 수량이 아니다
         if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
@@ -522,7 +525,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - year: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 말한다(원문 자리마다 연도가 분명할 때만).
     - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다.
     - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다.
-    - subject: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 말한다."""
+    - subject: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 말한다.
+    - basis: 원문이 1인당·가구당 값으로 말한 수치를 총계로(또는 반대로, 1인당↔가구당) 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -568,6 +572,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("bound")
     if _subject_swap(plain, sents):
         found.append("subject")
+    if _basis_conflict(plain, sents):
+        found.append("basis")
     return found
 
 
@@ -638,6 +644,35 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
                 if not c.get("unsupported_unit") and c["dimension"] == value["dimension"]
                 and abs(c["value"]) == abs(value["value"])]
         if held and all(p and not (p & claim_periods) for p in held):
+            return True
+    return False
+
+
+# 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
+_BASIS_WORDS = {"person": r"1인당|인당|1명당|명당|\bper (?:person|capita|head|resident|participant|student|worker|employee|recipient|user)\b|"
+                          r"\beach (?:person|resident|participant|student|recipient)\b",
+                "household": r"가구당|세대당|\bper (?:household|home|family|dwelling)\b|\beach household\b",
+                "total": r"(?:^|(?<=\s))총(?=\s?\d)|총액|총계|합계|누적|통틀어|\bin total\b|\btotal(?:ing|ed|s)?\b|\bcumulative\b|"
+                         r"\baltogether\b|\bcombined\b"}
+
+
+def _value_basis(text: str, value: dict) -> set[str]:
+    start, clause = _clause_around(text, value)
+    found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
+             for name, pattern in _BASIS_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
+    return {min(found)[1]} if found else set()
+
+
+def _basis_conflict(plain: str, sents: list[str]) -> bool:
+    """주장 수치의 기준(1인당·가구당·총계)이 같은 값이 나오는 원문 자리마다의 기준과 하나도 겹치지 않으면 True.
+
+    원문 자리 중 기준을 말하지 않는 곳이 하나라도 있으면 표시하지 않는다(값의 기준을 단정할 수 없음)."""
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        claim_basis = _value_basis(plain, value)
+        if value.get("unsupported_unit") or not claim_basis:
+            continue
+        held = [_value_basis(s, c) for s, c in _same_value_spots(sents, value)]
+        if held and all(b and not (b & claim_basis) for b in held):
             return True
     return False
 
@@ -892,7 +927,9 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
                     continue
                 other = _subject_terms(s2, w, vals2)
                 toward, away = mine & (other - own), mine & (own - other)
-                if own - other and toward and len(toward) > len(away):
+                # 주장이 원래 자리의 고유 대상 낱말을 모두 담으면 옮긴 것이 아니다. "에너지 바우처는 가구당 15만 원이었고, 사업비는
+                # 총 36억 원"처럼 앞 절의 주제어가 뒤 절에서 생략되면 주제어가 앞 수치의 대상으로만 잡히기 때문이다(2026-10-09).
+                if own - other and toward and len(toward) > len(away) and not (own - other) <= mine:
                     return True
             return False
         if all(moved(s, v, vals) for s, v, vals in held):
@@ -1004,16 +1041,17 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 1인당·가구당 값을 총계로(또는 반대로, 1인당↔가구당) 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
-                                     "unit_conflict": [], "bound_conflict": [], "subject_conflict": [],
+                                     "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
                                      "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
