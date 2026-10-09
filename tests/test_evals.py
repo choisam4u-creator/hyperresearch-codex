@@ -167,6 +167,18 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("Household water use fell 9 percent [S1].", en, "en"))
         self.assertTrue(score.supported("Daily cyclists rose to 14,000 [S1].", en, "en"))   # 변화 전후 값은 같은 대상
 
+    def test_per_unit_value_moved_to_total_is_mismatch(self):
+        # 2026-10-09 기준 강화: 원문의 1인당·가구당 값을 총계로(또는 1인당↔가구당) 말하면 불일치.
+        ko = "시는 청년 정착 지원금으로 1인당 20만 원을 지급했다. 에너지 바우처는 가구당 15만 원이었고, 사업비는 총 36억 원이었다."
+        en = "The state paid a rebate of 350 dollars per household. Seniors received an extra 120 dollars per person."
+        self.assertFalse(score.supported("청년 정착 지원금 총액은 20만 원이었다 [S1].", ko, "ko"))
+        self.assertFalse(score.supported("에너지 바우처는 1인당 15만 원이었다 [S1].", ko, "ko"))
+        self.assertFalse(score.supported("The rebate cost the state 350 dollars in total [S1].", en, "en"))
+        self.assertFalse(score.supported("Seniors received an extra 120 dollars per household [S1].", en, "en"))
+        self.assertTrue(score.supported("청년 정착 지원금은 1인당 20만 원이었다 [S1].", ko, "ko"))
+        self.assertTrue(score.supported("에너지 바우처 사업비는 총 36억 원이었다 [S1].", ko, "ko"))
+        self.assertTrue(score.supported("The state paid a rebate of 350 dollars per household [S1].", en, "en"))
+
     def test_unacknowledged_source_conflict_lowers_consistency(self):
         src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
                "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}

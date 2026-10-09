@@ -165,6 +165,37 @@ def period_mismatch(plain: str, source_text: str) -> bool:
     return False
 
 
+# 1인당·가구당 값과 총계(2026-10-09 기준 강화, QUALITY-LOG 참조). 기간 단위와 같은 방식으로 수치마다 가장 가까운 기준 하나를 본다.
+_BASES = {"person": r"1인당|인당|1명당|명당|\bper (?:person|capita|head|resident|participant|student|worker|employee|recipient|user)\b|"
+                    r"\beach (?:person|resident|participant|student|recipient)\b",
+          "household": r"가구당|세대당|\bper (?:household|home|family|dwelling)\b|\beach household\b",
+          "total": r"(?:^|(?<=\s))총(?=\s?\d)|총액|총계|합계|누적|통틀어|\bin total\b|\btotal(?:ing|ed|s)?\b|\bcumulative\b|\baltogether\b|\bcombined\b"}
+
+
+def _number_bases(text: str) -> list[tuple[str, set[str]]]:
+    out = []
+    for m in _NUM.finditer(text):
+        start = max((b.end() for b in _CLAUSE.finditer(text, 0, m.start())), default=0)
+        stop = next((b.start() for b in _CLAUSE.finditer(text, m.end())), len(text))
+        found = [(min(abs(x.start() + start - m.start()), abs(x.end() + start - m.end())), k) for k, pat in _BASES.items()
+                 for x in re.finditer(pat, text[start:stop], re.I)
+                 if not (x.start() + start <= m.start() < x.end() + start)]   # "1인당"의 1은 기준 낱말 자체다
+        out.append((m.group(0).replace(",", ""), {min(found)[1]} if found else set()))
+    return out
+
+
+def basis_mismatch(plain: str, source_text: str) -> bool:
+    """주장 수치의 기준(1인당·가구당·총계)이 원문에서 같은 수치가 나오는 자리마다의 기준과 모두 다르면 True."""
+    held_all = [x for s in _source_sentences(source_text) for x in _number_bases(s)]
+    for n, claim_bases in _number_bases(plain):
+        if not claim_bases:
+            continue
+        held = [p for m, p in held_all if m == n]
+        if held and all(p and not (p & claim_bases) for p in held):
+            return True
+    return False
+
+
 # 계획·추정의 실적화와 표본 범위의 일반화(2026-10-05 2회차 기준 강화, QUALITY-LOG 참조).
 # 미래·계획형 유보만 본다. 추정(estimate·추정)을 떼는 것은 다른 결함 유형으로 백로그에 둔다(QUALITY-LOG 참조).
 _HEDGE = re.compile(r"\b(?:plan(?:s|ned|ning)?|target(?:s|ed)?|aim(?:s|ed)?|goal|expect(?:s|ed)?|project(?:ed|ion|ions)|"
@@ -550,6 +581,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     # 2026-10-08 2회차 기준 강화: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 옮기면 불일치.
     if subject_swapped(plain, source_text):
+        return False
+    # 2026-10-09 기준 강화: 원문이 1인당·가구당 값으로 말한 수치를 총계로(또는 반대로, 1인당↔가구당) 말하면 불일치.
+    if basis_mismatch(plain, source_text):
         return False
     return True
 
