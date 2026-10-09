@@ -512,6 +512,15 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = mark_report_claims("## 다음 행동\n- 인접 미설치 건물을 비교군으로 둔다 [S1].\n", src, "ko")
         self.assertNotIn("불일치", text)
 
+    def test_subject_swap_ignores_plural_and_different_count_nouns(self):
+        # 2026-10-09 3회차: "the barrier"와 "noise barriers"는 같은 대상이고, "2.4-mile"과 "71 decibels"는 다른 종류 수치다.
+        # 옛 코드는 둘을 다르게·같게 세어 맞는 인용 문장에 '(source mismatch)'(subject_conflict)를 붙였다.
+        src = {"S1": "The state transportation department installed noise barriers along a 2.4-mile stretch of Route 9 in 2024. "
+                     "Daytime noise readings at 12 homes near the barrier fell from 71 decibels to 64 decibels after construction."}
+        text, changes = self.mark("The barrier covers a 2.4-mile stretch of Route 9 and was installed in 2024 [S1].", src)
+        self.assertNotIn("mismatch", text)
+        self.assertEqual([], changes["subject_conflict"])
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

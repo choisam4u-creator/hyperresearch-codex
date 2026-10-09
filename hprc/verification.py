@@ -943,12 +943,30 @@ def _subject_terms(text: str, value: dict, values: list[dict]) -> set[str]:
         cut = prev["start"]
     head = _UP_MARK.sub(" ", _DOWN_MARK.sub(" ", text[a:cut]))
     english = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", head)} - _EN_CONTEXT_STOP - _CONTEXT_STOP - _LABEL_STOP
+    # 단수·복수는 같은 대상이다("the barrier" ↔ "noise barriers"). 다르게 세면 제 대상을 다른 대상으로 옮긴 것으로 오판한다.
+    english = {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in english}
     return english | ({w[:2] for w in re.findall(r"[가-힣]{2,}", head)} - _LABEL_STOP)
 
 
-def _value_kind(value: dict, text: str) -> tuple[str, bool]:
-    """같은 종류 수치: 차원이 같고 퍼센트포인트 여부도 같다."""
-    return value["dimension"], bool(_PERCENT_POINT.search(value["raw"]) or _PERCENT_POINT.match(text, value["end"]))
+_COUNT_NOUN = re.compile(r"-?\s?([A-Za-z]{3,})")
+_COUNT_NOUN_STOP = {"and", "the", "for", "from", "with", "per", "than", "was", "were", "are", "had", "has", "into", "over",
+                    "after", "before", "since", "while", "but", "percent", "dollars", "dollar"}
+
+
+def _value_kind(value: dict, text: str) -> tuple:
+    """같은 종류 수치: 차원이 같고 퍼센트포인트 여부도 같다. 단위 없는 영어 수치는 바로 뒤 세는 낱말도 같아야 한다
+    ("2.4-mile"과 "71 decibels"는 다른 종류). 세는 낱말이 없으면 비교하지 않는다(종전대로 같은 종류)."""
+    noun = ""
+    if value["dimension"] == "unitless":
+        m = _COUNT_NOUN.match(text, value["end"])
+        word = m.group(1).lower() if m else ""
+        if word and word not in _COUNT_NOUN_STOP:
+            noun = word[:-1] if len(word) > 3 and word.endswith("s") and not word.endswith("ss") else word
+    return value["dimension"], bool(_PERCENT_POINT.search(value["raw"]) or _PERCENT_POINT.match(text, value["end"])), noun
+
+
+def _same_kind(a: tuple, b: tuple) -> bool:
+    return a[:2] == b[:2] and (not a[2] or not b[2] or a[2] == b[2])
 
 
 def _subject_swap(plain: str, sents: list[str]) -> bool:
@@ -969,7 +987,7 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
         def moved(s: str, v: dict, vals: list[dict]) -> bool:
             own = _subject_terms(s, v, vals)
             for s2, w, vals2 in spots:
-                if abs(w["value"]) == abs(value["value"]) or _value_kind(w, s2) != kind or _is_date_number(w, s2):
+                if abs(w["value"]) == abs(value["value"]) or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2):
                     continue
                 other = _subject_terms(s2, w, vals2)
                 toward, away = mine & (other - own), mine & (own - other)
