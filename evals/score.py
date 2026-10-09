@@ -551,6 +551,19 @@ def magnitude_swapped(plain: str, source_text: str) -> bool:
     return False
 
 
+def _word_stems(text: str) -> set[str]:
+    return {w.lower()[:5] for w in re.findall(r"[A-Za-z]{4,}", text) if w.lower() not in _EN_STOP}
+
+
+def wording_unsupported(plain: str, source_text: str) -> bool:
+    """한글이 없는 주장의 내용 낱말(4글자 이상, 앞 5글자로 비교해 복수·시제 차이를 넘김)이 4개 이상인데 그중 원문에 있는 것이
+    절반 미만이면 True. 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장을 잡는다. 한국어는 글자 2-gram 대조가 이미 잡는다."""
+    if re.search(r"[가-힣]", plain):
+        return False
+    stems = _word_stems(plain)
+    return len(stems) >= 4 and len(stems & _word_stems(source_text)) / len(stems) < 0.5
+
+
 def supported(sentence: str, source_text: str, lang: str) -> bool:
     """숫자는 전부 원문에 있어야 하고, 글자 2-gram의 절반 이상이 원문에 있어야 한다.
 
@@ -568,6 +581,9 @@ def supported(sentence: str, source_text: str, lang: str) -> bool:
         return False
     grams = _bigrams(plain)
     if grams and len(grams & _bigrams(source_text)) / len(grams) < 0.5:
+        return False
+    # 2026-10-09 3회차 기준 강화: 영어 글자 2-gram은 긴 원문에 거의 다 있어 지어낸 문장도 통과하므로 낱말로도 본다.
+    if wording_unsupported(plain, source_text):
         return False
     sents = _source_sentences(source_text)
     anchored = [s for s in sents if any(n in _numbers(s) for n in numbers)]

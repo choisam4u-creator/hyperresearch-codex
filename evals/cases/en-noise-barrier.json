@@ -1,0 +1,22 @@
+{
+  "id": "en-noise-barrier",
+  "lang": "en",
+  "baseline_time": "2026-09-30",
+  "prompt": "What did the Route 9 noise barrier change for nearby residents?",
+  "flaws": [
+    "inference_cited_as_source_fact",
+    "invented_claim_cited_without_numbers",
+    "faithful_paraphrase_kept_ok"
+  ],
+  "sources": {
+    "S1": "The state transportation department installed noise barriers along a 2.4-mile stretch of Route 9 in 2024. Daytime noise readings at 12 homes near the barrier fell from 71 decibels to 64 decibels after construction.\n\nThe department did not measure noise at homes farther than 300 feet from the road. Night-time readings were not collected because the monitoring contract covered daytime hours only.",
+    "S2": "A resident survey by the neighborhood association received 210 responses. Of those, 58 percent said sleep quality had improved since the barrier was built.\n\nThe association noted that the survey was voluntary and may over-represent residents who supported the project. Several respondents asked for landscaping on the barrier's road side."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What did the Route 9 noise barrier change for nearby residents?\n\n## Answer\nDaytime noise readings at 12 homes near the barrier fell from 71 decibels to 64 decibels [S1]. Noise barriers should become the standard design for every highway widening plan statewide [S1]. Of 210 survey respondents, 58 percent said their sleep quality improved [S2].\n\n## Evidence\n- The barrier covers a 2.4-mile stretch of Route 9 and was installed in 2024 [S1].\n- Night-time noise was not collected because monitoring covered daytime hours only [S1].\n\n## Counter-evidence and limits\n- Homes farther than 300 feet from the road were not measured [S1].\n- The survey was voluntary and may over-represent residents who supported the project [S2].\n- Most opponents of the project had moved away before residents were polled [S2].\n\n## Next actions\n- Add night-time readings at the same 12 homes (judgment)\n\n## Sources\n- [S1] State transportation department noise readings\n- [S2] Neighborhood association resident survey\n"
+      }
+    ]
+  }
+}

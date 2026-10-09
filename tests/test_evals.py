@@ -192,6 +192,17 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("Each school received a grant of 25,000 dollars [S1].", en, "en"))
         self.assertTrue(score.supported("Branches received 1,800 books per branch on average [S1].", en, "en"))
 
+    def test_invented_english_claim_without_numbers_is_checked(self):
+        # 2026-10-09 3회차 기준 강화: 영어 글자 2-gram은 긴 원문에 거의 다 있어 지어낸 문장도 통과했다. 내용 낱말 절반 이상이
+        # 원문에 있어야 한다. 복수·시제 차이("barrier"↔"barriers", "improved"↔"improve")는 앞 5글자 비교로 넘긴다.
+        en = ("A resident survey by the neighborhood association received 210 responses. Of those, 58 percent said sleep quality "
+              "had improved since the barrier was built. The association noted that the survey was voluntary and may "
+              "over-represent residents who supported the project.")
+        self.assertFalse(score.supported("Most opponents of the project had moved away before residents were polled [S2].", en, "en"))
+        self.assertTrue(score.supported("The survey was voluntary and may over-represent residents who supported the project [S2].",
+                                        en, "en"))
+        self.assertTrue(score.supported("Of 210 survey respondents, 58 percent said their sleep quality improved [S2].", en, "en"))
+
     def test_unacknowledged_source_conflict_lowers_consistency(self):
         src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
                "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}
