@@ -262,6 +262,8 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         raw = text[match.start():stop]
         if raw == "1" and _PER_UNIT_TAIL.match(text, stop):
             continue   # "1인당"·"1가구당"의 1은 기준을 말하는 낱말이지 수량이 아니다
+        if number == 1 and text.startswith("당", stop) and _UNIT_SCALE.get(unit, ("",))[0].startswith("count_"):
+            continue   # "1곳당"·"1대당"·"1명당"도 같다(세는 말이 단위로 먼저 읽힌다)
         if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
@@ -526,7 +528,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다.
     - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다.
     - subject: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 말한다.
-    - basis: 원문이 1인당·가구당 값으로 말한 수치를 총계로(또는 반대로, 1인당↔가구당) 말한다."""
+    - basis: 원문이 1인당·가구당·곳당·대당·학교당·평균 값으로 말한 수치를 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -648,12 +650,24 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
     return False
 
 
-# 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
+# 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·곳당·대당·학교당·평균·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
 _BASIS_WORDS = {"person": r"1인당|인당|1명당|명당|\bper (?:person|capita|head|resident|participant|student|worker|employee|recipient|user)\b|"
                           r"\beach (?:person|resident|participant|student|recipient)\b",
                 "household": r"가구당|세대당|\bper (?:household|home|family|dwelling)\b|\beach household\b",
+                "site": r"곳당|개소당|시설당|지점당|\bper (?:site|facility|center|centre|branch|location|store|clinic)\b|"
+                        r"\beach (?:site|facility|center|centre|branch|location|store|clinic)\b",
+                "vehicle": r"(?<!세)대당|차량당|\bper (?:vehicle|bus|car|truck)\b|\beach (?:vehicle|bus|car|truck)\b",
+                "school": r"학교당|개교당|\bper (?:school|campus)\b|\beach (?:school|campus)\b",
+                "average": r"평균|\b(?:on )?average\b",
                 "total": r"(?:^|(?<=\s))총(?=\s?\d)|총액|총계|합계|누적|통틀어|\bin total\b|\btotal(?:ing|ed|s)?\b|\bcumulative\b|"
                          r"\baltogether\b|\bcombined\b"}
+
+
+def _bases_agree(a: set[str], b: set[str]) -> bool:
+    """평균은 단위당 값과 어긋나지 않지만(가구 평균 = 가구당) 총계와는 다르다."""
+    if a & b:
+        return True
+    return (a == {"average"} and "total" not in b) or (b == {"average"} and "total" not in a)
 
 
 def _value_basis(text: str, value: dict) -> set[str]:
@@ -664,7 +678,7 @@ def _value_basis(text: str, value: dict) -> set[str]:
 
 
 def _basis_conflict(plain: str, sents: list[str]) -> bool:
-    """주장 수치의 기준(1인당·가구당·총계)이 같은 값이 나오는 원문 자리마다의 기준과 하나도 겹치지 않으면 True.
+    """주장 수치의 기준(1인당·가구당·곳당·대당·학교당·평균·총계)이 같은 값이 나오는 원문 자리마다의 기준과 하나도 겹치지 않으면 True.
 
     원문 자리 중 기준을 말하지 않는 곳이 하나라도 있으면 표시하지 않는다(값의 기준을 단정할 수 없음)."""
     for value in _quantity_values(plain, _date_like_spans(plain)):
@@ -672,7 +686,7 @@ def _basis_conflict(plain: str, sents: list[str]) -> bool:
         if value.get("unsupported_unit") or not claim_basis:
             continue
         held = [_value_basis(s, c) for s, c in _same_value_spots(sents, value)]
-        if held and all(b and not (b & claim_basis) for b in held):
+        if held and all(b and not _bases_agree(b, claim_basis) for b in held):
             return True
     return False
 
@@ -1041,7 +1055,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
-    - 인용 문장이 원문의 1인당·가구당 값을 총계로(또는 반대로, 1인당↔가구당) 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 1인당·가구당·곳당·대당·학교당·평균 값을 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말하면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
     "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "estimate_dropped": 문장 목록})."""

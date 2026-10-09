@@ -179,6 +179,19 @@ class ScoreTests(unittest.TestCase):
         self.assertTrue(score.supported("에너지 바우처 사업비는 총 36억 원이었다 [S1].", ko, "ko"))
         self.assertTrue(score.supported("The state paid a rebate of 350 dollars per household [S1].", en, "en"))
 
+    def test_per_site_vehicle_school_and_average_basis_is_checked(self):
+        # 2026-10-09 2회차 기준 강화: 대당·학교당·평균 값을 총계·다른 기준으로 말하면 불일치. 평균은 단위당 값과 어긋나지 않는다.
+        # 노트 머리의 "S2" 같은 출처 번호는 기준 없는 자리로 세지 않는다.
+        ko = "\n# replay case S2\n\n새 충전소의 설치비는 평균 2억 원이었다. 시는 대당 1억 원의 보조금을 지급했다."
+        en = "In 2025 the district gave a grant of 25,000 dollars per school. Branches received an average of 1,800 books."
+        self.assertFalse(score.supported("새 충전소 설치비는 총 2억 원이었다 [S2].", ko, "ko"))
+        self.assertFalse(score.supported("보조금은 운수회사 한 곳당 1억 원이었다 [S2].", ko, "ko"))
+        self.assertFalse(score.supported("The grant was 25,000 dollars per student [S1].", en, "en"))
+        self.assertFalse(score.supported("Branches received 1,800 books in total [S1].", en, "en"))
+        self.assertTrue(score.supported("새 충전소 설치비는 평균 2억 원이었다 [S2].", ko, "ko"))
+        self.assertTrue(score.supported("Each school received a grant of 25,000 dollars [S1].", en, "en"))
+        self.assertTrue(score.supported("Branches received 1,800 books per branch on average [S1].", en, "en"))
+
     def test_unacknowledged_source_conflict_lowers_consistency(self):
         src = {"S1": {"text": "Average attendance at participating schools increased 3 percent.", "cluster": "S1"},
                "S2": {"text": "Average attendance at participating schools decreased 1 percent.", "cluster": "S2"}}

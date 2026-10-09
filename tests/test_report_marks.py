@@ -471,6 +471,24 @@ class PlanScopeTests(unittest.TestCase):
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
             self.assertEqual([], changes["basis_conflict"], body)
 
+    def test_per_site_vehicle_school_and_average_value_moved_is_marked(self):
+        # 2026-10-09 2회차: 곳당·대당·학교당·평균 값을 총계나 다른 기준으로 말하면 '(출처 불일치)'. 평균은 단위당 값과는 어긋나지 않는다.
+        src = {"S1": "시는 대당 1억 원의 보조금을 지급했다. 새 충전소의 설치비는 평균 2억 원이었고, 보조금 총액은 120억 원이었다.",
+               "S2": "The district gave a grant of 25,000 dollars per school. Library branches received an average of 1,800 new books."}
+        for body, lang in (("새 충전소 설치비는 총 2억 원이었다 [S1].", "ko"),
+                           ("The grant was 25,000 dollars per student [S2].", "en"),
+                           ("Libraries received 1,800 new books in total [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["basis_conflict"]), body)
+        for body, lang in (("새 충전소 설치비는 평균 2억 원이었다 [S1].", "ko"), ("충전소 1곳당 설치비는 2억 원이었다 [S1].", "ko"),
+                           ("보조금 총액은 120억 원이었다 [S1].", "ko"),
+                           ("Each school received a grant of 25,000 dollars [S2].", "en"),
+                           ("Each library branch received 1,800 new books on average [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual([], changes["basis_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
