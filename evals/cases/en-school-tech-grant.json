@@ -1,0 +1,23 @@
+{
+ "id": "en-school-tech-grant",
+ "lang": "en",
+ "baseline_time": "2026-09-30",
+ "prompt": "How much technology money did schools and libraries receive?",
+ "flaws": [
+  "per_school_value_as_total",
+  "average_value_as_total",
+  "per_unit_basis_swapped",
+  "per_unit_average_and_total_kept_ok"
+ ],
+ "sources": {
+  "S1": "In 2025 the district gave a technology grant of 25,000 dollars per school. The grants totaled 1.2 million dollars across 48 schools.",
+  "S2": "Library branches received an average of 1,800 new books in 2025. The city also added 5,400 e-books to its digital catalog."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How much technology money did schools and libraries receive?\n\n## Answer\nIn 2025 the district gave a technology grant of 25,000 dollars per school [S1]. The district's technology grants totaled 25,000 dollars in 2025 [S1].\n\n## Evidence\n- The grants totaled 1.2 million dollars across 48 schools [S1].\n- The technology grant was 25,000 dollars per student [S1].\n- Library branches received an average of 1,800 new books [S2].\n- The library system received 1,800 new books in total [S2].\n\n## Counter-evidence and limits\n- The city added 5,400 e-books to its digital catalog [S2].\n- These sources do not show how schools spent the grants (judgment)\n\n## Next actions\n- Ask the district for spending by school (judgment)\n\n## Sources\n- [S1] District technology grant summary\n- [S2] Library collection report\n"
+   }
+  ]
+ }
+}

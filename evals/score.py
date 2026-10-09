@@ -169,12 +169,27 @@ def period_mismatch(plain: str, source_text: str) -> bool:
 _BASES = {"person": r"1인당|인당|1명당|명당|\bper (?:person|capita|head|resident|participant|student|worker|employee|recipient|user)\b|"
                     r"\beach (?:person|resident|participant|student|recipient)\b",
           "household": r"가구당|세대당|\bper (?:household|home|family|dwelling)\b|\beach household\b",
+          # 곳당·대당·학교당과 평균(2026-10-09 2회차 기준 강화, QUALITY-LOG 참조)
+          "site": r"곳당|개소당|시설당|지점당|\bper (?:site|facility|center|centre|branch|location|store|clinic)\b|"
+                  r"\beach (?:site|facility|center|centre|branch|location|store|clinic)\b",
+          "vehicle": r"(?<!세)대당|차량당|\bper (?:vehicle|bus|car|truck)\b|\beach (?:vehicle|bus|car|truck)\b",
+          "school": r"학교당|개교당|\bper (?:school|campus)\b|\beach (?:school|campus)\b",
+          "average": r"평균|\b(?:on )?average\b",
           "total": r"(?:^|(?<=\s))총(?=\s?\d)|총액|총계|합계|누적|통틀어|\bin total\b|\btotal(?:ing|ed|s)?\b|\bcumulative\b|\baltogether\b|\bcombined\b"}
+
+
+def _bases_agree(a: set[str], b: set[str]) -> bool:
+    """평균은 어떤 단위당 값과도 어긋나지 않지만(가구 평균 = 가구당) 총계와는 다르다."""
+    if a & b:
+        return True
+    return (a == {"average"} and "total" not in b) or (b == {"average"} and "total" not in a)
 
 
 def _number_bases(text: str) -> list[tuple[str, set[str]]]:
     out = []
     for m in _NUM.finditer(text):
+        if re.match(r"[A-Za-z]", text[m.start() - 1:m.start()]):
+            continue   # 노트 머리의 "S2" 같은 출처 번호는 값이 아니다(기준 없는 자리로 세면 판정이 꺼진다)
         start = max((b.end() for b in _CLAUSE.finditer(text, 0, m.start())), default=0)
         stop = next((b.start() for b in _CLAUSE.finditer(text, m.end())), len(text))
         found = [(min(abs(x.start() + start - m.start()), abs(x.end() + start - m.end())), k) for k, pat in _BASES.items()
@@ -185,13 +200,13 @@ def _number_bases(text: str) -> list[tuple[str, set[str]]]:
 
 
 def basis_mismatch(plain: str, source_text: str) -> bool:
-    """주장 수치의 기준(1인당·가구당·총계)이 원문에서 같은 수치가 나오는 자리마다의 기준과 모두 다르면 True."""
+    """주장 수치의 기준(1인당·가구당·곳당·대당·학교당·평균·총계)이 원문에서 같은 수치가 나오는 자리마다의 기준과 모두 다르면 True."""
     held_all = [x for s in _source_sentences(source_text) for x in _number_bases(s)]
     for n, claim_bases in _number_bases(plain):
         if not claim_bases:
             continue
         held = [p for m, p in held_all if m == n]
-        if held and all(p and not (p & claim_bases) for p in held):
+        if held and all(p and not _bases_agree(p, claim_bases) for p in held):
             return True
     return False
 
