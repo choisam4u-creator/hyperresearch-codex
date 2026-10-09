@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-09 (품질 회차 2)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 30 case·강화 기준): **99.7 → 99.9**. 주장-출처 일치 97.7→99.6. (28 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일:
+  - 평가 강화: 결함 case 2개(`ko-ebus-subsidy`, `en-school-tech-grant`) — 원문의 대당·학교당·평균 값을 총계로, 또는 다른 단위당 기준으로 바꿔 씀. 점수기 `basis_mismatch`에 site·vehicle·school·average 기준 추가(평균은 단위당 값과 맞고 총계와만 어긋남). 노트 머리 "S2"의 2가 판정을 끄던 점수기 결함 수정. 기존 28 case 오탐 0.
+  - 개선: `verification._BASIS_WORDS`·`_bases_agree` → 인용 문장에 `(출처 불일치)`(`basis_conflict`). 새 시험이 드러낸 오표시("충전소 1곳당"의 1을 수량으로 읽음) 수정. 기존 28 case 최종 보고서 diff 없음.
+  - 백로그: 곳당·대당·평균 항목 완료, 새 항목 1건(평균 기준 오표시율·subject/basis 겹침 실측). CHANGELOG `Unreleased` 한 줄, `evals/README.md` 기준 설명.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 573개 통과(시스템 Python 3.11, 새 시험 2개 — 둘 다 옛 코드·옛 점수기에서 실패 확인, `httpx`는 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.12/3.13·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)에 이어 푸시하고 PR 본문에 이번 회차 표를 더한다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: `평균`·`average`는 총계와 대비되지 않는 뜻으로도 쓰여 오표시 가능. 한 절에 기준 낱말이 둘이면 가장 가까운 것 하나로만 판정.
+- Mac에서 확인할 것:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && HPR_BACKEND=mock python -m evals.run --verbose
+  hpr run "전기버스 보조금과 충전소 설치비는 얼마였나?"   # report_marks.json의 basis_conflict 문장(특히 '평균')을 원문과 눈으로 대조
+  ```
+
 ## 2026-10-09 (품질 회차)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 28 case·강화 기준): **99.6 → 99.9**. 주장-출처 일치 97.9→99.6, 잘못 붙은 경고 없음 99.6→100. (26 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
