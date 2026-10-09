@@ -489,6 +489,29 @@ class PlanScopeTests(unittest.TestCase):
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
             self.assertEqual([], changes["basis_conflict"], body)
 
+    def test_cited_claim_absent_from_source_wording_is_marked(self):
+        # 2026-10-09 3회차: 수치 없이 원문에 없는 추론·사실을 인용만 달아 말하면 '(출처 불일치)'(wording_conflict).
+        # 같은 문자 체계일 때만 보고, 바꿔 말한 맞는 문장·번역 인용·다음 행동 절은 건드리지 않는다.
+        src = {"S1": "담당자는 기온과 점유 인원을 기록했지만 대조군은 두지 않았다. 사고 건수가 적어 통계적으로 유의한지는 검정하지 않았다.",
+               "S2": "The association noted that the survey was voluntary and may over-represent residents who supported the project. "
+                     "Of 210 responses, 58 percent said sleep quality had improved since the barrier was built."}
+        for body, lang in (("대조군이 없어 효과 크기를 확정할 수 없다 [S1].", "ko"),
+                           ("Most opponents of the project had moved away before residents were polled [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["wording_conflict"]), body)
+        for body, lang in (("담당자는 대조군을 두지 않았다 [S1].", "ko"), ("사고 건수가 적어 유의성은 검정하지 않았다 [S1].", "ko"),
+                           ("설문은 자발 참여라 사업 지지 주민이 많이 응답했을 수 있다 [S2].", "ko"),
+                           ("The voluntary survey may over-represent residents who supported the project [S2].", "en"),
+                           ("The department kept no control group [S1].", "en"),
+                           ("보고서에 따르면 담당자는 대조군을 두지 않았다 [S1].", "ko"),
+                           ("According to the association, the survey may over-represent supporters of the project [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual([], changes["wording_conflict"], body)
+        text, changes = mark_report_claims("## 다음 행동\n- 인접 미설치 건물을 비교군으로 둔다 [S1].\n", src, "ko")
+        self.assertNotIn("불일치", text)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

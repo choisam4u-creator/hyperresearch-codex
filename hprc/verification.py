@@ -513,6 +513,38 @@ def _char_bigrams(text: str) -> set[str]:
     return {compact[i:i + 2] for i in range(len(compact) - 1)}
 
 
+def _word_stems(text: str) -> set[str]:
+    """영어 내용 낱말을 앞 5글자로 줄인 것(복수·시제 차이를 넘기려는 근사)."""
+    return {w.lower()[:5] for w in re.findall(r"[A-Za-z]{4,}", text)} - {w[:5] for w in _EN_CONTEXT_STOP | _CONTEXT_STOP}
+
+
+# 출처를 가리키는 틀 낱말("두 독립 출처가 … 확인한다", "according to the report")은 원문 내용이 아니므로 대조 전에 뺀다.
+_SOURCE_FRAME = re.compile(
+    r"(?:두|세|여러|각)?\s*(?:독립(?:된|적인)?\s*)?(?:출처|자료|보고서|문서|기록|기사|메모|설문|조사)(?:들)?(?:가|이|는|은|에서|에|를|을|의)?"
+    r"(?:\s*따르면)?|확인한다|확인했다|확인된다|밝혔다|밝힌다|보고했다|적었다|전했다|따르면"
+    r"|\b(?:according to|(?:the )?(?:reports?|sources?|records?|memo|survey|article|audit)|reported|independent|confirm(?:s|ed)?|"
+    r"note[sd]?|says|said|states|stated|found|finds|shows?|showed|two|three|both)\b", re.I)
+
+
+def _wording_unsupported(plain: str, cited_text: str) -> bool:
+    """인용 문장의 내용이 인용 원문에 거의 없으면 True — 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장.
+
+    같은 문자 체계일 때만 본다(한국어 보고서가 영어 원문을 인용하는 번역 인용은 낱말 대조로 판정하지 않는다).
+    한국어는 글자 2-gram 중 원문에 있는 비율이 0.4 미만(2-gram 12개 이상), 영어는 4글자 이상 내용 낱말 중 원문에 있는 비율이
+    0.4 미만(낱말 4개 이상)일 때. 평가 점수기(0.5)보다 엄격하게 둬 바꿔 말한 맞는 문장을 덜 건드린다."""
+    hangul, latin = len(re.findall(r"[가-힣]", cited_text)), len(re.findall(r"[A-Za-z]", cited_text))
+    plain = _SOURCE_FRAME.sub(" ", plain)
+    if re.search(r"[가-힣]", plain):
+        if hangul <= latin:
+            return False
+        grams = _char_bigrams(plain)
+        return len(grams) >= 12 and len(grams & _char_bigrams(cited_text)) / len(grams) < 0.4
+    if latin <= hangul:
+        return False
+    stems = _word_stems(plain)
+    return len(stems) >= 4 and len(stems & _word_stems(cited_text)) / len(stems) < 0.4
+
+
 def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     """원문에 같은 값이 있어도 독자를 오도하는 경우만 돌려준다(확정에 가까운 신호만).
 
@@ -1056,9 +1088,10 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 1인당·가구당·곳당·대당·학교당·평균 값을 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말하면 '(출처 불일치)'
+    - 답·근거·한계 절의 인용 문장 내용이 같은 문자 체계의 인용 원문에 거의 없으면(원문에 없는 추론·사실) '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "wording_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
@@ -1066,7 +1099,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
                                      "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
-                                     "estimate_dropped": []}
+                                     "wording_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
@@ -1121,6 +1154,8 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                 conflicts = _value_conflicts(piece, cited_text) if cited_text.strip() else []
                 if _independence_overclaim(piece):
                     conflicts.append("independence")
+                if claim_section and cited_text.strip() and _wording_unsupported(_plain_claim(piece), cited_text):
+                    conflicts.append("wording")
                 if cited_text.strip() and (_absent_values(piece, cited_text) or conflicts):
                     changes["mismatch"].append(piece.strip())
                     for kind in conflicts:
