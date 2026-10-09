@@ -2,6 +2,24 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-09 (품질 회차 3)
+
+- 점수 전후(`python -m evals.run`, 종합 평균, 32 case·강화 기준): **99.7 → 100.0**. 주장-출처 일치 98.1→100, 잘못 붙은 경고 없음 99.6→100. (30 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.8 — 영어 쪽 맹점.) 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시):
+  - 평가 강화: 결함 case 2개(`ko-school-zone-camera`, `en-noise-barrier`) — 수치 없이 원문에 없는 추론·사실을 인용만 달아 씀. 점수기 `wording_unsupported`(영어 내용 낱말 절반 이상이 원문에 있어야 함). 기존 30 case 오탐 0.
+  - 개선 1: `verification._wording_unsupported` → 인용 문장에 `(출처 불일치)`(`wording_conflict`). 같은 문자 체계만, 출처 틀 낱말은 뺌, 다음 행동 절 제외. 남아 있던 ko-cooling-pilot 감점도 해소.
+  - 개선 2: 새 case가 드러낸 `_subject_swap` 오표시 수정(영어 단수·복수, 세는 낱말이 다른 단위 없는 수치).
+  - 백로그·CHANGELOG·`evals/README.md`(case 수 28→32로 바로잡음, 기준 설명).
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 576개 통과(Python 3.13, 새 시험 3개 — 코드 시험 2개는 옛 코드에서 실패 확인, `httpx` 등은 `pip install -e .`로 설치 필요했음). `python -m evals.run --min-total 97`·`compileall` 통과. walkthrough 재생성 결과 변화 없음. 3.11/3.12·Windows·휠 빌드는 클라우드에서 돌리지 않았다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17(claude/cloud-work → main)에 이어 푸시하고 PR 본문에 이번 회차 표를 더한다. CI 결과는 푸시 직후라 확인하지 못했다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고, 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 문턱 0.4는 새 case를 본 뒤 정했다. 원문을 많이 바꿔 말한 맞는 문장에 오표시가 생길 수 있고, 원문 낱말을 그대로 쓰며 뜻만 뒤집은 추론은 잡지 못한다. 32 case 모두 100점이라 다음 회차는 실제 codex 픽스처나 새 결함 유형이 먼저다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "어린이보호구역 과속 단속카메라는 사고를 줄였나? 근거와 한계를 밝혀라"
+  grep -h '"wording_conflict"' -A6 research/runs/*/report_marks.json   # 표시된 문장을 원문과 눈으로 대조해 오표시를 센다
+  ```
+
 ## 2026-10-09 (품질 회차 2)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 30 case·강화 기준): **99.7 → 99.9**. 주장-출처 일치 97.7→99.6. (28 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.9 — 맹점.) 상세는 `docs/QUALITY-LOG.md`.
