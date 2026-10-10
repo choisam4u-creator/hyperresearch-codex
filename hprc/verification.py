@@ -684,7 +684,49 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
+    if _negation_flip(plain, sents):
+        found.append("negation")
     return found
+
+
+# 부정 뒤집기(2026-10-10 라벨 평가 회차): 원문 낱말을 거의 그대로 쓰면서 부정만 빼거나 넣은 문장("did not reduce" →
+# "reduced", "줄지 않았다" → "줄었다", "has not been funded" → "is planned and funded"). 낱말 대조로는 통과한다.
+# 절마다 부정 여부를 보고, 주장 절과 가장 많이 겹치는 원문 절(영어 내용 낱말 60%·3개 이상, 한국어 글자 2-gram 50%·6개 이상)의
+# 부정 여부가 다르면 불일치로 본다. 'without'·'비(非)'처럼 대상을 한정하는 부정은 세지 않는다.
+_NEGATION = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet to|lack(?:s|ed|ing)?|fail(?:s|ed)? to|unchanged|"
+                       r"unfunded|unmeasured|unknown|unclear)\b|n't\b|않|없|못\s?하|못했|아니|미측정|미확인|미검증|미집계", re.I)
+_NEGATION_WORDS = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet|lack\w*|fail\w*|unchanged|unfunded|unmeasured|"
+                             r"unknown|unclear)\b", re.I)
+_CLAUSE_SPLIT = re.compile(r"[,;:]|\b(?:and|but|so|while|whereas|where|which|because|although|though)\b|"
+                           r"(?<=[가-힣])(?:고|며|지만|는데|어서|아서|으나)\s|(?<=[가-힣])\s(?:해|하여|해서)\s", re.I)
+
+
+def _clauses(text: str) -> list[str]:
+    return [c.strip() for c in _CLAUSE_SPLIT.split(text) if c and c.strip()]
+
+
+def _clause_overlap(claim: str, source: str) -> tuple[int, float]:
+    if re.search(r"[가-힣]", claim):
+        a, b = _char_bigrams(_NEGATION.sub(" ", claim)), _char_bigrams(_NEGATION.sub(" ", source))
+    else:
+        a, b = _word_stems(_NEGATION_WORDS.sub(" ", claim)), _word_stems(_NEGATION_WORDS.sub(" ", source))
+    shared = len(a & b)
+    return shared, (shared / len(a) if a else 0.0)
+
+
+def _negation_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if _scripts(s) == _scripts(plain) for c in _clauses(s)]
+    for clause in _clauses(plain):
+        scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
+        scored = [(shared, r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for _, r, _ in scored)
+        if all(bool(_NEGATION.search(clause)) != bool(_NEGATION.search(c)) for _, r, c in scored if r == best):
+            return True
+    return False
 
 
 # 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
@@ -1193,7 +1235,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
                                      "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
-                                     "wording_conflict": [], "estimate_dropped": []}
+                                     "wording_conflict": [], "negation_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}

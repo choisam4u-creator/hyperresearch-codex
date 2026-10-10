@@ -608,3 +608,23 @@ class LabeledRoundTests(unittest.TestCase):
                      "학생 1,800명을 비교했다 [S1]."):
             text, _ = self.mark(body, ko, "ko")
             self.assertIn("(출처 불일치)", text, body)
+
+    def test_negation_flip_with_source_words_is_marked(self):
+        en = {"S1": "The extension did not reduce daytime visits at the four branches. Evening security incidents were not "
+                    "higher than before the change. Retail jobs were not lost, and retail employment was flat."}
+        for body in ("The extension reduced daytime visits at the four branches [S1].",
+                     "Evening security incidents were higher than before the change [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertIn("(source mismatch)", text, body)
+            self.assertEqual(1, len(changes["negation_conflict"]), body)
+        for body in ("Daytime visits at the four branches were not reduced by the extension [S1].",
+                     "Retail employment stayed flat [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["negation_conflict"], body)
+        ko = {"S1": "같은 기간 70세 이상 보행자 교통사고는 줄지 않았다. 설문은 복지관 이용자만 대상으로 했다."}
+        text, changes = self.mark("같은 기간 70세 이상 보행자 교통사고는 줄었다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["negation_conflict"]))
+        for body in ("같은 기간 70세 이상 보행자 교통사고는 줄지 않았다 [S1].",
+                     "설문은 복지관 이용자만 대상으로 해 전체 고령자를 대표하지 않는다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["negation_conflict"], body)
