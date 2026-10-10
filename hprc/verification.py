@@ -253,6 +253,7 @@ def _date_like_spans(text: str) -> list[dict]:
 
 
 _YEAR_RANGE_HEAD = re.compile(r"\s*[~–—-]\s*(?:19|20)\d\d\s*년")
+_MONTH_RANGE_HEAD = re.compile(r"\s*[~–—]\s*(?:1[0-2]|0?[1-9])\s*월")
 _PER_UNIT_TAIL = re.compile(r"\s?(?:인|명|가구|세대|곳|개소)당")
 
 
@@ -284,6 +285,8 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
             continue   # "1곳당"·"1대당"·"1명당"도 같다(세는 말이 단위로 먼저 읽힌다)
         if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
+        if not unit and _MONTH_RANGE_HEAD.match(text, stop) and re.fullmatch(r"1[0-2]|0?[1-9]", raw):
+            unit = "월"   # "9~10월"의 앞 9도 달이다(2026-10-10 5회차, 라벨 평가 오표시)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
         item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop,
                 "number": number, "scale": scale}
@@ -937,7 +940,8 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
                  "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
 
 
-_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])(?<![Aa]pprox\.)\s")
+# 천 단위 쉼표("1,040명")에서는 끊지 않는다 — 끊으면 수치 앞 대상 낱말을 잃어 대상 바꿈을 오판한다(2026-10-10 5회차).
+_CLAUSE_BREAK = re.compile(r"(?<!\d),|,(?!\d)|[;:()]|(?<=[.!?。])(?<![Aa]pprox\.)\s")
 
 
 def _clause_around(text: str, value: dict) -> tuple[int, str]:
@@ -1233,7 +1237,7 @@ def _bound_overclaim(plain: str, sents: list[str]) -> bool:
 # 그 앞까지 거슬러 올라간다.
 _LABEL_STOP = {"the", "and", "for", "was", "are", "its", "has", "had", "not", "but", "all", "per", "new", "one", "two", "who",
                "percent", "에서", "에는", "에도", "으로", "부터", "까지", "에게"}
-_LINKED_VALUE = re.compile(r"^\s*(?:%|퍼센트|percent|[가-힣]{1,2})?(?:\s*[가-힣A-Za-z]{1,4}){0,2}\s*(?:에서|부터|~|–|-|\bto\b|\band\b)"
+_LINKED_VALUE = re.compile(r"^\s*(?:%|퍼센트|percent|[가-힣]{1,2})?(?:\s*[가-힣A-Za-z]{1,4}){0,2}\s*(?:에서|부터|~|–|-|\bto\b|\band\b|가운데|중)"
                            r"(?:\s+[가-힣A-Za-z]{1,4}){0,2}\s*$", re.I)
 
 

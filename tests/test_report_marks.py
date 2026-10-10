@@ -653,6 +653,15 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertNotIn("(출처 불일치)", text, body)
 
+    def test_month_range_and_thousands_comma_do_not_cause_false_marks(self):
+        ko = {"S1": "점검은 3월과 4월 두 달 동안만 이뤄졌다. 2025년 운전자 2,310명 가운데 41%가 속도를 줄였다고 답했다. "
+                    "보행자는 27%가 길을 돌아갔다고 답했다."}
+        for body in ("점검은 3~4월 두 달에 한정됐다 [S1].", "운전자의 41%가 속도를 줄였다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+        text, changes = self.mark("보행자의 41%가 속도를 줄였다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["subject_conflict"]))
+
     def test_negation_flip_with_source_words_is_marked(self):
         en = {"S1": "The extension did not reduce daytime visits at the four branches. Evening security incidents were not "
                     "higher than before the change. Retail jobs were not lost, and retail employment was flat."}
