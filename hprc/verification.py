@@ -686,7 +686,60 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("basis")
     if _negation_flip(plain, sents):
         found.append("negation")
+    if _share_overclaim(plain, sents):
+        found.append("share")
     return found
+
+
+# 몫 과장(2026-10-10 라벨 평가 회차): 원문이 "8곳 중 3곳"·"23 percent of households"·"75명 중 52명"처럼 일부의 몫으로 말한 것을
+# 주장이 "대부분(most·과반)"이나 "모두(all·every·모든)"로 말한다. 주장 절과 같은 대상을 말하는 원문 절(영어 내용 낱말 50%·2개,
+# 한국어 2-gram 40%·4개)의 몫이 대부분형은 50% 이하, 모두형은 100% 미만일 때만 본다. 주장 절이 몫을 직접 말하면 보지 않는다.
+_SMALL_NUMBERS = {w: i for i, w in enumerate(("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                                               "ten", "eleven", "twelve"))}
+_NUM = r"(\d+(?:,\d{3})*(?:\.\d+)?|" + "|".join(_SMALL_NUMBERS) + r")"
+_SHARE_OF = re.compile(_NUM + r"\s+(?:of|out of)\s+(?:the\s+|its\s+|their\s+|all\s+)?" + _NUM + r"\b", re.I)
+_SHARE_KO = re.compile(r"(\d+(?:,\d{3})*)\s*[가-힣]{0,2}\s*[가-힣]{0,3}\s*(?:가운데|중)\s*(\d+(?:,\d{3})*)")
+_SHARE_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+of\b|(?:의|가운데|중)\s*(\d+(?:\.\d+)?)\s*%", re.I)
+_MOST_WORDS = re.compile(r"\b(?:most|majority|bulk)\b|대부분|과반|대다수", re.I)
+_ALL_WORDS = re.compile(r"\b(?:all|every|each)\b|모든|모두|전원|전부", re.I)
+
+
+def _number_word(text: str) -> Decimal:
+    return Decimal(_SMALL_NUMBERS[text.lower()]) if text.lower() in _SMALL_NUMBERS else Decimal(text.replace(",", ""))
+
+
+def _shares(text: str) -> list[Decimal]:
+    out = []
+    for m in _SHARE_OF.finditer(text):
+        part, whole = _number_word(m.group(1)), _number_word(m.group(2))
+        if whole and part <= whole:
+            out.append(part / whole * 100)
+    for m in _SHARE_KO.finditer(text):
+        whole, part = Decimal(m.group(1).replace(",", "")), Decimal(m.group(2).replace(",", ""))
+        if whole and part <= whole:
+            out.append(part / whole * 100)
+    out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_PERCENT.finditer(text)]
+    return out
+
+
+def _share_overclaim(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (4, 0.4) if korean else (2, 0.5)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        most, every = bool(_MOST_WORDS.search(clause)), bool(_ALL_WORDS.search(clause))
+        if not (most or every) or _shares(clause):
+            continue
+        quantifier = _MOST_WORDS if most else _ALL_WORDS
+        bare = quantifier.sub(" ", clause)
+        for source in source_clauses:
+            shares = _shares(source)
+            shared, r = _clause_overlap(bare, source)
+            if not shares or shared < least or r < ratio:
+                continue
+            if (most and all(x <= 50 for x in shares)) or (every and not most and all(x < 100 for x in shares)):
+                return True
+    return False
 
 
 # 부정 뒤집기(2026-10-10 라벨 평가 회차): 원문 낱말을 거의 그대로 쓰면서 부정만 빼거나 넣은 문장("did not reduce" →
@@ -717,7 +770,7 @@ def _clause_overlap(claim: str, source: str) -> tuple[int, float]:
 def _negation_flip(plain: str, sents: list[str]) -> bool:
     korean = bool(re.search(r"[가-힣]", plain))
     least, ratio = (6, 0.5) if korean else (3, 0.6)
-    source_clauses = [c for s in sents if _scripts(s) == _scripts(plain) for c in _clauses(s)]
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
     for clause in _clauses(plain):
         scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
         scored = [(shared, r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
@@ -1235,7 +1288,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
                                      "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
-                                     "wording_conflict": [], "negation_conflict": [], "estimate_dropped": []}
+                                     "wording_conflict": [], "negation_conflict": [], "share_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}

@@ -628,3 +628,23 @@ class LabeledRoundTests(unittest.TestCase):
                      "설문은 복지관 이용자만 대상으로 해 전체 고령자를 대표하지 않는다 [S1]."):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual([], changes["negation_conflict"], body)
+
+    def test_share_overclaim_most_or_all_is_marked(self):
+        en = {"S1": "After the repair, 3 of the 8 sites met the state swimming standard on every sampled week. "
+                    "Hours were extended at four of its eleven branches. 23 percent of households in the two counties lacked a fast connection."}
+        for body in ("Most sampling sites met the state swimming standard after the repair [S1].",
+                     "Hours were extended at all eleven branches [S1].",
+                     "Most households in the two counties lacked a fast connection [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes["share_conflict"]), body)
+        for body in ("After the repair, 3 of 8 sites met the swimming standard every sampled week [S1].",
+                     "Nearly a quarter of households in the two counties lacked a fast connection [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["share_conflict"], body)
+        ko = {"S1": "조사 대상 12개 동 가운데 5개 동에서 야간 소음이 기준치 55dB을 넘었다. 기준치를 넘은 5개 동은 모두 간선도로에 접해 있었다.",
+              "S2": "응답 교사 75명 중 52명이 참여 학생의 수업 태도가 나아졌다고 답했다."}
+        for body in ("조사한 동 대부분에서 야간 소음이 기준치를 넘었다 [S1].", "모든 교사가 참여 학생의 수업 태도가 나아졌다고 답했다 [S2]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["share_conflict"]), body)
+        text, changes = self.mark("기준치를 넘은 동은 모두 간선도로에 접해 있었다 [S1].", ko, "ko")
+        self.assertEqual([], changes["share_conflict"])
