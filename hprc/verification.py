@@ -1197,14 +1197,18 @@ def _causal_reversal(plain: str, sents: list[str]) -> bool:
 # 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
 # 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
 _CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
-                           r"driven by|attribut\w*|as a result)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로", re.I)
+                           r"driven by|attribut\w*|as a result|concluded)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
+                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가", re.I)
 _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
 _CAUSAL_DISCLAIM = re.compile(
     r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
     r"(?:establish|determine|show|prove|isolate|distinguish|separate|attribute)\w*|\bobservational\b|\bcorrelation\b|"
     r"\b(?:cannot|can't|could not|did not|unable to)\s+rule out\b|"
     r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증|단정|추정|배제|분리)하지\s*(?:않|못)|(?:구분|입증|단정|배제|분리)할 수 없|"
-    r"단정하기 어렵", re.I)
+    r"단정하기 어렵|"
+    # 8회차(holdout4): "not necessarily due to the app", "감소분 전체를 보상제 효과로 보기는 어렵다", "의미 있는 변화로 보기 어렵다"
+    r"\bnot necessarily (?:due to|caused by|because of|the result of|attributable)|"
+    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",

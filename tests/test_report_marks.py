@@ -559,6 +559,22 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["scope_conflict"], body)
 
+    def test_attribution_the_source_declined_is_marked(self):
+        # 8회차(holdout4): 원문이 '보기 어렵다'·'not necessarily due to'로 유보한 귀속·평가를 결론처럼 말하면 causal_conflict.
+        src = {"S1": "꽁초 수는 320개에서 210개로 줄었다. 환경과는 단속 강화가 함께 이루어져 감소분 전체를 보상제 효과로 보기는 어렵다고 밝혔다.",
+               "S2": "The audit said the gap could reflect differences in road type and was not necessarily due to the app.",
+               "S3": "신고는 6% 줄었으나, 경찰은 신고 건수가 적어 의미 있는 변화로 보기 어렵다고 밝혔다."}
+        for body, lang in (("환경과는 꽁초 감소가 전적으로 보상제의 효과라고 결론지었다 [S1].", "ko"),
+                           ("The audit attributed the repair gap to the app [S2].", "en"),
+                           ("경찰은 신고가 6% 줄어든 것을 의미 있는 감소로 평가했다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["causal_conflict"]), body)
+        for body, lang in (("환경과는 감소분 전체를 보상제 효과로 보기 어렵다고 밝혔다 [S1].", "ko"),
+                           ("The audit said the gap was not necessarily due to the app [S2].", "en"),
+                           ("신고는 6% 줄었다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["causal_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
