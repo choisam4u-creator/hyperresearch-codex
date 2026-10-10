@@ -33,7 +33,8 @@ _EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "s
                 "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
                 "제곱킬로미터", "제곱미터", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
                 "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
-                "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees")
+                "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees",
+                "개월", "months")
 _UNITS = _EXTRA_UNITS + ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
           "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
@@ -192,6 +193,8 @@ _UNIT_SCALE = {
     # 눈금 없는 "degrees"는 같은 글의 앞 온도 눈금을 따른다("32 degrees Celsius, compared with 61 degrees"). 앞에 없으면
     # temp_bare로 두고 _absent_values가 인용 원문의 눈금으로 맞춘다.
     "degrees": ("temp_bare", Decimal("1")),
+    # "10개월"을 "10개"+"월"로 읽던 결함(백로그, 7회차). 달 수는 원문 달 범위("3월부터 12월까지")의 길이로도 뒷받침된다.
+    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")),
 }
 
 
@@ -606,6 +609,15 @@ _PER_PERIOD = (
 _NATIVE_COUNT = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
 
 
+_KO_MONTH_RANGE = re.compile(r"(?<!\d)(1[0-2]|0?[1-9])\s*월\s*(?:부터|~|–|-)\s*(?:\d{4}\s*년\s*)?(1[0-2]|0?[1-9])\s*월")
+_EN_MONTH_RANGE = re.compile(rf"\b(?:from\s+)?({_MONTH_PATTERN})\s+(?:\d{{4}}\s+)?(?:to|through|until|-|–)\s+({_MONTH_PATTERN})\b", re.I)
+
+
+def _month_ranges(text: str) -> list[tuple[int, int]]:
+    out = [(int(m.group(1)), int(m.group(2))) for m in _KO_MONTH_RANGE.finditer(text)]
+    return out + [(_MONTHS[m.group(1).lower()], _MONTHS[m.group(2).lower()]) for m in _EN_MONTH_RANGE.finditer(text)]
+
+
 def _per_period_candidates(sentence: str, values: list[dict], source_text: str) -> list[tuple[str, Decimal]]:
     out = []
     for words, defaults, lengths in _PER_PERIOD:
@@ -613,6 +625,8 @@ def _per_period_candidates(sentence: str, values: list[dict], source_text: str) 
             continue
         spans = [Decimal(_NATIVE_COUNT.get(m.group(1), m.group(1)) if m.group(1) in _NATIVE_COUNT else m.group(1))
                  for m in lengths.finditer(source_text)]
+        if 12 in defaults:   # 달 범위("3월부터 12월까지", "from March to December")는 양 끝 달을 넣어 센다(백로그, 7회차)
+            spans += [Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a]
         for n in [Decimal(d) for d in defaults] + [x for x in spans if x > 1]:
             out += [(v["dimension"], abs(v["value"]) / n) for v in values if v["dimension"] != "percent" and v["value"]]
     return out
@@ -663,6 +677,9 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 and abs(abs(value["value"]) - abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100) <= _step(value) / 2
                 for a in plain for b in plain):
             ok.add(value["start"])   # 원문 두 값의 증감률을 반올림한 퍼센트(6분→4.2분 → "1.8 minutes, or 30 percent", 7회차)
+        elif value["dimension"] == "months" and abs(value["value"]) in {
+                Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a}:
+            ok.add(value["start"])   # 원문 달 범위의 길이("3월부터 12월까지" → "10개월 동안")
         elif _ANNUAL_WORDS.search(sentence) and any(
                 a["dimension"] == value["dimension"]
                 and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)

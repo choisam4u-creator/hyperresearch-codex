@@ -799,3 +799,11 @@ class LabeledRoundTests(unittest.TestCase):
         for body in ("도서관 야간 이용자는 하루 평균 120명에서 180명으로 늘었다 [S1].", "평일 대출은 주말보다 30% 많았다 [S1]."):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual([], changes["antonym_conflict"], body)
+
+    def test_month_span_from_date_range_is_read(self):
+        # 백로그(7회차): "10개월"을 "10개"로 읽고, 원문 달 범위에서 센 기간·달 평균을 계산 값으로 보지 못하던 결함.
+        ko = {"S1": "방문 간호는 2025년 4월부터 9월까지 어르신 300명을 4,800회 방문했다."}
+        text, changes = self.mark("방문 간호는 6개월 동안 한 달 평균 약 800회 방문했다 [S1].", ko, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        text, changes = self.mark("방문 간호는 8개월 동안 방문했다 [S1].", ko, "ko")
+        self.assertIn("(출처 불일치)", text)
