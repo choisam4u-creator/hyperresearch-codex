@@ -694,6 +694,16 @@ class LabeledRoundTests(unittest.TestCase):
             text, _ = self.mark(body, ko, "ko")
             self.assertNotIn("(출처 불일치)", text, body)
 
+    def test_time_abbreviation_does_not_split_sentence(self):
+        en = {"S1": "Clinics moved opening time from 9 a.m. to 8 a.m. in May. Weekend hours did not change."}
+        text, changes = self.mark("Clinics now open at 8 a.m. on weekdays [S1].", en)
+        self.assertIn("Clinics now open at 8 a.m. on weekdays [S1].", text)
+        self.assertEqual([], changes["no_source"])
+        text, _ = self.mark("Clinics now open at 7 a.m. [S1].", en)
+        self.assertIn("at 7 a.m. (source mismatch) [S1].", text)
+        text, _ = self.mark("Clinics open at 8 a.m. Staff arrive earlier.", en)
+        self.assertIn("at 8 a.m. (no source) Staff", text)
+
     def test_month_range_and_thousands_comma_do_not_cause_false_marks(self):
         ko = {"S1": "점검은 3월과 4월 두 달 동안만 이뤄졌다. 2025년 운전자 2,310명 가운데 41%가 속도를 줄였다고 답했다. "
                     "보행자는 27%가 길을 돌아갔다고 답했다."}

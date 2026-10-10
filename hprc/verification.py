@@ -477,7 +477,12 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
           "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
                  "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
-_MARK_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
+# 시각·약어("8:30 a.m. start", "e.g. buses")의 마침표에서는 끊지 않는다. a.m./p.m. 뒤에 대문자가 오면 문장 끝으로 본다(2026-10-10 6회차:
+# 끊으면 표시가 "a.m (출처 없음). start"처럼 문장 가운데 들어가 본문이 깨졌다).
+_ABBREV = r"(?<![ap]\.m\.)(?<!\be\.g\.)(?<!\bi\.e\.)(?<!\bvs\.)(?<!\bU\.S\.)"
+_ABBREV_END = re.compile(r"\b(?:[ap]\.m|e\.g|i\.e|vs|U\.S)\.$")
+_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z]))"
+_MARK_SPLIT = re.compile(_SENTENCE_END + r"(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
                          r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
 
@@ -615,7 +620,7 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
 _UP_MARK = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|늘렸|상승", re.I)
 _DOWN_MARK = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|reduced?|dropped)\b|감소|줄었|줄어|줄였|하락|낮췄|낮아", re.I)
 # "approx. 3.8"처럼 약어 마침표 뒤에서는 끊지 않는다(추정 낱말이 수치와 한 문장에 남게, PR #16 리뷰 반영).
-_SOURCE_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)\s+|\n+")
+_SOURCE_SPLIT = re.compile(_SENTENCE_END + r"\s+|\n+")
 _EN_CONTEXT_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into",
                     "their", "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year",
                     "years", "median", "average", "report", "reports", "notes", "source"}
@@ -984,7 +989,7 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
 
 
 # 천 단위 쉼표("1,040명")에서는 끊지 않는다 — 끊으면 수치 앞 대상 낱말을 잃어 대상 바꿈을 오판한다(2026-10-10 5회차).
-_CLAUSE_BREAK = re.compile(r"(?<!\d),|,(?!\d)|[;:()]|(?<=[.!?。])(?<![Aa]pprox\.)\s")
+_CLAUSE_BREAK = re.compile(r"(?<!\d),|,(?!\d)|[;:()]|" + _SENTENCE_END + r"\s")
 
 
 def _clause_around(text: str, value: dict) -> tuple[int, str]:
@@ -1430,7 +1435,7 @@ def _with_mark(sentence: str, mark: str) -> str:
     """문장 끝 구두점 앞에 표시를 넣는다. 구두점 뒤 인용이 있으면 맨 끝에 붙인다."""
     body = sentence.rstrip()
     trailing = sentence[len(body):]
-    if body and body[-1] in ".!?。":
+    if body and body[-1] in ".!?。" and not _ABBREV_END.search(body):
         return body[:-1].rstrip() + f" {mark}" + body[-1] + trailing
     return body + f" {mark}" + trailing
 
@@ -1441,7 +1446,7 @@ def _with_mismatch(sentence: str, mark: str) -> str:
     if not tail or not tail.group(0).strip().startswith("[S"):
         return _with_mark(sentence, mark)
     head = sentence[:tail.start()].rstrip()
-    if head and head[-1] in ".!?。":        # "문장. [S1]" 꼴은 구두점 앞에 넣는다
+    if head and head[-1] in ".!?。" and not _ABBREV_END.search(head):  # "문장. [S1]" 꼴은 구두점 앞에 넣는다
         return head[:-1].rstrip() + f" {mark}" + head[-1] + " " + tail.group(0).lstrip()
     return head + f" {mark} " + tail.group(0).lstrip()
 
