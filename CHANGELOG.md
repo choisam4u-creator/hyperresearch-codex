@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Mark `(source mismatch)` when a cited sentence widens the source's stated scope to "every"/"all"/nationwide/`전국`/`모든` although no related source sentence says so, even without pilot or sample words (`scope_conflict`); counted lists (`all 6,200 families`), `every two months` and negated limits are not flagged. Treat effect verbs (`reduced`, `줄였다`, `늦췄다`) as causal claims when the cited source disclaims attribution (`could not rule out`, `단정할 수 없다`, `추정하지 않았다`), and mark sentences that turn a reported null result (`did not change`, `바뀌지 않았다`, not significant) into a change (`negation_conflict`). Stop splitting sentences at `a.m.`, `p.m.`, `e.g.`, `i.e.`, `vs.` and `U.S.`, which put marks mid-sentence.
 - Recover from a draft citation to a nonexistent source by removing it and marking the sentence `(no source)` instead of blocking the run; the removal is recorded and sets `review_required`.
 - Collapse co-citations of the same canonical URL and warn on text-similar source pairs cited as if independent; drop duplicate Sources rows before citation checks.
 - Mark cited sentences whose numbers or dates are absent from the cited source `(source mismatch)` and uncited factual sentences in Answer/Evidence/Limits `(no source)` directly in the report body.

@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-10 (품질 회차 6)
+
+- 점수 전후: 코드 수정 전에 만든 새 holdout2 라벨 평가(`python -m evals.labeled --set holdout2`, 12 case·136문장) **F1 59.5 → 80.9**(recall 50.0→80.3, precision 73.3→81.5, 맞는 문장 오표시율 17.1 그대로, 못 찾은 문장 2→0). 설계 때 보지 않은 묶음: dev 82.9→88.4, 5회차 holdout 73.4→80.0(둘 다 오표시율 그대로). 고정 32 case(`evals.run`) 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시):
+  - 코드 수정 전 먼저: 기존과 겹치지 않는 holdout2 case 12개(범위 과장 11·부정·유보 뒤집기 15·인과 역전 5·방향 9·단위 9, 동의어 맞는 문장 33·반올림·계산 값 26·단위 환산 3)와 `--set holdout2`(`4f263eb`).
+  - 개선 1 전체 범위 단정 `_universal_overclaim`(범위 과장 0/11→11/11). 개선 2 효과 동사 인과 단정·유보 표현 확장과 무변화·비유의 뒤집기 `_null_result_flip`(부정 5/15→13/15). 개선 3 'a.m.' 등 약어 마침표에서 문장을 끊어 본문이 깨지던 결함. 시험 3개(모두 옛 코드에서 실패 확인).
+  - 백로그: holdout 새로 만들기 항목 완료, 부정 항목 진행 기록, 새 항목 4건(사람 검토·오표시 17.1·단위 차원·시간 순서 역전). CI에 holdout2 `--min-f1 75`. CHANGELOG·evals README.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 590개 통과(Python 3.11; `httpx`·`pypdf`·`cffi`를 따로 설치). `evals.run`(100.0)·`evals.labeled`(dev 88.4, holdout 80.0, holdout2 80.9)·`compileall` 통과, walkthrough 재생성 변화 없음. 3.12/3.13·Windows·휠 빌드와 실제 `codex exec`는 돌리지 않았다.
+- 한계: holdout2도 이 세션이 쓰고 라벨을 달았고, 개선 1·2는 holdout2 기준선 오판을 본 뒤 만들었다(효과 동사 낱말 공유 문턱은 holdout2 두 문장을 보고 2→1로 낮춤) — holdout2 끝 점수는 과대평가이고 dev·holdout 상승이 덜 편향된 근거다. 맞는 문장 오표시율 17.1(단위 환산·곱·배수)은 이번에 손대지 않았다. 커밋 댓글 규칙은 이 세션 GitHub 도구에 커밋 댓글 기능이 없어 PR 본문·이 기록으로 대신한다. CI 결과는 푸시 직후라 확인하지 못했다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "LED 가로등 교체는 전력 사용과 야간 범죄를 줄였나? 근거와 한계를 밝혀라"
+  grep -h '"scope_conflict"\|"causal_conflict"\|"negation_conflict"' -A6 research/runs/*/report_marks.json   # 표시 문장을 원문과 대조해 오표시를 센다
+  ```
+
 ## 2026-10-10 (품질 회차 5)
 
 - 점수 전후: 코드 수정 전에 만든 새 holdout 라벨 평가(`python -m evals.labeled --set holdout`, 12 case·127문장) **F1 60.9 → 73.4**(recall 56.5→64.5, precision 66.0→85.1, 맞는 문장 오표시율 27.7→10.8). dev 108문장 81.0→82.9(오표시율 6.5→3.2). 고정 32 case(`evals.run`) 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
