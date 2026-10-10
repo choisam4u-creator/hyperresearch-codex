@@ -1,0 +1,73 @@
+{
+  "id": "en-food-scraps",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "How much food waste did the city's food scrap collection pilot divert?",
+  "sources": {
+    "S1": "The city's food scrap collection pilot ran in 3 districts from April 2024 to March 2025 and diverted 1,800 tonnes of food waste from the landfill. Participation reached 62 percent of eligible households by the end of the pilot.\n\nContamination with plastic averaged 4 percent of collected weight. The city did not measure changes in household waste generation.",
+    "S2": "The landfill operator reported that methane capture at the site did not change during the pilot period. The operator said the pilot volume was too small to detect at the landfill scale."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How much food waste did the city's food scrap collection pilot divert?\n\n## Answer\nThe pilot diverted 1,800 tonnes of food waste in its first year [S1]. That equals 1.8 million kilograms kept out of the landfill [S1]. The pilot diverted 1,800 kilograms of food waste from the landfill [S1].\n\n## Evidence\n- By the end of the pilot, roughly three in five eligible households took part [S1].\n- Plastic contamination averaged 4 percent of collected weight across all city districts [S1].\n- Methane capture at the landfill rose during the pilot [S2].\n\n## Counter-evidence and limits\n- The pilot was too small for its effect to show up at the landfill [S2].\n- Changes in how much waste households produced were not measured [S1].\n- Households in the pilot districts cut their total trash by a fifth.\n\n## Next actions\n- Weigh household trash before and after in a sample of pilot homes (judgment)\n\n## Sources\n- [S1] City food scrap pilot report\n- [S2] Landfill operator statement\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The pilot diverted 1,800 tonnes of food waste in its first year",
+      "label": "ok",
+      "tag": "plain",
+      "why": "2024-04~2025-03 한 해"
+    },
+    {
+      "key": "That equals 1.8 million kilograms",
+      "label": "ok",
+      "tag": "unit",
+      "why": "1,800 t = 1.8 million kg"
+    },
+    {
+      "key": "The pilot diverted 1,800 kilograms of food waste",
+      "label": "mismatch",
+      "tag": "unit",
+      "why": "톤을 킬로그램으로"
+    },
+    {
+      "key": "By the end of the pilot, roughly three in five eligible households",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "62% ≈ 5분의 3"
+    },
+    {
+      "key": "Plastic contamination averaged 4 percent of collected weight across all city districts",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "시범 3개 구"
+    },
+    {
+      "key": "Methane capture at the landfill rose during the pilot",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "원문: did not change"
+    },
+    {
+      "key": "The pilot was too small for its effect to show up",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2"
+    },
+    {
+      "key": "Changes in how much waste households produced were not measured",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1"
+    },
+    {
+      "key": "Households in the pilot districts cut their total trash by a fifth",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "출처 없음"
+    }
+  ]
+}

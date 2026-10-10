@@ -1,0 +1,67 @@
+{
+  "id": "en-telehealth",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "Do video visits reduce emergency visits among older patients?",
+  "sources": {
+    "S1": "A health system study followed 9,400 Medicare patients in two counties from 2022 to 2024. Patients who chose video visits had 12 percent fewer emergency visits than patients who used only in-person care.\n\nThe authors reported that patients who were already in better health were more likely to choose video visits, and said the difference should not be read as an effect of telehealth.",
+    "S2": "A state broadband office report found that 23 percent of households in the two counties lacked a home connection fast enough for video calls in 2024."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Do video visits reduce emergency visits among older patients?\n\n## Answer\nPatients using video visits had 12 percent fewer emergency visits than in-person-only patients [S1]. Video visits made patients healthier, which cut their emergency visits [S1]. The study followed 9,400 Medicare patients nationwide [S1].\n\n## Evidence\n- Healthier patients were more likely to pick video visits, so the gap is not a telehealth effect [S1].\n- Nearly a quarter of households in the two counties lacked broadband fast enough for video calls [S2].\n- Most households in the two counties lacked a connection fast enough for video calls [S2].\n\n## Counter-evidence and limits\n- The study ran from 2022 to 2024 in two counties [S1].\n- Telehealth use fell after 2024 as in-person clinics reopened.\n\n## Next actions\n- Look for a study that adjusts for baseline health (judgment)\n\n## Sources\n- [S1] Health system Medicare study\n- [S2] State broadband office report\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Patients using video visits had 12 percent fewer emergency visits",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S1"
+    },
+    {
+      "key": "Video visits made patients healthier",
+      "label": "mismatch",
+      "tag": "causal_reversal",
+      "why": "원문: 건강한 환자가 화상 진료를 골랐다"
+    },
+    {
+      "key": "The study followed 9,400 Medicare patients nationwide",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "두 카운티"
+    },
+    {
+      "key": "Healthier patients were more likely to pick video visits",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1 저자 해석"
+    },
+    {
+      "key": "Nearly a quarter of households in the two counties",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "23%"
+    },
+    {
+      "key": "Most households in the two counties lacked a connection",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "23%를 대부분으로"
+    },
+    {
+      "key": "The study ran from 2022 to 2024 in two counties",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S1"
+    },
+    {
+      "key": "Telehealth use fell after 2024 as in-person clinics reopened",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "출처 없음"
+    }
+  ]
+}
