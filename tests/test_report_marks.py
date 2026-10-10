@@ -543,6 +543,22 @@ class PlanScopeTests(unittest.TestCase):
         text, _ = self.mark("Average bus speeds inside the zone rose from 11 to 13 miles per hour [S1].", src)
         self.assertIn("mismatch", text)
 
+    def test_survey_share_restated_as_population_share_is_marked(self):
+        # 8회차(holdout4): 설문 응답자의 몫을 주민·시민 전체의 몫으로 말하면 범위를 넓힌 것(scope_conflict).
+        src = {"S1": "구 설문에서 이용자 450명 중 91%가 귀가가 더 안전하게 느껴졌다고 답했다.",
+               "S2": "A resident survey of 600 households found 58 percent supported continuing the program.",
+               "S3": "Census data show 58 percent of residents rent their homes."}
+        for body, lang in (("다온구 주민의 91%가 귀가가 더 안전해졌다고 느꼈다 [S1].", "ko"),
+                           ("A majority of pilot-district residents support continuing the program [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
+            self.assertEqual(1, len(changes["scope_conflict"]), body)
+        for body, lang in (("설문에 응한 이용자의 91%가 더 안전하다고 답했다 [S1].", "ko"),
+                           ("In the survey, 58 percent of households supported continuing the program [S2].", "en"),
+                           ("Most residents rent their homes [S3].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["scope_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

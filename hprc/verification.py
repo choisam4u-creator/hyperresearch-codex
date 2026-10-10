@@ -888,7 +888,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("period")
     if _plan_overclaim(plain, sents):
         found.append("plan")
-    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents):
+    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents):
         found.append("scope")
     if _year_conflict(plain, sents):
         found.append("year")
@@ -1598,6 +1598,38 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
         if all(moved(s, v, vals) for s, v, vals in held):
             return True
     return False
+
+
+# 표본 몫을 모집단 몫으로(8회차 holdout4): 원문 "이용자 450명 설문에서 91%"·"600가구 설문에서 58 percent"를 주장이
+# "주민의 91%"·"A majority of residents"처럼 설문이라는 말 없이 주민·시민 전체의 몫으로 말하면 범위를 넓힌 것이다.
+_POPULATION = re.compile(r"\b(?:residents|citizens|people|population|households|adults|voters|the public)\b|주민|시민|구민|군민|도민|국민", re.I)
+_SAMPLE_WORDS = re.compile(r"\b(?:surveys?|surveyed|polls?|polled|respond\w*|asked|interview\w*|users?|participants?|cyclists|"
+                           r"riders|applicants|patients)\b|설문|응답|조사|이용자|참여자|참가자", re.I)
+# 몫이 모집단에 걸린 꼴만 본다("주민의 91%", "58 percent of residents", "a majority of residents"). "Households statewide saw
+# bills fall 9 percent"처럼 모집단 낱말과 증감률이 한 문장에 있을 뿐인 것은 몫이 아니다.
+_POPULATION_SHARE = re.compile(
+    r"(?:주민|시민|구민|군민|도민|국민)(?:의|\s)\s*(?:약\s*)?\d|"
+    r"\b(?:percent|%|majority|most|two[- ]thirds|half|(?:a|one)[- ]third)\s+of\s+(?:the\s+)?(?:[\w-]+\s+){0,2}"
+    r"(?:residents|citizens|people|population|households|adults|voters|the public)\b|"
+    r"(?:주민|시민|구민|군민|도민|국민)\s*(?:대다수|대부분|과반|절반|3분의)", re.I)
+_SURVEY = re.compile(r"\b(?:surveys?|surveyed|polls?|polled|respond\w*|questionnaire)\b|설문|응답", re.I)
+_SHARE_WORDS = ((re.compile(r"\b(?:a|the) majority\b|\bmost\b|대다수|대부분|과반", re.I), (Decimal(50), Decimal(100))),
+                (re.compile(r"\btwo[- ]thirds\b|3분의 2", re.I), (Decimal(60), Decimal(72))),
+                (re.compile(r"\bhalf\b|절반", re.I), (Decimal(45), Decimal(55))),
+                (re.compile(r"\b(?:a|one)[- ]third\b|3분의 1", re.I), (Decimal(28), Decimal(38))))
+
+
+def _sample_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장이 주민·시민 전체의 몫을 말하고(설문·응답자·이용자 낱말 없이), 그 몫이 나오는 원문 문장이 모두 설문·응답 결과면 True."""
+    if not _POPULATION_SHARE.search(plain) or _SAMPLE_WORDS.search(plain):
+        return False
+    shares = [abs(v["value"]) for v in _quantity_values(plain, _date_like_spans(plain)) if v["dimension"] == "percent"]
+    ranges = [(x - Decimal("0.5"), x + Decimal("0.5")) for x in shares] + [r for rx, r in _SHARE_WORDS if rx.search(plain)]
+    if not ranges:
+        return False
+    held = [s for s in sents if any(lo <= abs(v["value"]) <= hi for v in _quantity_values(s, _date_like_spans(s))
+                                    if v["dimension"] == "percent" for lo, hi in ranges)]
+    return bool(held) and all(_SURVEY.search(s) for s in held)
 
 
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
