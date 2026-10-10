@@ -120,7 +120,8 @@ class AnalysisSingleFlightTests(unittest.TestCase):
 
     def test_same_key_concurrent_miss_calls_fake_analyst_once(self):
         outcomes = self._pair([FIXTURE, FIXTURE])
-        self.assertEqual(["ok", "ok"], sorted(status for _, status in outcomes))
+        statuses = sorted(status for _, status in outcomes)
+        self.assertEqual(["ok", "ok"], statuses, statuses)
         self.assertEqual(1, self._event_count())
         manifests = [json.loads((self.root / "research" / "runs" / f"run-{i}" /
                                  "manifest.json").read_text(encoding="utf-8")) for i in range(2)]
@@ -132,7 +133,7 @@ class AnalysisSingleFlightTests(unittest.TestCase):
     def test_failed_owner_releases_lock_and_waiter_populates_cache(self):
         outcomes = self._pair([FIXTURE, FIXTURE], fail_first=True)
         statuses = [status for _, status in outcomes]
-        self.assertEqual(1, statuses.count("ok"))
+        self.assertEqual(1, statuses.count("ok"), statuses)
         self.assertEqual(1, sum("intentional fake analyst failure" in status for status in statuses))
         self.assertEqual(2, self._event_count())
 
@@ -151,12 +152,14 @@ class AnalysisSingleFlightTests(unittest.TestCase):
         alternate = self.root / "alternate.json"
         alternate.write_text(json.dumps(changed, ensure_ascii=False), encoding="utf-8")
         outcomes = self._pair([FIXTURE, alternate])
-        self.assertEqual(["ok", "ok"], sorted(status for _, status in outcomes))
+        statuses = sorted(status for _, status in outcomes)
+        self.assertEqual(["ok", "ok"], statuses, statuses)
         self.assertEqual(2, self._event_count())
 
     def test_opt_out_keeps_two_independent_calls(self):
         outcomes = self._pair([FIXTURE, FIXTURE], reuse=False)
-        self.assertEqual(["ok", "ok"], sorted(status for _, status in outcomes))
+        statuses = sorted(status for _, status in outcomes)
+        self.assertEqual(["ok", "ok"], statuses, statuses)
         self.assertEqual(2, self._event_count())
 
     def test_wait_is_bounded_and_timeout_does_not_poison_lock(self):
