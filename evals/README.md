@@ -18,3 +18,15 @@ HPR_BACKEND=mock python -m evals.run --verbose  # 감점 근거
   - 보고서 구조: 질문 원문 줄과 답·근거·한계·출처·다음 행동 절이 내용과 함께 있는지
 - 실행이 막히면(Blocked) 그 case는 전 항목 0점이다.
 - 기준이나 픽스처를 바꾸면 `docs/QUALITY-LOG.md`에 이유를 적는다. 점수를 올리려고 기준을 느슨하게 하지 않는다.
+
+## 사람 라벨 대조 평가 (`evals.labeled`, 2026-10-10)
+
+```bash
+HPR_BACKEND=mock python -m evals.labeled            # precision·recall·F1·유형별 표
+HPR_BACKEND=mock python -m evals.labeled --verbose  # 틀린 판정 문장
+```
+
+- 위 점수기는 코드와 같은 발상이라 100에 닿은 뒤 개선을 구분하지 못한다. `labeled/*.json`은 질문·출처·작성 응답에 더해 문장마다 정답 `labels`(`key`: 보고서에서 그 문장을 찾을 고유 문자열, `label`: `ok`·`mismatch`·`unverified`, `tag`: 결함·바꿔 말하기 유형, `why`: 근거)를 둔다.
+- 점수기는 낱말·수치 대조를 하지 않는다. 최종 보고서에서 그 문장에 붙은 표시만 읽는다: `(출처 불일치)`·`(원문 추정치)` → mismatch, `(출처 없음)` → unverified, 없으면 ok. 결함(mismatch·unverified)을 양성으로 precision·recall·F1, ok 문장 오표시율, 라벨 정확 일치를 낸다. 문장을 보고서에서 못 찾으면 종료 코드 1.
+- 라벨·case를 고쳐 점수를 올리지 않는다. 라벨이 틀렸다고 판단하면 고치기 전에 `docs/QUALITY-LOG.md`에 근거를 적고, 새 결함 유형은 새 case로 더한다.
+

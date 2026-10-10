@@ -19,6 +19,10 @@
 - Mark `(source mismatch)` when a cited sentence restates a per-person or per-household amount as a total, or the reverse, or swaps per-person and per-household (`1인당 20만 원` → `총액 20만 원`); stop reading the `1` in `1인당` as a quantity, and stop flagging a value whose subject the source states only in an earlier clause.
 - Mark `(source mismatch)` when a cited Answer/Evidence/Limits sentence states something the cited source barely contains (under 40% of its Korean character bigrams or English content words appear in the source), such as an inference or fact added without numbers; recorded as `wording_conflict`. Translated citations and source-framing words ("according to the report") are not counted. The subject-swap check no longer treats singular and plural nouns as different subjects or compares numbers with different count nouns (`2.4-mile` vs `71 decibels`).
 - Add the `evals/` fixed-case quality score (`python -m evals.run`) to CI. Fixed-case scores are not a general quality claim.
+- Add a human-labeled evaluation (`python -m evals.labeled`, 12 new cases, 108 labeled sentences) that compares report marks with per-sentence labels (supported / source mismatch / unverified) and reports precision, recall and F1 instead of reusing the fixed-case scorer's rules; run it in CI with `--min-f1 75`.
+- Compare tonnes, kilograms, miles and kilometers (including hyphenated `12-kilometer`) by converted value, so swapped units are marked `(source mismatch)` and correct conversions are not.
+- Stop flagging hedged rounded values (`about 4 million`, `약 24%`) and values derived from cited numbers (ratios, percent changes, sums, `×365` annualization, `10명 중 7명꼴`) when they round to a value the source supports; out-of-range roundings are still marked.
+- Mark `(source mismatch)` when a cited clause repeats the source's wording but drops or adds a negation (`did not reduce` → `reduced`, `줄지 않았다` → `줄었다`; `negation_conflict`), or turns a stated share (`3 of the 8 sites`, `23 percent of`, `75명 중 52명`) into "most", "all", `대부분` or `모든` (`share_conflict`).
 
 ## 0.5.0 - 2026-09-26
 

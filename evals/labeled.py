@@ -135,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--case")
     parser.add_argument("--json")
     parser.add_argument("--verbose", action="store_true", help="틀린 판정 문장 출력")
+    parser.add_argument("--min-f1", type=float, help="F1이 이보다 낮으면 종료 코드 1(회귀 감시용, 목표 아님)")
     args = parser.parse_args(argv)
     os.environ["HPR_BACKEND"] = "mock"
     cases = load_cases(args.case)
@@ -149,7 +150,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         Path(args.json).write_text(json.dumps({"metrics": metrics(rows), "rows": rows}, ensure_ascii=False, indent=2),
                                    encoding="utf-8")
-    return 1 if metrics(rows)["missing"] else 0
+    m = metrics(rows)
+    return 1 if m["missing"] or (args.min_f1 is not None and m["f1"] < args.min_f1) else 0
 
 
 if __name__ == "__main__":
