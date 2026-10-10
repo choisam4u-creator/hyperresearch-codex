@@ -653,6 +653,24 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertNotIn("(출처 불일치)", text, body)
 
+    def test_universal_scope_without_narrow_words_is_marked(self):
+        en = {"S1": "The ferry discount was offered on 3 harbor routes in 2024. Weekday ferry trips on those routes rose 11 percent. "
+                    "Each route kept its schedule."}
+        for body in ("The ferry discount was offered on every route in the region [S1].",
+                     "Weekday ferry trips rose 11 percent nationwide [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes["scope_conflict"]), body)
+        for body in ("Weekday ferry trips on the 3 discounted routes rose 11 percent [S1].",
+                     "The discount did not cover all ferry routes [S1].", "All 3 harbor routes offered the ferry discount [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["scope_conflict"], body)
+        ko = {"S1": "교통공사는 2024년 도심 5개 역에 승강장 안전문을 새로 달았다. 해당 역의 추락 사고는 연 6건에서 1건으로 줄었다."}
+        text, changes = self.mark("전국 모든 역의 추락 사고가 연 6건에서 1건으로 줄었다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["scope_conflict"]))
+        for body in ("도심 5개 역의 추락 사고가 연 6건에서 1건으로 줄었다 [S1].", "안전문은 모든 역에 달리지는 않았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["scope_conflict"], body)
+
     def test_month_range_and_thousands_comma_do_not_cause_false_marks(self):
         ko = {"S1": "점검은 3월과 4월 두 달 동안만 이뤄졌다. 2025년 운전자 2,310명 가운데 41%가 속도를 줄였다고 답했다. "
                     "보행자는 27%가 길을 돌아갔다고 답했다."}

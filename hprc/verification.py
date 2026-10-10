@@ -727,7 +727,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("period")
     if _plan_overclaim(plain, sents):
         found.append("plan")
-    if _scope_overclaim(plain, sents):
+    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents):
         found.append("scope")
     if _year_conflict(plain, sents):
         found.append("year")
@@ -1331,6 +1331,31 @@ def _scope_overclaim(plain: str, sents: list[str]) -> bool:
 
 def _scope_stems(text: str) -> set[str]:
     return _content_stems(_NARROW_SCOPE.sub(" ", _WIDE_SCOPE.sub(" ", text)))
+
+
+# 전체 범위 단정(2026-10-10 6회차): 원문이 "6개 도심 지역", "25mm 미만 비", "강원·경북 산간", "서울 조사"처럼 범위를 한정해 말한
+# 것을 주장이 "every neighborhood", "all storms", "전국", "모든 청년"으로 넓힌다. 원문에 시범·표본 낱말이 없어도 생긴다.
+# 주장과 같은 대상(내용 낱말 2개 이상 공유)을 말하는 원문 문장이 있고 그중 어느 문장에도 전체 낱말이 없을 때만 본다.
+# 개수를 밝힌 "all 6,200 families"·"every two months"·"N percent of all"·"전국 평균"은 범위 단정이 아니라 세지 않는다.
+# 문턱은 dev 로만 정했다(holdout2 는 이 회차 이 세션이 쓴 문장이라 독립 측정이 아님 — QUALITY-LOG 참고).
+_UNIVERSAL = re.compile(
+    r"\b(?:all|every|entire|whole|nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?"
+    r"(?:city|country|nation|state|region|district|county))\b|전국|전역|모든|거의 모두|전체|전원|전부", re.I)
+_UNIVERSAL_SKIP = re.compile(
+    r"\b(?:all|every)\s+(?:\d|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|other|few|day|week|month|year)\w*|"
+    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average", re.I)
+
+
+def _universal_overclaim(plain: str, sents: list[str]) -> bool:
+    text = _UNIVERSAL_SKIP.sub(" ", plain)
+    # "전체 고령자를 대표하지 않는다"처럼 전체 낱말을 부정하는 문장은 범위를 넓히지 않고 한계를 말한다.
+    if not _UNIVERSAL.search(text) or _NEGATION.search(text):
+        return False
+    stems = _content_stems(_UNIVERSAL.sub(" ", text))
+    korean = bool(re.search(r"[가-힣]", plain))
+    related = [s for s in sents if bool(re.search(r"[가-힣]", s)) == korean
+               and len(stems & _content_stems(_UNIVERSAL.sub(" ", s))) >= 2]
+    return bool(related) and not any(_UNIVERSAL.search(_UNIVERSAL_SKIP.sub(" ", s)) for s in related)
 
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
