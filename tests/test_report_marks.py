@@ -752,3 +752,29 @@ class LabeledRoundTests(unittest.TestCase):
             self.assertEqual(1, len(changes["share_conflict"]), body)
         text, changes = self.mark("기준치를 넘은 동은 모두 간선도로에 접해 있었다 [S1].", ko, "ko")
         self.assertEqual([], changes["share_conflict"])
+
+    def test_derived_values_and_converted_units_are_read(self):
+        # 2026-10-10 7회차: 범위 앞 값의 단위, 넓이·온도·전력량 낱말 단위, 차·곱·기간당 평균·증감률을 계산 값으로 읽는다.
+        en = {"S1": "Average ferry speeds rose from 18 to 24 kilometers per hour. The 3,000 square meter plaza cost 250 dollars "
+                    "per square meter. Wait times fell from 40 minutes to 30 minutes. Water temperatures rose by 4 degrees "
+                    "Fahrenheit. Annual pumping energy fell from 52 gigawatt-hours to 40 gigawatt-hours. Ridership was 73,000 "
+                    "trips in 2024."}
+        for body in ("Ferries sped up by about 6 km/h [S1].", "The plaza covered 0.3 hectares [S1].",
+                     "The plaza cost about 750,000 dollars in total [S1].", "Wait times fell by 25 percent [S1].",
+                     "Water temperatures rose by about 2.2 degrees Celsius [S1].", "Ridership averaged about 200 trips a day [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertNotIn("(source mismatch)", text, body)
+        for body in ("Average ferry speeds rose from 18 to 24 miles per hour [S1].",
+                     "Water temperatures rose by 4 degrees Celsius [S1].",
+                     "Annual pumping energy fell from 52 megawatt-hours to 40 megawatt-hours [S1].",
+                     "The plaza covered 3 hectares [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertIn("(source mismatch)", text, body)
+        ko = {"S1": "체험관 신규 회원은 두 달 동안 2만 4,000명이었다. 생태공원은 2만 5,000㎡이다. 놀이터 바닥은 화씨 10도 낮았다. "
+                    "야간 개방 구역에 체육관은 포함되지 않았다."}
+        for body in ("한 달에 약 1만 2,000명이 새로 가입했다 [S1].", "생태공원 면적은 2.5헥타르다 [S1].", "놀이터 바닥은 섭씨 약 5.6도 낮았다 [S1].",
+                     "야간 개방 구역에서 체육관은 빠졌다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+        text, changes = self.mark("놀이터 바닥은 섭씨 10도 낮았다 [S1].", ko, "ko")
+        self.assertIn("(출처 불일치)", text)

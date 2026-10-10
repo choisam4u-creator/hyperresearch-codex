@@ -26,7 +26,15 @@ _KOREAN_DATE_LIKE = re.compile(
 )
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
-_UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
+# 넓이·온도·낱말로 쓴 전력량 단위(2026-10-10 7회차, holdout3): "1만 2,000㎡"↔"1.2헥타르", "2 degrees Fahrenheit"↔"1.1 degrees
+# Celsius" 같은 맞는 환산을 값으로 비교하고, "31 gigawatt-hours"→"31 megawatt-hours"·"화씨 2도"→"섭씨 2도" 같은 단위 바꿔치기를
+# 잡는다. "km"·"m"보다 먼저 맞춰야 "km²"가 길이로 읽히지 않는다.
+_EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
+                "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
+                "제곱킬로미터", "제곱미터", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
+                "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
+                "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees")
+_UNITS = _EXTRA_UNITS + ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
           "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
           "mWh", "mW", "kWh", "Wh", "kW", "W", "Gbps", "Mbps", "Kbps", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
@@ -164,6 +172,26 @@ _UNIT_SCALE = {
     "tb": ("data_decimal", Decimal("1000000")),
     "kbps": ("data_rate", Decimal("1000")), "mbps": ("data_rate", Decimal("1000000")), "gbps": ("data_rate", Decimal("1000000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
+    "square kilometers": ("area", Decimal("1000000")), "square kilometres": ("area", Decimal("1000000")),
+    "제곱킬로미터": ("area", Decimal("1000000")), "km²": ("area", Decimal("1000000")), "㎢": ("area", Decimal("1000000")),
+    "square meters": ("area", Decimal("1")), "square metres": ("area", Decimal("1")), "제곱미터": ("area", Decimal("1")),
+    "square kilometer": ("area", Decimal("1000000")), "square kilometre": ("area", Decimal("1000000")),
+    "square meter": ("area", Decimal("1")), "square metre": ("area", Decimal("1")), "square foot": ("area", Decimal("0.09290304")),
+    "square mile": ("area", Decimal("2589988.110336")),
+    "m²": ("area", Decimal("1")), "㎡": ("area", Decimal("1")), "hectares": ("area", Decimal("10000")),
+    "hectare": ("area", Decimal("10000")), "헥타르": ("area", Decimal("10000")), "acres": ("area", Decimal("4046.8564224")),
+    "acre": ("area", Decimal("4046.8564224")), "square feet": ("area", Decimal("0.09290304")),
+    "ft²": ("area", Decimal("0.09290304")), "square miles": ("area", Decimal("2589988.110336")),
+    "gigawatt-hours": ("energy", Decimal("1000000000")), "gigawatt hours": ("energy", Decimal("1000000000")),
+    "megawatt-hours": ("energy", Decimal("1000000")), "megawatt hours": ("energy", Decimal("1000000")),
+    "kilowatt-hours": ("energy", Decimal("1000")), "kilowatt hours": ("energy", Decimal("1000")),
+    # 온도는 화씨·섭씨를 다른 차원으로 둔다(환산에 0점 차이가 있어 배율 하나로 못 맞춘다). 환산 값은 _derived_candidates가 낸다.
+    "degrees celsius": ("temp_c", Decimal("1")), "degree celsius": ("temp_c", Decimal("1")), "°c": ("temp_c", Decimal("1")),
+    "℃": ("temp_c", Decimal("1")), "degrees fahrenheit": ("temp_f", Decimal("1")), "degree fahrenheit": ("temp_f", Decimal("1")),
+    "°f": ("temp_f", Decimal("1")), "℉": ("temp_f", Decimal("1")),
+    # 눈금 없는 "degrees"는 같은 글의 앞 온도 눈금을 따른다("32 degrees Celsius, compared with 61 degrees"). 앞에 없으면
+    # temp_bare로 두고 _absent_values가 인용 원문의 눈금으로 맞춘다.
+    "degrees": ("temp_bare", Decimal("1")),
 }
 
 
@@ -287,6 +315,11 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         if not unit and _MONTH_RANGE_HEAD.match(text, stop) and re.fullmatch(r"1[0-2]|0?[1-9]", raw):
             unit = "월"   # "9~10월"의 앞 9도 달이다(2026-10-10 5회차, 라벨 평가 오표시)
+        if not unit and text.startswith("도", stop):
+            lead_word = re.search(r"(섭씨|화씨)\s*(?:약|대략)?\s*$", text[:match.start()])
+            if lead_word:   # "섭씨 2도"·"화씨 2도"
+                unit, stop = ("degrees celsius" if lead_word.group(1) == "섭씨" else "degrees fahrenheit"), stop + 1
+                pos, raw = stop, text[match.start():stop]
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
         item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop,
                 "number": number, "scale": scale}
@@ -295,7 +328,22 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         if unit in {"mw", "mwh"}:
             item["unsupported_unit"] = unit_match.group(0).strip(" -")
         values.append(item)
+    # 범위·변화 앞 값은 뒤 값의 단위를 물려받는다("from 11 to 13 kilometers", "31에서 13GWh로"). 단위 없는 11로 읽으면
+    # 맞는 계산("2 km/h 빨라졌다")도 바꾼 단위("11 to 13 miles")도 비교하지 못한다(2026-10-10 7회차).
+    for before, after in zip(values, values[1:]):
+        if (before["dimension"] == "unitless" and after["dimension"] != "unitless" and not after.get("unsupported_unit")
+                and _RANGE_JOIN.fullmatch(text, before["end"], after["start"])):
+            before.update(dimension=after["dimension"], scale=after["scale"], value=before["number"] * after["scale"])
+    scale_seen = ""
+    for item in values:
+        if item["dimension"] in ("temp_c", "temp_f"):
+            scale_seen = item["dimension"]
+        elif item["dimension"] == "temp_bare" and scale_seen:
+            item["dimension"] = scale_seen
     return values
+
+
+_RANGE_JOIN = re.compile(r"\s*(?:to|and|~|–|—|-|에서|부터)\s*", re.I)
 
 
 def _context_terms(text: str, start: int, end: int) -> set[str]:
@@ -528,6 +576,45 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
                 if a["dimension"] == b["dimension"]:
                     out.append(("배", abs(a["value"]) / abs(b["value"])))
     out += [("percent", abs(p - q)) for p in percents for q in percents if p != q]
+    # 2026-10-10 7회차: 같은 차원 두 값의 차("9.2회에서 5.1회로" → "about 4"), 단위당 값×개수("㎡당 15만 원"×"1만 2,000㎡" →
+    # "약 18억 원"), 화씨↔섭씨 환산(차이와 절대 온도 둘 다). 어림 표시가 있을 때만 쓰인다.
+    for a in plain:
+        for b in plain:
+            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+                out.append((a["dimension"], abs(abs(a["value"]) - abs(b["value"]))))
+            if a is not b and (a["dimension"] in _COUNT_LIKE or a["dimension"] == b["dimension"] == "unitless"
+                               or (a["dimension"] == "area" and b["dimension"] in ("KRW", "USD"))):
+                out.append((b["dimension"], abs(a["value"]) * abs(b["value"])))
+    for v in values:
+        if v["dimension"] == "temp_f":
+            out += [("temp_c", abs(v["value"]) * 5 / 9), ("temp_c", abs((v["value"] - 32) * 5 / 9))]
+        elif v["dimension"] == "temp_c":
+            out += [("temp_f", abs(v["value"]) * 9 / 5), ("temp_f", abs(v["value"] * 9 / 5 + 32))]
+    return out
+
+
+_COUNT_LIKE = {"unitless", "명", "count_item", "count_place", "count_vehicle", "count_occurrence", "가구", "area"}
+# 기간당 평균("하루 평균 약 130회", "한 달에 약 1만 8,000마리"): 원문 총계를 원문 기간 길이나 1년의 날·주·달 수로 나눈 값.
+_PER_PERIOD = (
+    (re.compile(r"하루|일평균|일 평균|\b(?:a|per|each) day\b|\bdaily\b", re.I), (365, 30, 7),
+     re.compile(r"(\d+)\s*(?:days?\b|일\s*(?:간|동안))", re.I)),
+    (re.compile(r"한 주|주평균|주 평균|매주|\b(?:a|per|each) week\b|\bweekly\b", re.I), (52,),
+     re.compile(r"(\d+)\s*(?:weeks?\b|주\s*(?:간|동안))", re.I)),
+    (re.compile(r"한 달|월평균|월 평균|매달|매월|\b(?:a|per|each) month\b|\bmonthly\b", re.I), (12,),
+     re.compile(r"(\d+|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s*(?:months?\b|개월|달)", re.I)),
+)
+_NATIVE_COUNT = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+
+
+def _per_period_candidates(sentence: str, values: list[dict], source_text: str) -> list[tuple[str, Decimal]]:
+    out = []
+    for words, defaults, lengths in _PER_PERIOD:
+        if not words.search(sentence):
+            continue
+        spans = [Decimal(_NATIVE_COUNT.get(m.group(1), m.group(1)) if m.group(1) in _NATIVE_COUNT else m.group(1))
+                 for m in lengths.finditer(source_text)]
+        for n in [Decimal(d) for d in defaults] + [x for x in spans if x > 1]:
+            out += [(v["dimension"], abs(v["value"]) / n) for v in values if v["dimension"] != "percent" and v["value"]]
     return out
 
 
@@ -551,7 +638,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     ok: set[int] = set()
     words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
              for m in _WORD_SHARE.finditer(source_text)]
-    derived = _derived_candidates(source_values + words)
+    derived = _derived_candidates(source_values + words) + _per_period_candidates(sentence, source_values, source_text)
     plain = [v for v in source_values if v["dimension"] != "percent"]
     percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
     for value in claim_values:
@@ -571,6 +658,11 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 and abs(abs(value["value"]) - abs(a["value"]) / abs(b["value"]) * 100) <= _step(value) / 2
                 for a in plain for b in plain):
             ok.add(value["start"])   # 몫을 반올림한 퍼센트(412명 중 389명 → 94%)
+        elif value["dimension"] == "percent" and any(
+                a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"] and b["value"]
+                and abs(abs(value["value"]) - abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100) <= _step(value) / 2
+                for a in plain for b in plain):
+            ok.add(value["start"])   # 원문 두 값의 증감률을 반올림한 퍼센트(6분→4.2분 → "1.8 minutes, or 30 percent", 7회차)
         elif _ANNUAL_WORDS.search(sentence) and any(
                 a["dimension"] == value["dimension"]
                 and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)
@@ -609,6 +701,10 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
     claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")
                and not (value["raw"] == "1년" and re.match(r"이면|간|동안|새|마다", sentence[value["end"]:]))]
+    scales = {v["dimension"] for v in source if v["dimension"] in ("temp_c", "temp_f")}
+    for value in claimed:
+        if value["dimension"] == "temp_bare" and len(scales) == 1:
+            value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
     missing = [value for value in claimed
                if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)]
     approx = _approx_supported(sentence, missing, source, cited_text) if missing else set()
@@ -812,10 +908,13 @@ def _share_overclaim(plain: str, sents: list[str]) -> bool:
 # "reduced", "줄지 않았다" → "줄었다", "has not been funded" → "is planned and funded"). 낱말 대조로는 통과한다.
 # 절마다 부정 여부를 보고, 주장 절과 가장 많이 겹치는 원문 절(영어 내용 낱말 60%·3개 이상, 한국어 글자 2-gram 50%·6개 이상)의
 # 부정 여부가 다르면 불일치로 본다. 'without'·'비(非)'처럼 대상을 한정하는 부정은 세지 않는다.
+# 제외 낱말("left out of", "excluded", "빠졌다", "제외됐다")은 "did not include"·"포함되지 않았다"를 부정 낱말 없이 바꿔 말한 것이라
+# 부정으로 센다(2026-10-10 7회차, 맞는 바꿔 말하기에 붙던 오표시).
 _NEGATION = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet to|lack(?:s|ed|ing)?|fail(?:s|ed)? to|unchanged|"
-                       r"unfunded|unmeasured|unknown|unclear)\b|n't\b|않|없|못\s?하|못했|아니|미측정|미확인|미검증|미집계", re.I)
+                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없|못\s?하|못했|아니|"
+                       r"미측정|미확인|미검증|미집계|빠졌|빠져|빠진|제외", re.I)
 _NEGATION_WORDS = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet|lack\w*|fail\w*|unchanged|unfunded|unmeasured|"
-                             r"unknown|unclear)\b", re.I)
+                             r"unknown|unclear|left out|excluded|omitted)\b", re.I)
 _CLAUSE_SPLIT = re.compile(r"[,;:]|\b(?:and|but|so|while|whereas|where|which|because|although|though)\b|"
                            r"(?<=[가-힣])(?:고|며|지만|는데|어서|아서|으나)\s|(?<=[가-힣])\s(?:해|하여|해서)\s", re.I)
 
