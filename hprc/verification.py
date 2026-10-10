@@ -472,6 +472,70 @@ _MARK_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)(\s+)(?!\[S\d+\]|\((?:�
 _CITE_ID = re.compile(r"\[(S\d+)\]")
 
 
+# 어림 표시(2026-10-10 라벨 평가 회차): "about 4 million"·"약 24%"·"171톤가량"은 원문 값을 반올림하거나 원문 수치에서 계산한
+# 값(증감률·비율·합·곱·연간 환산)일 수 있다. 어림 표시가 붙은 값은 그 자릿수 반올림 범위(그리고 10%) 안에 원문 값이나 원문에서
+# 계산한 값이 있으면 원문에 있는 값으로 본다. 어림 표시가 없는 값은 원문 두 값의 합·차만 인정한다.
+_APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)|약|대략)\s*[$€£₩]?\s*$", re.I)
+_APPROX_TAIL = re.compile(r"\s*(?:가량|정도|안팎|내외|남짓|꼴)")
+_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(\d+)(?:\s*명)?(\s*(?:꼴|이상|or more))?", re.I)
+
+
+def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
+    """원문 수치에서 독자가 흔히 계산하는 값: 같은 차원 두 값의 비율·증감률(퍼센트), 퍼센트의 나머지, 값×퍼센트, 연간·월간 환산."""
+    out = [(v["dimension"], abs(v["value"])) for v in values]
+    plain = [v for v in values if v["dimension"] != "percent" and v["value"]]
+    percents = [abs(v["value"]) for v in values if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
+    for a in plain:
+        for b in plain:
+            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+                out.append(("percent", abs(a["value"]) / abs(b["value"]) * 100))
+                out.append(("percent", abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100))
+        for factor in (Decimal(365), Decimal(52), Decimal(12)):
+            out.append((a["dimension"], abs(a["value"]) * factor))
+        for p in percents:
+            out += [(a["dimension"], abs(a["value"]) * p / 100), (a["dimension"], abs(a["value"]) * (100 - p) / 100)]
+    out += [("percent", 100 - p) for p in percents]
+    return out
+
+
+def _rounds_to(claim: dict, target: Decimal) -> bool:
+    """어림 값이 target을 그 자릿수에서 반올림한 값인가(상대 오차 10% 이하)."""
+    number = abs(claim.get("number", claim["value"]))
+    if not number or not target:
+        return False
+    step = Decimal(10) ** number.normalize().as_tuple().exponent * claim.get("scale", Decimal(1))
+    gap = abs(abs(claim["value"]) - target)
+    return gap <= step / 2 and gap <= target / 10
+
+
+def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict]) -> set[int]:
+    """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
+    ok: set[int] = set()
+    derived = _derived_candidates(source_values)
+    plain = [v for v in source_values if v["dimension"] != "percent"]
+    for value in claim_values:
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        if hedged and any(dim == value["dimension"] and _rounds_to(value, t) for dim, t in derived):
+            ok.add(value["start"])
+        elif value["dimension"] != "percent" and any(
+                a is not b and a["dimension"] == b["dimension"] == value["dimension"]
+                and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
+                for a in plain for b in plain):
+            ok.add(value["start"])
+    percents = [t for dim, t in derived if dim == "percent"]
+    for m in _FRACTION.finditer(sentence):
+        part, whole = Decimal(m.group(1)), Decimal(m.group(2))
+        if re.search(r"명\s*중|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
+            part, whole = whole, part
+        if not whole or part > whole:
+            continue
+        share, half = part / whole * 100, Decimal(50) / whole
+        at_least = bool(m.group(3) and re.search(r"이상|or more", m.group(3), re.I))
+        if any((share - half <= t <= share + half) or (at_least and share <= t <= share + 2 * half) for t in percents):
+            ok.update(v["start"] for v in claim_values if m.start() <= v["start"] < m.end())
+    return ok
+
+
 def _absent_values(sentence: str, cited_text: str) -> list[str]:
     """정규화한 날짜·수치가 인용 원문에 아예 없는 것만 돌려준다.
 
@@ -484,11 +548,11 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     if _UNVERIFIED_SCOPE.search(sentence):
         return absent
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
-    for value in _quantity_values(sentence, claim_spans):
-        if value.get("unsupported_unit"):
-            continue
-        if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source):
-            absent.append(value["raw"])
+    claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")]
+    missing = [value for value in claimed
+               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)]
+    approx = _approx_supported(sentence, missing, source) if missing else set()
+    absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
 
@@ -1184,7 +1248,12 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                 conflicts = _value_conflicts(piece, cited_text) if cited_text.strip() else []
                 if _independence_overclaim(piece):
                     conflicts.append("independence")
-                if claim_section and cited_text.strip() and _wording_unsupported(_plain_claim(piece), cited_text):
+                # 낱말 대조는 수치 없이 말한 추론·사실용이다. 수치를 담고 그 수치가 모두 원문 값이거나 원문에서 계산한 어림 값이면
+                # ("연간으로 환산하면 약 16만 톤이다") 수치가 주장을 원문에 묶으므로 낱말이 달라도 표시하지 않는다(2026-10-10).
+                anchored = bool(_quantity_values(_plain_claim(piece), _date_like_spans(_plain_claim(piece)))) and \
+                    not _absent_values(piece, cited_text)
+                if (claim_section and cited_text.strip() and not anchored
+                        and _wording_unsupported(_plain_claim(piece), cited_text)):
                     conflicts.append("wording")
                 if cited_text.strip() and (_absent_values(piece, cited_text) or conflicts):
                     changes["mismatch"].append(piece.strip())

@@ -585,3 +585,26 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertNotIn("(source mismatch)", text)
         text, _ = mark_report_claims("## 답\n- 시는 하루 450킬로그램을 처리했다 [S1].\n", {"S1": "시는 하루 평균 450톤을 처리했다."}, "ko")
         self.assertIn("(출처 불일치)", text)
+
+    def test_hedged_rounding_and_derived_values_are_not_marked(self):
+        en = {"S1": "Visits rose to 3,047, compared with 2,210 a year earlier. Employment was 4.6 percent higher. "
+                    "The repair cost 4.2 million dollars.",
+              "S2": "A survey of 120 owners found that 71 raised prices."}
+        for body in ("That is an increase of roughly 38 percent [S1].", "Employment was nearly 5 percent higher [S1].",
+                     "The repair cost about 4 million dollars [S1].", "About 59 percent of surveyed owners raised prices [S2]."):
+            text, _ = self.mark(body, en)
+            self.assertNotIn("(source mismatch)", text, body)
+        for body in ("Employment rose about 6 percent [S1].", "The repair cost about 5 million dollars [S1].",
+                     "That is an increase of 38 percent and 120 new branches [S1]."):
+            text, _ = self.mark(body, en)
+            self.assertIn("(source mismatch)", text, body)
+        ko = {"S1": "시는 하루 평균 450톤을 처리했다. 처리량 가운데 62%는 재활용됐다. 참여 학생 860명과 비참여 학생 910명을 비교했다.",
+              "S2": "응답 교사 75명 중 52명이 나아졌다고 답했다."}
+        for body in ("연간으로 환산하면 약 16만 톤이다 [S1].", "소각량은 하루 약 171톤이다 [S1].", "학생 1,770명을 비교했다 [S1].",
+                     "응답 교사 10명 중 7명꼴로 나아졌다고 답했다 [S2].", "처리량의 약 5분의 3이 재활용됐다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+        for body in ("연간으로 환산하면 약 30만 톤이다 [S1].", "응답 교사 10명 중 9명꼴로 나아졌다고 답했다 [S2].",
+                     "학생 1,800명을 비교했다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertIn("(출처 불일치)", text, body)
