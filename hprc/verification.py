@@ -846,7 +846,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("share")
     if "negation" not in found and _null_result_flip(plain, sents):
         found.append("negation")
-    if "negation" not in found and _antonym_flip(plain, sents):
+    if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
+                                    or _comparison_swap(plain, sents)):
         found.append("antonym")
     if _causal_reversal(plain, sents):
         found.append("causal_reversal")
@@ -995,7 +996,7 @@ _ANTONYMS = (
     (r"\b(?:women|female)\b", r"\b(?:men|male)\b"),
     (r"\babove\b", r"\bbelow\b"),
     (r"\bolder\b", r"\byounger\b"),
-    (r"(?<!오)늘었|늘어|증가|상승|높아|높았|많아졌|길어|길었", r"줄었|줄어|감소|하락|낮아|낮았|적어졌|짧아|짧았"),
+    (r"(?<!오)늘었|늘어|증가|상승|높아|높았|많아졌|길어|길었|많았", r"줄었|줄어|감소|하락|낮아|낮았|적어졌|짧아|짧았|적었"),
     (r"이상(?:이|인|의|으로)", r"미만(?:이|인|의|으로)|이하(?:이|인|의|으로)"),
     (r"여성", r"남성"),
 )
@@ -1021,6 +1022,71 @@ def _antonym_flip(plain: str, sents: list[str]) -> bool:
                         and all(re.search(other, c, re.I) and not re.search(mine, c, re.I) and not _NEGATION.search(c)
                                 for c in tops)):
                     return True
+    return False
+
+
+# 변화 전후 뒤집기(2026-10-10 7회차): 원문 두 값을 그대로 쓰면서 전후 순서만 바꾼 문장("6,000 in 2024, up from 4,500" →
+# "fell from 6,000 to 4,500", "42%에서 19%로 떨어졌다" → "19%에서 42%로 올랐다"). 증감 낱말이 원문과 달라도("up from"·"떨어졌")
+# 값 순서로 본다. 원문에 같은 순서의 전후 쌍이 있으면 세지 않는다.
+_FROM_LEAD = re.compile(r"\bfrom\s*(?:an?\s+average\s+of\s+|about\s+)?[$€£₩]?\s*$", re.I)
+
+
+def _transitions(text: str) -> set[tuple[str, Decimal, Decimal]]:
+    values = [v for v in _quantity_values(text, _date_like_spans(text)) if not v.get("unsupported_unit")
+              and not _is_date_number(v, text)]
+    pairs = set()
+    for i, a in enumerate(values):
+        for b in values[i + 1:i + 3]:
+            if a["dimension"] != b["dimension"] or b["start"] - a["end"] > 40 or a["value"] == b["value"]:
+                continue
+            between = text[a["end"]:b["start"]]
+            if ((re.fullmatch(r"\s*(?:[A-Za-z]+\s+)?(?:to|→|->)\s*[$€£₩]?\s*", between, re.I) and _FROM_LEAD.search(text, 0, a["start"]))
+                    or (re.match(r"\s*에서\s", between) and re.match(r"\s*(?:으로|로)", text[b["end"]:])
+                        and len(between) <= 15)):
+                pairs.add((a["dimension"], abs(a["value"]), abs(b["value"])))
+            elif re.search(r"\b(?:up|down)\s+from\s*[$€£₩]?\s*$", between, re.I):
+                pairs.add((a["dimension"], abs(b["value"]), abs(a["value"])))
+    return pairs
+
+
+def _transition_flip(plain: str, sents: list[str]) -> bool:
+    mine = _transitions(plain)
+    if not mine:
+        return False
+    theirs = set().union(*(_transitions(s) for s in sents))
+    return any((d, y, x) in theirs and (d, x, y) not in theirs for d, x, y in mine)
+
+
+# 비교 기준 뒤바꿈(2026-10-10 7회차): "겨울철 주행거리는 여름보다 25% 짧았다" → "여름철 주행거리는 겨울보다 25% 짧았다". 낱말이
+# 모두 원문에 있어 낱말 대조로는 통과한다. 가장 많이 겹치는 원문 절의 '…보다'·'than …' 기준이 주장과 다르고, 두 기준이 서로
+# 상대 절에 나오며, 증감·비교 낱말 쪽이 같을 때만 본다(반대말까지 함께 바꾸면 뜻이 대체로 맞으므로 세지 않는다).
+_THAN_REF = re.compile(r"([가-힣]{1,6}?)(?:철|에)?보다|\bthan\s+(?:the\s+|in\s+|on\s+|at\s+|during\s+)?([A-Za-z]{3,})", re.I)
+
+
+def _comparison_swap(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        ref = _THAN_REF.search(clause)
+        if not ref:
+            continue
+        mine = (ref.group(1) or ref.group(2)).lower()
+        scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
+        scored = [(r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for r, _ in scored)
+        for r, c in scored:
+            other = _THAN_REF.search(c)
+            if r != best or not other:
+                continue
+            theirs = (other.group(1) or other.group(2)).lower()
+            same_side = all(bool(re.search(up, clause, re.I)) == bool(re.search(up, c, re.I))
+                            and bool(re.search(down, clause, re.I)) == bool(re.search(down, c, re.I)) for up, down in _ANTONYMS)
+            if (mine != theirs and same_side and mine in c[:other.start()].lower() + c[other.end():].lower()
+                    and theirs in clause[:ref.start()].lower() + clause[ref.end():].lower()):
+                return True
     return False
 
 

@@ -778,3 +778,24 @@ class LabeledRoundTests(unittest.TestCase):
             self.assertNotIn("(출처 불일치)", text, body)
         text, changes = self.mark("놀이터 바닥은 섭씨 10도 낮았다 [S1].", ko, "ko")
         self.assertIn("(출처 불일치)", text)
+
+    def test_transition_and_comparison_swaps_are_marked(self):
+        # 2026-10-10 7회차: 원문 두 값의 전후 순서만 바꾸거나 비교 기준('…보다'·'than …')만 바꾼 문장.
+        en = {"S1": "The shelter housed 840 people in 2025, up from 610 in 2024. Average stays fell from 19 nights to 12 nights. "
+                    "Night-shift staff worked longer hours than day-shift staff."}
+        for body in ("The shelter population fell from 840 to 610 [S1].", "Average stays rose from 12 nights to 19 nights [S1].",
+                     "Day-shift staff worked longer hours than night-shift staff [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes["antonym_conflict"]), body)
+        for body in ("The shelter population rose from 610 to 840 [S1].", "Average stays fell from 19 to 12 nights [S1].",
+                     "Night-shift staff worked longer hours than day-shift staff [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["antonym_conflict"], body)
+        ko = {"S1": "도서관 야간 이용자는 하루 평균 120명에서 180명으로 늘었다. 평일 대출은 주말보다 30% 많았다. 신축 건물의 관리비는 구관보다 15% 적었다."}
+        for body in ("도서관 야간 이용자는 하루 평균 180명에서 120명으로 줄었다 [S1].", "주말 대출은 평일보다 30% 많았다 [S1].",
+                     "신축 건물의 관리비는 구관보다 15% 많았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["antonym_conflict"]), body)
+        for body in ("도서관 야간 이용자는 하루 평균 120명에서 180명으로 늘었다 [S1].", "평일 대출은 주말보다 30% 많았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["antonym_conflict"], body)
