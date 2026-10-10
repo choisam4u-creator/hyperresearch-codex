@@ -566,3 +566,22 @@ class PlanScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LabeledRoundTests(unittest.TestCase):
+    """2026-10-10 라벨 평가 회차: 단위 환산·반올림·부정 뒤집기."""
+
+    def mark(self, body, sources, lang="en"):
+        head = "## Answer\n" if lang == "en" else "## 답\n"
+        return mark_report_claims(head + body + "\n", sources, lang)
+
+    def test_mass_and_length_units_compare_by_converted_value(self):
+        src = {"S1": "The pilot diverted 1,800 tonnes of food waste along a 12-kilometer route."}
+        for body in ("The pilot diverted 1,800 kilograms of food waste [S1].", "The route is 12 miles long [S1].",
+                     "The route is a 12-mile stretch [S1]."):
+            text, _ = self.mark(body, src)
+            self.assertIn("(source mismatch)", text, body)
+        text, _ = self.mark("That equals 1.8 million kilograms of food waste [S1].", src)
+        self.assertNotIn("(source mismatch)", text)
+        text, _ = mark_report_claims("## 답\n- 시는 하루 450킬로그램을 처리했다 [S1].\n", {"S1": "시는 하루 평균 450톤을 처리했다."}, "ko")
+        self.assertIn("(출처 불일치)", text)

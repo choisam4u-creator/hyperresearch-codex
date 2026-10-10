@@ -27,6 +27,8 @@ _KOREAN_DATE_LIKE = re.compile(
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 _UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
+          "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
+          "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
           "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 # "%p"·"%포인트"·"percentage points"도 퍼센트 차원의 값으로 읽는다. 퍼센트와 퍼센트포인트의 구분은 _percent_point_conflict가 따로 본다.
@@ -47,7 +49,8 @@ _KO_TOKEN = re.compile(r"(\s?\d+(?:,\d{3})*(?:\.\d+)?)?(\s?)([천백십만억조
 _EN_MAGNITUDE = re.compile(r"\s+(thousand|million|billion|trillion)(?![A-Za-z])|(\s?(?:bn|mn|mln|tn)|[KMBk])(?![A-Za-z])", re.I)
 _EN_ABBREVIATIONS = {"k": 10**3, "m": 10**6, "mn": 10**6, "mln": 10**6, "b": 10**9, "bn": 10**9, "tn": 10**12}
 _CURRENCY_LEAD = re.compile(r"[$€£₩]\s?$")
-_UNIT_TAIL = re.compile(r"\s*(?:" + "|".join(re.escape(unit) for unit in _UNITS) + r")(?![A-Za-z0-9])", re.IGNORECASE)
+# "12-kilometer stretch"처럼 하이픈으로 붙은 단위도 읽는다(2026-10-10 라벨 평가 회차).
+_UNIT_TAIL = re.compile(r"(?:\s*|-)(?:" + "|".join(re.escape(unit) for unit in _UNITS) + r")(?![A-Za-z0-9])", re.IGNORECASE)
 
 
 def _korean_compound(text: str, pos: int, first: Decimal) -> tuple[Decimal, int] | None:
@@ -137,7 +140,15 @@ _UNIT_SCALE = {
     "minute": ("time", Decimal("60")), "minutes": ("time", Decimal("60")), "분": ("time", Decimal("60")),
     "hour": ("time", Decimal("3600")), "hours": ("time", Decimal("3600")), "시간": ("time", Decimal("3600")),
     "m": ("length", Decimal("1")), "km": ("length", Decimal("1000")),
-    "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")),
+    "kilometer": ("length", Decimal("1000")), "kilometers": ("length", Decimal("1000")), "kilometre": ("length", Decimal("1000")),
+    "kilometres": ("length", Decimal("1000")), "킬로미터": ("length", Decimal("1000")),
+    "mile": ("length", Decimal("1609.344")), "miles": ("length", Decimal("1609.344")),
+    "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")), "kilogram": ("mass", Decimal("1000")),
+    "kilograms": ("mass", Decimal("1000")), "킬로그램": ("mass", Decimal("1000")),
+    # 톤은 미터법 톤(1,000kg)으로 본다. 미국 short ton(약 907kg)과의 차이는 반올림 허용 범위 밖이라 환산 주장이 표시될 수 있다.
+    "ton": ("mass", Decimal("1000000")), "tons": ("mass", Decimal("1000000")), "tonne": ("mass", Decimal("1000000")),
+    "tonnes": ("mass", Decimal("1000000")), "톤": ("mass", Decimal("1000000")),
+    "gwh": ("energy", Decimal("1000000000")),
     "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
     "개": ("count_item", Decimal("1")), "곳": ("count_place", Decimal("1")), "개소": ("count_place", Decimal("1")),
@@ -254,7 +265,7 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
             continue
         number, end = read
         unit_match = _UNIT_TAIL.match(text, end)
-        unit = unit_match.group(0).strip().lower() if unit_match else ""
+        unit = unit_match.group(0).strip(" -\t\n").lower() if unit_match else ""
         stop = unit_match.end() if unit_match else end
         if re.match(r"[A-Za-z0-9]", text[stop:stop + 1]):
             continue   # "4.2xyz"처럼 영문·숫자가 바로 붙은 수는 수량으로 읽지 않는다
@@ -267,11 +278,12 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
-        item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop}
+        item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop,
+                "number": number, "scale": scale}
         # mW/MW는 대소문자에 따라 배율이 달라 지원하지 않는다.
         # 공백 유무와 관계없이 추출하되 근거 일치에는 사용하지 않는다.
         if unit in {"mw", "mwh"}:
-            item["unsupported_unit"] = unit_match.group(0).strip()
+            item["unsupported_unit"] = unit_match.group(0).strip(" -")
         values.append(item)
     return values
 
