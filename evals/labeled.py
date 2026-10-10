@@ -1,6 +1,6 @@
 """사람 라벨 대조 평가: 문장마다 단 정답(맞음/출처 불일치/미검증)과 보고서 표시를 비교한다.
 
-    HPR_BACKEND=mock python -m evals.labeled [--case ID] [--verbose] [--json out.json]
+    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|all] [--case ID] [--verbose] [--json out.json]
 
 evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점해 천장 100에 닿았다. 이 평가는
 점수기 규칙을 쓰지 않는다. evals/labeled/*.json 의 "labels"(문장 열쇠 → 정답)를 사람이 정하고,
@@ -9,6 +9,8 @@ evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점�
 - 정답 ok: 출처가 지지함(바꿔 말함·반올림·단위 환산 포함). 표시가 붙으면 오표시.
 - 정답 mismatch: 인용했지만 원문과 뜻이 다름. unverified: 어느 출처에도 없음(인용 없음·판단 표시만).
 - 예측: (출처 불일치)·(원문 추정치) → mismatch, (출처 없음) → unverified, 둘 다 없으면 ok.
+- 묶음: dev = evals/labeled/*.json(4회차, 코드 문턱을 정할 때 본 문장), holdout = evals/labeled/holdout/*.json
+  (5회차, 코드 수정 전에 만든 새 문장). 개선은 dev 로 하고 holdout 으로 과적합을 잰다.
 라벨·case 를 고쳐 점수를 올리지 않는다. 고칠 때는 docs/QUALITY-LOG.md 에 이유를 적는다.
 """
 import argparse
@@ -30,8 +32,12 @@ _END = re.compile(r"[.!?。](?=\s|$)")
 _TRAIL = re.compile(r"(?:\s*\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|source estimate)\))+")
 
 
-def load_cases(only: str | None = None) -> list[dict]:
-    cases = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(CASES.glob("*.json"))]
+SETS = {"dev": ("*.json",), "holdout": ("holdout/*.json",), "all": ("*.json", "holdout/*.json")}
+
+
+def load_cases(only: str | None = None, which: str = "dev") -> list[dict]:
+    paths = [p for pattern in SETS[which] for p in sorted(CASES.glob(pattern))]
+    cases = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
     return [c for c in cases if only in (None, c["id"])]
 
 
@@ -132,13 +138,14 @@ def run_all(cases: list[dict]) -> list[dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="사람 라벨 대조 품질 평가")
+    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·all")
     parser.add_argument("--case")
     parser.add_argument("--json")
     parser.add_argument("--verbose", action="store_true", help="틀린 판정 문장 출력")
     parser.add_argument("--min-f1", type=float, help="F1이 이보다 낮으면 종료 코드 1(회귀 감시용, 목표 아님)")
     args = parser.parse_args(argv)
     os.environ["HPR_BACKEND"] = "mock"
-    cases = load_cases(args.case)
+    cases = load_cases(args.case, args.set)
     if not cases:
         parser.error("라벨 case 없음")
     rows = run_all(cases)
