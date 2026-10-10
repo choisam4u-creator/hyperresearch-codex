@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-10 (품질 회차 4)
+
+- 점수 전후: 새 사람 라벨 대조 평가(`python -m evals.labeled`, 12 case·108문장) **F1 44.7 → 81.0**(recall 41.3→73.9, precision 48.7→89.5, 맞는 문장 오표시율 32.3→6.5). 고정 32 case(`evals.run`)는 전후 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시):
+  - 코드 수정 전 먼저: 기존과 겹치지 않는 라벨 case 12개(부정 뒤집기·인과 역전·범위 과장·동의어 바꿔 말하기·반올림·단위 환산)와 라벨 대조 점수기 `evals/labeled.py`(`cae7ad1`).
+  - 개선 1 단위 환산(톤·킬로그램·마일·킬로미터, 하이픈 단위), 개선 2 어림·계산 값 인정(오표시 대폭 감소), 개선 3 부정 뒤집기 `negation_conflict`, 개선 4 몫 과장 `share_conflict`. 시험 4개(모두 옛 코드에서 실패 확인).
+  - 백로그: 라벨 평가 항목 완료로 추가, CI에 `evals.labeled --min-f1 75`. CHANGELOG·evals README.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 584개 통과(Python 3.11; `pip install -e .`이 이 컨테이너에서 의존성을 깔지 못해 `httpx`·`pypdf`·`cffi`를 따로 설치). `evals.run`(100.0)·`evals.labeled --min-f1 75`·`compileall` 통과, walkthrough 재생성 변화 없음. 3.12/3.13·Windows·휠 빌드와 실제 `codex exec`는 돌리지 않았다.
+- 한계: 라벨은 이 클라우드 세션이 달았고 사람 검토 전이다. 부정·몫 문턱은 이 108문장을 본 뒤 정해 끝 점수에 과적합 몫이 있다 — 다음 회차는 새 라벨 case로 다시 잰다. 인과 역전은 0/4 그대로. AGENTS.md의 커밋 댓글 규칙은 이 세션 GitHub 도구에 커밋 댓글 기능이 없어 따르지 못했고 PR 본문·이 기록에 남긴다. CI 결과는 푸시 직후라 확인하지 못했다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "방과후 수학교실은 참여 학생의 수학 점수를 올렸나? 근거와 한계를 밝혀라"
+  grep -h '"negation_conflict"\|"share_conflict"' -A6 research/runs/*/report_marks.json   # 표시 문장을 원문과 눈으로 대조해 오표시를 센다
+  ```
+
 ## 2026-10-09 (품질 회차 3)
 
 - 점수 전후(`python -m evals.run`, 종합 평균, 32 case·강화 기준): **99.7 → 100.0**. 주장-출처 일치 98.1→100, 잘못 붙은 경고 없음 99.6→100. (30 case 이전 끝 99.9, 새 case를 옛 기준으로 재면 99.8 — 영어 쪽 맹점.) 상세는 `docs/QUALITY-LOG.md`.
