@@ -23,6 +23,7 @@
 - Compare tonnes, kilograms, miles and kilometers (including hyphenated `12-kilometer`) by converted value, so swapped units are marked `(source mismatch)` and correct conversions are not.
 - Stop flagging hedged rounded values (`about 4 million`, `약 24%`) and values derived from cited numbers (ratios, percent changes, sums, `×365` annualization, `10명 중 7명꼴`) when they round to a value the source supports; out-of-range roundings are still marked.
 - Mark `(source mismatch)` when a cited clause repeats the source's wording but drops or adds a negation (`did not reduce` → `reduced`, `줄지 않았다` → `줄었다`; `negation_conflict`), or turns a stated share (`3 of the 8 sites`, `23 percent of`, `75명 중 52명`) into "most", "all", `대부분` or `모든` (`share_conflict`).
+- Accept more correct derived values without `(source mismatch)`: quotients (`8,700 visits over 9 days` → `nearly 970 a day`), percentage-point differences, lower bounds (`more than 60 percent`), rounded shares (`389 of 412` → `94%`), annualized amounts, word shares (`two thirds`), approximation words after a counter (`14권 남짓`); read `1만 2,400` as one number and Mbps/Gbps as units. Mark `(source mismatch)` when a cited clause swaps an antonym in the source wording (`longer` → `shorter`, `이상` → `미만`; `antonym_conflict`) or reverses an explicitly stated cause and effect (`causal_reversal_conflict`). Add a held-out labeled set (`python -m evals.labeled --set holdout`, 12 cases, 127 sentences).
 
 ## 0.5.0 - 2026-09-26
 
