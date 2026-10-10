@@ -2,6 +2,22 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-10 (품질 회차 5)
+
+- 점수 전후: 코드 수정 전에 만든 새 holdout 라벨 평가(`python -m evals.labeled --set holdout`, 12 case·127문장) **F1 60.9 → 73.4**(recall 56.5→64.5, precision 66.0→85.1, 맞는 문장 오표시율 27.7→10.8). dev 108문장 81.0→82.9(오표시율 6.5→3.2). 고정 32 case(`evals.run`) 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시):
+  - 코드 수정 전 먼저: 기존과 겹치지 않는 holdout case 12개(부정 13·인과 역전 5·방향 5·범위 9·단위 7, 동의어 맞는 문장 25·반올림·계산 값 26)와 `--set dev|holdout|all`(`406d0f3`). 기준선이 4회차 끝 점수(81.0)의 과적합을 드러냄(60.9).
+  - 개선 1 계산 값 인정(나눗셈·%p 차·하한·몫 반올림·연간 환산·낱말 몫, "1만 2,400"·Mbps 읽기). 개선 2 반대말 뒤집기 `antonym_conflict`·인과 역전 `causal_reversal_conflict`(dev로 설계 뒤 holdout 한 번 측정). 시험 각 1개(옛 코드에서 실패 확인).
+  - 백로그: 맞는 문장 오표시 2건(“9~10월”, 천 단위 쉼표에서 절을 끊던 결함) 수정, 인과 역전 항목 완료, 새 항목 4건. CI에 holdout 라벨 평가(`--min-f1 70`). CHANGELOG·evals README.
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 587개 통과(Python 3.11; `httpx`·`pypdf`·`cffi`를 따로 설치). `evals.run`(100.0)·`evals.labeled`(dev `--min-f1 75`, holdout `--min-f1 70`)·`compileall` 통과, walkthrough 재생성 변화 없음. 3.12/3.13·Windows·휠 빌드와 실제 `codex exec`는 돌리지 않았다.
+- 한계: 개선 1은 holdout 오표시 문장을 보며 만들어 holdout 오표시율 개선은 독립 측정이 아니다(개선 2만 설계 뒤 한 번 잼). holdout도 이 세션이 쓰고 라벨을 달았다(사람 검토 전). 다음 회차는 이번 코드를 보지 않은 새 holdout이나 실제 codex 보고서 라벨로 다시 재야 한다. 커밋 댓글 규칙은 이 세션 GitHub 도구에 커밋 댓글 기능이 없어 PR 본문·이 기록으로 대신한다. CI 결과는 푸시 직후라 확인하지 못했다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "주 4일 수업제는 교사 채용과 학생 성적에 어떤 변화를 냈나? 근거와 한계를 밝혀라"
+  grep -h '"antonym_conflict"\|"causal_reversal_conflict"' -A6 research/runs/*/report_marks.json   # 표시 문장을 원문과 대조해 오표시를 센다
+  ```
+
 ## 2026-10-10 (품질 회차 4)
 
 - 점수 전후: 새 사람 라벨 대조 평가(`python -m evals.labeled`, 12 case·108문장) **F1 44.7 → 81.0**(recall 41.3→73.9, precision 48.7→89.5, 맞는 문장 오표시율 32.3→6.5). 고정 32 case(`evals.run`)는 전후 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
