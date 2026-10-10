@@ -632,6 +632,27 @@ class LabeledRoundTests(unittest.TestCase):
             text, _ = self.mark(body, ko, "ko")
             self.assertIn("(출처 불일치)", text, body)
 
+    def test_antonym_flip_and_causal_reversal_are_marked(self):
+        en = {"S1": "The council expanded night service because evening ridership had grown on the two routes. "
+                    "The 2024 storm season lasted 5 weeks longer than the 2023 season."}
+        for body, kind in (("Evening ridership grew on the two routes because the council expanded night service [S1].",
+                            "causal_reversal_conflict"),
+                           ("The 2024 storm season lasted 5 weeks shorter than the 2023 season [S1].", "antonym_conflict")):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes[kind]), body)
+        for body in ("Night service was expanded because evening ridership had grown on the two routes [S1].",
+                     "The 2024 storm season ran 5 weeks longer than the 2023 season [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertNotIn("(source mismatch)", text, body)
+        ko = {"S1": "정비 인력 부족으로 고장 차량 40대가 수리를 기다리고 있다. 신청자의 절반 이상이 60세 이상이었다."}
+        for body, kind in (("고장 차량 40대가 밀리는 바람에 정비 인력이 부족해졌다 [S1].", "causal_reversal_conflict"),
+                           ("신청자 대부분이 60세 미만이었다 [S1].", "antonym_conflict")):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes[kind]), body)
+        for body in ("정비 인력이 모자라 고장 차량 40대가 수리를 기다린다 [S1].", "신청자의 절반 이상이 60세를 넘었다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+
     def test_negation_flip_with_source_words_is_marked(self):
         en = {"S1": "The extension did not reduce daytime visits at the four branches. Evening security incidents were not "
                     "higher than before the change. Retail jobs were not lost, and retail employment was flat."}

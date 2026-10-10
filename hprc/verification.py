@@ -740,6 +740,10 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("negation")
     if _share_overclaim(plain, sents):
         found.append("share")
+    if "negation" not in found and _antonym_flip(plain, sents):
+        found.append("antonym")
+    if _causal_reversal(plain, sents):
+        found.append("causal_reversal")
     return found
 
 
@@ -831,6 +835,88 @@ def _negation_flip(plain: str, sents: list[str]) -> bool:
         best = max(r for _, r, _ in scored)
         if all(bool(_NEGATION.search(clause)) != bool(_NEGATION.search(c)) for _, r, c in scored if r == best):
             return True
+    return False
+
+
+# 방향 뒤집기(2026-10-10 5회차): 원문 낱말을 그대로 쓰면서 반대말만 바꾼 문장("lasted 3 days longer" → "3 days shorter",
+# "70세 이상이었다" → "70세 미만이었다", "여성이었다" → "남성이었다"). 부정 뒤집기와 같은 문턱으로 가장 많이 겹치는 원문 절을 찾고,
+# 그 절이 같은 반대말 쌍의 다른 쪽만 말하면 불일치로 본다. 어느 한쪽이라도 부정이 있으면 부정 뒤집기에 맡긴다.
+_ANTONYMS = (
+    (r"\blonger\b", r"\bshorter\b"),
+    (r"\b(?:higher|more|increase[sd]?|rose|rising|grew|improved)\b", r"\b(?:lower|fewer|less|decrease[sd]?|fell|falling|declined|dropped|worsened)\b"),
+    (r"\b(?:women|female)\b", r"\b(?:men|male)\b"),
+    (r"\babove\b", r"\bbelow\b"),
+    (r"\bolder\b", r"\byounger\b"),
+    (r"(?<!오)늘었|늘어|증가|상승|높아|높았|많아졌|길어|길었", r"줄었|줄어|감소|하락|낮아|낮았|적어졌|짧아|짧았"),
+    (r"이상(?:이|인|의|으로)", r"미만(?:이|인|의|으로)|이하(?:이|인|의|으로)"),
+    (r"여성", r"남성"),
+)
+_ANTONYM_ANY = re.compile("|".join(a + "|" + b for a, b in _ANTONYMS), re.I)
+
+
+def _antonym_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        if _NEGATION.search(clause) or not _ANTONYM_ANY.search(clause):
+            continue
+        scored = [(_clause_overlap(_ANTONYM_ANY.sub(" ", clause), _ANTONYM_ANY.sub(" ", c)), c) for c in source_clauses]
+        scored = [(r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for r, _ in scored)
+        tops = [c for r, c in scored if r == best]
+        for up, down in _ANTONYMS:
+            for mine, other in ((up, down), (down, up)):
+                if (re.search(mine, clause, re.I) and not re.search(other, clause, re.I)
+                        and all(re.search(other, c, re.I) and not re.search(mine, c, re.I) and not _NEGATION.search(c)
+                                for c in tops)):
+                    return True
+    return False
+
+
+# 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
+# because they struggled to recruit" → "struggled to recruit because they adopted"). 원문과 주장 모두에 명시적 인과 표지가 있을 때만
+# (원인, 결과)를 나눠 본다. 주장의 원인이 원문의 결과와 겹치고(내용 낱말 절반 이상) 원문의 원인과는 덜 겹치며, 주장의 결과가
+# 원문의 원인과 겹치면 불일치로 본다.
+_EFFECT_FIRST = re.compile(r"\b(?:because(?: of)?|due to|as a result of|driven by|caused by|followed)\b", re.I)
+_CAUSE_FIRST = re.compile(r"\b(?:caus(?:ed|es)|led to|leads? to|created|creates|made|makes|drove|result(?:ed|s) in)\b"
+                          r"|때문에|때문|바람에|덕분에|덕에|(?:으로|로) 인해|탓에|(?:에|데) 따른|(?:에|데) 따라"
+                          r"|(?<=[가-힣])(?:이어서|여서|해서|아서|어서)\s"
+                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s", re.I)
+
+
+def _causal_pairs(text: str) -> list[tuple[str, str]]:
+    pairs = []
+    for m in _EFFECT_FIRST.finditer(text):
+        pairs.append((text[m.end():], text[:m.start()]))
+    for m in _CAUSE_FIRST.finditer(text):
+        pairs.append((text[:m.start()], text[m.end():]))
+    return [(c, e) for c, e in pairs if c.strip() and e.strip()]
+
+
+def _part_overlap(a: str, b: str) -> float:
+    if re.search(r"[가-힣]", a):
+        x, y = _char_bigrams(_CAUSE_FIRST.sub(" ", a)), _char_bigrams(b)
+    else:
+        x, y = _word_stems(a), _word_stems(b)
+    return len(x & y) / len(x) if x else 0.0
+
+
+def _causal_reversal(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    claim_pairs = _causal_pairs(plain)
+    if not claim_pairs:
+        return False
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c2, e2 in _causal_pairs(s):
+            for c1, e1 in claim_pairs:
+                cross = _part_overlap(c1, e2)
+                if cross >= 0.5 and cross > _part_overlap(c1, c2) and _part_overlap(e1, c2) > 0:
+                    return True
     return False
 
 
@@ -1330,9 +1416,11 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 1인당·가구당·곳당·대당·학교당·평균 값을 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말하면 '(출처 불일치)'
     - 답·근거·한계 절의 인용 문장 내용이 같은 문자 체계의 인용 원문에 거의 없으면(원문에 없는 추론·사실) '(출처 불일치)'
+    - 인용 문장이 원문 낱말 그대로 반대말만 바꾸거나(longer↔shorter, 이상↔미만) 원문의 원인·결과를 뒤집으면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "wording_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "wording_conflict", "negation_conflict", "share_conflict", "antonym_conflict",
+    "causal_reversal_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
@@ -1340,7 +1428,8 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
                                      "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
                                      "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
-                                     "wording_conflict": [], "negation_conflict": [], "share_conflict": [], "estimate_dropped": []}
+                                     "wording_conflict": [], "negation_conflict": [], "share_conflict": [], "antonym_conflict": [],
+                                     "causal_reversal_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
