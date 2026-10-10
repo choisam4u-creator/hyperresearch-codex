@@ -671,6 +671,29 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual([], changes["scope_conflict"], body)
 
+    def test_effect_verb_against_hedge_and_null_result_flip_are_marked(self):
+        en = {"S1": "Graffiti reports near the mural walls fell 15 percent, but the city could not rule out a change in reporting habits. "
+                    "Shop vacancy on the mural streets did not change."}
+        for body, kind in (("The murals reduced graffiti reports near the walls by 15 percent [S1].", "causal_conflict"),
+                           ("Shop vacancy on the mural streets fell after the murals [S1].", "negation_conflict")):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes[kind]), body)
+        for body in ("Graffiti reports near the mural walls fell 15 percent [S1].",
+                     "Shop vacancy on the mural streets stayed the same [S1]."):
+            text, _ = self.mark(body, en)
+            self.assertNotIn("(source mismatch)", text, body)
+        ko = {"S1": "급식 개편 뒤 잔반량은 하루 120kg에서 85kg으로 줄었다. 학교는 같은 시기 배식량도 줄여 급식 개편 효과를 따로 분리하지 못했다. "
+                    "학생 만족도는 조금 올랐지만 차이는 통계적으로 유의하지 않았다. 급식 개편 뒤 결식률은 달라지지 않았다."}
+        for body, kind in (("급식 개편이 잔반량을 하루 120kg에서 85kg으로 줄였다 [S1].", "causal_conflict"),
+                           ("학생 만족도가 뚜렷하게 올랐다 [S1].", "negation_conflict"),
+                           ("급식 개편 뒤 결식률이 줄었다 [S1].", "negation_conflict")):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes[kind]), body)
+        for body in ("급식 개편 뒤 잔반량은 하루 120kg에서 85kg으로 줄었다 [S1].", "학생 만족도는 조금 올랐다 [S1].",
+                     "결식률은 그대로였다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+
     def test_month_range_and_thousands_comma_do_not_cause_false_marks(self):
         ko = {"S1": "점검은 3월과 4월 두 달 동안만 이뤄졌다. 2025년 운전자 2,310명 가운데 41%가 속도를 줄였다고 답했다. "
                     "보행자는 27%가 길을 돌아갔다고 답했다."}

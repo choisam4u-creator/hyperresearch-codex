@@ -743,6 +743,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("negation")
     if _share_overclaim(plain, sents):
         found.append("share")
+    if "negation" not in found and _null_result_flip(plain, sents):
+        found.append("negation")
     if "negation" not in found and _antonym_flip(plain, sents):
         found.append("antonym")
     if _causal_reversal(plain, sents):
@@ -836,9 +838,48 @@ def _negation_flip(plain: str, sents: list[str]) -> bool:
         if not scored:
             continue
         best = max(r for _, r, _ in scored)
-        if all(bool(_NEGATION.search(clause)) != bool(_NEGATION.search(c)) for _, r, c in scored if r == best):
+        if all(bool(_NEGATION.search(clause)) != bool(_NEGATION.search(c))
+               and not (_SAME_STATE.search(clause) and _NO_CHANGE.search(c)) for _, r, c in scored if r == best):
             return True
     return False
+
+
+# "stayed the same"·"그대로였다"는 "did not change"·"바뀌지 않았다"를 부정 낱말 없이 바꿔 말한 것이다(2026-10-10 6회차).
+_SAME_STATE = re.compile(r"\b(?:stayed|remained|held)\s+(?:flat|the same|steady|level|stable)\b|\bflat\b|그대로|변함\s?없|제자리|"
+                         r"같은 수준", re.I)
+
+
+# 무변화·비유의 결과 뒤집기(2026-10-10 6회차): 원문이 "did not change significantly", "바뀌지 않았다", "차이는 유의하지 않았다"로
+# 말한 결과를 주장이 "caused test scores to rise", "머리 부상 비율이 줄었다", "뚜렷하게 더 높았다"로 쓴다. 낱말을 바꾼 부정이라
+# 절 겹침 문턱(부정 뒤집기)에 걸리지 않는다. 주장과 가장 많이 겹치는(내용 낱말 2개 이상) 원문 문장이 무변화를 말하고, 같은 대상을
+# 말하는 원문 문장 중 주장과 같은 방향을 말하는 것이 없을 때만 본다. 비유의는 주장이 뚜렷함·유의함을 말할 때만 본다.
+_NO_CHANGE = re.compile(r"\b(?:did not|didn't|does not|do not|has not|have not)\s+(?:\w+\s+)?(?:change|differ|improve|rise|fall|decline|"
+                        r"increase|decrease|move)\w*|\bno (?:significant |measurable |meaningful )?(?:change|difference|effect)\b|"
+                        r"\bunchanged\b|\b(?:stayed|remained) (?:flat|the same|steady)\b|"
+                        r"바뀌지\s?않|변하지\s?않|변화가?\s?없|달라지지\s?않|차이가?\s?없|그대로였", re.I)
+_NOT_SIGNIFICANT = re.compile(r"\bnot (?:statistically )?significant|\bno (?:statistically )?significant\b|"
+                              r"유의하지\s?않|유의미하지\s?않|유의한 차이가?\s?없", re.I)
+_SIGNIFICANT_CLAIM = re.compile(r"\b(?:significantly|markedly|substantially|clearly|sharply)\b|뚜렷하게|뚜렷이|유의하게|확연히|크게", re.I)
+
+
+def _null_result_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain):
+        return False
+    claim_dir = _direction_of(plain)
+    significant = bool(_SIGNIFICANT_CLAIM.search(plain))
+    if not (claim_dir or significant or _CAUSAL_CLAIM.search(plain) or _EFFECT_VERB.search(plain)):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = _content_stems(_SIGNIFICANT_CLAIM.sub(" ", _CAUSAL_ANY.sub(" ", plain)))
+    scored = [(len(stems & _content_stems(s)), s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    scored = [(n, s) for n, s in scored if n >= 2]
+    if not scored:
+        return False
+    best = max(n for n, _ in scored)
+    if claim_dir and any(_direction_of(_NO_CHANGE.sub(" ", s)) == claim_dir and not _NOT_SIGNIFICANT.search(s)
+                         for _, s in scored):
+        return False
+    return any(n == best and (_NO_CHANGE.search(s) or (significant and _NOT_SIGNIFICANT.search(s))) for n, s in scored)
 
 
 # 방향 뒤집기(2026-10-10 5회차): 원문 낱말을 그대로 쓰면서 반대말만 바꾼 문장("lasted 3 days longer" → "3 days shorter",
@@ -931,7 +972,9 @@ _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contr
 _CAUSAL_DISCLAIM = re.compile(
     r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
     r"(?:establish|determine|show|prove|isolate|distinguish|separate|attribute)\w*|\bobservational\b|\bcorrelation\b|"
-    r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증)하지\s*(?:않|못)|(?:구분|입증)할 수 없", re.I)
+    r"\b(?:cannot|can't|could not|did not|unable to)\s+rule out\b|"
+    r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증|단정|추정|배제|분리)하지\s*(?:않|못)|(?:구분|입증|단정|배제|분리)할 수 없|"
+    r"단정하기 어렵", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
@@ -966,10 +1009,23 @@ def _value_period(text: str, value: dict) -> set[str]:
     return {min(found)[1]} if found else set()
 
 
+# 효과 동사(2026-10-10 6회차): "LED lighting reduced burglaries", "카메라가 피해 면적을 줄였다", "등록이 입소를 늦췄다"처럼
+# 인과 낱말 없이 주어가 대상을 바꿨다고 말하는 문장도 인과 단정이다. 동사가 행정 행위("구는 어린이집을 늘렸다")일 수도 있어,
+# 이 경우는 유보 문장이 주장과 내용 낱말을 공유할 때만 본다(인과 낱말 주장은 공유를 요구하지 않는다).
+_EFFECT_VERB = re.compile(r"\b(?:reduced|lowered|cut|raised|boosted|improved|increased|decreased|shortened|delayed|prevented|"
+                          r"curbed|lengthened|lifted)\s+(?!by\b|to\b|from\b|\d)\w"
+                          r"|(?:을|를)\s(?:\S+\s){0,4}?\S*?(?:줄였|늦췄|높였|낮췄|늘렸|앞당겼|끌어올렸|떨어뜨렸|막았|개선했|단축했)", re.I)
+
+
 def _causal_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 인과를 단정하는데, 인용 원문이 인과를 유보·부정하는 문장을 담고 인과를 긍정하는 문장은 없으면 True."""
-    if not _CAUSAL_CLAIM.search(plain) or _CAUSAL_DISCLAIM.search(plain):
+    if _CAUSAL_DISCLAIM.search(plain):
         return False
+    if not _CAUSAL_CLAIM.search(plain):
+        stems = _causal_stems(plain)
+        return bool(_EFFECT_VERB.search(plain)) and any(
+            _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents) and not any(
+            _CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents)
     # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
     stems = _causal_stems(plain)
     return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
