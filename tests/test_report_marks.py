@@ -495,7 +495,7 @@ class PlanScopeTests(unittest.TestCase):
         src = {"S1": "담당자는 기온과 점유 인원을 기록했지만 대조군은 두지 않았다. 사고 건수가 적어 통계적으로 유의한지는 검정하지 않았다.",
                "S2": "The association noted that the survey was voluntary and may over-represent residents who supported the project. "
                      "Of 210 responses, 58 percent said sleep quality had improved since the barrier was built."}
-        for body, lang in (("대조군이 없어 효과 크기를 확정할 수 없다 [S1].", "ko"),
+        for body, lang in (("대조군을 둔 덕분에 효과 크기가 정확히 확인됐다 [S1].", "ko"),
                            ("Most opponents of the project had moved away before residents were polled [S2].", "en")):
             text, changes = self.mark(body, src, lang)
             self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
@@ -505,6 +505,9 @@ class PlanScopeTests(unittest.TestCase):
                            ("The voluntary survey may over-represent residents who supported the project [S2].", "en"),
                            ("The department kept no control group [S1].", "en"),
                            ("보고서에 따르면 담당자는 대조군을 두지 않았다 [S1].", "ko"),
+                           # 8회차: 유보·부정 문장은 원문보다 덜 말하는 쪽이라 낱말 대조로 표시하지 않는다(독립 라벨에서 대부분 맞는 문장).
+                           ("대조군이 없어 효과 크기를 확정할 수 없다 [S1].", "ko"),
+                           ("An unusually cold counting week might explain part of the drop [S2].", "en"),
                            ("According to the association, the survey may over-represent supporters of the project [S2].", "en")):
             text, changes = self.mark(body, src, lang)
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)

@@ -810,12 +810,20 @@ _SOURCE_FRAME = re.compile(
     r"note[sd]?|says|said|states|stated|found|finds|shows?|showed|two|three|both)\b", re.I)
 
 
+# 유보·부정 문장("단정하지 않았다", "판단이 이르다", "가능성이 있다", "might explain part of")은 원문보다 덜 말하는 쪽이라
+# 낱말 대조로 표시하지 않는다(8회차: 별도 에이전트가 쓴 holdout4에서 이 검사의 오표시 10건 중 4건, 다른 묶음 4건이 이런 문장).
+_RESTRAINED = re.compile(r"\b(?:might|may|could|possibly|perhaps|not|never|unclear|uncertain|cannot)\b|n't\b|"
+                         r"가능성|수 있|어렵|이르다|않았|않는다|않다|않은|없었|없다|불확실|미지수", re.I)
+
+
 def _wording_unsupported(plain: str, cited_text: str) -> bool:
     """인용 문장의 내용이 인용 원문에 거의 없으면 True — 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장.
 
     같은 문자 체계일 때만 본다(한국어 보고서가 영어 원문을 인용하는 번역 인용은 낱말 대조로 판정하지 않는다).
     한국어는 글자 2-gram 중 원문에 있는 비율이 0.4 미만(2-gram 12개 이상), 영어는 4글자 이상 내용 낱말 중 원문에 있는 비율이
     0.4 미만(낱말 4개 이상)일 때. 평가 점수기(0.5)보다 엄격하게 둬 바꿔 말한 맞는 문장을 덜 건드린다."""
+    if _RESTRAINED.search(plain):
+        return False
     hangul, latin = len(re.findall(r"[가-힣]", cited_text)), len(re.findall(r"[A-Za-z]", cited_text))
     plain = _SOURCE_FRAME.sub(" ", plain)
     if re.search(r"[가-힣]", plain):
