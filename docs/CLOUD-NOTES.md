@@ -2,6 +2,25 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-10 (품질 회차 8)
+
+- 점수 전후: 검사 코드·이전 라벨을 읽지 않은 별도 에이전트가 코드 수정 전에 쓴 holdout4 라벨 평가(`python -m evals.labeled --set holdout4`, 12 case·135문장) **F1 65.2 → 77.6**(recall 60.8→70.3, precision 70.3→86.7, 맞는 문장 오표시율 31.1→13.1). 설계 때 보지 않은 묶음: holdout 81.4→83.2, holdout2 86.2→86.8, holdout3 80.0→82.2, dev 88.4 그대로. 고정 32 case `evals.run` 100.0→99.9(유보 문장 규칙의 대가, QUALITY-LOG). 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시):
+  - 코드 수정 전 먼저: holdout4 12 case(`024cf77`). 이전 회차 holdout은 고치는 세션이 직접 썼다 — 기준선이 holdout3 끝보다 15점 낮아 그 점수들이 과대평가였음을 확인.
+  - 개선 1 계산 값 읽기(`ca92bd1`): ㎏·㎞·마일, 단위당 값 환산, 세는 말이 다른 몫, 1건당, '10명 중 약 8명', 건수×건당 금액.
+  - 개선 2 유보·부정 문장은 `wording_conflict`로 표시하지 않음(`3853221`) — 3회차에 내가 넣은 이 검사가 독립 라벨에서 가장 약했다.
+  - 개선 3 설문 몫→주민 전체 몫(`12ae321`), 개선 4 원문이 유보한 귀속을 결론처럼(`76c367b`).
+  - 기록: QUALITY-LOG·백로그(1건 완료·6건 추가)·CHANGELOG·evals README, CI에 holdout4 `--min-f1 70`(`c25fdec`).
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 598개 통과(Python 3.13, `pip install -e .`). 새 시험 5개 중 4개는 옛 코드에서 실패 확인(km→mile 상쇄 방지 시험은 회귀 감시용). `evals.run --min-total 97`, `evals.labeled` 다섯 묶음 CI 문턱, `compileall` 통과, walkthrough 변화 없음. 3.11/3.12·Windows는 클라우드 CI에 맡겼다. 실제 `codex exec`는 로그인이 없어 돌리지 않았다.
+- PR #17에 이어 푸시하고 PR 본문 맨 위에 이번 회차 표를 더한다. AGENTS.md의 커밋 댓글 규칙은 이 세션의 GitHub 도구에 커밋 댓글 기능이 없어 PR 댓글로 대신한다.
+- 남은 한계: holdout4도 개선 전에 오판 목록을 봤으므로 끝 점수는 과대평가. 사람 라벨 검토 전. 대상 바꿈(수치 없는 집단·요인 바꿈)은 8 중 2만 잡는다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "공유우산 시범사업은 시민 만족도와 우산 회수율에 어떤 결과를 냈나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"scope_conflict"\|"causal_conflict"\|"wording_conflict"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-10 (품질 회차 7)
 
 - 점수 전후: 코드 수정 전에 만든 새 holdout3 라벨 평가(`python -m evals.labeled --set holdout3`, 12 case·128문장) **F1 70.1 → 80.0**(recall 64.4→71.2, precision 77.0→91.2, 맞는 문장 오표시율 25.5→9.1). 설계 때 보지 않은 묶음: holdout2 80.9→86.2(오표시율 17.1→11.4), holdout 80.0→81.4(10.8→7.7), dev 88.4 그대로. 고정 32 case(`evals.run`) 100.0 그대로. 상세는 `docs/QUALITY-LOG.md`.
