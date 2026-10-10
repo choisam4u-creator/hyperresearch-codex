@@ -521,6 +521,25 @@ class PlanScopeTests(unittest.TestCase):
         self.assertNotIn("mismatch", text)
         self.assertEqual([], changes["subject_conflict"])
 
+    def test_derived_korean_values_are_read_as_source_values(self):
+        # 8회차(holdout4): 단위 기호 ㎏, 단위당 값 환산, 세는 말이 다른 개수의 몫, '1건당', '10명 중 약 8명', 건수×건당 금액.
+        src = {"S1": "주민이 꽁초를 가져오면 1g당 20원을 지급했다. 참여 점포는 전체 410개 점포 가운데 152곳이었다. "
+                     "배송 건수는 26,000건이었고 배송비는 시가 건당 3,500원씩 부담했다. 사업비는 1억 2천만 원, 이용 건수는 5,400건이었다. "
+                     "이용자의 78%가 여성이었다."}
+        for body in ("꽁초 1㎏을 가져오면 2만 원을 받을 수 있었다 [S1].", "점포의 약 37%가 참여했다 [S1].",
+                     "시가 부담한 배송비는 모두 9,100만 원 정도였다 [S1].", "이용 1건당 사업비는 약 2만 2천 원이었다 [S1].",
+                     "이용자 10명 중 약 8명은 여성이었다 [S1]."):
+            text, changes = self.mark(body, src, "ko")
+            self.assertNotIn("불일치", text, body)
+        text, _ = self.mark("꽁초 1㎏을 가져오면 5만 원을 받을 수 있었다 [S1].", src, "ko")
+        self.assertIn("불일치", text)   # 단위당 값과 맞지 않는 금액은 그대로 표시
+
+    def test_rate_rule_does_not_hide_a_unit_swap(self):
+        # 단위당 값 환산은 서로 다른 단위를 잇는 값만 쓴다. 같은 단위 두 값의 비율로는 km→mile 바꿔치기가 서로 상쇄돼 통과했다.
+        src = {"S1": "Average bus speeds inside it rose from 11 to 13 kilometers per hour."}
+        text, _ = self.mark("Average bus speeds inside the zone rose from 11 to 13 miles per hour [S1].", src)
+        self.assertIn("mismatch", text)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

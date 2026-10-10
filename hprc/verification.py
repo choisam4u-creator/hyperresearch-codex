@@ -31,7 +31,7 @@ _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 # 잡는다. "km"·"m"보다 먼저 맞춰야 "km²"가 길이로 읽히지 않는다.
 _EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
                 "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
-                "제곱킬로미터", "제곱미터", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
+                "제곱킬로미터", "제곱미터", "㎏", "㎞", "마일", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
                 "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
                 "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees",
                 "개월", "months")
@@ -160,6 +160,7 @@ _UNIT_SCALE = {
     "mile": ("length", Decimal("1609.344")), "miles": ("length", Decimal("1609.344")),
     "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")), "kilogram": ("mass", Decimal("1000")),
     "kilograms": ("mass", Decimal("1000")), "킬로그램": ("mass", Decimal("1000")),
+    "㎏": ("mass", Decimal("1000")), "㎞": ("length", Decimal("1000")), "마일": ("length", Decimal("1609.344")),   # 한 글자 단위 기호(8회차 holdout4: "꽁초 1㎏")
     # 톤은 미터법 톤(1,000kg)으로 본다. 미국 short ton(약 907kg)과의 차이는 반올림 허용 범위 밖이라 환산 주장이 표시될 수 있다.
     "ton": ("mass", Decimal("1000000")), "tons": ("mass", Decimal("1000000")), "tonne": ("mass", Decimal("1000000")),
     "tonnes": ("mass", Decimal("1000000")), "톤": ("mass", Decimal("1000000")),
@@ -312,8 +313,9 @@ def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
         raw = text[match.start():stop]
         if raw == "1" and _PER_UNIT_TAIL.match(text, stop):
             continue   # "1인당"·"1가구당"의 1은 기준을 말하는 낱말이지 수량이 아니다
-        if number == 1 and text.startswith("당", stop) and _UNIT_SCALE.get(unit, ("",))[0].startswith("count_"):
-            continue   # "1곳당"·"1대당"·"1명당"도 같다(세는 말이 단위로 먼저 읽힌다)
+        if number == 1 and text.startswith("당", stop) and (_UNIT_SCALE.get(unit, (unit,))[0].startswith("count_")
+                                                            or unit in ("건", "명", "가구")):
+            continue   # "1곳당"·"1대당"·"1명당"·"1건당"도 같다(세는 말이 단위로 먼저 읽힌다)
         if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
             unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
         if not unit and _MONTH_RANGE_HEAD.match(text, stop) and re.fullmatch(r"1[0-2]|0?[1-9]", raw):
@@ -553,7 +555,8 @@ _ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:
 _WORD_SHARES = {"half": 50, "a third": Decimal(100) / 3, "one third": Decimal(100) / 3, "two thirds": Decimal(200) / 3,
                 "a quarter": 25, "one quarter": 25, "three quarters": 75, "a fifth": 20, "one fifth": 20, "절반": 50}
 _WORD_SHARE = re.compile(r"\b(?:" + "|".join(k for k in _WORD_SHARES if k.isascii()) + r")\b|절반", re.I)
-_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(\d+)(?:\s*명)?(\s*(?:꼴|이상|or more))?", re.I)
+_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*명)?"
+                       r"(\s*(?:꼴|이상|or more))?", re.I)   # "10명 중 약 8명"(8회차)
 
 
 def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
@@ -596,7 +599,18 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
     return out
 
 
-_COUNT_LIKE = {"unitless", "명", "count_item", "count_place", "count_vehicle", "count_occurrence", "가구", "area"}
+_COUNT_LIKE = {"unitless", "명", "count_item", "count_place", "count_vehicle", "count_occurrence", "가구", "area", "건"}
+# 세는 말만 다른 개수("410개 점포 가운데 152곳")는 몫을 셀 때 같은 종류로 본다(8회차 holdout4).
+_COUNTS = {"unitless", "명", "가구", "건", "count_item", "count_place", "count_vehicle", "count_occurrence"}
+
+
+def _comparable_counts(a: dict, b: dict) -> bool:
+    """세는 말이 달라도 둘 다 세는 말이 붙은 정수 개수면 몫을 셀 수 있다. 세는 말 없는 수("4주"의 4)와 소수("0.7건")는
+    우연히 맞는 몫이 생기므로 넣지 않는다(고정 case ko-cooling-pilot에서 0.7건÷4 ≈ 18%가 맞는 값처럼 보였다)."""
+    if a["dimension"] == b["dimension"]:
+        return True
+    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS and "unitless" not in (a["dimension"], b["dimension"])
+            and a["value"] == a["value"].to_integral_value() and b["value"] == b["value"].to_integral_value())
 # 기간당 평균("하루 평균 약 130회", "한 달에 약 1만 8,000마리"): 원문 총계를 원문 기간 길이나 1년의 날·주·달 수로 나눈 값.
 _PER_PERIOD = (
     (re.compile(r"하루|일평균|일 평균|\b(?:a|per|each) day\b|\bdaily\b", re.I), (365, 30, 7),
@@ -647,7 +661,11 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
     return gap <= step / 2 and gap <= target / 10
 
 
-def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "") -> set[int]:
+_PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
+
+
+def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
+                      all_claimed: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
     ok: set[int] = set()
     words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
@@ -668,7 +686,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
             if any(abs(abs(value["value"]) - abs(p - q)) <= _step(value) / 2 for p in percents for q in percents if p != q):
                 ok.add(value["start"])
         elif value["dimension"] == "percent" and any(
-                a is not b and a["dimension"] == b["dimension"] and 0 < abs(a["value"]) < abs(b["value"])
+                a is not b and _comparable_counts(a, b) and 0 < abs(a["value"]) < abs(b["value"])
                 and abs(abs(value["value"]) - abs(a["value"]) / abs(b["value"]) * 100) <= _step(value) / 2
                 for a in plain for b in plain):
             ok.add(value["start"])   # 몫을 반올림한 퍼센트(412명 중 389명 → 94%)
@@ -690,6 +708,23 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
                 for a in plain for b in plain):
             ok.add(value["start"])
+    # 단위당 값의 환산(8회차 holdout4): 원문 "1g당 20원"을 주장 "1㎏을 가져오면 2만 원"처럼 주장의 다른 수량에 맞춰 늘린 값.
+    # 원문 기준 수량 뒤에 '당'·'per'·'/'가 있을 때만 본다. 맞으면 주장의 그 수량(1㎏)도 원문에서 온 값으로 본다.
+    rates = [(a, b) for a in plain if a["value"] and _PER_BASIS.match(source_text, a["end"])
+             for b in plain if b is not a and b["dimension"] != a["dimension"]]   # 단위당 값은 서로 다른 단위를 잇는다(g→원)
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent":
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        for other in all_claimed or claim_values:
+            if other is value or other["start"] == value["start"]:
+                continue
+            for a, b in rates:
+                if a["dimension"] != other["dimension"] or b["dimension"] != value["dimension"]:
+                    continue
+                target = abs(b["value"]) * abs(other["value"]) / abs(a["value"])
+                if abs(value["value"]) == target or (hedged and _rounds_to(value, target)):
+                    ok.update((value["start"], other["start"]))
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
@@ -724,7 +759,7 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
             value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
     missing = [value for value in claimed
                if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)]
-    approx = _approx_supported(sentence, missing, source, cited_text) if missing else set()
+    approx = _approx_supported(sentence, missing, source, cited_text, claimed) if missing else set()
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
