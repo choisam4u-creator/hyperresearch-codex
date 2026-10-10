@@ -1,0 +1,86 @@
+{
+ "id": "en-community-paramedics",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did community paramedic home visits reduce emergency visits?",
+ "sources": {
+  "S1": "Community paramedics made 5,600 home visits to frequent 911 callers in 2024. Among the 410 enrolled patients, emergency department visits fell from an average of 9.2 per year to 5.1.\n\nPatients with active psychiatric crises were referred elsewhere and not enrolled.",
+  "S2": "Ambulance response times citywide did not change during the program. Enrolled patients were older on average than those who declined, so the evaluators cautioned that the comparison may overstate the effect."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did community paramedic home visits reduce emergency visits?\n\n## Answer\nEnrolled patients' emergency visits fell by about 4 a year on average [S1]. Emergency visits among enrolled patients were cut by about 45 percent [S1]. Each paramedic team made 5,600 home visits [S1].\n\n## Evidence\n- Paramedics averaged nearly 14 visits per enrolled patient [S1].\n- The program enrolled patients in active psychiatric crises [S1].\n- Emergency department visits fell for all frequent 911 callers in the city [S1].\n- Ambulance response times across the city improved during the program [S2].\n\n## Counter-evidence and limits\n- Citywide ambulance response times stayed the same [S2].\n- The evaluators warned the comparison might exaggerate the program's effect [S2].\n- The evaluators confirmed the comparison accurately measured the program's effect [S2].\n- Each home visit cost about $210.\n\n## Next actions\n- Compare with patients who declined enrollment (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Enrolled patients' emergency visits fell by about 4 a year on average",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "9.2-5.1"
+  },
+  {
+   "key": "Emergency visits among enrolled patients were cut by about 45 percent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "44.6%"
+  },
+  {
+   "key": "Each paramedic team made 5,600 home visits",
+   "label": "mismatch",
+   "tag": "basis",
+   "why": "총계→팀당"
+  },
+  {
+   "key": "Paramedics averaged nearly 14 visits per enrolled patient",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "5,600/410"
+  },
+  {
+   "key": "The program enrolled patients in active psychiatric crises",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "not enrolled"
+  },
+  {
+   "key": "Emergency department visits fell for all frequent 911 callers in the city",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "등록 410명"
+  },
+  {
+   "key": "Ambulance response times across the city improved during the program",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not change"
+  },
+  {
+   "key": "Citywide ambulance response times stayed the same",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "did not change"
+  },
+  {
+   "key": "The evaluators warned the comparison might exaggerate the program's effect",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "overstate"
+  },
+  {
+   "key": "The evaluators confirmed the comparison accurately measured the program's effect",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "cautioned"
+  },
+  {
+   "key": "Each home visit cost about $210",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}
