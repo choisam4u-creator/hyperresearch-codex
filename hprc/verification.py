@@ -29,7 +29,7 @@ _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 _UNITS = ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
           "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
-          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
+          "mWh", "mW", "kWh", "Wh", "kW", "W", "Gbps", "Mbps", "Kbps", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
 # "%p"·"%포인트"·"percentage points"도 퍼센트 차원의 값으로 읽는다. 퍼센트와 퍼센트포인트의 구분은 _percent_point_conflict가 따로 본다.
 # 자릿수 낱말: "420억 원"과 "420만 원", "4.2 million"과 "4.2 billion"은 숫자 글자가 같아도 다른 값이다. 값에 곱해 비교하므로
@@ -94,6 +94,12 @@ def _korean_compound(text: str, pos: int, first: Decimal) -> tuple[Decimal, int]
         used, end = True, m.end()
     if not used:
         return None
+    if total and not group and pending is None:
+        # "1만 2,400권"·"3억 5,000"처럼 큰 자릿수 뒤에 자릿수 없이 붙는 나머지(1만 미만) 숫자도 같은 수다.
+        # 연도·월·퍼센트·영문 단위가 붙은 숫자("1만 2025년")는 다른 값으로 둔다.
+        tail = re.match(r"\s?(\d{1,3}(?:,\d{3})?|\d{4})(?![\d,.])(?!\s*(?:년|월|일|%|퍼센트|[A-Za-z]))", text[end:])
+        if tail and Decimal(tail.group(1).replace(",", "")) < 10**4:
+            return total + Decimal(tail.group(1).replace(",", "")), end + tail.end()
     return total + group + (pending or 0), end
 
 
@@ -155,7 +161,8 @@ _UNIT_SCALE = {
     "대": ("count_vehicle", Decimal("1")), "회": ("count_occurrence", Decimal("1")), "종": ("count_type", Decimal("1")),
     "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "%p": ("percent", Decimal("1")),
     "percentage point": ("percent", Decimal("1")), "percentage points": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
-    "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
+    "tb": ("data_decimal", Decimal("1000000")),
+    "kbps": ("data_rate", Decimal("1000")), "mbps": ("data_rate", Decimal("1000000")), "gbps": ("data_rate", Decimal("1000000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
 }
 
@@ -475,8 +482,18 @@ _CITE_ID = re.compile(r"\[(S\d+)\]")
 # 어림 표시(2026-10-10 라벨 평가 회차): "about 4 million"·"약 24%"·"171톤가량"은 원문 값을 반올림하거나 원문 수치에서 계산한
 # 값(증감률·비율·합·곱·연간 환산)일 수 있다. 어림 표시가 붙은 값은 그 자릿수 반올림 범위(그리고 10%) 안에 원문 값이나 원문에서
 # 계산한 값이 있으면 원문에 있는 값으로 본다. 어림 표시가 없는 값은 원문 두 값의 합·차만 인정한다.
-_APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)|약|대략)\s*[$€£₩]?\s*$", re.I)
-_APPROX_TAIL = re.compile(r"\s*(?:가량|정도|안팎|내외|남짓|꼴)")
+_APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)(?:\s+an?)?|약|대략)\s*[$€£₩]?\s*$", re.I)
+# "14권 남짓"·"130억 원꼴"처럼 세는 말 뒤에 오는 어림 낱말도 본다.
+_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴)")
+# 하한 표시("more than 60 percent", "60% 넘게"): 원문(계산) 값이 그 값 이상이고 그 자릿수 한 칸 안에 있을 때만 인정한다.
+_LOWER_LEAD = re.compile(r"\b(?:more than|over|above|at least|upwards of)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
+_LOWER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:넘게|넘는|넘었|이상|초과)")
+_POINTS_TAIL = re.compile(r"\s*(?:percentage[- ])?points?\b|\s*%?\s?포인트|\s*%\s?p\b", re.I)
+_ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:a|per|each) year\b|\bannual(?:ly)?\b|\byearly\b", re.I)
+# 원문의 낱말 몫("two thirds", "절반")도 퍼센트 값으로 본다.
+_WORD_SHARES = {"half": 50, "a third": Decimal(100) / 3, "one third": Decimal(100) / 3, "two thirds": Decimal(200) / 3,
+                "a quarter": 25, "one quarter": 25, "three quarters": 75, "a fifth": 20, "one fifth": 20, "절반": 50}
+_WORD_SHARE = re.compile(r"\b(?:" + "|".join(k for k in _WORD_SHARES if k.isascii()) + r")\b|절반", re.I)
 _FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(\d+)(?:\s*명)?(\s*(?:꼴|이상|or more))?", re.I)
 
 
@@ -495,7 +512,20 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
         for p in percents:
             out += [(a["dimension"], abs(a["value"]) * p / 100), (a["dimension"], abs(a["value"]) * (100 - p) / 100)]
     out += [("percent", 100 - p) for p in percents]
+    # 나눗셈(8,700회÷9일, 1,560억 원÷12곳)·배수(128÷52 = 2.5배)·퍼센트끼리의 차(71%−58% = 13%p)
+    for a in plain:
+        for b in plain:
+            if a is not b and abs(b["value"]) > 1:
+                out.append((a["dimension"], abs(a["value"]) / abs(b["value"])))
+                if a["dimension"] == b["dimension"]:
+                    out.append(("배", abs(a["value"]) / abs(b["value"])))
+    out += [("percent", abs(p - q)) for p in percents for q in percents if p != q]
     return out
+
+
+def _step(claim: dict) -> Decimal:
+    number = abs(claim.get("number", claim["value"]))
+    return Decimal(10) ** number.normalize().as_tuple().exponent * claim.get("scale", Decimal(1))
 
 
 def _rounds_to(claim: dict, target: Decimal) -> bool:
@@ -503,20 +533,41 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
     number = abs(claim.get("number", claim["value"]))
     if not number or not target:
         return False
-    step = Decimal(10) ** number.normalize().as_tuple().exponent * claim.get("scale", Decimal(1))
+    step = _step(claim)
     gap = abs(abs(claim["value"]) - target)
     return gap <= step / 2 and gap <= target / 10
 
 
-def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict]) -> set[int]:
+def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "") -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
     ok: set[int] = set()
-    derived = _derived_candidates(source_values)
+    words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
+             for m in _WORD_SHARE.finditer(source_text)]
+    derived = _derived_candidates(source_values + words)
     plain = [v for v in source_values if v["dimension"] != "percent"]
+    percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
     for value in claim_values:
         hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
-        if hedged and any(dim == value["dimension"] and _rounds_to(value, t) for dim, t in derived):
+        lower = _LOWER_LEAD.search(sentence, 0, value["start"]) or _LOWER_TAIL.match(sentence, value["end"])
+        same = [t for dim, t in derived if dim == value["dimension"]]
+        if hedged and any(_rounds_to(value, t) for t in same):
             ok.add(value["start"])
+        elif lower and any(abs(value["value"]) <= t < abs(value["value"]) + _step(value) for t in same):
+            ok.add(value["start"])
+        elif _POINTS_TAIL.match(sentence, value["end"]) or re.search(r"points?|포인트|%p", value["raw"], re.I):
+            # 퍼센트포인트 차: 원문 두 퍼센트의 차를 그 자릿수로 반올림한 값
+            if any(abs(abs(value["value"]) - abs(p - q)) <= _step(value) / 2 for p in percents for q in percents if p != q):
+                ok.add(value["start"])
+        elif value["dimension"] == "percent" and any(
+                a is not b and a["dimension"] == b["dimension"] and 0 < abs(a["value"]) < abs(b["value"])
+                and abs(abs(value["value"]) - abs(a["value"]) / abs(b["value"]) * 100) <= _step(value) / 2
+                for a in plain for b in plain):
+            ok.add(value["start"])   # 몫을 반올림한 퍼센트(412명 중 389명 → 94%)
+        elif _ANNUAL_WORDS.search(sentence) and any(
+                a["dimension"] == value["dimension"]
+                and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)
+                for a in plain for f in (12, 52, 365)):
+            ok.add(value["start"])   # 연간 환산(월 29만 원 → 1년이면 348만 원)
         elif value["dimension"] != "percent" and any(
                 a is not b and a["dimension"] == b["dimension"] == value["dimension"]
                 and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
@@ -548,10 +599,11 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     if _UNVERIFIED_SCOPE.search(sentence):
         return absent
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
-    claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")]
+    claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")
+               and not (value["raw"] == "1년" and re.match(r"이면|간|동안|새|마다", sentence[value["end"]:]))]
     missing = [value for value in claimed
                if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)]
-    approx = _approx_supported(sentence, missing, source) if missing else set()
+    approx = _approx_supported(sentence, missing, source, cited_text) if missing else set()
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 

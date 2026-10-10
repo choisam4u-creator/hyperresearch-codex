@@ -609,6 +609,29 @@ class LabeledRoundTests(unittest.TestCase):
             text, _ = self.mark(body, ko, "ko")
             self.assertIn("(출처 불일치)", text, body)
 
+    def test_quotients_points_lower_bounds_and_compound_numbers_are_derived(self):
+        en = {"S1": "The clinic handled 4,200 calls over 7 days. Two thirds of callers were women. "
+                    "The pass rate was 64 percent for the program and 51 percent for the comparison group. "
+                    "Ridership fell from 3.2 million to 1.1 million riders. The line runs at 40Mbps."}
+        for body in ("That is roughly 600 calls a day [S1].", "About 67 percent of callers were women [S1].",
+                     "The program's pass rate was 13 points higher [S1].", "Ridership fell by more than 60 percent [S1].",
+                     "Ridership fell by 2.1 million riders [S1]."):
+            text, _ = self.mark(body, en)
+            self.assertNotIn("(source mismatch)", text, body)
+        for body in ("That is roughly 900 calls a day [S1].", "The program's pass rate was 9 points higher [S1].",
+                     "Ridership fell by more than 80 percent [S1].", "The line runs at 40Gbps [S1]."):
+            text, _ = self.mark(body, en)
+            self.assertIn("(source mismatch)", text, body)
+        ko = {"S1": "사업은 주민 640명에게 도시락 9,600개를 전달했다. 응답자 250명 중 231명이 만족했다. 월 지원금은 15만 원이었다. "
+                    "보수에는 총 2만 4,500권을 들였다."}
+        for body in ("주민 한 명당 15개꼴을 받았다 [S1].", "응답자 92%가 만족했다 [S1].", "지원금은 1년이면 180만 원이다 [S1].",
+                     "보수에는 총 24,500권을 들였다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertNotIn("(출처 불일치)", text, body)
+        for body in ("주민 한 명당 30개꼴을 받았다 [S1].", "응답자 85%가 만족했다 [S1].", "지원금은 1년이면 200만 원이다 [S1]."):
+            text, _ = self.mark(body, ko, "ko")
+            self.assertIn("(출처 불일치)", text, body)
+
     def test_negation_flip_with_source_words_is_marked(self):
         en = {"S1": "The extension did not reduce daytime visits at the four branches. Evening security incidents were not "
                     "higher than before the change. Retail jobs were not lost, and retail employment was flat."}
