@@ -547,7 +547,7 @@ _CITE_ID = re.compile(r"\[(S\d+)\]")
 # 계산한 값이 있으면 원문에 있는 값으로 본다. 어림 표시가 없는 값은 원문 두 값의 합·차만 인정한다.
 _APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)(?:\s+an?)?|약|대략)\s*[$€£₩]?\s*$", re.I)
 # "14권 남짓"·"130억 원꼴"처럼 세는 말 뒤에 오는 어림 낱말도 본다.
-_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴)")
+_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴|수준|규모)")   # 12회차: "1,400만 원 수준", "3,600만 원 규모"
 # 하한 표시("more than 60 percent", "60% 넘게"): 원문(계산) 값이 그 값 이상이고 그 자릿수 한 칸 안에 있을 때만 인정한다.
 _LOWER_LEAD = re.compile(r"\b(?:more than|over|above|at least|upwards of)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
 _LOWER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:넘게|넘는|넘었|이상|초과)")
@@ -1032,7 +1032,7 @@ def _share_overclaim(plain: str, sents: list[str]) -> bool:
 # 제외 낱말("left out of", "excluded", "빠졌다", "제외됐다")은 "did not include"·"포함되지 않았다"를 부정 낱말 없이 바꿔 말한 것이라
 # 부정으로 센다(2026-10-10 7회차, 맞는 바꿔 말하기에 붙던 오표시).
 _NEGATION = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet to|lack(?:s|ed|ing)?|fail(?:s|ed)? to|unchanged|"
-                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없|못\s?하|못했|아니|"
+                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없(?!이)|못\s?하|못했|아니|"
                        r"미측정|미확인|미검증|미집계|빠졌|빠져|빠진|제외", re.I)
 _NEGATION_WORDS = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet|lack\w*|fail\w*|unchanged|unfunded|unmeasured|"
                              r"unknown|unclear|left out|excluded|omitted)\b", re.I)
@@ -1973,7 +1973,9 @@ _UNIVERSAL = re.compile(
     r"(?:city|country|nation|state|region|district|county))\b|전국|전역|모든|거의 모두|전체|전원|전부", re.I)
 _UNIVERSAL_SKIP = re.compile(
     r"\b(?:all|every)\s+(?:\d|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|other|few|day|week|month|year)\w*|"
-    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average", re.I)
+    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average|"
+    # 12회차: '전체 지원액'·'entire budget'은 범위가 아니라 합계다
+    r"전체\s?(?:지원액|지원금|사업비|예산|비용|금액|매출|합계|규모|공사비)|\b(?:entire|whole)\s+(?:budget|cost|amount|sum)\b", re.I)
 
 
 def _universal_overclaim(plain: str, sents: list[str]) -> bool:

@@ -703,6 +703,20 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["causal_conflict"], body)
 
+    def test_approximate_suffixes_total_amounts_and_without_are_not_flagged(self):
+        # 12회차(holdout8): '수준'·'규모'는 어림 표시, '전체 지원액'은 범위가 아니라 합계, '삭감 없이'의 '없이'는 부정 뒤집기가 아니다.
+        src = {"S1": "8개월간 매출은 1억 1,200만 원이었고, 이용자는 대부분 70대 이상이었다. 참가자 360명에게 1인당 10만 원 바우처를 줬다. "
+                     "반지하 주택 140가구에 공사를 했고 실제 평균 지원액은 186만 원이었다.",
+               "S2": "위원회는 2026년 운영 예산 9천만 원을 원안대로 가결했다."}
+        for body in ("8개월간 매출은 약 1억 1천만 원으로, 월평균 1,400만 원 수준이었다 [S1].", "지급된 바우처 총액은 3,600만 원 규모였다 [S1].",
+                     "시범사업 전체 지원액은 약 2억 6천만 원이었다 [S1].", "위원회는 2026년 운영 예산 9천만 원을 삭감 없이 통과시켰다 [S2]."):
+            text, _ = self.mark(body, src, "ko")
+            self.assertNotIn("불일치", text, body)
+        text, _ = self.mark("8개월간 매출은 약 1억 1천만 원으로, 월평균 2,000만 원 수준이었다 [S1].", src, "ko")
+        self.assertIn("불일치", text)
+        text, _ = self.mark("위원회는 2026년 운영 예산 9천만 원을 원안대로 가결하지 않았다 [S2].", src, "ko")
+        self.assertIn("불일치", text)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
