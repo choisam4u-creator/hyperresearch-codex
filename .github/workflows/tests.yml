@@ -31,6 +31,8 @@ jobs:
         run: HPR_BACKEND=mock python -m evals.labeled --set holdout4 --min-f1 70
       - name: Labeled evals (holdout5)
         run: HPR_BACKEND=mock python -m evals.labeled --set holdout5 --min-f1 60
+      - name: Labeled evals (holdout6)
+        run: HPR_BACKEND=mock python -m evals.labeled --set holdout6 --min-f1 65
       - name: Build wheel
         run: |
           python -m pip wheel --no-deps . --wheel-dir "$RUNNER_TEMP/hpr-wheel"
