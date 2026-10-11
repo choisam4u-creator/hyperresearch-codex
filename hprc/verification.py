@@ -921,7 +921,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("period")
     if _plan_overclaim(plain, sents):
         found.append("plan")
-    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents):
+    if (_scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents)
+            or _condition_flip(plain, sents)):
         found.append("scope")
     if _year_conflict(plain, sents):
         found.append("year")
@@ -1957,6 +1958,44 @@ def _universal_overclaim(plain: str, sents: list[str]) -> bool:
                and len(stems & _content_stems(_UNIVERSAL.sub(" ", s))) >= 2]
     return bool(related) and not any(_UNIVERSAL.search(_UNIVERSAL_SKIP.sub(" ", s)) for s in related)
 
+
+
+# 조건 뒤집기(11회차, holdout6 조건 3/7을 보고 설계): 원문이 이용·자격을 조건으로 묶었는데("allowed only if labeled", "동물등록을
+# 마친 반려견만 가능", "수업은 평일 오전에만") 주장은 조건이 없다고 말하거나("at any time without restriction", "동물등록 여부와
+# 관계없이", "평일 저녁과 주말에도"), 원문이 조건이 없다고 했는데("free … regardless of insurance status") 주장이 조건을 붙인다
+# ("free only for women with public insurance"). 'only 12 percent' 같은 강조는 조건으로 보지 않는다. 주장과 내용 낱말이 가장 많이
+# (2개 이상) 겹치는 같은 글자 원문 문장만 본다.
+_ONLY_COND = re.compile(r"\bonly (?:if|for|to|when|with|after|during|on|by|between|within|from)\b|\b(?:limited|restricted) to\b|"
+                        r"\bsolely for\b|\bexclusively for\b|에만|만\s?(?:가능|이용|참여|입장|신청|받|허용|대상)|에\s?한(?:해|하여|정)", re.I)
+_OPEN_COND = re.compile(r"\bregardless of\b|\bwithout (?:any )?restrictions?\b|\bno restrictions?\b|\b(?:at )?any time\b|"
+                        r"\bopen to (?:all|anyone|everyone)\b|\banyone\b|관계없이|상관없이|무관하게|누구나|제한\s?없이|언제든", re.I)
+_ALSO_KO = re.compile(r"[가-힣]+에도\s")
+
+
+def _condition_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(_OPEN_COND.sub(" ", plain)):
+        return False
+    claim_open = bool(_OPEN_COND.search(plain))
+    claim_only = not claim_open and bool(_ONLY_COND.search(plain))
+    claim_also = not (claim_open or claim_only) and bool(_ALSO_KO.search(plain))
+    if not (claim_open or claim_only or claim_also):
+        return False
+    stems = _content_stems(plain)
+    korean = bool(re.search(r"[가-힣]", plain))
+    scored = [(len(stems & _content_stems(s)), s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    scored = [(n, s) for n, s in scored if n >= 2]
+    if not scored:
+        return False
+    best = max(n for n, _ in scored)
+    for n, s in scored:
+        if n != best:
+            continue
+        only, opened = bool(_ONLY_COND.search(s)), bool(_OPEN_COND.search(s))
+        if (claim_open or claim_also) and only and not opened:
+            return True
+        if claim_only and opened and not only:
+            return True
+    return False
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
 _SIMILAR_WARNED = re.compile(r"\(S\d+(?:·S\d+)+: [^)]*(?:독립 출처가 아닐 수 있음|may not be independent)[^)]*\)")

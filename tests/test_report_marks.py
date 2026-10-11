@@ -592,6 +592,25 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["causal_conflict"], body)
 
+    def test_dropped_or_added_eligibility_condition_is_marked(self):
+        # 11회차: 원문이 조건으로 묶은 이용을 조건 없다고, 조건 없다고 한 것을 조건부로 말하면 scope_conflict.
+        src = {"S1": "Garden plots were rented to residents only if they completed a safety course. Plot fees were waived for "
+                     "all renters regardless of income.",
+               "S2": "상담실은 평일 오후에만 문을 열었다. 상담은 사전 예약을 마친 학생만 이용할 수 있었다.",
+               "S3": "Only 12 percent of renters grew vegetables in winter."}
+        for body, lang in (("Residents could rent garden plots without any restrictions [S1].", "en"),
+                           ("Plot fees were waived only for low-income renters [S1].", "en"),
+                           ("상담실은 평일 오후와 주말에도 문을 열었다 [S2].", "ko"),
+                           ("상담은 사전 예약 여부와 관계없이 학생 누구나 이용할 수 있었다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["scope_conflict"]), body)
+        for body, lang in (("Residents could rent garden plots only if they completed a safety course [S1].", "en"),
+                           ("Plot fees were waived for every renter, whatever their income [S1].", "en"),
+                           ("상담실은 평일 오후에만 운영되었다 [S2].", "ko"),
+                           ("Few renters, at any time of year, grew vegetables in winter [S3].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["scope_conflict"], body)
+
     def test_exact_quotients_shares_and_month_lengths_are_read_as_source_values(self):
         # 10회차(holdout6): '12-month', 세는 말이 다른 개수의 몫·나머지, 어림 표시 없는 정확한 나눗셈·절반.
         src = {"S1": "Over 12 months the fridges collected 38,400 kilograms of food.",
