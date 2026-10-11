@@ -1,0 +1,86 @@
+{
+ "id": "en-eviction-legal-aid",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "What did Calder Falls's eviction legal aid pilot achieve in its first year?",
+ "sources": {
+  "S1": "From July 2025 to June 2026, the pilot offered free legal representation to tenants facing eviction in housing court if their household income was at or below 200% of the federal poverty line. Lawyers from two contracted nonprofits represented tenants in 1,240 cases.\n\nIn represented cases, 64% of tenants remained in their homes, compared with 37% among unrepresented tenants in the same court over the same period. The department cautions that represented and unrepresented tenants differed in income and case type, so the gap should not be read as the effect of representation alone.",
+  "S2": "The pilot's first-year cost was $3.1 million, paid from the city's housing trust fund. The FY2027 proposal would expand eligibility to 250% of the poverty line, which the budget office estimates would raise caseloads by about 30%."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Calder Falls's eviction legal aid pilot achieve in its first year?\n\n## Answer\nCalder Falls's pilot provided free eviction defense to low-income tenants in 1,240 housing court cases in its first year [S1]. Representation raised the share of tenants staying in their homes by 27 percentage points [S1]. The program cost an average of roughly $2,500 per represented case [S1][S2].\n\n## Evidence\n- Eligibility was limited to households earning no more than twice the federal poverty line [S1].\n- Nearly two-thirds of represented tenants avoided losing their homes [S1].\n- Representation was provided by city-employed public defenders [S1].\n- The first-year cost of $3.1 million came from the general fund [S2].\n\n## Counter-evidence and limits\n- The department notes that represented and unrepresented tenants were similar in income and case type [S1].\n- The city has expanded eligibility to 250% of the poverty line [S2].\n- The budget office expects the expansion to add about 370 cases a year [S2].\n- Eviction filings in Calder Falls fell by 15% during the pilot year.\n\n## Next actions\n- Request a matched comparison of represented and unrepresented cases by income and case type before the FY2027 vote (judgment).\n\n## Sources\n- [S1] Calder Falls Housing Department, Eviction Legal Aid Pilot: First-Year Review (2026)\n- [S2] Calder Falls Budget Office, FY2027 proposal\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Calder Falls's pilot provided free eviction defense to low-income tenants in 1,240 housing court cases in its first year",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "free representation, 1,240 cases"
+  },
+  {
+   "key": "Representation raised the share of tenants staying in their homes by 27 percentage points",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "S1 warns the 64% vs 37% gap is not the effect of representation alone"
+  },
+  {
+   "key": "The program cost an average of roughly $2,500 per represented case",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "3.1M/1,240 = 2,500"
+  },
+  {
+   "key": "Eligibility was limited to households earning no more than twice the federal poverty line",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "at or below 200% FPL"
+  },
+  {
+   "key": "Nearly two-thirds of represented tenants avoided losing their homes",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "64%"
+  },
+  {
+   "key": "Representation was provided by city-employed public defenders",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "lawyers from two contracted nonprofits"
+  },
+  {
+   "key": "The first-year cost of $3.1 million came from the general fund",
+   "label": "mismatch",
+   "tag": "funding",
+   "why": "paid from the housing trust fund"
+  },
+  {
+   "key": "The department notes that represented and unrepresented tenants were similar in income and case type",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: they differed"
+  },
+  {
+   "key": "The city has expanded eligibility to 250% of the poverty line",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "only proposed in FY2027 budget"
+  },
+  {
+   "key": "The budget office expects the expansion to add about 370 cases a year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "30% of 1,240 = 372"
+  },
+  {
+   "key": "Eviction filings in Calder Falls fell by 15% during the pilot year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source on filings"
+  }
+ ]
+}

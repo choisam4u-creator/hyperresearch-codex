@@ -1,0 +1,86 @@
+{
+ "id": "en-water-taxi",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "How well did Port Halden's harbor water taxi pilot perform in its first year?",
+ "sources": {
+  "S1": "The water taxi pilot ran from May 2025 to April 2026 with two 40-seat boats linking the East Wharf and the Civic Pier, a 2.4-kilometer crossing that takes 11 minutes. Ridership totaled 186,000 boardings over the 12 months, with July the busiest month at 27,500 boardings and January the quietest at 6,200.\n\nA rider survey of 1,140 respondents found that 38% had previously made the trip by car and 44% by bus. The authority cautions that the survey was conducted only on summer weekdays and may not represent winter riders.",
+  "S2": "The pilot's operating cost was $2.9 million, of which fares covered $0.56 million; the remainder came from the city's general fund. Councillors approved a second year but cut winter service to weekends only, starting in November 2026."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How well did Port Halden's harbor water taxi pilot perform in its first year?\n\n## Answer\nPort Halden's harbor water taxi carried 186,000 boardings in its first year, averaging about 15,500 a month [S1]. Fares recovered roughly one-fifth of the $2.9 million operating cost [S2]. The council approved a second year of service and expanded winter sailings to run daily [S2].\n\n## Evidence\n- The crossing covers about 1.5 miles and takes 11 minutes [S1].\n- Peak-month ridership in July was more than four times the January low [S1].\n- Most surveyed riders said they had previously driven the route [S1].\n- The two boats each seat 60 passengers [S1].\n- The service ran between the East Wharf and the Civic Pier from May 2025 through April 2026 [S1].\n\n## Counter-evidence and limits\n- The authority notes that the survey covered riders across all seasons, so its mode-shift estimates are representative [S1].\n- The roughly $2.3 million operating shortfall was covered by a regional transit grant [S2].\n- Water taxi pilots in comparable port cities typically lose about half their riders in winter months.\n\n## Next actions\n- Run a winter weekday rider survey before the weekend-only schedule starts so the mode-shift estimate covers all seasons (judgment).\n\n## Sources\n- [S1] Port Halden Transit Authority, Harbor Water Taxi Pilot: 12-month evaluation\n- [S2] Port Halden City Council minutes, June 2026\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Halden's harbor water taxi carried 186,000 boardings in its first year, averaging about 15,500 a month",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "186,000/12 = 15,500"
+  },
+  {
+   "key": "Fares recovered roughly one-fifth of the $2.9 million operating cost",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "0.56/2.9 = 19.3%"
+  },
+  {
+   "key": "The council approved a second year of service and expanded winter sailings to run daily",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S2: winter service was cut to weekends only"
+  },
+  {
+   "key": "The crossing covers about 1.5 miles and takes 11 minutes",
+   "label": "ok",
+   "tag": "unit_conversion",
+   "why": "2.4 km = 1.49 miles"
+  },
+  {
+   "key": "Peak-month ridership in July was more than four times the January low",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "27,500/6,200 = 4.4"
+  },
+  {
+   "key": "Most surveyed riders said they had previously driven the route",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "only 38% previously drove"
+  },
+  {
+   "key": "The two boats each seat 60 passengers",
+   "label": "mismatch",
+   "tag": "magnitude",
+   "why": "S1: 40-seat boats"
+  },
+  {
+   "key": "The service ran between the East Wharf and the Civic Pier from May 2025 through April 2026",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "route and dates match"
+  },
+  {
+   "key": "The authority notes that the survey covered riders across all seasons, so its mode-shift estimates are representative",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "survey was summer weekdays only and may not represent winter riders"
+  },
+  {
+   "key": "The roughly $2.3 million operating shortfall was covered by a regional transit grant",
+   "label": "mismatch",
+   "tag": "funding",
+   "why": "remainder came from the city's general fund"
+  },
+  {
+   "key": "Water taxi pilots in comparable port cities typically lose about half their riders in winter months",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source on other cities"
+  }
+ ]
+}
