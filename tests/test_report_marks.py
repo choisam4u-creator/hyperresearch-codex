@@ -917,3 +917,28 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertNotIn("(출처 불일치)", text)
         text, changes = self.mark("친환경 제설제는 염화칼슘의 2.6배 가격이다 [S1].", ko, "ko")
         self.assertIn("(출처 불일치)", text)
+
+    def test_comparison_reference_and_inline_flips(self):
+        # 9회차(holdout5): 원문이 '…보다'로 비교한 기준·방향을 뒤집은 문장, 주장 스스로 두 값을 반대로 비교한 문장, '-er than' 비교 낱말.
+        ko = {"S1": "이용 경험자 중 청결 만족도는 72%로, 시 직영 공중화장실 만족도 61%보다 높았다. "
+                    "다만 70대 이상 응답자는 이용 경험이 23%로, 40~50대(61%)보다 낮았다. 시범 구간 피해율은 6%였고 일반 구간은 11%였다."}
+        for body in ("이용자의 청결 만족도는 직영 공중화장실보다 민간 개방화장실 쪽이 낮았다 [S1].",
+                     "70대 이상 응답자의 이용 경험은 40~50대보다 높았다 [S1].",
+                     "시범 구간의 피해율은 6%로 일반 구간 11%보다 높았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["antonym_conflict"]), body)
+        for body in ("이용자의 청결 만족도는 직영 공중화장실보다 민간 개방화장실 쪽이 높았다 [S1].",
+                     "70대 이상 응답자의 이용 경험은 40~50대보다 낮았다 [S1].",
+                     "시범 구간의 피해율은 6%로 일반 구간 11%보다 낮았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["antonym_conflict"], body)
+        en = {"S1": "Fountains at transit stops dispensed more water on average than fountains in parks. "
+                    "The division cautioned that summer 2026 was drier than 2025. Lower-income buyers received $1,200 and others $500."}
+        for body in ("Park fountains dispensed more water on average than those at transit stops [S1].",
+                     "Summer 2026 was wetter than 2025 [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual(1, len(changes["antonym_conflict"]), body)
+        for body in ("Transit-stop fountains dispensed more water on average than park fountains [S1].",
+                     "Summer 2026 was drier than 2025 [S1].", "Lower-income buyers received $1,200 rather than $500 [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["antonym_conflict"], body)

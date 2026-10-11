@@ -1153,73 +1153,158 @@ def _comparison_swap(plain: str, sents: list[str]) -> bool:
             theirs = (other.group(1) or other.group(2)).lower()
             same_side = all(bool(re.search(up, clause, re.I)) == bool(re.search(up, c, re.I))
                             and bool(re.search(down, clause, re.I)) == bool(re.search(down, c, re.I)) for up, down in _ANTONYMS)
-            if (mine != theirs and same_side and mine in c[:other.start()].lower() + c[other.end():].lower()
+            # "than park fountains"처럼 원문 기준 낱말(fountains)이 주장 기준 쪽에도 있으면 맞바꾼 것이 아니다(9회차)
+            if (mine != theirs and same_side and not (ref.group(2) and theirs in clause[ref.start():].lower())
+                    and mine in c[:other.start()].lower() + c[other.end():].lower()
                     and theirs in clause[:ref.start()].lower() + clause[ref.end():].lower()):
                 return True
     return False
 
 
-# 수치 비교 뒤집기(9회차, holdout4 비교 1/4): "Opposition outweighed support"·"외로움이 줄었다고 답한 비율보다 기계 음성이
-# 불편하다고 답한 비율이 더 높았다"처럼 두 대상을 크기로 비교하는데, 인용 원문 한 문장이 두 대상의 값을 같은 종류로 하나씩
-# 말하고("58 percent supported …, while 21 percent opposed it") 크기가 반대면 불일치. 대상은 주장의 비교 낱말 앞·뒤(한국어는
-# '…보다' 앞·뒤) 쪽에만 있는 내용 낱말로 나누고, 원문 수치 절이 한쪽 낱말만 가질 때 그 대상의 값으로 본다. 감소·증가 '폭'을
-# 비교하는 주장은 원문 수치가 수준값이라 보지 않는다.
-_CMP_EN = re.compile(r"\b(?:(more|greater|larger|higher|bigger|outweigh(?:ed|s)?|outnumber(?:ed|s)?|exceed(?:ed|s)?|surpass(?:ed|es)?)"
-                     r"|(less|fewer|lower|smaller|trail(?:ed|s)?))\b", re.I)
-_CMP_KO = re.compile(r"보다\s*((?:[^\s.]+\s+){0,6}?)(?:더\s*)?(?:(높|많|크|컸|길)|(낮|적|작|짧))")
-_CMP_CHANGE = re.compile(r"\b(?:declines?|drops?|falls?|increases?|rises?|growth|gains?|reductions?|cuts?|changes?|improvements?)\b"
-                         r"|감소|증가|하락|상승|늘어난|줄어든|개선|폭", re.I)
+# 비교 뒤집기(9회차). 주장이 두 대상을 비교하는데("Opposition outweighed support", "A는 B보다 높았다") 원문과 크기 순서가 반대인 문장.
+# 비교 낱말은 반대말 쌍(more↔less, wetter↔drier, 높↔낮 …)으로 묶어 같은 쌍 안에서만 방향을 비교한다. 세 가지로 본다.
+# ① 원문 한 문장이 두 대상의 값을 같은 종류로 하나씩 말하고("58 percent supported …, while 21 percent opposed it") 크기가 반대.
+#    대상은 주장의 비교 낱말 앞·뒤(한국어는 '…보다' 앞·뒤) 쪽에만 있는 내용 낱말로 나누고, 원문 수치마다 같은 절에서 가장 가까이
+#    나오는 쪽 낱말의 대상 값으로 본다(크기 쌍 more·higher·많·높만).
+# ② 원문 문장도 같은 비교 쌍으로 비교하고("직영 만족도 61%보다 높았다"), 주장의 기준('…보다'·'than' 쪽)이 원문의 기준과 같은데
+#    방향이 반대이거나, 주장이 두 대상을 맞바꿨는데 방향이 같다(원문이 주어를 생략해 ①로는 대상을 알 수 없을 때).
+# ③ 주장 스스로 두 값을 말하며 반대로 비교한다("피해율은 6%로 일반 구간 11%보다 높았다").
+# 감소·증가 '폭'을 비교하는 주장은 원문 수치가 수준값이라 ①·③에서 보지 않는다.
+_CMP_PAIRS_EN = (
+    (r"more|greater|larger|higher|bigger|outweigh(?:ed|s)?|outnumber(?:ed|s)?|exceed(?:ed|s)?|surpass(?:ed|es)?",
+     r"less|fewer|lower|smaller|trail(?:ed|s)?"),
+    (r"longer", r"shorter"), (r"faster|quicker", r"slower"), (r"wetter|rainier", r"drier"), (r"warmer|hotter", r"colder|cooler"),
+    (r"earlier", r"later"), (r"older", r"younger"), (r"costlier|pricier", r"cheaper"), (r"busier", r"quieter"))
+_CMP_PAIRS_KO = ((r"높|많|크|컸", r"낮|적|작"), (r"길", r"짧"), (r"빠르|빨랐|빨라", r"느리|느렸|늦"), (r"비싸|비쌌", r"싸|쌌|저렴"))
+_CMP_EN = re.compile(r"\b(?:" + "|".join(f"(?P<u{i}>{u})|(?P<d{i}>{d})" for i, (u, d) in enumerate(_CMP_PAIRS_EN)) + r")\b", re.I)
+_CMP_KO = re.compile(r"보다\s*(?P<between>(?:[^\s.]+\s+){0,6}?)(?:더\s*)?(?:"
+                     + "|".join(f"(?P<u{i}>{u})|(?P<d{i}>{d})" for i, (u, d) in enumerate(_CMP_PAIRS_KO)) + ")")
+_CMP_PLAIN_EN = re.compile(r"^(?:more|greater|larger|higher|bigger|less|fewer|lower|smaller)$", re.I)
+_CMP_CHANGE = re.compile(r"\b(?:declines?|drops?|falls?|increases?|rises?|rose|grew|growth|gains?|reductions?|cuts?|changes?|"
+                         r"improvements?)\b|감소|증가|하락|상승|늘어난|줄어든|개선|폭", re.I)
 
 
-def _comparison_sides(clause: str) -> tuple[str, str, int] | None:
-    """(큰 쪽이라 말한 대상 글, 작은 쪽이라 말한 대상 글, 1) 또는 반대 방향이면 -1. 비교가 없으면 None."""
+def _cmp_kind(match: re.Match) -> tuple[int, int]:
+    name = next(k for k, v in match.groupdict().items() if v and k[0] in "ud" and k[1:].isdigit())
+    return int(name[1:]), 1 if name[0] == "u" else -1
+
+
+def _comparison_sides(clause: str) -> tuple[str, str, tuple[int, int], int] | None:
+    """(비교 낱말이 말하는 대상 글, 기준('…보다'·'than' 쪽) 글, (비교 쌍, 방향), 기준 글이 끝나는 위치). 비교가 없으면 None."""
     m = _CMP_KO.search(clause)
     if m:
-        sign = 1 if m.group(2) else -1
-        before, between = clause[:m.start()], m.group(1)
-        if _content_stems(between):
-            return between, before, sign
+        kind = _cmp_kind(m)
+        before, between = clause[:m.start()], m.group("between")
+        # 기준은 '…보다' 바로 앞 명사구: 마지막 조사 어절(은·는·이·가·로·으로) 뒤("평균 4.8명으로 민간보다" → "민간").
         tokens = before.split()
-        cut = max((i for i, t in enumerate(tokens[:-1]) if re.search(r"[가-힣](?:가|이|은|는)$", t)), default=None)
+        cut = max((i for i, t in enumerate(tokens[:-1]) if re.search(r"(?:[가-힣]|\d%?)(?:가|이|은|는|로|으로)$", t)), default=None)
+        ref = " ".join(tokens[cut + 1:]) if cut is not None else before
+        if _content_stems(between):   # 대상이 '…보다' 뒤에 오면 앞 전체가 기준이다("외로움이 줄었다고 답한 비율보다 기계 음성이 …")
+            return between, before, kind, m.start()
         if cut is None:
             return None
-        return " ".join(tokens[:cut + 1]), " ".join(tokens[cut + 1:]), sign
-    m = _CMP_EN.search(clause)
-    if not m or re.search(r"[가-힣]", clause):
+        return " ".join(tokens[:cut + 1]), ref, kind, m.start()
+    if re.search(r"[가-힣]", clause):
         return None
-    sign = 1 if m.group(1) else -1
-    than = re.search(r"\bthan\b", clause[m.end():], re.I)
-    if m.group(0).lower() in ("more", "greater", "larger", "higher", "bigger", "less", "fewer", "lower", "smaller") and not than:
+    m = _CMP_EN.search(clause)
+    if not m:
+        return None
+    than = re.search(r"(?<!rather )\bthan\b", clause[m.end():], re.I)
+    if clause[m.end():m.end() + 1] == "-":   # "Lower-income", "longer-term"은 비교가 아니다
+        return None
+    if (_CMP_PLAIN_EN.match(m.group(0)) or m.group(0).lower().endswith("er")) and not than:
         return None
     ref = clause[m.end() + than.end():] if than else clause[m.end():]
-    return clause[:m.start()], ref, sign
+    return clause[:m.start()], ref, _cmp_kind(m), len(clause)
+
+
+def _cmp_terms(text: str) -> set[str]:
+    """비교 대상 낱말: 영어는 복수 s를 뗀 앞 5글자와 연도("wetter than 2025"), 한국어는 어절 앞 두 글자, 숫자 붙은 한국어 어절("40~50대")은 그대로."""
+    if re.search(r"[가-힣]", text):
+        return _content_stems(text) | {t for t in re.findall(r"\d[\d~∼-]*[가-힣]+", text)}
+    return {re.sub(r"s$", "", w.lower())[:5] for w in re.findall(r"[A-Za-z]{4,}|\b(?:19|20)\d\d\b", text)} - {
+        w[:5] for w in _EN_CONTEXT_STOP | _CONTEXT_STOP} - {"those", "these", "there", "where", "which", "while", "people"}
+
+
+def _term_positions(text: str, terms: set[str]) -> list[int]:
+    if re.search(r"[가-힣]", text):
+        return [m.start() for t in terms for m in re.finditer(re.escape(t), text)]
+    return [m.start() for m in re.finditer(r"[A-Za-z]{4,}|\b(?:19|20)\d\d\b", text) if re.sub(r"s$", "", m.group(0).lower())[:5] in terms]
+
+
+def _distinct_sides(sides) -> tuple[set[str], set[str]]:
+    big, small = _cmp_terms(sides[0]), _cmp_terms(sides[1])
+    return big - small, small - big
 
 
 def _value_comparison_flip(plain: str, sents: list[str]) -> bool:
     for clause in re.split(r"[;:()]|(?<!\d),|,(?!\d)", plain):
         sides = _comparison_sides(clause)
-        if not sides or _CMP_CHANGE.search(clause):
+        if not sides:
             continue
-        stems = _content_stems if re.search(r"[가-힣]", clause) else _word_stems
-        big, small = stems(sides[0]), stems(sides[1])
-        big, small = big - small, small - big
+        (pair, sign), change = sides[2], bool(_CMP_CHANGE.search(clause))
+        if pair == 0 and not change and _inline_comparison_flip(clause, sides, sign):
+            return True
+        big, small = _distinct_sides(sides)
         if not big or not small:
             continue
         for s in sents:
+            if _source_comparison_flip(s, big, small, sides[2]):
+                return True
+            if pair or change:
+                continue
             found: dict[str, dict[str, set]] = {}
             for value in _quantity_values(s, _date_like_spans(s)):
                 if value.get("unsupported_unit"):
                     continue
-                words = stems(_clause_around(s, value)[1])
-                side = "big" if words & big and not words & small else "small" if words & small and not words & big else ""
+                start, words = _clause_around(s, value)
+                at = value["start"] - start
+                near = {side: min((abs(p - at) for p in _term_positions(words, terms)), default=None)
+                        for side, terms in (("big", big), ("small", small))}
+                if near["big"] is None and near["small"] is None:
+                    continue
+                side = ("small" if near["big"] is None else "big" if near["small"] is None
+                        else "big" if near["big"] < near["small"] else "small" if near["small"] < near["big"] else "")
                 if side:
                     found.setdefault(value["dimension"], {"big": set(), "small": set()})[side].add(value["value"])
-            for pair in found.values():
-                if len(pair["big"]) == 1 and len(pair["small"]) == 1:
-                    (b,), (sm,) = pair["big"], pair["small"]
-                    if (b - sm) * sides[2] < 0:
+            for pair_values in found.values():
+                if len(pair_values["big"]) == 1 and len(pair_values["small"]) == 1:
+                    (b,), (sm,) = pair_values["big"], pair_values["small"]
+                    if (b - sm) * sign < 0:
                         return True
     return False
+
+
+def _source_comparison_flip(sentence: str, big: set[str], small: set[str], kind: tuple[int, int]) -> bool:
+    """② 원문 문장 자체의 비교와 기준·방향을 맞춰 본다(문장 전체를 한 비교로 본다)."""
+    theirs = _comparison_sides(sentence)
+    if not theirs or theirs[2][0] != kind[0]:
+        return False
+    # 원문 기준은 '…보다'·'than' 바로 곁만 본다("시 직영 공중화장실 만족도 61%보다" → 앞 값 뒤부터).
+    ref = theirs[1]
+    if re.search(r"[가-힣]", sentence):
+        cut = max([m.end() for m in re.finditer(r"\d[\d,.]*\s*%?\s*[가-힣]{0,2}\s*(?:로|으로)?\s*,", ref)], default=0)
+        ref = ref[cut:]
+    ref_terms, other_terms = _cmp_terms(ref), _cmp_terms(theirs[0]) - _cmp_terms(ref)
+    same_ref = bool(small & ref_terms) and not big & ref_terms
+    swapped = bool(big & ref_terms) and not small & ref_terms and bool(small & other_terms)
+    return (same_ref and theirs[2][1] != kind[1]) or (swapped and theirs[2][1] == kind[1])
+
+
+def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
+    """③ 주장 안의 두 값: 기준 값은 '…보다' 바로 앞(한국어)·'than' 바로 뒤(영어) 값, 다른 값은 그 앞의 같은 종류 값 하나."""
+    values = [v for v in _quantity_values(clause, _date_like_spans(clause)) if not v.get("unsupported_unit")]
+    if re.search(r"[가-힣]", clause):
+        at = sides[3]
+        refs = [v for v in values if 0 <= at - v["end"] <= 3]
+    else:
+        than = re.search(r"\bthan\b", clause, re.I)
+        refs = [v for v in values if than and 0 <= v["start"] - than.end() <= 12]
+    if len(refs) != 1:
+        return False
+    ref = refs[0]
+    others = [v for v in values if v is not ref and v["dimension"] == ref["dimension"] and v["end"] <= ref["start"]]
+    return len(others) == 1 and (others[0]["value"] - ref["value"]) * sign < 0
 
 
 # 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
