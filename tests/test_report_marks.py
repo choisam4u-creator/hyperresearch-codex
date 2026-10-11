@@ -861,3 +861,38 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertNotIn("(출처 불일치)", text)
         text, changes = self.mark("방문 간호는 8개월 동안 방문했다 [S1].", ko, "ko")
         self.assertIn("(출처 불일치)", text)
+
+    def test_span_total_restated_per_period_is_marked(self):
+        # 9회차(holdout4 기간 바꿈): 수치 절에 기간 낱말이 없고 문장이 기간 길이("first twelve months")만 밝힌 합계를 '한 달에'로 말한 문장.
+        en = {"S1": "In the first twelve months, the utility sent 1,120 leak alerts. Over three months, crews fixed 90 hydrants."}
+        text, changes = self.mark("The utility issued 1,120 alerts per month during the pilot [S1].", en)
+        self.assertEqual(1, len(changes["period_conflict"]))
+        for body in ("The utility sent 1,120 alerts a year [S1].", "The utility sent 1,120 alerts in total [S1].",
+                     "Crews fixed 90 hydrants in total [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["period_conflict"], body)
+        text, changes = self.mark("Crews fixed 90 hydrants a month [S1].", en)
+        self.assertEqual(1, len(changes["period_conflict"]))
+        ko = {"S1": "시범 기간 중 대여 건수는 18,400건이었다. 첫 6개월 동안 민원은 240건 접수됐다."}
+        for body in ("하루 평균 대여는 18,400건이었다 [S1].", "민원은 한 달에 240건 접수됐다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["period_conflict"]), body)
+        text, changes = self.mark("민원은 6개월 동안 240건 접수됐다 [S1].", ko, "ko")
+        self.assertEqual([], changes["period_conflict"])
+
+    def test_value_comparison_flip_is_marked(self):
+        # 9회차(holdout4 비교 뒤집기): 원문 한 문장이 두 대상 값을 말하는데 주장이 크기 비교를 뒤집은 문장.
+        en = {"S1": "A resident survey of 600 households found 58 percent supported continuing the program, while 21 percent opposed it."}
+        text, changes = self.mark("Opposition outweighed support in the household survey [S1].", en)
+        self.assertEqual(1, len(changes["antonym_conflict"]))
+        for body in ("Support outweighed opposition in the household survey [S1].",
+                     "More households supported the program than opposed it [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["antonym_conflict"], body)
+        ko = {"S1": "이용자 600명 조사에서 71%가 외로움이 줄었다고 답했지만, 19%는 기계 음성이 불편하다고 답했다."}
+        text, changes = self.mark("외로움이 줄었다고 답한 비율보다 기계 음성이 불편하다고 답한 비율이 더 높았다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["antonym_conflict"]))
+        for body in ("기계 음성이 불편하다고 답한 비율보다 외로움이 줄었다고 답한 비율이 더 높았다 [S1].",
+                     "외로움이 줄었다는 응답이 기계 음성이 불편하다는 응답보다 많았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["antonym_conflict"], body)

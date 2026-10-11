@@ -907,7 +907,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if "negation" not in found and _null_result_flip(plain, sents):
         found.append("negation")
     if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
-                                    or _comparison_swap(plain, sents)):
+                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
         found.append("antonym")
     if _causal_reversal(plain, sents):
         found.append("causal_reversal")
@@ -1150,6 +1150,69 @@ def _comparison_swap(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 수치 비교 뒤집기(9회차, holdout4 비교 1/4): "Opposition outweighed support"·"외로움이 줄었다고 답한 비율보다 기계 음성이
+# 불편하다고 답한 비율이 더 높았다"처럼 두 대상을 크기로 비교하는데, 인용 원문 한 문장이 두 대상의 값을 같은 종류로 하나씩
+# 말하고("58 percent supported …, while 21 percent opposed it") 크기가 반대면 불일치. 대상은 주장의 비교 낱말 앞·뒤(한국어는
+# '…보다' 앞·뒤) 쪽에만 있는 내용 낱말로 나누고, 원문 수치 절이 한쪽 낱말만 가질 때 그 대상의 값으로 본다. 감소·증가 '폭'을
+# 비교하는 주장은 원문 수치가 수준값이라 보지 않는다.
+_CMP_EN = re.compile(r"\b(?:(more|greater|larger|higher|bigger|outweigh(?:ed|s)?|outnumber(?:ed|s)?|exceed(?:ed|s)?|surpass(?:ed|es)?)"
+                     r"|(less|fewer|lower|smaller|trail(?:ed|s)?))\b", re.I)
+_CMP_KO = re.compile(r"보다\s*((?:[^\s.]+\s+){0,6}?)(?:더\s*)?(?:(높|많|크|컸|길)|(낮|적|작|짧))")
+_CMP_CHANGE = re.compile(r"\b(?:declines?|drops?|falls?|increases?|rises?|growth|gains?|reductions?|cuts?|changes?|improvements?)\b"
+                         r"|감소|증가|하락|상승|늘어난|줄어든|개선|폭", re.I)
+
+
+def _comparison_sides(clause: str) -> tuple[str, str, int] | None:
+    """(큰 쪽이라 말한 대상 글, 작은 쪽이라 말한 대상 글, 1) 또는 반대 방향이면 -1. 비교가 없으면 None."""
+    m = _CMP_KO.search(clause)
+    if m:
+        sign = 1 if m.group(2) else -1
+        before, between = clause[:m.start()], m.group(1)
+        if _content_stems(between):
+            return between, before, sign
+        tokens = before.split()
+        cut = max((i for i, t in enumerate(tokens[:-1]) if re.search(r"[가-힣](?:가|이|은|는)$", t)), default=None)
+        if cut is None:
+            return None
+        return " ".join(tokens[:cut + 1]), " ".join(tokens[cut + 1:]), sign
+    m = _CMP_EN.search(clause)
+    if not m or re.search(r"[가-힣]", clause):
+        return None
+    sign = 1 if m.group(1) else -1
+    than = re.search(r"\bthan\b", clause[m.end():], re.I)
+    if m.group(0).lower() in ("more", "greater", "larger", "higher", "bigger", "less", "fewer", "lower", "smaller") and not than:
+        return None
+    ref = clause[m.end() + than.end():] if than else clause[m.end():]
+    return clause[:m.start()], ref, sign
+
+
+def _value_comparison_flip(plain: str, sents: list[str]) -> bool:
+    for clause in re.split(r"[;:()]|(?<!\d),|,(?!\d)", plain):
+        sides = _comparison_sides(clause)
+        if not sides or _CMP_CHANGE.search(clause):
+            continue
+        stems = _content_stems if re.search(r"[가-힣]", clause) else _word_stems
+        big, small = stems(sides[0]), stems(sides[1])
+        big, small = big - small, small - big
+        if not big or not small:
+            continue
+        for s in sents:
+            found: dict[str, dict[str, set]] = {}
+            for value in _quantity_values(s, _date_like_spans(s)):
+                if value.get("unsupported_unit"):
+                    continue
+                words = stems(_clause_around(s, value)[1])
+                side = "big" if words & big and not words & small else "small" if words & small and not words & big else ""
+                if side:
+                    found.setdefault(value["dimension"], {"big": set(), "small": set()})[side].add(value["value"])
+            for pair in found.values():
+                if len(pair["big"]) == 1 and len(pair["small"]) == 1:
+                    (b,), (sm,) = pair["big"], pair["small"]
+                    if (b - sm) * sides[2] < 0:
+                        return True
+    return False
+
+
 # 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
 # because they struggled to recruit" → "struggled to recruit because they adopted"). 원문과 주장 모두에 명시적 인과 표지가 있을 때만
 # (원인, 결과)를 나눠 본다. 주장의 원인이 원문의 결과와 겹치고(내용 낱말 절반 이상) 원문의 원인과는 덜 겹치며, 주장의 결과가
@@ -1240,7 +1303,39 @@ def _value_period(text: str, value: dict) -> set[str]:
     start, clause = _clause_around(text, value)
     found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
              for name, pattern in _PERIOD_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
-    return {min(found)[1]} if found else set()
+    return {min(found)[1]} if found else _span_period(text)
+
+
+# 9회차(holdout4 기간 바꿈): "In the first twelve months, the utility sent 1,120 leak alerts"처럼 수치 절에 기간 낱말이 없고
+# 문장이 기간 길이만 밝히면, 그 수치는 기간 전체의 합계다. 길이가 정확히 하루·한 주·한 달·한 해면 그 단위와도 맞는다.
+_SPAN_COUNT = {"one": 1, "a": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+               "ten": 10, "eleven": 11, "twelve": 12, "eighteen": 18, "twenty-four": 24, "한": 1, "두": 2, "세": 3, "네": 4}
+_SPAN = re.compile(r"\b(?:first|past|last|over|during|within|in|across)\s+(?:the\s+)?(?:first\s+|past\s+|last\s+)?"
+                   r"(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|eighteen|twenty-four)\s+"
+                   r"(day|week|month|year)s?\b"
+                   r"|(?:첫\s?)?(\d+|한|두|세|네)\s?(일|주|개월|달|년)\s?(?:동안|간)"
+                   r"|(기간\s?(?:중|동안))", re.I)
+_SPAN_UNIT = {"day": "day", "week": "week", "month": "month", "year": "year",
+              "일": "day", "주": "week", "개월": "month", "달": "month", "년": "year"}
+
+
+def _span_period(text: str) -> set[str]:
+    m = _SPAN.search(text)
+    if not m:
+        return set()
+    if m.group(5):
+        return {"total"}
+    count, unit = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+    n = int(count) if count.isdigit() else _SPAN_COUNT[count.lower()]
+    name = _SPAN_UNIT[unit.lower()]
+    periods = {"total"}
+    if n == 1:
+        periods.add(name)
+    elif name == "month" and n == 12:
+        periods.add("year")
+    elif name == "week" and n in (4, 5):
+        periods.add("month")
+    return periods
 
 
 # 효과 동사(2026-10-10 6회차): "LED lighting reduced burglaries", "카메라가 피해 면적을 줄였다", "등록이 입소를 늦췄다"처럼
