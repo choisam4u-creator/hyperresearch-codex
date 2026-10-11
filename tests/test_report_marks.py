@@ -717,6 +717,19 @@ class PlanScopeTests(unittest.TestCase):
         text, _ = self.mark("위원회는 2026년 운영 예산 9천만 원을 원안대로 가결하지 않았다 [S2].", src, "ko")
         self.assertIn("불일치", text)
 
+    def test_intention_stated_as_already_done_is_marked(self):
+        # 12회차(holdout8a): 원문이 의도·계획·권고로만 말한 것을 '이미·already' 시행했다고 쓰면 plan_conflict(수치 없어도).
+        src = {"S1": "시는 올해 사업을 이어가되 겨울철에는 실내 치유 프로그램을 추가하겠다고 밝혔다.",
+               "S2": "The district plans to launch a free paint voucher program next spring."}
+        for body, lang in (("시는 겨울철 실내 치유 프로그램을 이미 도입했다 [S1].", "ko"),
+                           ("The district has already launched a free paint voucher program [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["plan_conflict"]), body)
+        for body, lang in (("시는 겨울철 실내 치유 프로그램을 추가할 계획이다 [S1].", "ko"),
+                           ("The district plans to launch a free paint voucher program [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["plan_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

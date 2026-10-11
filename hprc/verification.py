@@ -941,7 +941,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("causal")
     if _period_conflict(plain, sents):
         found.append("period")
-    if _plan_overclaim(plain, sents):
+    if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents):
         found.append("plan")
     if (_scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents)
             or _condition_flip(plain, sents)):
@@ -1561,6 +1561,61 @@ def _reason_swap(plain: str, sents: list[str]) -> bool:
         theirs = _reason_stems(given) if given else set()
         if theirs and not theirs & mine and rest & _reason_stems(s.replace(given, " ")):
             return True
+    return False
+
+
+# 12회차(holdout8a): ① 원문이 의도·계획·권고로만 말한 것을 '이미·already' 시행했다고 쓴 문장(수치 없이도) — 원문 "겨울철에는 실내 치유
+# 프로그램을 추가하겠다고 밝혔다" → "이미 도입했다". 주장과 가장 많이 겹치는 원문 절이 의도 낱말을 담을 때만.
+# ② 같은 금액의 재원·부담 주체를 바꾼 문장 — "군은 차량 구입비 1억 4천만 원을 부담했다" → "1억 4천만 원은 지역 농협이 부담했다",
+# "paid from the city's housing trust fund" → "came from the general fund". 같은 값이 든 원문 문장의 부담 주체와 겹치지 않을 때만.
+_ALREADY = re.compile(r"\balready\b|이미", re.I)
+_INTENT = re.compile(r"\b(?:plans?|planned|intends?|intended|proposed|propose|recommend\w*|will|would|considering|pending)\b|"
+                     r"하겠다|할 계획|할 예정|예정이|계획이|권고|검토|추진할|방침", re.I)
+
+
+def _already_overclaim(plain: str, sents: list[str]) -> bool:
+    if not _ALREADY.search(plain) or _INTENT.search(plain):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    bare, best, most = _ALREADY.sub(" ", plain), None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(bare, c)
+            if shared > most:
+                best, most = c, shared
+    return best is not None and most >= (4 if korean else 2) and bool(_INTENT.search(best))
+
+
+_FUND_EN = re.compile(r"\b(?:came from|paid (?:for )?(?:from|by|out of)|funded (?:by|from|through)|financed (?:by|from))\s+(.+?)(?:[,.;]|$)",
+                      re.I)
+_FUND_KO_VERB = re.compile(r"부담했|부담한|지원했|출연했|댔다|냈다")
+_FUND_GENERIC = {"fund", "funds", "funded", "grant", "grants", "budget", "money", "city", "the", "state", "one-time", "reserve"}
+
+
+def _funder(text: str) -> set[str] | None:
+    if re.search(r"[가-힣]", text):
+        m = _FUND_KO_VERB.search(text)
+        if not m:
+            return None
+        names = [w for w in re.findall(r"([가-힣]{1,6})(?:이|가|은|는)(?=\s)", text[:m.start()]) if w not in ("원", "것")]
+        return {names[-1]} if names else None
+    m = _FUND_EN.search(text)
+    return ({re.sub(r"'s$", "", w.lower()) for w in re.findall(r"[A-Za-z']{3,}", m.group(1))} - _FUND_GENERIC) if m else None
+
+
+def _funding_swap(plain: str, sents: list[str]) -> bool:
+    values = [v for v in _quantity_values(plain, _date_like_spans(plain))
+              if not v.get("unsupported_unit") and v["dimension"] in ("KRW", "USD", "unitless")]
+    mine = _funder(plain) if values else None
+    if not mine:
+        return False
+    for s in sents:
+        if any(abs(c["value"]) == abs(v["value"]) for c in _quantity_values(s, _date_like_spans(s)) for v in values):
+            theirs = _funder(s)
+            if theirs and not theirs & mine:
+                return True
     return False
 
 
