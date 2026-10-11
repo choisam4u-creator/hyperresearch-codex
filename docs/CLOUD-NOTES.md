@@ -2,6 +2,19 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-11 (품질 회차 10)
+
+- 점수 전후: 별도 에이전트가 코드 수정 전에 쓴 holdout6 라벨 평가(`python -m evals.labeled --set holdout6`, 12 case·135문장) **F1 63.6 → 73.1**(recall 56.8→66.2, precision 72.4→81.7, 맞는 문장 오표시율 26.2→18.0). 설계 때 보지 않은 묶음: holdout3 83.1→83.7, holdout4 80.3→81.2, dev·holdout·holdout2·holdout5 변화 없음, 오표시 증가 0. 고정 32 case 99.9 그대로. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시): holdout6 먼저(`e12a22e`) → 계산 값 읽기(`11f3ded`) → 'of' 없는 설문 몫(`497660a`) → 검토 중인 방안(`47a8419`) → 주된 이유 바꿈(`84d37e7`) → 기록·CI holdout6 `--min-f1 65`(`2b7f46c`).
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 612개 통과(Python 3.13). 새 시험 4개는 옛 코드에서 실패 확인. `evals.run --min-total 97`, CI의 라벨 평가 일곱 문턱, `compileall`, `scripts/check_release_version.py v0.5.0b1` 통과, walkthrough 변화 없음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 태그·릴리스는 만들지 않았다.
+- 남은 한계: 개선은 holdout6 오판 목록을 본 뒤 만들어 끝 점수는 과대평가. holdout5는 이번 개선으로 변하지 않았다(묶음마다 결함 유형이 달라 일반화가 약함). 조건·자격 바꿈과 수치 비교 뒤집기가 큰 남은 약점.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "수리 카페 시범사업에서 수리가 실패한 주된 이유와 참여자 설문 결과는 무엇인가? 근거와 한계를 밝혀라"
+  grep -h -A8 '"causal_conflict"\|"share_conflict"\|"plan_conflict"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-11 (품질 회차 9) — v0.5.0b1 베타 준비 + holdout5
 
 - 최우선 B1~B4(샘님 10/11 승인, 베타 PyPI 공개 준비): **B1 `ce60e80`** 버전 `0.5.0b1`(pyproject·`__version__`·CITATION·README 배지·이슈 템플릿, CHANGELOG 머리 `## [0.5.0b1] - 2026-10-11 (베타)`) · **B2 `5fdbbab`** README·README.ko·PYPI.md 맨 위 베타 안내(classifier는 이미 Beta) · **B3 `7c42fee`** `release.yml` 태그 검사를 `scripts/check_release_version.py`로 옮겨 `v0.5.0b1`·`aN`·`rcN` 허용, pyproject·`__version__`·CITATION 셋 대조, `tests/test_release_version.py`. `python -m build` → `hyperresearch_codex-0.5.0b1` sdist·wheel, `twine check` PASSED. 태그·릴리스·PyPI 게시는 하지 않음.
