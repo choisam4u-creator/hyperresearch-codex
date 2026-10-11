@@ -1,0 +1,92 @@
+{
+ "id": "en-mammography-van",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "Has Ashford Vale's mobile mammography van improved breast cancer screening in rural towns?",
+ "sources": {
+  "S1": "Ashford Vale's mobile mammography van visited 22 rural towns between January and December 2025 and performed 2,860 screenings. Of those screened, 1,030 women had not had a mammogram in the previous five years.\n\nThe van operated four days a week, and appointments were free for women aged 40 to 74 regardless of insurance status. Follow-up imaging was recommended for 8.4 percent of screened women, and 19 cancers were detected.",
+  "S2": "The university review found that screening rates among eligible women in the visited towns rose from 48 percent in 2024 to 57 percent in 2025, while rates in comparable towns without van visits rose from 47 to 49 percent. The authors caution that the comparison towns were not randomly selected.\n\nThe review also found that 31 percent of women referred for follow-up imaging did not complete it within 90 days, most often citing travel distance to the regional hospital."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Ashford Vale's mobile mammography van improved breast cancer screening in rural towns?\n\n## Answer\nThe van screened about 2,900 women across 22 rural towns in 2025, and screening rates in those towns rose 9 percentage points [S1][S2]. The university review proved that the van caused the increase in screening [S2].\n\n## Evidence\n- More than a third of women screened had gone at least five years without a mammogram [S1].\n- The van averaged roughly 130 screenings per town [S1].\n- Screenings were free only for women with public insurance [S1].\n- The van ran seven days a week throughout 2025 [S1].\n- About one in twelve screened women was recommended for follow-up imaging [S1].\n- Screening in comparison towns without the van rose by 9 percentage points as well [S2].\n\n## Counter-evidence and limits\n- Nearly a third of referred women did not finish follow-up imaging within 90 days [S2].\n- Women who skipped follow-up most often cited the cost of the imaging [S2].\n- Comparison towns were randomly assigned, which strengthens the review's conclusions [S2].\n- The county plans to buy a second van in 2027.\n\n## Next actions\n- Look into transport support for follow-up imaging before scaling the van schedule (judgment)\n\n## Sources\n- [S1] Ashford Vale County Health Department, Mobile Mammography Report 2025\n- [S2] University review of the Ashford Vale mobile screening program\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The van screened about 2,900 women across 22 rural towns in 2025, and screening rates in those towns rose 9 percentage points",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "2,860 rounds to about 2,900; 48 to 57 percent is +9 points"
+  },
+  {
+   "key": "The university review proved that the van caused the increase in screening",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "authors caution that comparison towns were not randomly selected"
+  },
+  {
+   "key": "More than a third of women screened had gone at least five years without a mammogram",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,030 / 2,860 = 36 percent"
+  },
+  {
+   "key": "The van averaged roughly 130 screenings per town",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,860 / 22 = 130"
+  },
+  {
+   "key": "Screenings were free only for women with public insurance",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "free for ages 40 to 74 regardless of insurance status"
+  },
+  {
+   "key": "The van ran seven days a week throughout 2025",
+   "label": "mismatch",
+   "tag": "magnitude",
+   "why": "it operated four days a week"
+  },
+  {
+   "key": "About one in twelve screened women was recommended for follow-up imaging",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "8.4 percent is about 1 in 12"
+  },
+  {
+   "key": "Screening in comparison towns without the van rose by 9 percentage points as well",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "comparison towns rose only 2 points; the 9-point rise was in visited towns"
+  },
+  {
+   "key": "Nearly a third of referred women did not finish follow-up imaging within 90 days",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "31 percent"
+  },
+  {
+   "key": "Women who skipped follow-up most often cited the cost of the imaging",
+   "label": "mismatch",
+   "tag": "reason",
+   "why": "most often cited travel distance to the regional hospital"
+  },
+  {
+   "key": "Comparison towns were randomly assigned, which strengthens the review's conclusions",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "comparison towns were not randomly selected"
+  },
+  {
+   "key": "The county plans to buy a second van in 2027",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source mentions a second van"
+  }
+ ]
+}

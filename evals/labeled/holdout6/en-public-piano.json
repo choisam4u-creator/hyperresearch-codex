@@ -1,0 +1,92 @@
+{
+ "id": "en-public-piano",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "How did Brindle's public piano program perform in its first season?",
+ "sources": {
+  "S1": "In summer 2025 the Brindle Arts Council placed 10 donated pianos in parks and transit plazas for 16 weeks. Motion counters and volunteer observations estimated about 21,000 play sessions in total, with the busiest piano at Central Station accounting for 4,700 of them.\n\nThe pianos were covered and locked each night at 9 p.m. Three pianos were damaged by rain, and one was removed after week six because of repeated vandalism.",
+  "S2": "A survey of 85 businesses within 200 meters of a piano found that 46 percent reported more foot traffic during the program, 49 percent reported no change, and 5 percent reported less. The council has proposed a 2026 season with 12 pianos, pending a sponsorship agreement.\n\nThe program cost $64,000, of which $40,000 came from private sponsors."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How did Brindle's public piano program perform in its first season?\n\n## Answer\nBrindle's 16-week public piano program logged an estimated 21,000 play sessions across 10 pianos [S1]. Nearly half of surveyed nearby businesses said foot traffic rose during the program [S2].\n\n## Evidence\n- That works out to roughly 1,300 play sessions per week across the program [S1].\n- The Central Station piano accounted for more than a fifth of all sessions [S1].\n- The pianos remained open around the clock [S1].\n- Most surveyed businesses reported an increase in foot traffic [S2].\n- Private sponsors covered about 63 percent of the program's $64,000 cost [S2].\n- Vandalism damaged three pianos, and one more was lost to rain [S1].\n\n## Counter-evidence and limits\n- One piano was withdrawn in week six after repeated vandalism [S1].\n- The council has already confirmed a 12-piano season for 2026 [S2].\n- The foot-traffic survey covered all businesses in the city [S2].\n- Piano tuning was provided free of charge by a local music school.\n\n## Next actions\n- Secure the sponsorship agreement and rain covers before committing to a 2026 season (judgment)\n\n## Sources\n- [S1] Brindle Arts Council, Street Pianos 2025 Evaluation\n- [S2] Brindle nearby-business survey and program budget summary\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Brindle's 16-week public piano program logged an estimated 21,000 play sessions across 10 pianos",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "matches S1"
+  },
+  {
+   "key": "Nearly half of surveyed nearby businesses said foot traffic rose during the program",
+   "label": "ok",
+   "tag": "share",
+   "why": "46 percent"
+  },
+  {
+   "key": "That works out to roughly 1,300 play sessions per week across the program",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "21,000 / 16 = 1,312"
+  },
+  {
+   "key": "The Central Station piano accounted for more than a fifth of all sessions",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "4,700 / 21,000 = 22 percent"
+  },
+  {
+   "key": "The pianos remained open around the clock",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "covered and locked each night at 9 p.m."
+  },
+  {
+   "key": "Most surveyed businesses reported an increase in foot traffic",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "46 percent is less than half; 49 percent saw no change"
+  },
+  {
+   "key": "Private sponsors covered about 63 percent of the program's $64,000 cost",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "40,000 / 64,000 = 62.5 percent"
+  },
+  {
+   "key": "Vandalism damaged three pianos, and one more was lost to rain",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "rain damaged three; one was removed for vandalism"
+  },
+  {
+   "key": "One piano was withdrawn in week six after repeated vandalism",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "removed after week six because of vandalism"
+  },
+  {
+   "key": "The council has already confirmed a 12-piano season for 2026",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "only proposed, pending a sponsorship agreement"
+  },
+  {
+   "key": "The foot-traffic survey covered all businesses in the city",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "only 85 businesses within 200 meters of a piano"
+  },
+  {
+   "key": "Piano tuning was provided free of charge by a local music school",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "tuning not mentioned in any source"
+  }
+ ]
+}

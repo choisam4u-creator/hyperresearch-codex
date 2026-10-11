@@ -1,0 +1,86 @@
+{
+ "id": "en-repair-cafe",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "What did Calder Springs' repair cafe program achieve?",
+ "sources": {
+  "S1": "Calder Springs held 18 monthly repair cafe events in community centers from January 2025 to June 2026. Volunteer fixers attempted 2,250 repairs, and 1,395 items left in working condition.\n\nThe office estimated that the events diverted about 11 metric tons of material from landfill, using average item weights rather than measuring each item. Electronics were the most common category, making up 37 percent of items brought in.",
+  "S2": "In a survey of 530 attendees, 64 percent said they had learned a repair skill they could use at home, and 29 percent said they had attended more than one event. Attendance was highest in winter months.\n\nVolunteers reported that a shortage of replacement parts was the main reason repairs failed. The office plans to pilot a parts fund in 2027."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Calder Springs' repair cafe program achieve?\n\n## Answer\nThe repair cafes fixed about 62 percent of attempted repairs over 18 months [S1]. The events diverted roughly 11 tonnes of material from landfill, a figure measured by weighing each item [S1].\n\n## Evidence\n- On average, about 125 repairs were attempted at each event [S1].\n- Electronics made up just over a third of items brought in [S1].\n- Most attendees came to more than one event [S2].\n- Nearly two-thirds of surveyed attendees said they picked up a repair skill usable at home [S2].\n- Attendance peaked during the summer months [S2].\n- Repairs most often failed because volunteers lacked the necessary skills [S2].\n\n## Counter-evidence and limits\n- The parts shortage prompted the city to cancel repair cafes planned for 2027 [S2].\n- The 64 percent skill figure reflects survey respondents rather than every attendee [S2].\n- Each event drew around 40 volunteer fixers.\n\n## Next actions\n- Track the planned 2027 parts fund to see whether repair success improves (judgment)\n\n## Sources\n- [S1] Calder Springs Sustainability Office, Repair Cafe Report\n- [S2] Calder Springs repair cafe attendee survey\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The repair cafes fixed about 62 percent of attempted repairs over 18 months",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,395 / 2,250 = 62 percent"
+  },
+  {
+   "key": "The events diverted roughly 11 tonnes of material from landfill, a figure measured by weighing each item",
+   "label": "mismatch",
+   "tag": "basis",
+   "why": "estimate used average item weights, not measured items"
+  },
+  {
+   "key": "On average, about 125 repairs were attempted at each event",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,250 / 18 = 125"
+  },
+  {
+   "key": "Electronics made up just over a third of items brought in",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "37 percent"
+  },
+  {
+   "key": "Most attendees came to more than one event",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "only 29 percent attended more than one"
+  },
+  {
+   "key": "Nearly two-thirds of surveyed attendees said they picked up a repair skill usable at home",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "64 percent"
+  },
+  {
+   "key": "Attendance peaked during the summer months",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "attendance was highest in winter"
+  },
+  {
+   "key": "Repairs most often failed because volunteers lacked the necessary skills",
+   "label": "mismatch",
+   "tag": "reason",
+   "why": "main reason was a shortage of replacement parts"
+  },
+  {
+   "key": "The parts shortage prompted the city to cancel repair cafes planned for 2027",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "office plans a parts fund in 2027; no cancellation"
+  },
+  {
+   "key": "The 64 percent skill figure reflects survey respondents rather than every attendee",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "figure is from a survey of 530 attendees"
+  },
+  {
+   "key": "Each event drew around 40 volunteer fixers",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "volunteer counts not in sources"
+  }
+ ]
+}
