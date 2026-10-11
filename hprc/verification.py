@@ -36,7 +36,7 @@ _EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "s
                 "제곱킬로미터", "제곱미터", "㎏", "㎞", "마일", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
                 "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
                 "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees",
-                "개월", "months")
+                "개월", "months", "month")   # "a 12-month pilot"(10회차 holdout6)
 _UNITS = _EXTRA_UNITS + ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
           "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
@@ -197,7 +197,7 @@ _UNIT_SCALE = {
     # temp_bare로 두고 _absent_values가 인용 원문의 눈금으로 맞춘다.
     "degrees": ("temp_bare", Decimal("1")),
     # "10개월"을 "10개"+"월"로 읽던 결함(백로그, 7회차). 달 수는 원문 달 범위("3월부터 12월까지")의 길이로도 뒷받침된다.
-    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")),
+    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")), "month": ("months", Decimal("1")),
 }
 
 
@@ -568,7 +568,7 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
     percents = [abs(v["value"]) for v in values if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
     for a in plain:
         for b in plain:
-            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+            if a is not b and _comparable_counts(a, b) and a["value"] != b["value"]:
                 out.append(("percent", abs(a["value"]) / abs(b["value"]) * 100))
                 out.append(("percent", abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100))
         for factor in (Decimal(365), Decimal(52), Decimal(12)):
@@ -611,8 +611,10 @@ def _comparable_counts(a: dict, b: dict) -> bool:
     우연히 맞는 몫이 생기므로 넣지 않는다(고정 case ko-cooling-pilot에서 0.7건÷4 ≈ 18%가 맞는 값처럼 보였다)."""
     if a["dimension"] == b["dimension"]:
         return True
-    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS and "unitless" not in (a["dimension"], b["dimension"])
-            and a["value"] == a["value"].to_integral_value() and b["value"] == b["value"].to_integral_value())
+    # 10회차(holdout6): "1,050구획"처럼 세는 말을 못 읽은 정수도 10 이상이면 개수로 본다("84개"와 몫을 셈). 작은 수(4주의 4)는 여전히 뺀다.
+    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS
+            and all(v["value"] == v["value"].to_integral_value() and (v["dimension"] != "unitless" or abs(v["value"]) >= 10)
+                    for v in (a, b)))
 # 기간당 평균("하루 평균 약 130회", "한 달에 약 1만 8,000마리"): 원문 총계를 원문 기간 길이나 1년의 날·주·달 수로 나눈 값.
 _PER_PERIOD = (
     (re.compile(r"하루|일평균|일 평균|\b(?:a|per|each) day\b|\bdaily\b", re.I), (365, 30, 7),
@@ -663,6 +665,8 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
     return gap <= step / 2 and gap <= target / 10
 
 
+# '대'는 차량 수와 연령대("20~30대")에 함께 쓰여 다른 세는 말과 섞지 않는다(10회차: 연령대가 우연한 몫과 맞아 결함을 놓침).
+_NAMED_COUNTS = {"명", "가구", "건", "count_item", "count_place", "count_occurrence"}
 _PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
 
 
@@ -678,7 +682,8 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     for value in claim_values:
         hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
         lower = _LOWER_LEAD.search(sentence, 0, value["start"]) or _LOWER_TAIL.match(sentence, value["end"])
-        same = [t for dim, t in derived if dim == value["dimension"]]
+        same = [t for dim, t in derived if dim == value["dimension"]
+                or (dim in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]   # 31만 2천 건×9% → "약 2만 8천 개"
         if hedged and any(_rounds_to(value, t) for t in same):
             ok.add(value["start"])
         elif lower and any(abs(value["value"]) <= t < abs(value["value"]) + _step(value) for t in same):
@@ -729,6 +734,19 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 target = abs(b["value"]) * abs(other["value"]) / abs(a["value"])
                 if abs(value["value"]) == target or (hedged and _rounds_to(value, target)):
                     ok.update((value["start"], other["start"]))
+    # 10회차(holdout6): 어림 표시가 없어도 원문 두 값의 나눗셈이나 원문 몫(퍼센트·'절반')을 곱한 값과 정확히 같으면 계산한 값이다
+    # ("9,720회 ÷ 36곳 = 한 곳당 270회", "3억 8천만 원의 절반 = 1억 9천만 원"). 10 미만 값은 우연히 맞기 쉬워 뺀다.
+    shares = percents + [Decimal(_WORD_SHARES[m.group(0).lower()]) for m in _WORD_SHARE.finditer(source_text)]
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle") or abs(value["value"]) < 10:
+            continue
+        target = abs(value["value"])
+        kin = [a for a in plain if a["dimension"] == value["dimension"]
+               or (a["dimension"] in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]
+        if any(abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain
+               if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"}) \
+                or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares):
+            ok.add(value["start"])
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
@@ -1690,6 +1708,9 @@ _CHANGE_FROM = re.compile(r"\bfrom\s*$", re.I)
 def _bounded_value(text: str, value: dict) -> bool:
     """수치가 상한·하한 낱말 뒤에 있거나 범위의 끝값이면 True("from X to Y"의 변화 전후 값은 뺀다)."""
     before = text[max(0, value["start"] - 40):value["start"]]
+    if (re.search(r"\b(?:over|under)\s*$", before, re.I)
+            and (value["dimension"] in ("months", "time") or re.match(r"\s*(?:years?|weeks?|days?)\b", text[value["end"]:], re.I))):
+        return False   # "over 12 months"는 기간('동안')이지 하한이 아니다(10회차)
     if _BOUND_LEAD.search(before) or _BOUND_TAIL.match(text, value["end"]):
         return True
     prev = _RANGE_BEFORE.search(before)

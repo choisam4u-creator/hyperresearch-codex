@@ -575,6 +575,24 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["causal_conflict"], body)
 
+    def test_exact_quotients_shares_and_month_lengths_are_read_as_source_values(self):
+        # 10회차(holdout6): '12-month', 세는 말이 다른 개수의 몫·나머지, 어림 표시 없는 정확한 나눗셈·절반.
+        src = {"S1": "Over 12 months the fridges collected 38,400 kilograms of food.",
+               "S2": "충전기 36곳에서 1년 동안 9,720회 충전했다. 조성비는 3억 8천만 원이었으며 이 중 절반은 도비 보조금이었다. "
+                     "1,050구획 가운데 84개가 시즌 중 경작을 포기했다. 컵 대여는 31만 2천 건이었고 반납률은 91%였다."}
+        for body, lang in (("Over the 12-month pilot, donations averaged roughly 3,200 kilograms per month [S1].", "en"),
+                           ("충전기 한 곳당 연평균 충전 횟수는 270회였다 [S2].", "ko"),
+                           ("조성비 3억 8천만 원 가운데 도비 보조금은 1억 9천만 원이었다 [S2].", "ko"),
+                           ("시즌 종료 때까지 경작을 이어간 구획은 약 92%였다 [S2].", "ko"),
+                           ("반납되지 않은 컵은 약 2만 8천 개로 추산된다 [S2].", "ko")):
+            text, _ = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+        text, _ = self.mark("충전기 한 곳당 연평균 충전 횟수는 300회였다 [S2].", src, "ko")
+        self.assertIn("불일치", text)
+        # 연령대 '20~30대'는 다른 세는 말과 섞지 않는다(60대 ÷ 2개 = 30 같은 우연한 몫).
+        text, _ = self.mark("참여자는 대부분 20~30대였다 [S1].", {"S1": "2개 동에서 참여자 가운데 60대 이상이 64%였다."}, "ko")
+        self.assertIn("불일치", text)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
