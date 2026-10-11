@@ -2,6 +2,19 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-11 (품질 회차 12)
+
+- 점수 전후: 별도 에이전트가 쓴 holdout8(12 case·135문장)을 설계용 8a·눈가림 8b로 나눴다. **눈가림 8b F1 60.3 → 60.3(변화 없음)**, 설계용 8a 62.5 → 73.0, holdout8 전체 61.4 → 66.7(오표시율 24.2 → 17.7). 바깥 묶음 holdout5 70.9 → 72.9, 나머지는 그대로이고 오표시가 늘어난 묶음은 없다. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout8 먼저(`5135247`) → 어림 낱말·합계·'없이' 오표시(`aa7877e`) → '이미' 시행 단정(`a6541aa`) → 재원 주체 바꿈(`c47aef1`) → 기록, CI holdout8 `--min-f1 60`.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 618개 통과. 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, CI 라벨 평가 문턱 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스는 하지 않았다.
+- 남은 한계: 눈가림 절반이 움직이지 않았다 — 낱말 목록 방식은 설계에 쓴 표현 밖으로 일반화가 약하다는 11회차 결론을 다시 확인했다. 8b는 다음 회차에도 눈가림으로 쓰도록 오판 목록을 열지 않았다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "지하 주거 곰팡이 개선 공사 지원사업은 습도를 얼마나 낮췄고 비용은 누가 냈나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-11 (품질 회차 11)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 이미 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 이번에는 다시 고치지 않고 확인만 했다: pyproject·`__version__`·CITATION `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고치지 않았다. 태그 뒤 CHANGELOG의 `0.5.0b1` 아래에 들어간 10회차 줄은 실제 태그에 없어서 새 `## [Unreleased]`로 옮겼다.
