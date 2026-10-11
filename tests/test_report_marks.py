@@ -605,6 +605,14 @@ class PlanScopeTests(unittest.TestCase):
                                   src)
         self.assertEqual([], changes["share_conflict"])
 
+    def test_option_under_review_stated_as_done_is_marked(self):
+        # 10회차(holdout6): '늘리는 방안을 검토하고 있다'를 '이미 늘려 운영하고 있다'로 쓰면 plan_conflict.
+        src = {"S1": "군은 주말 관리 인력을 2명에서 4명으로 늘리는 방안을 검토하고 있다."}
+        text, changes = self.mark("군은 이미 주말 관리 인력을 4명으로 늘려 운영하고 있다 [S1].", src, "ko")
+        self.assertEqual(1, len(changes["plan_conflict"]))
+        text, changes = self.mark("군은 주말 인력을 4명으로 늘리는 방안을 검토 중이다 [S1].", src, "ko")
+        self.assertEqual([], changes["plan_conflict"])
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

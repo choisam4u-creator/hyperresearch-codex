@@ -1540,7 +1540,8 @@ def _basis_conflict(plain: str, sents: list[str]) -> bool:
 # 계획·목표의 실적화: 원문이 앞으로의 계획·목표·전망으로만 말한 수치를 유보 없이 이룬 것처럼 쓰는지 본다.
 # 추정(estimate·추정)을 떼는 경우는 오표시 위험이 커서 아직 표시하지 않는다(백로그).
 _PLAN_WORDS = re.compile(r"\b(?:plan(?:s|ned|ning)?|target(?:s|ed)?|aim(?:s|ed)?|goal|expect(?:s|ed)?|project(?:ed|ion|ions)|"
-                         r"forecast\w*|propos\w*|intend\w*|will)\b|계획|목표|예정|전망|예상|방침", re.I)
+                         r"forecast\w*|propos\w*|intend\w*|will|considering|under consideration)\b|계획|목표|예정|전망|예상|방침|"
+                         r"방안을\s*(?:검토|추진|마련)|검토\s*(?:중|하고\s*있)", re.I)   # 10회차: "늘리는 방안을 검토하고 있다"
 # 범위 일반화: 시범·표본 범위 결과를 전역·전체 결과로 쓰는지 본다.
 _WIDE_SCOPE = re.compile(
     r"\b(?:nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?(?:city|country|nation|state|region)|"
