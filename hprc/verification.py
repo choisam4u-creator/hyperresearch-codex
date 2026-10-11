@@ -576,6 +576,8 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
         for p in percents:
             out += [(a["dimension"], abs(a["value"]) * p / 100), (a["dimension"], abs(a["value"]) * (100 - p) / 100)]
     out += [("percent", 100 - p) for p in percents]
+    # 세 갈래 응답의 나머지("58 percent supported …, 27 percent opposed, and the rest were unsure" → "about 15 percent", 11회차)
+    out += [("percent", 100 - p - q) for i, p in enumerate(percents) for q in percents[i + 1:] if p + q < 100]
     # 나눗셈(8,700회÷9일, 1,560억 원÷12곳)·배수(128÷52 = 2.5배)·퍼센트끼리의 차(71%−58% = 13%p)
     for a in plain:
         for b in plain:
@@ -668,17 +670,21 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
 # '대'는 차량 수와 연령대("20~30대")에 함께 쓰여 다른 세는 말과 섞지 않는다(10회차: 연령대가 우연한 몫과 맞아 결함을 놓침).
 _PER_UNIT_WORDS = re.compile(r"당|마다|평균|\b(?:per|each|apiece|average|averaged|on average)\b", re.I)
 _NAMED_COUNTS = {"명", "가구", "건", "count_item", "count_place", "count_occurrence"}
+# 몫 곱의 부분을 말하는 표현("운영비 가운데 도비 지원액은 1억 800만 원", "of the budget"): 전체 값을 함께 말하지 않아도 몫 곱을 인정(11회차).
+_PART_OF = re.compile(r"[가-힣]\s(?:가운데|중)\s|\b(?:of|from) (?:the|its|this|that) (?:\w+\s){0,2}?(?:budget|cost|total|funding|spending)\b", re.I)
 _PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
 
 
 def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
-                      all_claimed: list[dict] | None = None) -> set[int]:
+                      all_claimed: list[dict] | None = None, bases: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
     ok: set[int] = set()
     words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
              for m in _WORD_SHARE.finditer(source_text)]
     derived = _derived_candidates(source_values + words) + _per_period_candidates(sentence, source_values, source_text)
     plain = [v for v in source_values if v["dimension"] != "percent"]
+    derived += [(a["dimension"], abs(a["value"]) * abs(u["value"]) / abs(b["value"])) for u in bases or ()
+                for b in plain if b["dimension"] == u["dimension"] and b["value"] for a in plain if a is not b]
     percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
     for value in claim_values:
         hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
@@ -738,20 +744,31 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     # 10회차(holdout6): 어림 표시가 없어도 원문 두 값의 나눗셈이나 원문 몫(퍼센트·'절반')을 곱한 값과 정확히 같으면 계산한 값이다
     # ("9,720회 ÷ 36곳 = 한 곳당 270회", "3억 8천만 원의 절반 = 1억 9천만 원"). 10 미만 값은 우연히 맞기 쉬워 뺀다.
     shares = percents + [Decimal(_WORD_SHARES[m.group(0).lower()]) for m in _WORD_SHARE.finditer(source_text)]
+    part_of = bool(_PART_OF.search(sentence))
     for value in claim_values:
-        if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle") or abs(value["value"]) < 10:
+        if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle"):
             continue
         target = abs(value["value"])
         kin = [a for a in plain if a["dimension"] == value["dimension"]
                or (a["dimension"] in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]
+        if target < 10:
+            # 11회차(holdout7): 10 미만 단위당 값("1명당 평균 1.8회" = 538회 ÷ 296명, "가구당 평균 9곳" = 2,808 ÷ 312)은 단위당
+            # 표현이 있고 두 원문 값이 모두 100 이상인 정수일 때만, 주장 자릿수로 반올림해 맞는지 본다(작은 수끼리의 우연한 몫을 피함).
+            if _PER_UNIT_WORDS.search(sentence) and any(
+                    abs(abs(a["value"]) / abs(b["value"]) - target) <= _step(value) / 2
+                    for a in kin for b in plain if b is not a and b["dimension"] in _NAMED_COUNTS | {"unitless"}
+                    and min(abs(a["value"]), abs(b["value"])) >= 100
+                    and all(v["value"] == v["value"].to_integral_value() for v in (a, b))):
+                ok.add(value["start"])
+            continue
         # 나눗셈은 주장이 단위당 값이라고 말할 때만('한 곳당', 'per volunteer', '평균'), 몫 곱은 주장이 전체 값도 함께 말할 때만
         # 인정한다(PR #18 Codex 리뷰: '$100 million, 20 volunteers' → 'The project cost 5 million dollars'가 통과하던 것).
         if (_PER_UNIT_WORDS.search(sentence) and any(
                 abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain
                 if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"})) \
                 or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares
-                       if any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
-                              for c in all_claimed or claim_values)):
+                       if part_of or any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
+                                         for c in all_claimed or claim_values)):
             ok.add(value["start"])
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
@@ -787,12 +804,17 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
             value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
     # 단위를 앞 값에만 붙인 주장("fell by 9 km/h, from 38 to 29")의 맨 숫자는, 주장에 그 단위 값이 따로 있을 때만 원문의 같은
     # 숫자("38 km/h")로 본다(9회차 holdout5). 단위를 못 읽은 "38 mph"·"7주"까지 맞다고 보면 단위 바꿔치기를 놓친다.
+    # 단위당 값의 기준 수량("물 1톤당 약 4,000원", "per 1 kilometer")은 원문에 없어도 된다. 대신 원문 두 값의 나눗셈을 그 기준
+    # 수량에 맞춰 늘린 값을 계산 값 후보로 쓴다(11회차 holdout7: 2,160만 원 ÷ 5,400톤 → 1톤당 4,000원).
+    bases = [value for value in claimed if abs(value.get("number", value["value"])) == 1 and value["dimension"] != "percent"
+             and _PER_BASIS.match(sentence, value["end"])]
+    claimed = [value for value in claimed if value not in bases]
     missing = [value for value in claimed
                if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)
                and not (value["dimension"] == "unitless" and any(
                    c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
                    and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
-    approx = _approx_supported(sentence, missing, source, cited_text, claimed) if missing else set()
+    approx = _approx_supported(sentence, missing, source, cited_text, claimed, bases) if missing else set()
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
@@ -1714,11 +1736,18 @@ def _value_year(text: str, value: dict, years: list[tuple[int, int, int]]) -> in
     return next(iter(mine)) if len(mine) == 1 else None
 
 
+# 비교 기준 연도("2024년보다 50% 늘어 14,400명", "up 20 percent than 2024", "compared with 2024")는 수치의 연도가 아니다(11회차 holdout7).
+_BASE_YEAR_TAIL = re.compile(r"\s?년?\s?(?:보다|대비|에\s?비해|에\s?견줘)")
+_BASE_YEAR_LEAD = re.compile(r"\b(?:than|compared (?:with|to)|versus|vs\.?|relative to)\s+(?:(?:the\s+)?(?:same\s+)?(?:period|months?|level)\s+(?:of|in)\s+)?$", re.I)
+
+
 def _year_values(text: str) -> list[tuple[dict, int | None]]:
-    years = _year_spans(text)
+    spans = _year_spans(text)
+    years = [(y, a, b) for y, a, b in spans
+             if not (_BASE_YEAR_TAIL.match(text, b) or _BASE_YEAR_LEAD.search(text[:a]))]
     return [(v, _value_year(text, v, years)) for v in _quantity_values(text, _date_like_spans(text))
             if not v.get("unsupported_unit") and v["dimension"] not in ("년", "월", "일")
-            and not any(a <= v["start"] < b for _, a, b in years)]
+            and not any(a <= v["start"] < b for _, a, b in spans)]
 
 
 def _year_conflict(plain: str, sents: list[str]) -> bool:
@@ -1965,10 +1994,14 @@ def _universal_overclaim(plain: str, sents: list[str]) -> bool:
 # 관계없이", "평일 저녁과 주말에도"), 원문이 조건이 없다고 했는데("free … regardless of insurance status") 주장이 조건을 붙인다
 # ("free only for women with public insurance"). 'only 12 percent' 같은 강조는 조건으로 보지 않는다. 주장과 내용 낱말이 가장 많이
 # (2개 이상) 겹치는 같은 글자 원문 문장만 본다.
-_ONLY_COND = re.compile(r"\bonly (?:if|for|to|when|with|after|during|on|by|between|within|from)\b|\b(?:limited|restricted) to\b|"
-                        r"\bsolely for\b|\bexclusively for\b|에만|만\s?(?:가능|이용|참여|입장|신청|받|허용|대상)|에\s?한(?:해|하여|정)", re.I)
-_OPEN_COND = re.compile(r"\bregardless of\b|\bwithout (?:any )?restrictions?\b|\bno restrictions?\b|\b(?:at )?any time\b|"
-                        r"\bopen to (?:all|anyone|everyone)\b|\banyone\b|관계없이|상관없이|무관하게|누구나|제한\s?없이|언제든", re.I)
+_ONLY_COND = re.compile(r"\bonly (?:if|for|to|when|where|with|after|during|on|by|between|within|from)\b|\b(?:limited|restricted) to\b|"
+                        r"\bsolely for\b|\bexclusively for\b|에만|(?:때|경우)만|만\s?(?:가능|이용|참여|입장|신청|받|허용|대상)|"
+                        r"에\s?한(?:해|하여|정)|(?:이용|지원|신청|참여|입장)\s?대상은", re.I)
+_OPEN_COND = re.compile(r"\bregardless of\b|\bwithout (?:a |an |any )?(?:restrictions?|request|application|referral)\b|"
+                        r"\bno restrictions?\b|\b(?:at )?any time\b|\bopen to (?:all|any|everyone)\b|\banyone\b|"
+                        r"관계없이|상관없이|무관하게|누구나|제한\s?없이|언제든", re.I)
+# 원문 "except overnight" → 주장 "including overnight"(11회차 holdout7).
+_EXCEPT_WORD = re.compile(r"\bexcept(?:ing)?\s+(?:for\s+|during\s+|on\s+)?(\w+)", re.I)
 _ALSO_KO = re.compile(r"[가-힣]+에도\s")
 
 
@@ -1978,7 +2011,8 @@ def _condition_flip(plain: str, sents: list[str]) -> bool:
     claim_open = bool(_OPEN_COND.search(plain))
     claim_only = not claim_open and bool(_ONLY_COND.search(plain))
     claim_also = not (claim_open or claim_only) and bool(_ALSO_KO.search(plain))
-    if not (claim_open or claim_only or claim_also):
+    claim_incl = {w.lower() for w in re.findall(r"\bincluding\s+(?:during\s+|on\s+)?(\w+)", plain, re.I)}
+    if not (claim_open or claim_only or claim_also or claim_incl):
         return False
     stems = _content_stems(plain)
     korean = bool(re.search(r"[가-힣]", plain))
@@ -1990,6 +2024,8 @@ def _condition_flip(plain: str, sents: list[str]) -> bool:
     for n, s in scored:
         if n != best:
             continue
+        if claim_incl & {w.lower() for w in _EXCEPT_WORD.findall(s)}:
+            return True
         only, opened = bool(_ONLY_COND.search(s)), bool(_OPEN_COND.search(s))
         if (claim_open or claim_also) and only and not opened:
             return True

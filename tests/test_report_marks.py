@@ -604,12 +604,43 @@ class PlanScopeTests(unittest.TestCase):
                            ("상담은 사전 예약 여부와 관계없이 학생 누구나 이용할 수 있었다 [S2].", "ko")):
             text, changes = self.mark(body, src, lang)
             self.assertEqual(1, len(changes["scope_conflict"]), body)
+        more = {"S1": "Plot fees of $3 per day applied after 6 hours, except overnight between 9 p.m. and 7 a.m. "
+                      "Crews also planted street trees without a request unless an owner opted out.",
+                "S2": "분수는 기온이 30도 이상이고 바람이 약할 때만 가동되었다."}
+        for body, lang in (("Plot fees of $3 per day applied after 6 hours, including overnight [S1].", "en"),
+                           ("Crews planted street trees only where an owner made a request [S1].", "en"),
+                           ("분수는 기온 30도 이상이면 바람과 관계없이 가동되었다 [S2].", "ko")):
+            text, changes = self.mark(body, more, lang)
+            self.assertEqual(1, len(changes["scope_conflict"]), body)
         for body, lang in (("Residents could rent garden plots only if they completed a safety course [S1].", "en"),
                            ("Plot fees were waived for every renter, whatever their income [S1].", "en"),
                            ("상담실은 평일 오후에만 운영되었다 [S2].", "ko"),
                            ("Few renters, at any time of year, grew vegetables in winter [S3].", "en")):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["scope_conflict"], body)
+
+    def test_remainders_unit_bases_small_per_unit_quotients_and_base_years(self):
+        # 11회차(holdout7): 세 갈래 응답의 나머지, '1톤당' 기준 수량, 10 미만 단위당 몫, 부분을 말한 몫 곱, 비교 기준 연도.
+        src = {"S1": "Of 900 residents surveyed, 61 percent supported the plan, 26 percent opposed it, and the rest were unsure. "
+                     "Crews completed 1,560 clearings for 240 households.",
+               "S2": "운영 기간 물 사용량은 3,200톤이었고 운영비는 1,280만 원이었다. 신청 가구 250곳에 방문은 모두 455회였다. "
+                     "운영비는 연 2억 4천만 원이었고 이 가운데 40%를 도비로 지원받았다. 2025년 이용자는 12,000명이었다. 2024년 이용자는 8,000명이었다."}
+        for body, lang in (("About 13 percent of respondents were unsure [S1].", "en"),
+                           ("Crews cleared an average of 6.5 sidewalks per household [S1].", "en"),
+                           ("운영비는 물 1톤당 약 4,000원꼴이었다 [S2].", "ko"),
+                           ("신청 가구 1곳당 평균 1.8회 방문이 이루어졌다 [S2].", "ko"),
+                           ("운영비 가운데 도비 지원액은 연 9,600만 원이었다 [S2].", "ko"),
+                           ("이용자는 2024년보다 50% 늘어 12,000명을 기록했다 [S2].", "ko")):
+            text, _ = self.mark(body, src, lang)
+            self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
+        for body, lang in (("About 9 percent of respondents were unsure [S1].", "en"),
+                           ("Crews cleared an average of 8.5 sidewalks per household [S1].", "en"),
+                           ("운영비는 물 1톤당 약 9,000원꼴이었다 [S2].", "ko"),
+                           ("신청 가구 1곳당 평균 2.4회 방문이 이루어졌다 [S2].", "ko"),
+                           ("운영비 가운데 도비 지원액은 연 1억 2천만 원이었다 [S2].", "ko"),
+                           ("2024년 이용자는 12,000명이었다 [S2].", "ko")):
+            text, _ = self.mark(body, src, lang)
+            self.assertIn("불일치" if lang == "ko" else "mismatch", text, body)
 
     def test_exact_quotients_shares_and_month_lengths_are_read_as_source_values(self):
         # 10회차(holdout6): '12-month', 세는 말이 다른 개수의 몫·나머지, 어림 표시 없는 정확한 나눗셈·절반.
