@@ -2,6 +2,16 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-11 (품질 회차 9) — v0.5.0b1 베타 준비 + holdout5
+
+- 최우선 B1~B4(샘님 10/11 승인, 베타 PyPI 공개 준비): **B1 `ce60e80`** 버전 `0.5.0b1`(pyproject·`__version__`·CITATION·README 배지·이슈 템플릿, CHANGELOG 머리 `## [0.5.0b1] - 2026-10-11 (베타)`) · **B2 `5fdbbab`** README·README.ko·PYPI.md 맨 위 베타 안내(classifier는 이미 Beta) · **B3 `7c42fee`** `release.yml` 태그 검사를 `scripts/check_release_version.py`로 옮겨 `v0.5.0b1`·`aN`·`rcN` 허용, pyproject·`__version__`·CITATION 셋 대조, `tests/test_release_version.py`. `python -m build` → `hyperresearch_codex-0.5.0b1` sdist·wheel, `twine check` PASSED. 태그·릴리스·PyPI 게시는 하지 않음.
+- 점수 전후: 새 독립 묶음 holdout5(별도 에이전트 작성, 12 case·132문장) **F1 57.9 → 66.1**(recall 48.6→56.9, precision 71.4→78.8, 오표시율 23.3→18.3). holdout4 77.6→80.3, holdout3 82.2→83.1, holdout2 86.8→87.5, dev·holdout 그대로, 고정 32 case 99.9 그대로. 상세·한계는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout4로 기간 합계·값 비교 개선(`c5b60cb`, holdout5에선 효과 0 — 정직하게 기록) → holdout5 커밋(`7eac323`)·제목 픽스처 수정(`7438c2b`, 내 지시문 오류) → 날짜 오인 "2월 120곳"·맨 숫자·배수(`e20e11a`) → 비교 뒤집기 확장(`cc7ce4c`). CI에 holdout5 `--min-f1 60`. 백로그 'CHANGELOG와 다음 버전 준비' 완료, 새 항목 5건.
+- 돌린 시험: 전체 mock 단위 시험 608개 통과(Python 3.11 venv, 클라우드; 시스템 pip/python 불일치로 venv 사용), `evals.run`(99.9)·`evals.labeled` 여섯 묶음 CI 문턱 통과, 패키지 빌드·twine check. 이 푸시들의 GitHub CI 결과는 확인하지 않았다.
+- Mac에서 실제 codex로 확인할 것:
+  - `pip install -e . && python3 -c "import hprc; print(hprc.__version__)"` → `0.5.0b1`, `python3 scripts/check_release_version.py v0.5.0b1`
+  - `python3 hpr.py doctor && python3 hpr.py run "<한국어 정책 질문>"` 후 `report_marks.json`의 `antonym_conflict`·`period_conflict` 문장을 사람이 판정(오표시율)
+
 ## 2026-10-10 (품질 회차 8)
 
 - 점수 전후: 검사 코드·이전 라벨을 읽지 않은 별도 에이전트가 코드 수정 전에 쓴 holdout4 라벨 평가(`python -m evals.labeled --set holdout4`, 12 case·135문장) **F1 65.2 → 77.6**(recall 60.8→70.3, precision 70.3→86.7, 맞는 문장 오표시율 31.1→13.1). 설계 때 보지 않은 묶음: holdout 81.4→83.2, holdout2 86.2→86.8, holdout3 80.0→82.2, dev 88.4 그대로. 고정 32 case `evals.run` 100.0→99.9(유보 문장 규칙의 대가, QUALITY-LOG). 상세는 `docs/QUALITY-LOG.md`.
