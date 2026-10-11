@@ -1382,7 +1382,7 @@ def _causal_reversal(plain: str, sents: list[str]) -> bool:
 # 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
 # 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
 _CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
-                           r"driven by|attribut\w*|as a result|concluded)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
+                           r"driven by|attribut\w*|as a result|concluded|proved?|proves|showing|pushed)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
                            r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가", re.I)
 _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
 _CAUSAL_DISCLAIM = re.compile(
@@ -1393,7 +1393,16 @@ _CAUSAL_DISCLAIM = re.compile(
     r"단정하기 어렵|"
     # 8회차(holdout4): "not necessarily due to the app", "감소분 전체를 보상제 효과로 보기는 어렵다", "의미 있는 변화로 보기 어렵다"
     r"\bnot necessarily (?:due to|caused by|because of|the result of|attributable)|"
-    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵", re.I)
+    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵|"
+    # 11회차(holdout5·6 유보→단정 0/6): 원문이 원인을 가능성으로만 말함 — "may reflect the tank", "could discourage repeat
+    # tagging", "may account for part of the decline", "too small to draw firm conclusions", "not randomly selected",
+    # "줄였을 수 있다고 보면서도", "비교에 한계가 있다". 조동사 뒤 동사를 인과·효과 동사로 한정해 "may apply" 같은 문장은 넣지 않는다.
+    r"\b(?:may|might|could)\s+(?:also\s+|partly\s+|in part\s+)?(?:have\s+)?(?:reflect|account|explain|contribut|discourag|"
+    r"encourag|reduc|lower|cut|rais|boost|improv|increas|decreas|prevent|help|driv|caus|be (?:due|linked|related|attributable|"
+    r"partly|a result|the result))\w*|\btoo (?:small|few|short|limited|early) to (?:draw|reach|support|confirm|establish|"
+    r"say|conclude)\b|\bnot randomly (?:selected|assigned|chosen)\b|"
+    r"(?:였|었|았|했)을\s?수\s?있(?:다|으나|지만|다고|다는)|(?:때문|효과|영향|덕분|결과)일\s?수\s?있|"
+    r"(?:비교|해석|분석|판단)에\s?한계가?\s?있", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",

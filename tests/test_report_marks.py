@@ -575,6 +575,23 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["causal_conflict"], body)
 
+    def test_cause_the_source_only_called_possible_is_marked(self):
+        # 11회차: 원문이 원인을 가능성으로만 말하거나('may reflect', '줄였을 수 있다') 근거 한계를 밝혔는데 단정하면 causal_conflict.
+        src = {"S1": "Litter complaints fell from 300 to 180. The office said the new bins may reflect part of the drop, "
+                     "but the numbers are too small to draw firm conclusions.",
+               "S2": "참여 학교의 결석은 12% 줄었다. 교육청은 아침 급식이 결석을 줄였을 수 있다고 보면서도 비교 학교 선정에 한계가 있다고 적었다.",
+               "S3": "Residents may apply online. Wait times fell from 9 to 6 days after the portal opened."}
+        for body, lang in (("The new bins caused the drop in litter complaints [S1].", "en"),
+                           ("The data proved the bins worked [S1].", "en"),
+                           ("교육청은 아침 급식이 결석을 줄였다고 결론 내렸다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["causal_conflict"]), body)
+        for body, lang in (("The office said the new bins may have contributed to the drop [S1].", "en"),
+                           ("교육청은 아침 급식이 결석을 줄였을 수 있다고 봤다 [S2].", "ko"),
+                           ("The online portal cut wait times from 9 to 6 days [S3].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["causal_conflict"], body)
+
     def test_exact_quotients_shares_and_month_lengths_are_read_as_source_values(self):
         # 10회차(holdout6): '12-month', 세는 말이 다른 개수의 몫·나머지, 어림 표시 없는 정확한 나눗셈·절반.
         src = {"S1": "Over 12 months the fridges collected 38,400 kilograms of food.",
