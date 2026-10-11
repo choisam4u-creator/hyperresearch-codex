@@ -896,3 +896,24 @@ class LabeledRoundTests(unittest.TestCase):
                      "외로움이 줄었다는 응답이 기계 음성이 불편하다는 응답보다 많았다 [S1]."):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual([], changes["antonym_conflict"], body)
+
+    def test_korean_month_followed_by_count_is_not_a_date(self):
+        # 9회차(holdout5): "2025년 2월 120곳"의 "2월 12"를 날짜로 읽어 원문 수치가 사라지고, 맞는 차(90곳)와 연월이 표시되던 결함.
+        ko = {"S1": "개방 화장실은 2025년 2월 120곳에서 2026년 6월 210곳으로 늘었다."}
+        text, changes = self.mark("개방 화장실은 2025년 2월과 비교해 90곳, 비율로는 75% 늘었다 [S1].", ko, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        text, changes = self.mark("개방 화장실은 2025년 2월 150곳이었다 [S1].", ko, "ko")
+        self.assertIn("(출처 불일치)", text)
+
+    def test_bare_numbers_after_a_unit_value_and_exact_ratios(self):
+        # 9회차(holdout5): 단위를 앞 값에만 붙인 "from 38 to 29", 원문 두 금액의 배수 "1.6배"는 원문에서 온 값.
+        en = {"S1": "Radar counts showed the 85th-percentile speed falling from 38 km/h before installation to 29 km/h after."}
+        text, changes = self.mark("The 85th-percentile speed fell by 9 km/h, from 38 to 29 [S1].", en)
+        self.assertNotIn("(source mismatch)", text)
+        text, changes = self.mark("Speeds dropped from 38 mph to 29 mph [S1].", en)
+        self.assertIn("(source mismatch)", text)
+        ko = {"S1": "친환경 제설제의 톤당 가격은 48만 원으로 염화칼슘(톤당 30만 원)보다 비쌌다."}
+        text, changes = self.mark("친환경 제설제는 톤당 18만 원 더 비싸 염화칼슘의 1.6배 가격이다 [S1].", ko, "ko")
+        self.assertNotIn("(출처 불일치)", text)
+        text, changes = self.mark("친환경 제설제는 염화칼슘의 2.6배 가격이다 [S1].", ko, "ko")
+        self.assertIn("(출처 불일치)", text)

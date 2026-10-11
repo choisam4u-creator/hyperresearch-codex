@@ -21,8 +21,10 @@ _KOREAN_YEAR_RANGE = re.compile(
 )
 # 날짜 표기는 수치 근거 검사의 대상이 아니다. 다만 연도가 없거나 달력상
 # 해석할 수 없는 표기는 _date_values에서 확정값으로 만들지 않아 별도 검토를 남긴다.
+# 날 숫자 뒤에 '일'이나 날짜 범위가 와야 날짜다 — "2025년 2월 120곳"의 "2월 12"를 날짜로 읽어 수치가 사라지던 결함(9회차 holdout5).
 _KOREAN_DATE_LIKE = re.compile(
-    r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?:\s*일)?(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
+    r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?!\d)(?:\s*일|(?=\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일))"
+    r"(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
 )
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
@@ -695,6 +697,8 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 and abs(abs(value["value"]) - abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100) <= _step(value) / 2
                 for a in plain for b in plain):
             ok.add(value["start"])   # 원문 두 값의 증감률을 반올림한 퍼센트(6분→4.2분 → "1.8 minutes, or 30 percent", 7회차)
+        elif value["dimension"] == "배" and any(abs(abs(value["value"]) - t) <= _step(value) / 2 for t in same):
+            ok.add(value["start"])   # 원문 같은 단위 두 값의 배수를 그 자릿수로 말한 값(48만 원÷30만 원 → 1.6배, 9회차 holdout5)
         elif value["dimension"] == "months" and abs(value["value"]) in {
                 Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a}:
             ok.add(value["start"])   # 원문 달 범위의 길이("3월부터 12월까지" → "10개월 동안")
@@ -757,8 +761,13 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     for value in claimed:
         if value["dimension"] == "temp_bare" and len(scales) == 1:
             value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
+    # 단위를 앞 값에만 붙인 주장("fell by 9 km/h, from 38 to 29")의 맨 숫자는, 주장에 그 단위 값이 따로 있을 때만 원문의 같은
+    # 숫자("38 km/h")로 본다(9회차 holdout5). 단위를 못 읽은 "38 mph"·"7주"까지 맞다고 보면 단위 바꿔치기를 놓친다.
     missing = [value for value in claimed
-               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)]
+               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)
+               and not (value["dimension"] == "unitless" and any(
+                   c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
+                   and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
     approx = _approx_supported(sentence, missing, source, cited_text, claimed) if missing else set()
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
