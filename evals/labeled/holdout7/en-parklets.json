@@ -1,0 +1,92 @@
+{
+ "id": "en-parklets",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "What were the results of Harlow Bay's curbside parklet pilot?",
+ "sources": {
+  "S1": "Harlow Bay's Curbside Parklet Pilot permitted 14 parklets on commercial streets in the Old Port district between May and October 2025. Each parklet replaced one or two metered parking spaces, removing a total of 22 spaces. Restaurants paid an annual permit fee of $1,200 per parklet, and the city waived the fee for the first season for businesses with fewer than 10 employees.\n\nThe city estimated lost meter revenue at roughly $31,000 for the season, based on average occupancy of the removed spaces in 2024 rather than actual 2025 usage. Two parklets were removed early after failing accessibility inspections for ramp slope.",
+  "S2": "A sales-tax analysis found that participating restaurants' taxable sales in May-October 2025 were 9 percent higher than in the same months of 2024; non-participating restaurants on the same streets saw a 4 percent increase. The finance office noted that participants self-selected and may have already been growing faster.\n\nOf 1,050 people intercepted on Old Port sidewalks, 58 percent supported keeping parklets permanently, 27 percent opposed, and the rest were unsure. Opposition was highest among respondents who said they drove to the district. The transportation department is drafting permanent design standards, expected in spring 2027."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What were the results of Harlow Bay's curbside parklet pilot?\n\n## Answer\nFourteen parklets operated in the Old Port district during the 2025 season [S1]. Participating restaurants' taxable sales grew more than twice as fast as those of non-participants on the same streets [S2].\n\n## Evidence\n- The parklets took up 22 metered spaces, or about 1.6 spaces per parklet [S1].\n- The city waived the $1,200 permit fee for all participating restaurants in the first season [S1].\n- Lost meter revenue was about $31,000, calculated from actual 2025 meter data [S1].\n- Two parklets were taken out early because their ramps were too steep to pass accessibility checks [S1].\n- Just under three in five people surveyed on the sidewalks backed making parklets permanent [S2].\n- About 15 percent of respondents were undecided [S2].\n- Opposition was strongest among people who walked to the district [S2].\n\n## Counter-evidence and limits\n- The sales gain shows that parklets caused restaurant revenue to rise [S2].\n- Permanent design standards were adopted in spring 2026 [S2].\n- Several neighboring cities have since copied Harlow Bay's parklet model.\n\n## Next actions\n- Ask the finance office for pre-2024 sales trends to test the self-selection concern (judgment)\n\n## Sources\n- [S1] Harlow Bay Department of Transportation, Curbside Parklet Pilot Report\n- [S2] Harlow Bay Finance Office and sidewalk intercept survey\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Fourteen parklets operated in the Old Port district during the 2025 season",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "14 parklets permitted in Old Port, May-October 2025"
+  },
+  {
+   "key": "Participating restaurants' taxable sales grew more than twice as fast as those of non-participants on the same streets",
+   "label": "ok",
+   "tag": "comparison",
+   "why": "9 percent vs 4 percent, 2.25 times"
+  },
+  {
+   "key": "The parklets took up 22 metered spaces, or about 1.6 spaces per parklet",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "22 / 14 = 1.57"
+  },
+  {
+   "key": "The city waived the $1,200 permit fee for all participating restaurants in the first season",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "waiver only for businesses with fewer than 10 employees"
+  },
+  {
+   "key": "Lost meter revenue was about $31,000, calculated from actual 2025 meter data",
+   "label": "mismatch",
+   "tag": "basis",
+   "why": "estimate based on 2024 average occupancy, not actual 2025 usage"
+  },
+  {
+   "key": "Two parklets were taken out early because their ramps were too steep to pass accessibility checks",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "failed accessibility inspections for ramp slope"
+  },
+  {
+   "key": "Just under three in five people surveyed on the sidewalks backed making parklets permanent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "58 percent"
+  },
+  {
+   "key": "About 15 percent of respondents were undecided",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "100 - 58 - 27 = 15"
+  },
+  {
+   "key": "Opposition was strongest among people who walked to the district",
+   "label": "mismatch",
+   "tag": "target",
+   "why": "opposition highest among those who drove"
+  },
+  {
+   "key": "The sales gain shows that parklets caused restaurant revenue to rise",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "finance office warned of self-selection; no causal finding"
+  },
+  {
+   "key": "Permanent design standards were adopted in spring 2026",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "standards still being drafted, expected spring 2027"
+  },
+  {
+   "key": "Several neighboring cities have since copied Harlow Bay's parklet model",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "other cities not mentioned"
+  }
+ ]
+}
