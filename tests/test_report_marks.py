@@ -613,6 +613,21 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = self.mark("군은 주말 인력을 4명으로 늘리는 방안을 검토 중이다 [S1].", src, "ko")
         self.assertEqual([], changes["plan_conflict"])
 
+    def test_different_main_reason_is_marked(self):
+        # 10회차(holdout6): 원문과 다른 '주된 이유'를 대면 causal_conflict. 같은 이유를 바꿔 말한 문장은 그대로.
+        src = {"S1": "Volunteers reported that a shortage of replacement parts was the main reason repairs failed.",
+               "S2": "반대한 점주들은 주로 반납 처리에 드는 시간을 이유로 들었다. 이용하지 않은 이유로는 '위치를 몰라서'가 가장 많았다."}
+        for body, lang in (("Repairs most often failed because volunteers lacked the necessary skills [S1].", "en"),
+                           ("반대한 점주들은 주로 컵 분실에 따른 비용을 이유로 꼽았다 [S2].", "ko"),
+                           ("이용하지 않은 사람들은 주로 충전 시간이 길다는 점을 이유로 들었다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["causal_conflict"]), body)
+        for body, lang in (("Repairs most often failed because replacement parts were in short supply [S1].", "en"),
+                           ("반대한 점주들은 주로 반납 처리 시간을 이유로 들었다 [S2].", "ko"),
+                           ("이용하지 않은 사람들은 주로 위치를 몰라서라고 답했다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["causal_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

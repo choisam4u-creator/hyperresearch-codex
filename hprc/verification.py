@@ -909,7 +909,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
                     and not any(any(t in s.lower() for t in stems) for s in held)):
                 found.append("context")
                 break
-    if _causal_overclaim(plain, sents):
+    if _causal_overclaim(plain, sents) or _reason_swap(plain, sents):
         found.append("causal")
     if _period_conflict(plain, sents):
         found.append("period")
@@ -1476,6 +1476,54 @@ def _causal_overclaim(plain: str, sents: list[str]) -> bool:
     return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
             and not any(_CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s)
                         for s in sents))
+
+
+# 이유 바꿈(10회차 holdout6): 원문과 주장이 같은 일의 '주된 이유'를 말하는데 이유가 다르다 — 원문 "a shortage of replacement parts
+# was the main reason repairs failed" → 주장 "Repairs most often failed because volunteers lacked the necessary skills",
+# "주로 반납 처리에 드는 시간을 이유로 들었다" → "주로 컵 분실에 따른 비용을 이유로 꼽았다". 이유 구절끼리 내용 낱말이 하나도 겹치지
+# 않고 나머지(무엇의 이유인지)는 겹칠 때만 본다.
+_REASON_EN = (re.compile(r"\bbecause (?:of )?(.+)$", re.I),
+              re.compile(r"\b(?:most often|most commonly|mainly|primarily|chiefly)\s+(?:cited|named|blamed|gave)\s+(.+)$", re.I),
+              re.compile(r"^(.+?)\s+(?:was|were|is|are)\s+the\s+(?:main|primary|chief|most common|leading|biggest)\s+(?:reason|cause)", re.I),
+              re.compile(r"\b(?:main|primary|chief|most common|leading|biggest)\s+(?:reason|cause)\s+(?:\w+\s+){0,4}?(?:was|were|is|are)\s+(.+)$",
+                         re.I))
+_REASON_KO = (re.compile(r"주로\s+(.+?)\s*이유로"), re.compile(r"이유로(?:는)?\s+(.+?)(?:가|이)\s*가장\s*많"),
+              re.compile(r"(.+?)(?:이|가)\s*(?:주된|가장 큰)\s*(?:이유|원인)"), re.compile(r"(?:주된|가장 큰)\s*(?:이유|원인)(?:은|는)\s*(.+)"))
+_REASON_MAIN = re.compile(r"\b(?:most often|most commonly|main|mainly|primary|primarily|chief|chiefly|leading|biggest)\b|주로|주된|가장", re.I)
+_REASON_FRAME = re.compile(r"^.*?\b(?:reported|said|found|noted|stated|concluded)\s+that\s+", re.I)
+_REASON_STOP = {"reason", "cause", "because", "most", "often", "main", "mainly", "주로", "이유", "가장", "많았", "들었", "꼽았"}
+
+
+def _reason_of(text: str) -> str | None:
+    text = _REASON_FRAME.sub("", text)
+    for pattern in (_REASON_KO if re.search(r"[가-힣]", text) else _REASON_EN):
+        m = pattern.search(text)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _reason_stems(text: str) -> set[str]:
+    return _content_stems(re.sub(r"[\"'‘’“”]", " ", text)) - _REASON_STOP
+
+
+def _reason_swap(plain: str, sents: list[str]) -> bool:
+    if not _REASON_MAIN.search(plain):
+        return False
+    claimed = _reason_of(plain)
+    mine = _reason_stems(claimed) if claimed else set()
+    if not mine:
+        return False
+    rest = _reason_stems(plain.replace(claimed, " "))
+    korean = bool(re.search(r"[가-힣]", plain))
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean or not _REASON_MAIN.search(s):
+            continue
+        given = _reason_of(s)
+        theirs = _reason_stems(given) if given else set()
+        if theirs and not theirs & mine and rest & _reason_stems(s.replace(given, " ")):
+            return True
+    return False
 
 
 def _causal_stems(text: str) -> set[str]:
