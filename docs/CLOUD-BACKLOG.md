@@ -68,11 +68,14 @@
 - [ ] 품질: `wording_conflict`는 유보 문장을 빼도 다섯 묶음에서 단독 이유 오표시가 남는다 — 실제 codex 보고서에서 오표시율을 재고, 높으면 끈다
 
 - [ ] 평가: holdout5 라벨을 사람이 검토(작성 에이전트 라벨, 132문장) — 특히 계산 값 맞음 28문장과 비교 뒤집기 7문장 — 근거: 2026-10-11 9회차, 라벨 대조 점수의 정답이 아직 사람 판정이 아님
-- [ ] 품질: 유보 탈락("may reflect"→"pushed", "could"→"did", 결론 동사 "showing the humps made …") holdout5 0/4·holdout4 2/4 — 원문 유보 낱말이 있는 절과 주장 절의 대응을 인과 동사 없이도 볼지 검토 — 근거: 2026-10-11 9회차
+- [x] 품질: 유보 탈락("may reflect"→"pushed", "could"→"did", 결론 동사 "showing the humps made …") holdout5 0/4·holdout4 2/4 — 원문 유보 낱말이 있는 절과 주장 절의 대응을 인과 동사 없이도 볼지 검토 — 근거: 2026-10-11 9회차 — 2026-10-11 11회차 완료(`db9d22f`): 가능성 유보(may reflect·could·too small to draw firm conclusions·not randomly selected·줄였을 수 있다·비교에 한계)와 proved·showing·pushed. holdout5 hedge 0/4→4/4, 보지 않은 holdout7 F1 +1.1
 - [ ] 품질: 몫 과장 낱말 바꿈("3분의 1 수준"→"대부분", "a third"→"most", 설문 다수 응답) holdout5 0/3 — `_share_overclaim`이 분수 낱말·'수준'을 몫으로 읽는지 확인 — 근거: 2026-10-11 9회차
 - [ ] 품질: 시간 복합 표기("3시간 10분"→"25분", 차 "2시간 45분")를 한 값(분)으로 읽기 — holdout5 맞는 문장 오표시 1 — 근거: 2026-10-11 9회차
 - [ ] 평가: 다음 독립 묶음(holdout6)은 코드 수정 전에 만들고, 지시문에 언어별 보고서 제목을 명시(9회차 지시문 오류 재발 방지) — 근거: 2026-10-11 9회차
-- [ ] 품질: 조건·자격 바꿈('only if labeled'→'without restriction', '18 and older'→'16 and older', '평일만'→'주말에도') — holdout6 결함 7 중 3만 잡음. 원문 조건 낱말(only·만·이상·제외)을 주장이 지우거나 바꾸는지 보는 기준 검토
+- [ ] 품질: 조건·자격 바꿈('only if labeled'→'without restriction', '18 and older'→'16 and older', '평일만'→'주말에도') — holdout6 결함 7 중 3만 잡음. 원문 조건 낱말(only·만·이상·제외)을 주장이 지우거나 바꾸는지 보는 기준 검토 — 11회차 진행(`b3671a8`·`be40352`): `_condition_flip`(only·에만·때만·이용 대상은 ↔ regardless·without restriction·관계없이·누구나·에도, except↔including). holdout6 조건 3/7→6/7, holdout7 4/9→8/9(본 뒤). 남은 것: 숫자 자격 바꿈("18 and older"→"16 and older")과 내용 낱말이 겹치지 않는 대상 문장
 - [ ] 품질: 수치 비교 뒤집기 남은 것('6 percent, lower than the 11 percent'→'twice as often', 원문 두 금액의 크기→'the larger part') — 9회차 `_comparison_swap`·`_magnitude` 쪽과 함께 본다
 - [ ] 평가: holdout5(66.1)는 10회차 개선으로 변하지 않았다 — 묶음마다 결함 유형이 달라 한 묶음을 보고 고치는 방식의 일반화가 약하다. 실제 codex 보고서 문장 라벨(Mac 실행) 또는 사람이 holdout5·6 라벨 일부를 검토
 
+- [ ] 품질: 계획 단계 낱말 남은 것 — "반영할지 검토하고 있다"→"예산에 반영했다", "방안을 검토 중"→"확정했다", "drafting … expected in 2027"→"approved" — holdout7 계획 3/6 — 근거: 2026-10-11 11회차
+- [ ] 품질: 비율 뒤집기("about one-third the cost" → "roughly three times") — 원문 분수·배수와 주장 배수가 서로 역수면 표시 — holdout7 비교 1/4 — 근거: 2026-10-11 11회차
+- [ ] 평가: 개선을 새 묶음의 오판을 보기 전에 설계하고 새 묶음은 집계만 재는 11회차 방식을 이어 간다 — 11회차 덜 편향된 수치는 holdout7 +1.1뿐(조건 개선은 0). 다음 holdout8도 코드 수정 전에 만든다 — 근거: 2026-10-11 11회차

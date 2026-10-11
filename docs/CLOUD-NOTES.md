@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-11 (품질 회차 11)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 이미 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 이번에는 다시 고치지 않고 확인만 했다: pyproject·`__version__`·CITATION `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고치지 않았다. 태그 뒤 CHANGELOG의 `0.5.0b1` 아래에 들어간 10회차 줄은 실제 태그에 없어서 새 `## [Unreleased]`로 옮겼다.
+- 점수 전후: 별도 에이전트가 쓴 holdout7(12 case·134문장) **F1 66.1 → 74.6**, 오표시율 21.0 → 11.3. 덜 편향된 수치는 holdout7을 보지 않고 만든 개선 1·2 뒤의 **67.2(+1.1)**. 다른 묶음: holdout5 66.1→70.9, holdout6 73.1→77.7, holdout4 81.2→82.0, 나머지는 그대로이고 오표시가 늘어난 묶음은 없다. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout7 먼저(`4d891c9`) → 유보→단정(`db9d22f`) → 조건 뒤집기(`b3671a8`) → holdout7 오판을 본 뒤 조건 확장·계산 값(`be40352`) → 기록, CI holdout7 `--min-f1 70`. 백로그 '유보 탈락' 완료, '조건·자격 바꿈' 진행, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 615개 통과(Python 3.11 venv). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, CI 라벨 평가 여덟 문턱 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 태그·릴리스·PyPI 게시는 하지 않았다. 이 푸시들의 GitHub CI 결과는 확인하지 못했다.
+- 남은 한계: 조건 개선은 보지 않은 묶음에서 효과가 0이었다. 낱말 목록 방식은 묶음마다 일반화가 약하다. 어느 묶음도 아직 사람이 검토하지 않았다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "버스정류장 쿨링포그 시범사업은 기온을 얼마나 낮췄고 어떤 조건에서 작동했나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"causal_conflict"\|"scope_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-11 (품질 회차 10)
 
 - 점수 전후: 별도 에이전트가 코드 수정 전에 쓴 holdout6 라벨 평가(`python -m evals.labeled --set holdout6`, 12 case·135문장) **F1 63.6 → 73.1**(recall 56.8→66.2, precision 72.4→81.7, 맞는 문장 오표시율 26.2→18.0). 설계 때 보지 않은 묶음: holdout3 83.1→83.7, holdout4 80.3→81.2, dev·holdout·holdout2·holdout5 변화 없음, 오표시 증가 0. 고정 32 case 99.9 그대로. 상세는 `docs/QUALITY-LOG.md`.
