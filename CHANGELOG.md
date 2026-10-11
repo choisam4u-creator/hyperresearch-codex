@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## [0.5.0b1] - 2026-10-11 (베타)
+
+- First PyPI beta (PEP 440 pre-release `0.5.0b1`). The automatic quality checks may end a run with `review_required` (exit code 3); a person should review every report.
 
 - Read area (`㎡`, `hectares`, `㎢`, `acres`, `ft²`), temperature (`degrees Fahrenheit`/`Celsius`, `°F`/`°C`, `섭씨`/`화씨 N도`), spelled-out energy (`gigawatt-hours`, `megawatt-hours`) and `개월`/`months` units, and give the first value of `from 11 to 13 kilometers` the second value's unit, so correct conversions are not flagged and swapped units (`GWh` → `MWh`, `°F` → `°C`) are marked `(source mismatch)`. Hedged values may now also be differences, per-unit × count products, Fahrenheit↔Celsius conversions and per-day/week/month averages (including month spans such as `3월부터 12월까지`); unhedged change rates (`6 → 4.2 minutes, or 30 percent`) are accepted. Count exclusion wording (`left out`, `excluded`, `빠졌다`, `제외`) as negation. Mark `(source mismatch)` when a cited sentence reverses a source before/after pair (`up from 4,500` → `fell from 6,000 to 4,500`) or swaps the comparison reference (`겨울철 … 여름보다` → `여름철 … 겨울보다`), recorded as `antonym_conflict`.
 - Mark `(source mismatch)` when a cited sentence widens the source's stated scope to "every"/"all"/nationwide/`전국`/`모든` although no related source sentence says so, even without pilot or sample words (`scope_conflict`); counted lists (`all 6,200 families`), `every two months` and negated limits are not flagged. Treat effect verbs (`reduced`, `줄였다`, `늦췄다`) as causal claims when the cited source disclaims attribution (`could not rule out`, `단정할 수 없다`, `추정하지 않았다`), and mark sentences that turn a reported null result (`did not change`, `바뀌지 않았다`, not significant) into a change (`negation_conflict`). Stop splitting sentences at `a.m.`, `p.m.`, `e.g.`, `i.e.`, `vs.` and `U.S.`, which put marks mid-sentence.
@@ -28,7 +30,7 @@
 - Mark `(source mismatch)` when a cited clause repeats the source's wording but drops or adds a negation (`did not reduce` → `reduced`, `줄지 않았다` → `줄었다`; `negation_conflict`), or turns a stated share (`3 of the 8 sites`, `23 percent of`, `75명 중 52명`) into "most", "all", `대부분` or `모든` (`share_conflict`).
 - Accept more correct derived values without `(source mismatch)`: quotients (`8,700 visits over 9 days` → `nearly 970 a day`), percentage-point differences, lower bounds (`more than 60 percent`), rounded shares (`389 of 412` → `94%`), annualized amounts, word shares (`two thirds`), approximation words after a counter (`14권 남짓`); read `1만 2,400` as one number and Mbps/Gbps as units. Mark `(source mismatch)` when a cited clause swaps an antonym in the source wording (`longer` → `shorter`, `이상` → `미만`; `antonym_conflict`) or reverses an explicitly stated cause and effect (`causal_reversal_conflict`). Add a held-out labeled set (`python -m evals.labeled --set holdout`, 12 cases, 127 sentences).
 
-## 0.5.0 - 2026-09-26
+## 0.5.0 - 2026-09-26 (not published; included in 0.5.0b1)
 
 - Interleave search candidates across hostnames after ranking so one domain cannot monopolize the early source set.
 - Treat explicitly unverified or unmeasured quantities as disclosed gaps while continuing to warn on unsupported factual numbers.
