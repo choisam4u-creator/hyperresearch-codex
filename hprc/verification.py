@@ -950,6 +950,8 @@ _NUM = r"(\d+(?:,\d{3})*(?:\.\d+)?|" + "|".join(_SMALL_NUMBERS) + r")"
 _SHARE_OF = re.compile(_NUM + r"\s+(?:of|out of)\s+(?:the\s+|its\s+|their\s+|all\s+)?" + _NUM + r"\b", re.I)
 _SHARE_KO = re.compile(r"(\d+(?:,\d{3})*)\s*[가-힣]{0,2}\s*[가-힣]{0,3}\s*(?:가운데|중)\s*(\d+(?:,\d{3})*)")
 _SHARE_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+of\b|(?:의|가운데|중)\s*(\d+(?:\.\d+)?)\s*%", re.I)
+_SHARE_SAID = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+(?:said|say|says|reported|answered|agreed|wanted|used|attended|"
+                         r"preferred|supported|opposed|chose|would)\b|응답(?:이|은|자가|자는)?\s*(\d+(?:\.\d+)?)\s*%", re.I)
 _MOST_WORDS = re.compile(r"\b(?:most|majority|bulk)\b|대부분|과반|대다수", re.I)
 _ALL_WORDS = re.compile(r"\b(?:all|every|each)\b|모든|모두|전원|전부", re.I)
 
@@ -969,6 +971,8 @@ def _shares(text: str) -> list[Decimal]:
         if whole and part <= whole:
             out.append(part / whole * 100)
     out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_PERCENT.finditer(text)]
+    # 10회차(holdout6): 설문 몫은 "of" 없이도 쓴다 — "23 percent said …", "응답이 35%", "점주의 57%가 … 원했고".
+    out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_SAID.finditer(text)]
     return out
 
 

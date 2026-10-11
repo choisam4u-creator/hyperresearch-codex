@@ -593,6 +593,18 @@ class PlanScopeTests(unittest.TestCase):
         text, _ = self.mark("참여자는 대부분 20~30대였다 [S1].", {"S1": "2개 동에서 참여자 가운데 60대 이상이 64%였다."}, "ko")
         self.assertIn("불일치", text)
 
+    def test_minority_survey_share_said_without_of_called_most_is_marked(self):
+        # 10회차(holdout6): 원문 설문 몫이 "of" 없이 쓰여도("23 percent said …", "응답이 35%") '대부분·most'로 말하면 share_conflict.
+        src = {"S1": "The evaluation surveyed 610 fridge users; 23 percent said it was their main source of fresh produce.",
+               "S2": "참여자 620명 설문에서 '채소 구입비가 줄었다'는 응답이 35%였다."}
+        for body, lang in (("Most surveyed users said the fridges were their main source of fresh produce [S1].", "en"),
+                           ("응답자 대다수가 채소 구입비가 줄었다고 답했다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["share_conflict"]), body)
+        text, changes = self.mark("About a quarter of surveyed users said the fridges were their main source of fresh produce [S1].",
+                                  src)
+        self.assertEqual([], changes["share_conflict"])
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
