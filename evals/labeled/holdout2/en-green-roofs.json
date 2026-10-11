@@ -1,0 +1,86 @@
+{
+ "id": "en-green-roofs",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "How much do green roofs cool buildings and hold back stormwater?",
+ "sources": {
+  "S1": "Sensors on 25 green roofs recorded peak summer roof surface temperatures averaging 32 degrees Celsius, compared with 61 degrees on nearby conventional roofs. The green roofs held back about 55 percent of rainfall during storms under 25 millimeters.\n\nDuring larger storms, the share of rainfall retained dropped sharply.",
+  "S2": "Installation cost averaged 180 dollars per square meter, about three times the cost of a standard roof replacement. Building owners reported no change in indoor cooling bills in the first year."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How much do green roofs cool buildings and hold back stormwater?\n\n## Answer\nGreen roof surfaces peaked about 29 degrees cooler than conventional roofs [S1]. Peak green roof surfaces averaged 32 degrees Fahrenheit [S1]. Green roofs retained just over half of the rain from storms under 25 millimeters [S1].\n\n## Evidence\n- Green roofs held back about 55 percent of rainfall in all storms [S1].\n- In bigger storms, green roofs kept a much smaller share of the rain [S1].\n- Installation cost averaged 180 dollars per square foot [S2].\n- Green roofs cost roughly triple a standard roof replacement [S2].\n- Cooler roofs lowered indoor cooling bills in the first year [S2].\n\n## Counter-evidence and limits\n- Owners saw no difference in indoor cooling bills during the first year [S2].\n- The temperature study measured 25 roofs [S1].\n- Green roofs also attracted more pollinating insects.\n\n## Next actions\n- Measure retention in storms above 25 millimeters (judgment)\n\n## Sources\n- [S1] Green roof sensor study\n- [S2] Building owner survey\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Green roof surfaces peaked about 29 degrees cooler than conventional roofs",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "61-32"
+  },
+  {
+   "key": "Peak green roof surfaces averaged 32 degrees Fahrenheit",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "Celsius"
+  },
+  {
+   "key": "Green roofs retained just over half of the rain from storms under 25 millimeters",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "55%"
+  },
+  {
+   "key": "Green roofs held back about 55 percent of rainfall in all storms",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "25mm 미만만"
+  },
+  {
+   "key": "In bigger storms, green roofs kept a much smaller share of the rain",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "dropped sharply"
+  },
+  {
+   "key": "Installation cost averaged 180 dollars per square foot",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "square meter"
+  },
+  {
+   "key": "Green roofs cost roughly triple a standard roof replacement",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "three times"
+  },
+  {
+   "key": "Cooler roofs lowered indoor cooling bills in the first year",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "no change"
+  },
+  {
+   "key": "Owners saw no difference in indoor cooling bills during the first year",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "no change"
+  },
+  {
+   "key": "The temperature study measured 25 roofs",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "Green roofs also attracted more pollinating insects",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

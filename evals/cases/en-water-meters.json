@@ -1,0 +1,22 @@
+{
+ "id": "en-water-meters",
+ "lang": "en",
+ "baseline_time": "2026-09-30",
+ "prompt": "What changed in water use and customer complaints after the smart water meter rollout?",
+ "flaws": [
+  "value_moved_to_parallel_subject",
+  "value_moved_to_parallel_subject",
+  "same_subject_paraphrase_ok"
+ ],
+ "sources": {
+  "S1": "The utility installed 52,000 smart meters in 2025. After installation, average household water use fell 9 percent, while commercial water use fell 3 percent.",
+  "S2": "Leak repairs reported by customers rose 40 percent, and billing complaints rose 15 percent in the first year."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What changed in water use and customer complaints after the smart water meter rollout?\n\n## Answer\nThe utility installed 52,000 smart meters in 2025 [S1]. Household water use fell 9 percent after installation [S1]. Commercial water use fell 9 percent after smart meters were installed [S1].\n\n## Evidence\n- Leak repairs reported by customers rose 40 percent [S2].\n- Billing complaints rose 40 percent in the first year [S2].\n- Commercial water use fell 3 percent [S1].\n\n## Counter-evidence and limits\n- Billing complaints rose 15 percent in the first year [S2].\n- Whether the meters caused the drop is not established by these sources (judgment)\n\n## Next actions\n- Ask the utility for water use by customer class over two years (judgment)\n\n## Sources\n- [S1] Utility smart meter rollout results\n- [S2] Customer service first-year summary\n"
+   }
+  ]
+ }
+}

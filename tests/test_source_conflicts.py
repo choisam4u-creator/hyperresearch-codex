@@ -58,5 +58,44 @@ class SourceConflictTests(unittest.TestCase):
         self.assertEqual(text, mark_report_claims(text, src, "en")[0])
 
 
+    BIKE = {"S1": "시 보고서에 따르면 2025년 공공자전거 대여 건수는 전년보다 8% 증가했다.",
+            "S2": "운영사 요약에 따르면 2025년 공공자전거 대여 건수는 전년보다 31% 증가했다."}
+
+    def bike(self, s2_value: str, limits: str = "- 표본이 작다 (판단).") -> str:
+        return ("## 답\n2025년 공공자전거 대여 건수는 전년보다 8% 증가했다 [S1]. "
+                f"2025년 공공자전거 대여 건수는 전년보다 {s2_value} 증가했다 [S2].\n\n"
+                f"## 반대 근거와 한계\n{limits}\n\n## 출처\n- [S1] a\n- [S2] b\n")
+
+    def test_same_direction_with_large_magnitude_gap_is_noted(self):
+        text, pairs = note_source_conflicts(self.bike("31%"), self.BIKE, "ko")
+        self.assertEqual([["S1", "S2"]], pairs)
+        self.assertIn("- 출처끼리 증감 폭이 크게 다름: S1·S2를 인용한 문장이 같은 대상의 증감 폭을 8%·31%로 말하므로", text)
+        self.assertEqual((text, []), note_source_conflicts(text, self.BIKE, "ko"))   # 다시 돌려도 같다
+        self.assertEqual(text, mark_report_claims(text, self.BIKE, "ko")[0])
+
+    def test_small_gap_or_acknowledged_gap_is_left_alone(self):
+        src = dict(self.BIKE, S2=self.BIKE["S2"].replace("31%", "12%"))
+        self.assertEqual([], note_source_conflicts(self.bike("12%"), src, "ko")[1])   # 2배 미만
+        report = self.bike("31%", "- S1은 거치형만, S2는 전기자전거까지 센다 (판단).")
+        self.assertEqual((report, []), note_source_conflicts(report, self.BIKE, "ko"))
+        src = dict(self.BIKE, S2=self.BIKE["S2"].replace("31%", "31%포인트"))
+        self.assertEqual([], note_source_conflicts(self.bike("31%포인트"), src, "ko")[1])   # 퍼센트와 퍼센트포인트는 비교하지 않는다
+
+    def test_magnitude_gap_in_different_years_is_left_alone(self):
+        # PR #17 리뷰: 서로 다른 해의 증감 폭은 상충이 아니다.
+        src = {"S1": "Bike-share trips increased 8 percent in 2023.", "S2": "Bike-share trips increased 31 percent in 2025."}
+        report = ("## Answer\nBike-share trips increased 8 percent in 2023 [S1]. Bike-share trips increased 31 percent in 2025 [S2].\n\n"
+                  "## Limits\n- Small sample (judgment).\n")
+        self.assertEqual((report, []), note_source_conflicts(report, src, "en"))
+
+    def test_english_magnitude_row(self):
+        src = {"S1": "Bike-share trips increased 8 percent in 2025.", "S2": "Bike-share trips increased 31 percent in 2025."}
+        report = ("## Answer\nBike-share trips increased 8 percent in 2025 [S1]. Bike-share trips increased 31 percent in 2025 [S2].\n\n"
+                  "## Limits\n- Small sample (judgment).\n")
+        text, pairs = note_source_conflicts(report, src, "en")
+        self.assertEqual([["S1", "S2"]], pairs)
+        self.assertIn("- Sources differ in size: sentences citing S1 and S2 give 8% and 31% for the same subject's change", text)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,86 @@
+{
+ "id": "en-library-fines",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "What happened after the library stopped charging overdue fines?",
+ "sources": {
+  "S1": "After the library ended overdue fines in March 2022, the share of items returned within 30 days of the due date rose from 91 percent to 94 percent. Card renewals increased by 12 percent in the following year.\n\nThe library did not track whether the same patrons returned.",
+  "S2": "Fine revenue had been about 85,000 dollars a year, or less than 1 percent of the library's budget. Staff time spent on fine disputes fell by roughly 600 hours annually."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What happened after the library stopped charging overdue fines?\n\n## Answer\nEnding overdue fines did not reduce timely returns [S1]. Returns within 30 days of the due date fell from 94 percent to 91 percent [S1]. The 30-day return share rose by 3 percentage points [S1].\n\n## Evidence\n- Card renewals grew 12 percent in the year after the change [S1].\n- Card renewals grew 12 percent across all libraries in the state [S1].\n- Lost fine revenue was under 1 percent of the budget [S2].\n- Fine revenue was about 85 million dollars a year [S2].\n- Staff saved about 50 hours a month on fine disputes [S2].\n\n## Counter-evidence and limits\n- The library tracked whether the same patrons came back [S1].\n- Because renewals rose, the library ended fines [S1].\n- Most patrons said they preferred the fine-free policy.\n\n## Next actions\n- Track repeat borrowers for a year (judgment)\n\n## Sources\n- [S1] Library circulation report\n- [S2] Library budget memo\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Ending overdue fines did not reduce timely returns",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "91→94 상승"
+  },
+  {
+   "key": "Returns within 30 days of the due date fell from 94 percent to 91 percent",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "순서 뒤집기"
+  },
+  {
+   "key": "The 30-day return share rose by 3 percentage points",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "94-91"
+  },
+  {
+   "key": "Card renewals grew 12 percent in the year after the change",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "increased"
+  },
+  {
+   "key": "Card renewals grew 12 percent across all libraries in the state",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "이 도서관만"
+  },
+  {
+   "key": "Lost fine revenue was under 1 percent of the budget",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "less than"
+  },
+  {
+   "key": "Fine revenue was about 85 million dollars a year",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "85,000"
+  },
+  {
+   "key": "Staff saved about 50 hours a month on fine disputes",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "600/12"
+  },
+  {
+   "key": "The library tracked whether the same patrons came back",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not track"
+  },
+  {
+   "key": "Because renewals rose, the library ended fines",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원인·결과 뒤집기"
+  },
+  {
+   "key": "Most patrons said they preferred the fine-free policy",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

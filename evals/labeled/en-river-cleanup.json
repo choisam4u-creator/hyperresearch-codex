@@ -1,0 +1,79 @@
+{
+  "id": "en-river-cleanup",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "Did the stormwater overflow repair make the Mill River safe for swimming?",
+  "sources": {
+    "S1": "The regional water authority sampled bacteria weekly at 8 sites along a 12-kilometer stretch of the Mill River in summer 2025. After the stormwater overflow repair, 3 of the 8 sites met the state swimming standard on every sampled week.\n\nThe other 5 sites exceeded the standard after heavy rain. The authority did not sample in the winter months.",
+    "S2": "The repair cost 4.2 million dollars and was completed in May 2025. The authority's capital plan lists a second overflow repair upstream, which has not been funded."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did the stormwater overflow repair make the Mill River safe for swimming?\n\n## Answer\nAfter the overflow repair, 3 of 8 sampling sites met the swimming standard every sampled week [S1]. Most sampling sites met the state swimming standard after the repair [S1]. The sampled stretch runs about 7.5 miles along the Mill River [S1].\n\n## Evidence\n- The sampling covered a 12-mile stretch of the Mill River [S1].\n- The repair cost about 4 million dollars and was finished in May 2025 [S2].\n- A second upstream overflow repair is planned and funded [S2].\n\n## Counter-evidence and limits\n- Five sites still went over the standard after heavy rain [S1].\n- No samples were taken in winter [S1].\n- The state swimming standard was tightened in 2024 (judgment).\n- Swimming-related illnesses dropped after the repair.\n\n## Next actions\n- Sample the five failing sites within 48 hours of heavy rain (judgment)\n\n## Sources\n- [S1] Regional water authority sampling results\n- [S2] Water authority capital plan\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "After the overflow repair, 3 of 8 sampling sites met",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S1"
+    },
+    {
+      "key": "Most sampling sites met the state swimming standard",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "8곳 중 3곳"
+    },
+    {
+      "key": "The sampled stretch runs about 7.5 miles",
+      "label": "ok",
+      "tag": "unit",
+      "why": "12 km = 7.46 mi"
+    },
+    {
+      "key": "The sampling covered a 12-mile stretch",
+      "label": "mismatch",
+      "tag": "unit",
+      "why": "12 km를 12 mile로"
+    },
+    {
+      "key": "The repair cost about 4 million dollars",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "4.2 million → about 4"
+    },
+    {
+      "key": "A second upstream overflow repair is planned and funded",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "원문: has not been funded"
+    },
+    {
+      "key": "Five sites still went over the standard after heavy rain",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1"
+    },
+    {
+      "key": "No samples were taken in winter",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1"
+    },
+    {
+      "key": "The state swimming standard was tightened in 2024",
+      "label": "unverified",
+      "tag": "judgment_fact",
+      "why": "판단 표시만 단 사실 주장, 출처 없음"
+    },
+    {
+      "key": "Swimming-related illnesses dropped after the repair",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "출처 없음"
+    }
+  ]
+}

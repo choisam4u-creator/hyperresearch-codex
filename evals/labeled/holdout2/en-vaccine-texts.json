@@ -1,0 +1,86 @@
+{
+ "id": "en-vaccine-texts",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "Do text message reminders improve on-time childhood vaccination?",
+ "sources": {
+  "S1": "In a randomized trial at 14 clinics, parents who received text reminders completed their child's second measles dose on time at a rate of 78 percent, versus 71 percent for parents who did not get texts. The trial enrolled 6,200 families.\n\nThe effect was smaller among families who already had a regular pediatrician.",
+  "S2": "The texting service cost 0.40 dollars per family. The health department has not decided whether to expand it beyond the trial clinics."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Do text message reminders improve on-time childhood vaccination?\n\n## Answer\nText reminders raised on-time second doses by 7 percentage points [S1]. On-time completion was 78 percent with texts and 71 percent without [S1]. Text reminders raised on-time completion to 87 percent [S1].\n\n## Evidence\n- Roughly 6,000 families took part in the trial [S1].\n- Families were assigned to the two groups at random [S1].\n- The effect was larger among families who already had a regular pediatrician [S1].\n- Texting cost 40 cents per family [S2].\n- Texting all 6,200 families cost about 2,480 dollars [S2].\n\n## Counter-evidence and limits\n- The department has decided to expand texting to every clinic in the state [S2].\n- Families without a regular pediatrician saw a bigger effect [S1].\n- Parents preferred texts over phone calls.\n\n## Next actions\n- Estimate the cost of a countywide rollout (judgment)\n\n## Sources\n- [S1] Randomized reminder trial\n- [S2] Health department cost note\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Text reminders raised on-time second doses by 7 percentage points",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "78-71"
+  },
+  {
+   "key": "On-time completion was 78 percent with texts and 71 percent without",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "Text reminders raised on-time completion to 87 percent",
+   "label": "mismatch",
+   "tag": "number",
+   "why": "78"
+  },
+  {
+   "key": "Roughly 6,000 families took part in the trial",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "6,200"
+  },
+  {
+   "key": "Families were assigned to the two groups at random",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "randomized"
+  },
+  {
+   "key": "The effect was larger among families who already had a regular pediatrician",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "smaller"
+  },
+  {
+   "key": "Texting cost 40 cents per family",
+   "label": "ok",
+   "tag": "unit",
+   "why": "0.40 dollars"
+  },
+  {
+   "key": "Texting all 6,200 families cost about 2,480 dollars",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "6,200×0.4"
+  },
+  {
+   "key": "The department has decided to expand texting to every clinic in the state",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "has not decided"
+  },
+  {
+   "key": "Families without a regular pediatrician saw a bigger effect",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "반대쪽에서 말함"
+  },
+  {
+   "key": "Parents preferred texts over phone calls",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

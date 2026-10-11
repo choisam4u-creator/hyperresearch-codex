@@ -1,6 +1,8 @@
+베타: 자동 품질 검사가 review_required(종료 코드 3) 경고를 낼 수 있습니다. 결과를 사람이 검토하세요.
+
 # hyperresearch-codex (한국어)
 
-[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![상태: beta](https://img.shields.io/badge/status-beta%200.5.0-orange)
+[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![상태: beta](https://img.shields.io/badge/status-beta%200.5.0b1-orange)
 
 질문 하나를 **출처가 있고 반대 검토를 거친 브리프**로 만드는 Codex 전용 리서치 파이프라인입니다. 파이썬이 모든 단계를 통제하고, 모델은 읽기 전용으로 실행되며, 인용과 제한된 수정은 게이트를 통과해야 합니다.
 
@@ -17,7 +19,7 @@ hpr demo
 
 실제 조사는 설정된 Codex 사용량을 소모합니다. 먼저 `hpr run "질문" --dry-run`으로 호출 수와 대략 비용을 확인하세요. 입력 토큰 기준 중단 기능은 다음 호출 전 중단을 돕지만, 진행 중인 호출의 초과를 막는 결제 상한은 아닙니다.
 
-영문 README(기본): [README.md](README.md) · 상태: 베타 0.5.0 · 저자 samchoi
+영문 README(기본): [README.md](README.md) · 상태: 베타 0.5.0b1 · 저자 samchoi
 
 질문 하나 → 출처 수집(Codex 정찰 검색·DuckDuckGo·학술 API) → 분석 → (Full: 깊이 조사·초안 3개·종합) → 비평 → 부분 수정 → 인용 표본 검사 → 다듬기 → 출처 상세표가 붙은 보고서. 이전 조사는 창고(vault)에 남아 CLI·MCP로 검색할 수 있습니다. 새 조사에서의 자료·분석 재사용은 검증 조건을 갖춘 선택 기능이며 기본 비활성입니다. [최근 유지보수](docs/INTERNAL-POLISH-20260916.md), [20회 고정 입력 실측](docs/EFFICIENCY-RESULTS-20260914.md), [사전 등록 실험 계획](docs/EFFICIENCY-STUDY-PROTOCOL.md)을 공개하며 일반적인 품질 향상·토큰 절감으로 확대 해석하지 않습니다.
 

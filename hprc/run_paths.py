@@ -1,4 +1,5 @@
 """실행 ID를 프로젝트의 ``research/runs`` 아래 안전한 경로로 바꾼다."""
+import os
 from pathlib import Path
 import unicodedata
 
@@ -41,9 +42,21 @@ def run_directory(root: Path, run_id: str) -> Path:
         candidate = (runs / run_id).resolve()
     except (OSError, RuntimeError) as error:
         raise InvalidRunId(f"run_id 경로를 확인할 수 없습니다: {error}") from error
-    if candidate.parent != runs:
+    if candidate.parent != runs and not _same_directory(candidate.parent, runs_directory(root)):
         raise InvalidRunId("run_id는 research/runs 바로 아래의 실행 폴더여야 합니다")
     return candidate
+
+
+def _same_directory(a: Path, b: Path) -> bool:
+    """두 경로가 같은 폴더인지. 앞의 ``resolve()``와 후보 ``resolve()`` 사이에 다른 프로세스가 ``research/runs``를
+    만들면 Windows에서는 짧은 이름(8.3)이 그때서야 펼쳐져 같은 폴더가 다른 문자열로 나올 수 있다. 그래서 다시 정규화한
+    값과 비교하고, 둘 다 있으면 파일 시스템에 같은 폴더인지 묻는다. 링크로 밖을 가리키는 경로는 여전히 거부된다."""
+    if a == b:
+        return True
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return False
 
 
 __all__ = ["InvalidRunId", "run_directory", "runs_directory"]

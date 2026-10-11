@@ -24,6 +24,22 @@ class RunDirectoryTests(unittest.TestCase):
         got = run_directory(self.root, "한글 실행-01_test")
         self.assertEqual((self.root / "research" / "runs" / "한글 실행-01_test").resolve(), got)
 
+    def test_runs_folder_spelled_differently_between_resolves_is_accepted(self):
+        # Windows에서 research/runs가 첫 resolve()와 후보 resolve() 사이에 생기면 짧은 이름(8.3)이 펼쳐져 같은 폴더가
+        # 다른 문자열로 나올 수 있다(동시 실행 CI에서 정상 run_id가 거부됨). 다른 철자를 링크로 흉내 낸다.
+        real = self.root / "research" / "runs"
+        real.mkdir(parents=True)
+        alias = self.root / "alias-runs"
+        try:
+            alias.symlink_to(real, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink unavailable")
+        from hprc import run_paths
+        calls = iter([alias, real.resolve()])
+        with mock.patch.object(run_paths, "runs_directory", side_effect=lambda root: next(calls)):
+            got = run_directory(self.root, "run-1")
+        self.assertEqual(real.resolve() / "run-1", got)
+
     def test_rejects_path_syntax_blank_and_control_characters(self):
         invalid = ["", "   ", ".", "..", "../escaped", "a/b", "a\\b", "/tmp/absolute", "line\nfeed", "delete\x7f"]
         for run_id in invalid:

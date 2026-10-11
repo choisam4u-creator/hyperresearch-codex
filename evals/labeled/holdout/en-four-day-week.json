@@ -1,0 +1,80 @@
+{
+ "id": "en-four-day-week",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout-2026-10-10",
+ "prompt": "What happened after rural districts moved to a four-day school week?",
+ "sources": {
+  "S1": "A trial of a four-day school week in 14 rural districts found that teacher applications per opening rose from 3.1 to 4.6 after the switch. Student attendance was unchanged.\n\nReading scores fell slightly in the second year, by 0.04 standard deviations, while math scores showed no significant difference.",
+  "S2": "Districts adopted the four-day week mainly because they struggled to recruit teachers, according to superintendent interviews. Parents of younger children reported higher childcare costs on the fifth day."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What happened after rural districts moved to a four-day school week?\n\n## Answer\nTeacher applications per opening rose from 3.1 to 4.6, nearly a 50 percent increase [S1]. Applications per opening rose by 4.6 [S1]. Student attendance stayed the same after the switch [S1].\n\n## Evidence\n- Student attendance improved after the switch [S1].\n- Reading scores dipped slightly in year two [S1].\n- Math scores rose significantly [S1].\n- Districts struggled to recruit teachers because they adopted the four-day week [S2].\n\n## Counter-evidence and limits\n- The trial covered 14 rural districts only [S1].\n- Parents of young children said childcare cost them more on the extra day off [S2].\n- Teachers in the trial districts earned less than the state average.\n\n## Next actions\n- Track reading scores for a third year (judgment)\n\n## Sources\n- [S1] Four-day week trial evaluation\n- [S2] Superintendent interview study\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Teacher applications per opening rose from 3.1 to 4.6, nearly a 50 percent increase",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "48.4%"
+  },
+  {
+   "key": "Applications per opening rose by 4.6",
+   "label": "mismatch",
+   "tag": "number",
+   "why": "1.5 증가"
+  },
+  {
+   "key": "Student attendance stayed the same after the switch",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "unchanged"
+  },
+  {
+   "key": "Student attendance improved after the switch",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "unchanged"
+  },
+  {
+   "key": "Reading scores dipped slightly in year two",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1"
+  },
+  {
+   "key": "Math scores rose significantly",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "no significant difference"
+  },
+  {
+   "key": "Districts struggled to recruit teachers because they adopted",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원문: 채용난 때문에 도입"
+  },
+  {
+   "key": "The trial covered 14 rural districts only",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "Parents of young children said childcare cost them more",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2"
+  },
+  {
+   "key": "Teachers in the trial districts earned less than the state average",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}
