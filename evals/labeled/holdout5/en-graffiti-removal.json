@@ -1,0 +1,86 @@
+{
+  "id": "en-graffiti-removal",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Has Ridgeway's 48-hour graffiti removal guarantee reduced repeat graffiti and complaint backlogs?",
+  "sources": {
+    "S1": "Ridgeway Clean Streets Office, Graffiti Response Report (June 2026). Starting in January 2026, Ridgeway committed to removing reported graffiti on public property within 48 hours. In the first five months, crews closed 3,150 reports, with 88% removed within 48 hours, up from 52% in the same months of 2025. The open backlog fell from 640 reports at the end of December 2025 to 95 at the end of May 2026.\n\nThe program added two crews and cost $410,000 for the five months, about $130 per closed report. The office said quick removal could discourage repeat tagging, but it has only begun tracking repeat sites and has no full-year data yet.",
+    "S2": "Ridgeway Business Improvement District Survey (May 2026). Of 220 storefront owners surveyed in the downtown district, 57% said graffiti on their block had decreased since January, and 9% said it had increased.\n\nPrivate property is not covered by the guarantee; owners must remove graffiti themselves within 10 days or face a $150 fine. The district plans to offer a free paint voucher program from September 2026."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Has Ridgeway's 48-hour graffiti removal guarantee reduced repeat graffiti and complaint backlogs?\n\n## Answer\nThe share of graffiti reports handled inside the 48-hour window climbed from 52% to 88% [S1]. Quick removal has reduced repeat tagging at the same sites [S1].\n\n## Evidence\n- The open backlog shrank by 545 reports, or about 85%, between December and May [S1].\n- By the end of May the open backlog stood at 950 reports [S1].\n- Spending worked out to roughly $130 for every closed report [S1].\n- More than half of surveyed downtown storefront owners saw less graffiti on their block since January [S2].\n- Most Ridgeway businesses report a drop in graffiti [S2].\n- The guarantee also covers graffiti on private storefronts [S2].\n\n## Counter-evidence and limits\n- Owners who leave graffiti up beyond 10 days can be fined $150 [S2].\n- The district has already launched a free paint voucher program [S2].\n- Ridgeway spent $1.2 million on graffiti removal in 2024 across all departments.\n\n## Next actions\n- Wait for a full year of repeat-site tracking before citing reduced repeat tagging as a result (judgment)\n\n## Sources\n- [S1] Ridgeway Clean Streets Office, Graffiti Response Report (Jun 2026)\n- [S2] Ridgeway Business Improvement District Survey (May 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The share of graffiti reports handled inside the 48-hour window climbed from 52% to 88%",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: 88% within 48 hours, up from 52%"
+    },
+    {
+      "key": "Quick removal has reduced repeat tagging at the same sites",
+      "label": "mismatch",
+      "tag": "hedge",
+      "why": "S1: 'could discourage'; repeat-site tracking only begun, no data"
+    },
+    {
+      "key": "The open backlog shrank by 545 reports, or about 85%, between December and May",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 640 to 95 = -545, -85.2%"
+    },
+    {
+      "key": "By the end of May the open backlog stood at 950 reports",
+      "label": "mismatch",
+      "tag": "magnitude",
+      "why": "S1: backlog was 95, not 950"
+    },
+    {
+      "key": "Spending worked out to roughly $130 for every closed report",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: about $130 per closed report"
+    },
+    {
+      "key": "More than half of surveyed downtown storefront owners saw less graffiti on their block since January",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: 57% of 220 downtown owners said decreased"
+    },
+    {
+      "key": "Most Ridgeway businesses report a drop in graffiti",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "S2: 220 surveyed downtown storefronts, not all Ridgeway businesses"
+    },
+    {
+      "key": "The guarantee also covers graffiti on private storefronts",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S2: private property is not covered"
+    },
+    {
+      "key": "Owners who leave graffiti up beyond 10 days can be fined $150",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: remove within 10 days or face $150 fine"
+    },
+    {
+      "key": "The district has already launched a free paint voucher program",
+      "label": "mismatch",
+      "tag": "plan",
+      "why": "S2: plans to offer it from September 2026"
+    },
+    {
+      "key": "Ridgeway spent $1.2 million on graffiti removal in 2024 across all departments",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}

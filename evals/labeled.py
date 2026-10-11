@@ -1,6 +1,6 @@
 """사람 라벨 대조 평가: 문장마다 단 정답(맞음/출처 불일치/미검증)과 보고서 표시를 비교한다.
 
-    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|all] [--case ID] [--verbose] [--json out.json]
+    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|holdout5|all] [--case ID] [--verbose] [--json out.json]
 
 evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점해 천장 100에 닿았다. 이 평가는
 점수기 규칙을 쓰지 않는다. evals/labeled/*.json 의 "labels"(문장 열쇠 → 정답)를 사람이 정하고,
@@ -13,7 +13,8 @@ evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점�
   (5회차, 코드 수정 전에 만든 새 문장), holdout2 = evals/labeled/holdout2/*.json(6회차, 5회차 코드 변경 뒤
   코드를 고치기 전에 만든 새 문장), holdout3 = evals/labeled/holdout3/*.json(7회차, 6회차 코드 변경 뒤
   코드를 고치기 전에 만든 새 문장), holdout4 = evals/labeled/holdout4/*.json(8회차, 검사 코드·이전 라벨을 읽지 않은
-  별도 에이전트가 작성·라벨링). 개선은 dev 로 하고 holdout 들로 과적합을 잰다.
+  별도 에이전트가 작성·라벨링), holdout5 = evals/labeled/holdout5/*.json(9회차, 같은 방식의 별도 에이전트가 작성·라벨링,
+  9회차 코드는 holdout5를 보기 전에 holdout4로 설계). 개선은 dev 로 하고 holdout 들로 과적합을 잰다.
 라벨·case 를 고쳐 점수를 올리지 않는다. 고칠 때는 docs/QUALITY-LOG.md 에 이유를 적는다.
 """
 import argparse
@@ -36,8 +37,8 @@ _TRAIL = re.compile(r"(?:\s*\((?:판단|출처 없음|출처 불일치|원문 �
 
 
 SETS = {"dev": ("*.json",), "holdout": ("holdout/*.json",), "holdout2": ("holdout2/*.json",),
-        "holdout3": ("holdout3/*.json",), "holdout4": ("holdout4/*.json",),
-        "all": ("*.json", "holdout/*.json", "holdout2/*.json", "holdout3/*.json", "holdout4/*.json")}
+        "holdout3": ("holdout3/*.json",), "holdout4": ("holdout4/*.json",), "holdout5": ("holdout5/*.json",),
+        "all": ("*.json", "holdout/*.json", "holdout2/*.json", "holdout3/*.json", "holdout4/*.json", "holdout5/*.json")}
 
 
 def load_cases(only: str | None = None, which: str = "dev") -> list[dict]:
@@ -143,7 +144,7 @@ def run_all(cases: list[dict]) -> list[dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="사람 라벨 대조 품질 평가")
-    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·all")
+    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·holdout5·all")
     parser.add_argument("--case")
     parser.add_argument("--json")
     parser.add_argument("--verbose", action="store_true", help="틀린 판정 문장 출력")

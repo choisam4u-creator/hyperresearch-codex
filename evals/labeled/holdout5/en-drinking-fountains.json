@@ -1,0 +1,86 @@
+{
+  "id": "en-drinking-fountains",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Did Carver City's public drinking fountain program increase water use and reduce plastic bottle litter?",
+  "sources": {
+    "S1": "Carver City Public Works, Fountain Program Update (July 2026). Between May 2025 and April 2026 the city installed 75 bottle-filling fountains in parks, transit stops and plazas, bringing the total to 210. Each new fountain cost about $9,400 installed. Flow meters on the 75 new units recorded 1.35 million litres dispensed in their first year, which the city equates to roughly 2.7 million half-litre bottles.\n\nMaintenance crews logged 320 out-of-service reports in the year, most often for low water pressure. Fountains at transit stops dispensed more water on average than fountains in parks.",
+    "S2": "Carver City Litter Audit, Spring 2026 (Keep Carver Clean, May 2026). Volunteers counted litter on 40 sample blocks in April 2026 and compared the results with the same blocks in April 2024. Plastic beverage bottles fell from 18% to 13% of counted litter items. Total litter items per block were essentially unchanged.\n\nThe audit did not attempt to link the decline to the fountain program; the report notes that a regional bottle deposit scheme started in January 2025. About a third of surveyed passers-by (n = 450) said they had used a city fountain in the past month."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Carver City's public drinking fountain program increase water use and reduce plastic bottle litter?\n\n## Answer\nIn their first year the 75 new fountains dispensed about 1.35 million litres [S1]. The fountain program was the main reason plastic bottles fell as a share of litter [S2].\n\n## Evidence\n- Before the expansion, the city had 135 fountains [S1].\n- Installing the new fountains came to roughly $705,000 in total [S1].\n- Meters on the new units logged roughly 1.35 million gallons of water [S1].\n- Park fountains dispensed more water on average than those at transit stops [S1].\n- Plastic bottles dropped by five percentage points as a share of counted litter items [S2].\n- Most passers-by surveyed said they had used a city fountain in the past month [S2].\n\n## Counter-evidence and limits\n- Overall litter per block barely changed, so fewer bottles did not mean cleaner streets overall [S2].\n- A regional bottle deposit scheme began after the fountain expansion was completed [S2].\n- Carver City residents bought an estimated 41 million single-use water bottles in 2025.\n\n## Next actions\n- Prioritize new fountains at transit stops and fix low-pressure units before expanding into parks (judgment)\n\n## Sources\n- [S1] Carver City Public Works, Fountain Program Update (Jul 2026)\n- [S2] Keep Carver Clean, Carver City Litter Audit Spring 2026\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "In their first year the 75 new fountains dispensed about 1.35 million litres",
+      "label": "ok",
+      "tag": "verbatim",
+      "why": "S1: 1.35 million litres in first year from 75 new units"
+    },
+    {
+      "key": "The fountain program was the main reason plastic bottles fell as a share of litter",
+      "label": "mismatch",
+      "tag": "causal_invented",
+      "why": "S2: audit did not try to link the decline to fountains; deposit scheme also started"
+    },
+    {
+      "key": "Before the expansion, the city had 135 fountains",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 75 added to reach 210"
+    },
+    {
+      "key": "Installing the new fountains came to roughly $705,000 in total",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 75 x $9,400 = $705,000"
+    },
+    {
+      "key": "Meters on the new units logged roughly 1.35 million gallons of water",
+      "label": "mismatch",
+      "tag": "unit",
+      "why": "S1: litres, not gallons"
+    },
+    {
+      "key": "Park fountains dispensed more water on average than those at transit stops",
+      "label": "mismatch",
+      "tag": "comparison",
+      "why": "S1: transit-stop fountains dispensed more than park fountains"
+    },
+    {
+      "key": "Plastic bottles dropped by five percentage points as a share of counted litter items",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S2: 18% to 13%"
+    },
+    {
+      "key": "Most passers-by surveyed said they had used a city fountain in the past month",
+      "label": "mismatch",
+      "tag": "share",
+      "why": "S2: about a third, not most"
+    },
+    {
+      "key": "Overall litter per block barely changed, so fewer bottles did not mean cleaner streets overall",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: total litter per block essentially unchanged"
+    },
+    {
+      "key": "A regional bottle deposit scheme began after the fountain expansion was completed",
+      "label": "mismatch",
+      "tag": "order",
+      "why": "S2: deposit scheme began Jan 2025, before the May 2025-Apr 2026 installs"
+    },
+    {
+      "key": "Carver City residents bought an estimated 41 million single-use water bottles in 2025",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}
