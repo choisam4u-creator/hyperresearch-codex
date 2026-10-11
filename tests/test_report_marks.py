@@ -589,6 +589,14 @@ class PlanScopeTests(unittest.TestCase):
             self.assertNotIn("불일치" if lang == "ko" else "mismatch", text, body)
         text, _ = self.mark("충전기 한 곳당 연평균 충전 횟수는 300회였다 [S2].", src, "ko")
         self.assertIn("불일치", text)
+        # PR #18 Codex 리뷰: 나눗셈은 단위당 표현이 있을 때만, 몫 곱은 전체 값도 함께 말할 때만 인정한다.
+        cost = {"S1": "The project cost 100 million dollars and involved 20 volunteers."}
+        text, _ = self.mark("The project cost 5 million dollars [S1].", cost)
+        self.assertIn("mismatch", text)
+        text, _ = self.mark("The project cost 5 million dollars per volunteer [S1].", cost)
+        self.assertNotIn("mismatch", text)
+        text, _ = self.mark("충전 횟수는 270회였다 [S2].", src, "ko")
+        self.assertIn("불일치", text)
         # 연령대 '20~30대'는 다른 세는 말과 섞지 않는다(60대 ÷ 2개 = 30 같은 우연한 몫).
         text, _ = self.mark("참여자는 대부분 20~30대였다 [S1].", {"S1": "2개 동에서 참여자 가운데 60대 이상이 64%였다."}, "ko")
         self.assertIn("불일치", text)

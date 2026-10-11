@@ -666,6 +666,7 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
 
 
 # '대'는 차량 수와 연령대("20~30대")에 함께 쓰여 다른 세는 말과 섞지 않는다(10회차: 연령대가 우연한 몫과 맞아 결함을 놓침).
+_PER_UNIT_WORDS = re.compile(r"당|마다|평균|\b(?:per|each|apiece|average|averaged|on average)\b", re.I)
 _NAMED_COUNTS = {"명", "가구", "건", "count_item", "count_place", "count_occurrence"}
 _PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
 
@@ -743,9 +744,14 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         target = abs(value["value"])
         kin = [a for a in plain if a["dimension"] == value["dimension"]
                or (a["dimension"] in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]
-        if any(abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain
-               if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"}) \
-                or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares):
+        # 나눗셈은 주장이 단위당 값이라고 말할 때만('한 곳당', 'per volunteer', '평균'), 몫 곱은 주장이 전체 값도 함께 말할 때만
+        # 인정한다(PR #18 Codex 리뷰: '$100 million, 20 volunteers' → 'The project cost 5 million dollars'가 통과하던 것).
+        if (_PER_UNIT_WORDS.search(sentence) and any(
+                abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain
+                if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"})) \
+                or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares
+                       if any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
+                              for c in all_claimed or claim_values)):
             ok.add(value["start"])
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
