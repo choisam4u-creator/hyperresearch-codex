@@ -1,0 +1,86 @@
+{
+ "id": "en-stray-cat-tnr",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "Did the Riverton trap-neuter-return pilot reduce the stray cat population and complaints?",
+ "sources": {
+  "S1": "Riverton Animal Services ran a trap-neuter-return (TNR) pilot in three downtown districts from March 2024 to February 2026. Volunteers and contracted vets sterilized 1,840 cats, at an average cost of $62 per cat, funded by a $150,000 city grant.\n\nA spring 2026 street count in the pilot districts estimated 2,300 free-roaming cats, down from 3,100 in the spring 2024 baseline count. Officials said the decline may partly reflect a colder-than-usual counting week, and the counts were not repeated in non-pilot districts.",
+  "S2": "Nuisance complaints about cats in the pilot districts fell from 412 in 2023 to 268 in 2025, according to the city's 311 log. A resident survey of 600 households in the pilot districts found 58 percent supported continuing the program, while 21 percent opposed it.\n\nThe shelter reported that cat intake from the pilot districts did not fall over the period; kitten intake rose slightly in 2025."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the Riverton trap-neuter-return pilot reduce the stray cat population and complaints?\n\n## Answer\nThe pilot coincided with an estimated drop of about 800 free-roaming cats in the three downtown districts [S1]. The TNR program caused the decline in the cat population across Riverton [S1].\n\n## Evidence\n- Over roughly two years, 1,840 cats were sterilized in the pilot area [S1].\n- Total sterilization spending came to about $114,000 at $62 per cat [S1].\n- Cat complaints logged through 311 fell by roughly a third between 2023 and 2025 [S2].\n- Shelter intake of cats from the pilot districts declined as fewer kittens were born [S2].\n- A majority of pilot-district residents support continuing the program [S2].\n- The $150,000 grant that paid for the sterilizations came from the state [S1].\n\n## Counter-evidence and limits\n- An unusually cold counting week might explain part of the drop [S1].\n- Opposition outweighed support in the household survey [S2].\n- Similar TNR programs in other cities have typically taken five to seven years to show population effects.\n\n## Next actions\n- Repeat the street count in a non-pilot district next spring to get a comparison group (judgment)\n\n## Sources\n- [S1] Riverton Animal Services, TNR pilot summary 2024-2026\n- [S2] Riverton 311 complaint log and resident survey\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The pilot coincided with an estimated drop of about 800 free-roaming cats in the three downtown districts",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "3,100 - 2,300 = 800 in pilot districts"
+  },
+  {
+   "key": "The TNR program caused the decline in the cat population across Riverton",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "Source hedges (cold week may explain part) and covers only pilot districts"
+  },
+  {
+   "key": "Over roughly two years, 1,840 cats were sterilized in the pilot area",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Mar 2024-Feb 2026, 1,840 cats"
+  },
+  {
+   "key": "Total sterilization spending came to about $114,000 at $62 per cat",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,840 x $62 = $114,080"
+  },
+  {
+   "key": "Cat complaints logged through 311 fell by roughly a third between 2023 and 2025",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "412 -> 268 is a 35% drop"
+  },
+  {
+   "key": "Shelter intake of cats from the pilot districts declined as fewer kittens were born",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Source: intake did not fall; kitten intake rose"
+  },
+  {
+   "key": "A majority of pilot-district residents support continuing the program",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "58% of 600 surveyed households, not all residents"
+  },
+  {
+   "key": "The $150,000 grant that paid for the sterilizations came from the state",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Source says it was a city grant"
+  },
+  {
+   "key": "An unusually cold counting week might explain part of the drop",
+   "label": "ok",
+   "tag": "hedge",
+   "why": "Hedge preserved from source"
+  },
+  {
+   "key": "Opposition outweighed support in the household survey",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "58% support vs 21% oppose"
+  },
+  {
+   "key": "Similar TNR programs in other cities have typically taken five to seven years to show population effects",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

@@ -54,7 +54,8 @@ def fixture_backend(case: dict, calls: list[str]):
     return backend
 
 
-def run_case(case: dict, workdir: Path) -> dict:
+def run_pipeline(case: dict, workdir: Path) -> tuple[str | None, str, dict, list[str]]:
+    """case 하나를 파이프라인으로 돌려 (최종 보고서, 막힌 이유, 출처, 단계 호출)을 돌려준다."""
     proj = workdir / case["id"]
     (proj / "research").mkdir(parents=True)
     inputs = proj / "frozen_inputs.json"
@@ -74,6 +75,11 @@ def run_case(case: dict, workdir: Path) -> dict:
     if src_file.exists():
         for s in json.loads(src_file.read_text(encoding="utf-8"))["sources"]:
             sources[s["id"]] = {"text": note_body(Path(s["path"])), "cluster": s.get("cluster", s["id"])}
+    return final, error, sources, calls
+
+
+def run_case(case: dict, workdir: Path) -> dict:
+    final, error, sources, calls = run_pipeline(case, workdir)
     result = score(final, case["lang"], case["prompt"], sources)
     result.update(id=case["id"], error=error, calls=calls)
     return result

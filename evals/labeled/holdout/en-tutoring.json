@@ -1,0 +1,86 @@
+{
+ "id": "en-tutoring",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout-2026-10-10",
+ "prompt": "Did high-dosage tutoring raise algebra pass rates?",
+ "sources": {
+  "S1": "In the district's high-dosage tutoring program, 1,150 ninth graders received three 50-minute sessions a week. Students who attended at least 80 percent of sessions passed algebra at a rate of 71 percent, compared with 58 percent for a matched comparison group.\n\nThe program cost $2,400 per student per year. Students with lower attendance showed no gain over the comparison group.",
+  "S2": "An external review found that the matched comparison group was drawn from the same schools but could not rule out that more motivated students chose to attend more sessions."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did high-dosage tutoring raise algebra pass rates?\n\n## Answer\nThe program served 1,150 ninth graders with three 50-minute sessions each week [S1]. That is 2.5 hours of tutoring per week [S1]. Frequent attenders passed algebra at 71 percent, 13 points above the comparison group [S1].\n\n## Evidence\n- All tutored students passed algebra at 71 percent [S1].\n- Students with lower attendance also outperformed the comparison group [S1].\n- The program cost about $2,400 for each student annually [S1].\n- The program cost $2,400 per student per month [S1].\n\n## Counter-evidence and limits\n- The review could not exclude that more motivated students attended more often [S2].\n- The review confirmed that tutoring, not motivation, drove the higher pass rate [S2].\n- Attending more sessions made students more motivated [S2].\n- Tutors were rated highly by participating teachers.\n\n## Next actions\n- Randomize session invitations to separate motivation from dosage (judgment)\n\n## Sources\n- [S1] District tutoring evaluation\n- [S2] External review\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The program served 1,150 ninth graders",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "That is 2.5 hours of tutoring per week",
+   "label": "ok",
+   "tag": "unit",
+   "why": "150분"
+  },
+  {
+   "key": "Frequent attenders passed algebra at 71 percent, 13 points above",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "71-58"
+  },
+  {
+   "key": "All tutored students passed algebra at 71 percent",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "출석 80% 이상만"
+  },
+  {
+   "key": "Students with lower attendance also outperformed",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "no gain"
+  },
+  {
+   "key": "The program cost about $2,400 for each student annually",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "per student per year"
+  },
+  {
+   "key": "The program cost $2,400 per student per month",
+   "label": "mismatch",
+   "tag": "basis",
+   "why": "연간을 월간으로"
+  },
+  {
+   "key": "The review could not exclude that more motivated students",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "could not rule out"
+  },
+  {
+   "key": "The review confirmed that tutoring, not motivation",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "could not rule out"
+  },
+  {
+   "key": "Attending more sessions made students more motivated",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "동기 높은 학생이 더 출석"
+  },
+  {
+   "key": "Tutors were rated highly by participating teachers",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

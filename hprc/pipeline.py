@@ -574,7 +574,7 @@ class Run:
         if limits_filled:
             atomic_write(self.dir / "limits_filled.json", json.dumps({"rows": limits_filled}, ensure_ascii=False))
         texts = {s["id"]: note_body(Path(s["path"])) for s in self.sources}
-        # 출처끼리 반대 방향 결과를 한계 절이 다루지 않으면 상충 안내를 덧붙인다(본문 표시는 하지 않음).
+        # 출처끼리 반대 방향이거나 증감 폭이 2배 이상 다른 결과를 한계 절이 다루지 않으면 안내를 덧붙인다(본문 표시는 하지 않음).
         fixed, conflicts = note_source_conflicts(fixed, texts, self.lang)
         if conflicts:
             log = self.dir / "source_conflicts.json"

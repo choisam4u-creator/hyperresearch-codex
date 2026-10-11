@@ -1,0 +1,86 @@
+{
+ "id": "en-school-counselors",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "What happened when Brookfield schools added counselors under the 2024 staffing pilot?",
+ "sources": {
+  "S1": "Under a two-year state-funded pilot that began in fall 2024, Brookfield School District hired 14 additional counselors across 9 middle and high schools, lowering the average student-to-counselor ratio in those schools from 480:1 to 290:1. The district's other 11 schools were not eligible for pilot funding.\n\nIn pilot schools, chronic absenteeism fell from 22 percent in 2023-24 to 18 percent in 2024-25. Over the same period, chronic absenteeism in non-pilot schools fell from 21 percent to 19 percent.",
+  "S2": "A district survey of 2,100 students in pilot schools found that 47 percent said they had met with a counselor during the year, up from 29 percent before the pilot. The district's evaluation stated that the improvement in attendance may be linked to counselor outreach but that a new attendance-tracking app was introduced in pilot schools at the same time.\n\nState funding for the pilot ends in June 2026, and the district has not identified a replacement source."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What happened when Brookfield schools added counselors under the 2024 staffing pilot?\n\n## Answer\nPilot schools added 14 counselors and cut their student-to-counselor ratio by about 190 students per counselor [S1]. Counselor outreach drove the attendance improvement in pilot schools [S2].\n\n## Evidence\n- Chronic absenteeism in pilot schools dropped by four percentage points in one year [S1].\n- Non-pilot schools saw a larger absenteeism decline than pilot schools [S1].\n- All 20 schools in the district qualified for the pilot funding [S1].\n- Nearly half of surveyed pilot-school students reported seeing a counselor during the year [S2].\n- The share of students meeting a counselor rose from 29 percent to 47 percent across the district [S2].\n- The pilot is paid for with federal money [S1].\n\n## Counter-evidence and limits\n- A new attendance-tracking app launched in the pilot schools at the same time, making it hard to credit counselors alone [S2].\n- State money for the pilot runs out in June 2026 with no replacement source identified yet [S2].\n- Professional guidelines recommend a ratio of 250 students per counselor.\n\n## Next actions\n- Compare absenteeism trends in pilot schools with and without heavy use of the tracking app (judgment)\n\n## Sources\n- [S1] Brookfield School District, counselor pilot staffing and attendance data\n- [S2] Brookfield School District, pilot evaluation and student survey\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Pilot schools added 14 counselors and cut their student-to-counselor ratio by about 190 students per counselor",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "480 - 290 = 190"
+  },
+  {
+   "key": "Counselor outreach drove the attendance improvement in pilot schools",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "Source: may be linked; app introduced at same time"
+  },
+  {
+   "key": "Chronic absenteeism in pilot schools dropped by four percentage points in one year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "22% -> 18%"
+  },
+  {
+   "key": "Non-pilot schools saw a larger absenteeism decline than pilot schools",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "Non-pilot fell 2 points vs 4 in pilot"
+  },
+  {
+   "key": "All 20 schools in the district qualified for the pilot funding",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "11 schools were not eligible"
+  },
+  {
+   "key": "Nearly half of surveyed pilot-school students reported seeing a counselor during the year",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "47%"
+  },
+  {
+   "key": "The share of students meeting a counselor rose from 29 percent to 47 percent across the district",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Survey covered pilot-school students only"
+  },
+  {
+   "key": "The pilot is paid for with federal money",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "State-funded"
+  },
+  {
+   "key": "A new attendance-tracking app launched in the pilot schools at the same time, making it hard to credit counselors alone",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Confounder stated in S2"
+  },
+  {
+   "key": "State money for the pilot runs out in June 2026 with no replacement source identified yet",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "Matches S2"
+  },
+  {
+   "key": "Professional guidelines recommend a ratio of 250 students per counselor",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

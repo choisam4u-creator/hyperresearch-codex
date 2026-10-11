@@ -1,0 +1,92 @@
+{
+ "id": "en-school-start-time",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "Did later high school start times improve student sleep and outcomes?",
+ "sources": {
+  "S1": "The district moved high school start times from 7:30 a.m. to 8:30 a.m. in fall 2023. In a survey of 1,850 students, average weeknight sleep rose from 6.6 hours to 7.1 hours. First-period tardiness fell from 14 percent of students to 9 percent.\n\nThe survey covered the district's four high schools only; middle schools kept their earlier schedule.",
+  "S2": "Standardized test scores in the first year did not change significantly. The report notes that students who already slept more were more likely to answer the survey, so the sleep gain may be overstated."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did later high school start times improve student sleep and outcomes?\n\n## Answer\nHigh schools now start an hour later, at 8:30 a.m. [S1]. Students reported about 30 more minutes of sleep on weeknights [S1]. More than 1,800 students answered the survey [S1].\n\n## Evidence\n- Tardiness in first period dropped from 14 percent to 9 percent of students [S1].\n- First-period tardiness fell by 5 percent [S1].\n- Later start times caused test scores to rise in the first year [S2].\n- Students who slept more were more likely to respond to the survey [S2].\n\n## Counter-evidence and limits\n- The sleep gain may be overstated because of who answered the survey [S2].\n- Answering the survey made students sleep more [S2].\n- Middle schools also adopted the 8:30 a.m. start [S1].\n- The later schedule applied to middle and high schools across the district [S1].\n- Car crashes involving teen drivers fell after the change.\n\n## Next actions\n- Survey middle schools before extending the change (judgment)\n\n## Sources\n- [S1] District start-time survey\n- [S2] First-year outcomes report\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "High schools now start an hour later, at 8:30 a.m.",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "7:30→8:30"
+  },
+  {
+   "key": "Students reported about 30 more minutes of sleep on weeknights",
+   "label": "ok",
+   "tag": "unit",
+   "why": "0.5시간=30분"
+  },
+  {
+   "key": "More than 1,800 students answered the survey",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "1,850"
+  },
+  {
+   "key": "Tardiness in first period dropped from 14 percent to 9 percent of students",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "fell"
+  },
+  {
+   "key": "First-period tardiness fell by 5 percent",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "5%p, 상대 36%"
+  },
+  {
+   "key": "Later start times caused test scores to rise in the first year",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not change significantly"
+  },
+  {
+   "key": "Students who slept more were more likely to respond to the survey",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2"
+  },
+  {
+   "key": "The sleep gain may be overstated because of who answered the survey",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2"
+  },
+  {
+   "key": "Answering the survey made students sleep more",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "선택 효과를 인과로"
+  },
+  {
+   "key": "Middle schools also adopted the 8:30 a.m. start",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "kept their earlier schedule"
+  },
+  {
+   "key": "The later schedule applied to middle and high schools across the district",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "고교 4곳만"
+  },
+  {
+   "key": "Car crashes involving teen drivers fell after the change",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

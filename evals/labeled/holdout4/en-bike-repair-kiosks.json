@@ -1,0 +1,86 @@
+{
+ "id": "en-bike-repair-kiosks",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "Are Harlow's public bike repair kiosks being used, and did they increase cycling?",
+ "sources": {
+  "S1": "In April 2025 Harlow installed 25 self-service bike repair kiosks with air pumps and tethered tools at parks and transit stations. Each kiosk cost $3,200 to buy and install. Sensors on the pumps recorded 41,000 uses through March 2026, with the five busiest kiosks, all at rail stations, accounting for 46 percent of uses.\n\nBy March 2026, 7 of the 25 kiosks had needed tool replacements due to theft or vandalism.",
+  "S2": "The city's annual cycling counts showed weekday bike trips at monitored intersections rose 4 percent between 2024 and 2025. The transportation department cautioned that the counts cover only 12 intersections and that a new protected corridor opened on Elm Street in the same year, so the kiosks' effect on ridership cannot be isolated.\n\nIn an online poll of 900 cyclists, 64 percent said they had used a kiosk at least once."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Are Harlow's public bike repair kiosks being used, and did they increase cycling?\n\n## Answer\nThe kiosks have seen heavy use, logging about 41,000 pump uses in their first year [S1]. The kiosks boosted weekday cycling by 4 percent [S2].\n\n## Evidence\n- The city spent roughly $80,000 to buy and install all the kiosks [S1].\n- Nearly half of all uses came from the five busiest kiosks, which sit at rail stations [S1].\n- Kiosks in parks were the most heavily used [S1].\n- About two-thirds of Harlow residents have used a kiosk [S2].\n- Theft or vandalism affected more than a quarter of the kiosks [S1].\n\n## Counter-evidence and limits\n- The Elm Street corridor opened a year after the kiosks were installed [S2].\n- Bike counts come from only a dozen intersections [S2].\n- Repair tools at most kiosks had to be replaced because of theft [S1].\n- Comparable kiosks in other cities typically last about ten years.\n\n## Next actions\n- Add bike counters near the rail-station kiosks before attributing ridership changes to them (judgment)\n\n## Sources\n- [S1] Harlow Parks and Transportation, repair kiosk usage data\n- [S2] Harlow annual cycling count and cyclist poll\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The kiosks have seen heavy use, logging about 41,000 pump uses in their first year",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "April 2025 to March 2026, 41,000 uses"
+  },
+  {
+   "key": "The kiosks boosted weekday cycling by 4 percent",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "Source says kiosk effect cannot be isolated"
+  },
+  {
+   "key": "The city spent roughly $80,000 to buy and install all the kiosks",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "25 x $3,200 = $80,000"
+  },
+  {
+   "key": "Nearly half of all uses came from the five busiest kiosks, which sit at rail stations",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "46% is nearly half"
+  },
+  {
+   "key": "Kiosks in parks were the most heavily used",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Busiest five were all at rail stations"
+  },
+  {
+   "key": "About two-thirds of Harlow residents have used a kiosk",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "64% of 900 polled cyclists, not residents"
+  },
+  {
+   "key": "Theft or vandalism affected more than a quarter of the kiosks",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "7 / 25 = 28%"
+  },
+  {
+   "key": "The Elm Street corridor opened a year after the kiosks were installed",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "Source says the same year"
+  },
+  {
+   "key": "Bike counts come from only a dozen intersections",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "12 intersections"
+  },
+  {
+   "key": "Repair tools at most kiosks had to be replaced because of theft",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "Only 7 of 25"
+  },
+  {
+   "key": "Comparable kiosks in other cities typically last about ten years",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

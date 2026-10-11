@@ -1,0 +1,86 @@
+{
+  "id": "en-speed-humps",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Did Fairhaven's residential speed hump program lower vehicle speeds and collisions on local streets?",
+  "sources": {
+    "S1": "Fairhaven Transportation Department, Speed Hump Evaluation (September 2026). In spring 2025 the city installed 96 speed humps on 31 residential streets selected from resident petitions. Radar counts showed the 85th-percentile speed falling from 38 km/h before installation to 29 km/h after. Average daily traffic on the treated streets dropped from 1,900 to 1,650 vehicles.\n\nReported injury collisions on the 31 streets fell from 14 in the two years before installation to 5 in the 16 months after. The department said the collision numbers are too small to draw firm conclusions. Installation averaged $4,200 per hump.",
+    "S2": "Fairhaven Fire Department Memo (June 2026). Fire engines on routes with speed humps took an average of 9 seconds longer per call to reach their destination. The department has asked that streets on primary response routes be excluded from future hump installations.\n\nA survey of 380 households on treated streets found that 68% supported keeping the humps, while 19% reported more traffic on nearby untreated streets. Traffic counts on adjacent streets were taken only before installation, not after."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Fairhaven's residential speed hump program lower vehicle speeds and collisions on local streets?\n\n## Answer\nThe 85th-percentile speed on treated streets fell by 9 km/h, from 38 to 29 [S1]. Injury collisions on the treated streets dropped sharply, showing the humps made the streets safer [S1].\n\n## Evidence\n- The city put in 96 speed humps across 31 residential streets chosen through resident petitions [S1].\n- Radar counts showed speeds dropping from 38 mph to 29 mph [S1].\n- Daily traffic on treated streets fell by about 13% [S1].\n- Installation cost averaged $4,200 per street [S1].\n- Post-installation counts show traffic shifted onto adjacent streets because of the humps [S2].\n- About two-thirds of surveyed households on treated streets wanted to keep the humps [S2].\n\n## Counter-evidence and limits\n- Fire engines on hump routes needed an extra 9 seconds per call on average [S2].\n- The fire department's request to exclude response routes came before the 2025 installations [S2].\n- Fairhaven has roughly 420 km of residential streets, and only about 6% have traffic calming.\n\n## Next actions\n- Exclude primary fire response routes from the next round and add after counts on adjacent streets (judgment)\n\n## Sources\n- [S1] Fairhaven Transportation Department, Speed Hump Evaluation (Sep 2026)\n- [S2] Fairhaven Fire Department Memo (Jun 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The 85th-percentile speed on treated streets fell by 9 km/h, from 38 to 29",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 38 to 29 km/h"
+    },
+    {
+      "key": "Injury collisions on the treated streets dropped sharply, showing the humps made the streets safer",
+      "label": "mismatch",
+      "tag": "hedge",
+      "why": "S1: numbers too small to draw firm conclusions"
+    },
+    {
+      "key": "The city put in 96 speed humps across 31 residential streets chosen through resident petitions",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: 96 humps on 31 streets selected from petitions"
+    },
+    {
+      "key": "Radar counts showed speeds dropping from 38 mph to 29 mph",
+      "label": "mismatch",
+      "tag": "unit",
+      "why": "S1: km/h, not mph"
+    },
+    {
+      "key": "Daily traffic on treated streets fell by about 13%",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "S1: 1,900 to 1,650 = -13.2%"
+    },
+    {
+      "key": "Installation cost averaged $4,200 per street",
+      "label": "mismatch",
+      "tag": "basis",
+      "why": "S1: $4,200 per hump, not per street"
+    },
+    {
+      "key": "Post-installation counts show traffic shifted onto adjacent streets because of the humps",
+      "label": "mismatch",
+      "tag": "causal_invented",
+      "why": "S2: adjacent counts taken only before installation; 19% perception only"
+    },
+    {
+      "key": "About two-thirds of surveyed households on treated streets wanted to keep the humps",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "S2: 68% supported keeping"
+    },
+    {
+      "key": "Fire engines on hump routes needed an extra 9 seconds per call on average",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: 9 seconds longer per call"
+    },
+    {
+      "key": "The fire department's request to exclude response routes came before the 2025 installations",
+      "label": "mismatch",
+      "tag": "order",
+      "why": "S2: memo dated June 2026, after spring 2025 installs"
+    },
+    {
+      "key": "Fairhaven has roughly 420 km of residential streets, and only about 6% have traffic calming",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}

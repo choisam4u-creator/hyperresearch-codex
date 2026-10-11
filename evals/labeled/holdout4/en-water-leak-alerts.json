@@ -1,0 +1,86 @@
+{
+ "id": "en-water-leak-alerts",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "How well did Lakemont's smart water meter leak-alert pilot work for households?",
+ "sources": {
+  "S1": "Lakemont Water Utility installed smart meters with automatic leak alerts in 4,000 homes in the Eastside neighborhood starting in January 2025. The system sends a text message when continuous flow lasts more than 48 hours.\n\nIn the first twelve months, the utility sent 1,120 leak alerts. Customers who received an alert and responded fixed the leak within an average of 6 days, compared with 31 days for leaks found through monthly billing before the pilot.",
+  "S2": "An evaluation by the utility estimated that participating homes saved 9.5 million gallons of water in 2025, roughly 36 million liters. The evaluation noted that savings estimates rely on modelled baseline usage and could be overstated.\n\nAbout 15 percent of alerted customers never responded to the message. The utility plans to expand the meters citywide by 2028, pending council approval of a $12 million budget."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How well did Lakemont's smart water meter leak-alert pilot work for households?\n\n## Answer\nLeaks flagged by text alerts were repaired about five times faster than leaks discovered through billing before the pilot [S1]. The pilot saved roughly 36 million liters of water in its first year, though the figure rests on modelled baselines [S2].\n\n## Evidence\n- An alert is triggered once water has flowed continuously for more than two days [S1].\n- The utility issued 1,120 alerts per month during the pilot [S1].\n- Average household savings were 9.5 million gallons [S2].\n- All alerted customers fixed their leaks within six days [S1].\n- The meters have already been rolled out across the whole city [S2].\n\n## Counter-evidence and limits\n- Around one in seven alerted customers did not reply to the alert [S2].\n- The evaluation concluded that its savings estimates were probably understated [S2].\n- Citywide expansion depends on the council approving $12 million [S2].\n- Most of the detected leaks were caused by running toilets.\n\n## Next actions\n- Ask the utility for a non-responder follow-up and the baseline model behind the savings figure (judgment)\n\n## Sources\n- [S1] Lakemont Water Utility, Eastside smart meter pilot report\n- [S2] Lakemont Water Utility, 2025 leak-alert evaluation\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Leaks flagged by text alerts were repaired about five times faster than leaks discovered through billing before the pilot",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "31 / 6 = about 5.2"
+  },
+  {
+   "key": "The pilot saved roughly 36 million liters of water in its first year, though the figure rests on modelled baselines",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S2 including caveat"
+  },
+  {
+   "key": "An alert is triggered once water has flowed continuously for more than two days",
+   "label": "ok",
+   "tag": "unit_conversion",
+   "why": "48 hours = 2 days"
+  },
+  {
+   "key": "The utility issued 1,120 alerts per month during the pilot",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "1,120 alerts over twelve months, not per month"
+  },
+  {
+   "key": "Average household savings were 9.5 million gallons",
+   "label": "mismatch",
+   "tag": "basis",
+   "why": "9.5M gallons is the total across homes"
+  },
+  {
+   "key": "All alerted customers fixed their leaks within six days",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "6 days is an average among responders; 15% never responded"
+  },
+  {
+   "key": "The meters have already been rolled out across the whole city",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "Citywide expansion is planned for 2028, pending approval"
+  },
+  {
+   "key": "Around one in seven alerted customers did not reply to the alert",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "15% is about 1 in 7"
+  },
+  {
+   "key": "The evaluation concluded that its savings estimates were probably understated",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Source says could be overstated"
+  },
+  {
+   "key": "Citywide expansion depends on the council approving $12 million",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "pending council approval of $12M"
+  },
+  {
+   "key": "Most of the detected leaks were caused by running toilets",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

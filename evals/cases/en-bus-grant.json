@@ -1,0 +1,22 @@
+{
+  "id": "en-bus-grant",
+  "lang": "en",
+  "baseline_time": "2026-09-30",
+  "prompt": "How large was the state bus replacement grant and what does it cover?",
+  "flaws": [
+    "magnitude_word_swapped",
+    "magnitude_word_swapped_second_source",
+    "equivalent_value_rewritten_ok"
+  ],
+  "sources": {
+    "S1": "The state awarded the transit agency a 4.2 million dollar grant in 2025 to replace 30 diesel buses. Annual ridership on the affected routes was 1.6 million trips.",
+    "S2": "The agency capital plan lists fleet replacement costs of 96 million dollars over ten years. The plan expects the grant to cover the first 30 buses only."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How large was the state bus replacement grant and what does it cover?\n\n## Answer\nThe state awarded the transit agency a 4.2 billion dollar grant in 2025 to replace 30 diesel buses [S1].\n\n## Evidence\n- Annual ridership on the affected routes was 1,600,000 trips [S1].\n- The agency capital plan lists fleet replacement costs of 96 thousand dollars over ten years [S2].\n- The plan expects the grant to cover the first 30 buses only [S2].\n\n## Counter-evidence and limits\n- The grant covers only part of the ten-year fleet replacement plan (judgment).\n\n## Next actions\n- Ask the agency how the remaining buses will be funded (judgment)\n\n## Sources\n- [S1] State transit grant announcement\n- [S2] Transit agency capital plan\n"
+      }
+    ]
+  }
+}

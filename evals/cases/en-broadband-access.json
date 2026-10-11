@@ -1,0 +1,21 @@
+{
+ "id": "en-broadband-access",
+ "lang": "en",
+ "baseline_time": "2026-09-30",
+ "prompt": "How much has rural broadband access improved, and what did the subsidy program do? Cite sources.",
+ "flaws": [
+  "percentage_point_as_percent",
+  "value_moved_to_other_year"
+ ],
+ "sources": {
+  "S1": "The state broadband office reported that 78 percent of rural households had high-speed internet in 2025, up from 71 percent in 2022, an increase of 7 percentage points. The share of urban households with access stayed at 93 percent.",
+  "S2": "In 2023, the subsidy program enrolled 41,000 households. Enrollment reached 56,000 households in 2025. Monthly bills for enrolled households fell by 12 percent on average."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How much has rural broadband access improved, and what did the subsidy program do? Cite sources.\n\n## Answer\nRural high-speed internet access rose 7 percent [S1]. In 2025, 78 percent of rural households had high-speed internet [S1].\n\n## Evidence\n- The subsidy program enrolled 41,000 households in 2025 [S2].\n- In 2023, the subsidy program enrolled 41,000 households [S2].\n- Enrollment reached 56,000 households in 2025 [S2].\n- Monthly bills for enrolled households fell by 12 percent on average [S2].\n- Rural access rose by 7 percentage points, from 71 percent in 2022 [S1].\n\n## Counter-evidence and limits\n- The share of urban households with access stayed at 93 percent [S1].\n- The sources do not separate the subsidy's effect from other network investment (judgment).\n\n## Next actions\n- Request county-level access data before and after enrollment (judgment)\n\n## Sources\n- [S1] State broadband office annual report\n- [S2] Subsidy program enrollment summary\n"
+   }
+  ]
+ }
+}

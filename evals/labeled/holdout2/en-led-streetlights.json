@@ -1,0 +1,86 @@
+{
+ "id": "en-led-streetlights",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "Did the LED streetlight conversion save energy and reduce crime?",
+ "sources": {
+  "S1": "The city replaced 42,000 sodium streetlights with LED fixtures between 2021 and 2023. Annual electricity use for street lighting fell from 31 gigawatt-hours to 13 gigawatt-hours, and maintenance calls dropped by 40 percent.\n\nThe upgrade did not include lights in city parks.",
+  "S2": "Police data show reported nighttime burglaries in the retrofitted districts fell 7 percent, but daytime burglaries fell by a similar amount, so the analysts could not attribute the decline to lighting."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the LED streetlight conversion save energy and reduce crime?\n\n## Answer\nStreet lighting electricity use dropped by more than half, from 31 to 13 gigawatt-hours [S1]. Annual street lighting use fell by 18 gigawatt-hours [S1]. Annual street lighting use fell from 31 megawatt-hours to 13 megawatt-hours [S1].\n\n## Evidence\n- About 42 thousand sodium lights were swapped for LEDs [S1].\n- Maintenance calls rose by 40 percent after the upgrade [S1].\n- Brighter LED lighting reduced nighttime burglaries by 7 percent [S2].\n- Nighttime and daytime burglaries both fell by similar amounts [S2].\n\n## Counter-evidence and limits\n- Lights in city parks were left out of the upgrade [S1].\n- The upgrade covered every streetlight in the city, including parks [S1].\n- Analysts could not attribute the burglary decline to lighting [S2].\n- The LED fixtures are expected to last 20 years.\n\n## Next actions\n- Compare park and street areas after dark (judgment)\n\n## Sources\n- [S1] Public works LED report\n- [S2] Police burglary analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Street lighting electricity use dropped by more than half, from 31 to 13 gigawatt-hours",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "58%"
+  },
+  {
+   "key": "Annual street lighting use fell by 18 gigawatt-hours",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "31-13"
+  },
+  {
+   "key": "Annual street lighting use fell from 31 megawatt-hours to 13 megawatt-hours",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "GWh→MWh"
+  },
+  {
+   "key": "About 42 thousand sodium lights were swapped for LEDs",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "42,000"
+  },
+  {
+   "key": "Maintenance calls rose by 40 percent after the upgrade",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "dropped"
+  },
+  {
+   "key": "Brighter LED lighting reduced nighttime burglaries by 7 percent",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "could not attribute"
+  },
+  {
+   "key": "Nighttime and daytime burglaries both fell by similar amounts",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2"
+  },
+  {
+   "key": "Lights in city parks were left out of the upgrade",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "did not include"
+  },
+  {
+   "key": "The upgrade covered every streetlight in the city, including parks",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "공원 제외"
+  },
+  {
+   "key": "Analysts could not attribute the burglary decline to lighting",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S2"
+  },
+  {
+   "key": "The LED fixtures are expected to last 20 years",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

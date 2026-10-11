@@ -1,0 +1,80 @@
+{
+ "id": "en-ebike-rebate",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did the e-bike rebate get people out of cars?",
+ "sources": {
+  "S1": "The e-bike rebate paid $500 toward a new electric bike for 3,200 residents in 2024. A follow-up survey of 1,100 recipients found that 41 percent used the bike instead of a car for at least one trip a week.\n\nRecipients with incomes under $50,000 received $1,200 instead of $500.",
+  "S2": "Bike shops in the city sold 6,000 e-bikes in 2024, up from 4,500 in 2023. The researchers could not say how many rebate buyers would have bought an e-bike anyway."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the e-bike rebate get people out of cars?\n\n## Answer\nRebates went to more than 3,000 residents [S1]. About 450 surveyed recipients replaced at least one weekly car trip with the bike [S1]. Among all 3,200 rebate recipients, 41 percent replaced a weekly car trip [S1].\n\n## Evidence\n- Every recipient received $500 [S1].\n- Lower-income recipients received $1,200 rather than $500 [S1].\n- City e-bike sales rose by one third from 2023 to 2024 [S2].\n- City e-bike sales fell from 6,000 to 4,500 [S2].\n\n## Counter-evidence and limits\n- The researchers determined how many rebate buyers would have bought an e-bike anyway [S2].\n- The rebate caused the jump in city e-bike sales [S2].\n- Most recipients were commuters.\n\n## Next actions\n- Ask non-recipients how often they ride (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Rebates went to more than 3,000 residents",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "3,200"
+  },
+  {
+   "key": "About 450 surveyed recipients replaced at least one weekly car trip with the bike",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "1,100×41%"
+  },
+  {
+   "key": "Among all 3,200 rebate recipients, 41 percent replaced a weekly car trip",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "설문 표본→전체"
+  },
+  {
+   "key": "Every recipient received $500",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "저소득은 1,200"
+  },
+  {
+   "key": "Lower-income recipients received $1,200 rather than $500",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "under $50,000"
+  },
+  {
+   "key": "City e-bike sales rose by one third from 2023 to 2024",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "1,500/4,500"
+  },
+  {
+   "key": "City e-bike sales fell from 6,000 to 4,500",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "4,500→6,000"
+  },
+  {
+   "key": "The researchers determined how many rebate buyers would have bought an e-bike anyway",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "could not say"
+  },
+  {
+   "key": "The rebate caused the jump in city e-bike sales",
+   "label": "mismatch",
+   "tag": "invented_cause",
+   "why": "인과 서술 없음·반사실 불명"
+  },
+  {
+   "key": "Most recipients were commuters",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

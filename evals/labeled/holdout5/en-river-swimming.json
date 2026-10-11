@@ -1,0 +1,86 @@
+{
+  "id": "en-river-swimming",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Is the Larch River swimming area in Eastport safe enough to reopen for a full summer season?",
+  "sources": {
+    "S1": "Eastport Environmental Health Division, 2026 Water Quality Summary (September 2026). Staff sampled the Larch River designated swimming area twice a week from June 1 to August 31, 2026, for 26 sampling days. E. coli exceeded the swimming advisory threshold of 235 CFU per 100 mL on 5 of those days, compared with 11 of 24 sampling days in 2025. Four of the five exceedances in 2026 came within 48 hours of rainfall over 15 mm.\n\nThe division said the improvement may reflect the upstream combined overflow storage tank that began operating in April 2026, but cautioned that summer 2026 was drier than 2025. The division recommends a rain-triggered closure rule rather than a fixed season.",
+    "S2": "Eastport Parks and Recreation, River Beach Pilot Report (September 2026). The pilot opened the swimming area on weekends only, for 12 weekends, with two lifeguards on duty from 11 a.m. to 6 p.m. Attendance totaled 9,600 visits, averaging 400 visits per weekend day.\n\nLifeguards made 14 rescues, all of them in the deeper channel beyond the buoy line. Staffing cost $86,000 for the season. The department has requested funding for a seven-day season in 2027, but the city council has not yet voted on it."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Is the Larch River swimming area in Eastport safe enough to reopen for a full summer season?\n\n## Answer\nAdvisory-level bacteria readings were less frequent in 2026, on 5 of 26 sampling days versus 11 of 24 in 2025 [S1]. The council has approved funding for a seven-day swimming season in 2027 [S2].\n\n## Evidence\n- About 19% of 2026 sampling days exceeded the advisory threshold, down from roughly 46% the year before [S1].\n- The upstream overflow storage tank pushed bacteria levels below the threshold [S1].\n- Most of the 2026 exceedances followed heavy rain within two days [S1].\n- The swimming area drew 9,600 visits per weekend day [S2].\n- Lifeguards were on duty for seven hours each open day [S2].\n- Lifeguards carried out 41 rescues, all in the deeper channel beyond the buoy line [S2].\n\n## Counter-evidence and limits\n- Summer 2026 was wetter than 2025, which makes the improvement more convincing [S1].\n- Two lifeguards per open day cost the city $86,000 over the season [S2].\n- The Larch River swimming area is 140 metres long and has a maximum depth of 3.2 metres.\n\n## Next actions\n- Adopt the rain-triggered closure rule and mark the deeper channel as off-limits before considering a longer season (judgment)\n\n## Sources\n- [S1] Eastport Environmental Health Division, 2026 Water Quality Summary\n- [S2] Eastport Parks and Recreation, River Beach Pilot Report (Sep 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Advisory-level bacteria readings were less frequent in 2026, on 5 of 26 sampling days versus 11 of 24 in 2025",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: exceedances on 5 of 26 days vs 11 of 24 in 2025"
+    },
+    {
+      "key": "The council has approved funding for a seven-day swimming season in 2027",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S2: funding requested; council has not yet voted"
+    },
+    {
+      "key": "About 19% of 2026 sampling days exceeded the advisory threshold, down from roughly 46% the year before",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 5/26 = 19.2%, 11/24 = 45.8%"
+    },
+    {
+      "key": "The upstream overflow storage tank pushed bacteria levels below the threshold",
+      "label": "mismatch",
+      "tag": "hedge",
+      "why": "S1: improvement 'may reflect' the tank; 2026 was also drier"
+    },
+    {
+      "key": "Most of the 2026 exceedances followed heavy rain within two days",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: 4 of 5 within 48 hours of rainfall over 15 mm"
+    },
+    {
+      "key": "The swimming area drew 9,600 visits per weekend day",
+      "label": "mismatch",
+      "tag": "period",
+      "why": "S2: 9,600 is the season total; 400 per weekend day"
+    },
+    {
+      "key": "Lifeguards were on duty for seven hours each open day",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S2: 11 a.m. to 6 p.m."
+    },
+    {
+      "key": "Lifeguards carried out 41 rescues, all in the deeper channel beyond the buoy line",
+      "label": "mismatch",
+      "tag": "number",
+      "why": "S2: 14 rescues, not 41"
+    },
+    {
+      "key": "Summer 2026 was wetter than 2025, which makes the improvement more convincing",
+      "label": "mismatch",
+      "tag": "comparison",
+      "why": "S1: 2026 was drier than 2025, which weakens the comparison"
+    },
+    {
+      "key": "Two lifeguards per open day cost the city $86,000 over the season",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: staffing cost $86,000 for the season"
+    },
+    {
+      "key": "The Larch River swimming area is 140 metres long and has a maximum depth of 3.2 metres",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}

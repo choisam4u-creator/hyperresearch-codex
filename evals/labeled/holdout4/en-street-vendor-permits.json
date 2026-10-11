@@ -1,0 +1,92 @@
+{
+ "id": "en-street-vendor-permits",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "Did Marisol City's simplified street vendor permit pilot bring more vendors into the licensed system?",
+ "sources": {
+  "S1": "Marisol City launched a simplified street vendor permit in the Central Market district in July 2025, replacing a four-step process with a single online application and cutting the annual fee from $540 to $180. By June 2026, 310 vendors held permits in the district, compared with 95 a year earlier.\n\nThe city's licensing office said average processing time dropped from 45 days to 9 days. Officials estimated that about 600 vendors operate in the district, so roughly half remain unlicensed.",
+  "S2": "Code enforcement citations against vendors in Central Market fell from 1,050 in fiscal year 2025 to 640 in fiscal year 2026. A vendor association representing about 200 members said the lower fee was the main reason members applied, though it noted that some members still found the online form difficult without help in Spanish.\n\nPermit fee revenue in the district rose to $55,800 in fiscal year 2026."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Marisol City's simplified street vendor permit pilot bring more vendors into the licensed system?\n\n## Answer\nThe number of permitted vendors in the district more than tripled within a year [S1]. Nearly all vendors in Central Market are now licensed [S1].\n\n## Evidence\n- The annual permit fee was cut by two-thirds [S1].\n- Applicants now wait about a fifth as long for a decision as before [S1].\n- The fee was lowered from $540 to $180 per month [S1].\n- Citations against vendors fell by about 39 percent between fiscal 2025 and 2026 [S2].\n- Citations fell because the simplified permit brought vendors into compliance [S2].\n- The vendor association said the simpler online form, rather than the fee, was the main draw for applicants [S2].\n\n## Counter-evidence and limits\n- Some association members struggled with the online form when Spanish-language help was not available [S2].\n- Fee revenue in the district reached $55,800 in fiscal 2025 [S2].\n- Neighboring cities charge vendors an average of $400 a year.\n- The pilot was modeled on a similar program in Los Angeles.\n\n## Next actions\n- Add Spanish-language application help before judging how many remaining vendors can be reached (judgment)\n\n## Sources\n- [S1] Marisol City Licensing Office, vendor permit pilot update\n- [S2] Central Market code enforcement data and vendor association statement\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The number of permitted vendors in the district more than tripled within a year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "95 -> 310 is 3.3x"
+  },
+  {
+   "key": "Nearly all vendors in Central Market are now licensed",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "Roughly half remain unlicensed"
+  },
+  {
+   "key": "The annual permit fee was cut by two-thirds",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "$540 -> $180"
+  },
+  {
+   "key": "Applicants now wait about a fifth as long for a decision as before",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "9 / 45 = 0.2"
+  },
+  {
+   "key": "The fee was lowered from $540 to $180 per month",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "Annual fee, not monthly"
+  },
+  {
+   "key": "Citations against vendors fell by about 39 percent between fiscal 2025 and 2026",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "(1,050-640)/1,050 = 39%"
+  },
+  {
+   "key": "Citations fell because the simplified permit brought vendors into compliance",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "Source gives no cause for fewer citations"
+  },
+  {
+   "key": "The vendor association said the simpler online form, rather than the fee, was the main draw for applicants",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Association named the lower fee as main reason"
+  },
+  {
+   "key": "Some association members struggled with the online form when Spanish-language help was not available",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Paraphrase of S2"
+  },
+  {
+   "key": "Fee revenue in the district reached $55,800 in fiscal 2025",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "FY2026, not FY2025"
+  },
+  {
+   "key": "Neighboring cities charge vendors an average of $400 a year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  },
+  {
+   "key": "The pilot was modeled on a similar program in Los Angeles",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

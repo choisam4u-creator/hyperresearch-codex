@@ -1,0 +1,73 @@
+{
+  "id": "en-protected-lanes",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "Did protected bike lanes increase cycling on city corridors?",
+  "sources": {
+    "S1": "The city transportation office counted cyclists on 14 corridors between 2021 and 2025. Protected bike lanes were added on 6 corridors in 2023, and the council chose those 6 because cyclist counts there had already grown by 40 percent between 2021 and 2023.\n\nAfter the lanes opened, counts on the 6 corridors rose a further 18 percent by 2025. Counts on the 8 corridors without new lanes rose 9 percent over the same period.",
+    "S2": "A hospital trauma registry recorded 52 cyclist injuries on the 6 corridors in 2022 and 37 in 2024. The registry noted that it does not record exposure, so injury rates per trip could not be calculated.\n\nThe registry covers only patients admitted to the city's two trauma centers."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did protected bike lanes increase cycling on city corridors?\n\n## Answer\nThe council placed protected lanes on the 6 corridors because cycling counts there had already grown by 40 percent [S1]. The 40 percent growth in cycling on those corridors was caused by the protected lanes [S1]. After opening, counts on the lane corridors rose another 18 percent, twice the 9 percent rise elsewhere [S1].\n\n## Evidence\n- Cyclist injuries on the 6 corridors dropped from 52 in 2022 to 37 in 2024 [S2].\n- Injury rates per trip fell on all 14 corridors [S2].\n- Fewer injuries led the council to build the lanes [S2].\n\n## Counter-evidence and limits\n- The registry does not record exposure, so per-trip injury rates are unknown [S2].\n- Only patients admitted to the city's two trauma centers are counted [S2].\n- Corridors chosen for lanes already had growing ridership, so the before-after rise overstates the lane effect (judgment).\n\n## Next actions\n- Compare corridor counts with matched corridors chosen before 2023 (judgment)\n\n## Sources\n- [S1] City transportation office cyclist counts\n- [S2] Hospital trauma registry\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The council placed protected lanes on the 6 corridors because",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S1 선정 이유 그대로"
+    },
+    {
+      "key": "The 40 percent growth in cycling on those corridors was caused by the protected lanes",
+      "label": "mismatch",
+      "tag": "causal_reversal",
+      "why": "40% 증가가 차로보다 먼저였고 선정 이유였다"
+    },
+    {
+      "key": "After opening, counts on the lane corridors rose another 18 percent",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "18은 9의 두 배"
+    },
+    {
+      "key": "Cyclist injuries on the 6 corridors dropped from 52",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S2 그대로"
+    },
+    {
+      "key": "Injury rates per trip fell on all 14 corridors",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "원문: 6개 구간, 이용당 비율은 계산 불가"
+    },
+    {
+      "key": "Fewer injuries led the council to build the lanes",
+      "label": "mismatch",
+      "tag": "invented_cause",
+      "why": "선정 이유는 이용량 증가"
+    },
+    {
+      "key": "The registry does not record exposure, so per-trip injury rates are unknown",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2 바꿔 말함"
+    },
+    {
+      "key": "Only patients admitted to the city's two trauma centers are counted",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2"
+    },
+    {
+      "key": "Corridors chosen for lanes already had growing ridership",
+      "label": "ok",
+      "tag": "judgment",
+      "why": "근거에서 나온 판단, 표시 있음"
+    }
+  ]
+}

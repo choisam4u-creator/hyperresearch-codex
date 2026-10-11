@@ -1,0 +1,80 @@
+{
+ "id": "en-heat-pump-grants",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did heat pump grants lower heating bills for low-income homes?",
+ "sources": {
+  "S1": "The program funded heat pumps in 2,400 low-income homes during 2023. Average winter heating bills in those homes fell from $1,150 to $820.\n\nHomes heated with wood were not eligible.",
+  "S2": "In a sample of 300 participating homes, indoor winter temperatures rose by 2 degrees Fahrenheit on average. Electricity use in the sample rose 18 percent because heat pumps replaced gas furnaces."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did heat pump grants lower heating bills for low-income homes?\n\n## Answer\nAverage winter heating bills dropped by $330 [S1]. Average winter heating bills dropped by nearly 30 percent [S1]. Average winter heating bills dropped by about 40 percent [S1].\n\n## Evidence\n- Indoor winter temperatures rose by about 1.1 degrees Celsius in the sampled homes [S2].\n- Indoor winter temperatures rose by 2 degrees Celsius in the sampled homes [S2].\n- Electricity use in sampled homes went up 18 percent as heat pumps took over from gas furnaces [S2].\n- Because electricity use rose 18 percent, heat pumps replaced gas furnaces [S2].\n\n## Counter-evidence and limits\n- Wood-heated homes were also eligible for the grants [S1].\n- Indoor temperatures rose 2 degrees in all 2,400 participating homes [S2].\n- Installers reported a three-month waiting list.\n\n## Next actions\n- Compare bills for homes that kept gas furnaces (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Average winter heating bills dropped by $330",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "1,150-820"
+  },
+  {
+   "key": "Average winter heating bills dropped by nearly 30 percent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "28.7%"
+  },
+  {
+   "key": "Average winter heating bills dropped by about 40 percent",
+   "label": "mismatch",
+   "tag": "rounding",
+   "why": "실제 28.7%"
+  },
+  {
+   "key": "Indoor winter temperatures rose by about 1.1 degrees Celsius in the sampled homes",
+   "label": "ok",
+   "tag": "unit",
+   "why": "2°F 차"
+  },
+  {
+   "key": "Indoor winter temperatures rose by 2 degrees Celsius in the sampled homes",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "°F→°C"
+  },
+  {
+   "key": "Electricity use in sampled homes went up 18 percent as heat pumps took over from gas furnaces",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "because"
+  },
+  {
+   "key": "Because electricity use rose 18 percent, heat pumps replaced gas furnaces",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원인·결과 뒤집음"
+  },
+  {
+   "key": "Wood-heated homes were also eligible for the grants",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "not eligible"
+  },
+  {
+   "key": "Indoor temperatures rose 2 degrees in all 2,400 participating homes",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "300 표본"
+  },
+  {
+   "key": "Installers reported a three-month waiting list",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

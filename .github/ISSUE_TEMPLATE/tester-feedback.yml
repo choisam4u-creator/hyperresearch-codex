@@ -50,7 +50,7 @@ body:
     id: hpr_version
     attributes:
       label: hyperresearch-codex version
-      placeholder: 0.5.0 or commit ID
+      placeholder: 0.5.0b1 or commit ID
     validations:
       required: true
   - type: input

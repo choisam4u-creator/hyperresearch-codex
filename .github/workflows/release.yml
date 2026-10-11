@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing non-draft GitHub release tag (vX.Y.Z)
+        description: Existing non-draft GitHub release tag (vX.Y.Z or PEP 440 pre-release such as v0.5.0b1)
         required: true
         type: string
 
@@ -28,16 +28,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          python - <<'PY'
-          import os, pathlib, re, tomllib
-          tag = os.environ["RELEASE_TAG"]
-          match = re.fullmatch(r"v([0-9]+\.[0-9]+\.[0-9]+)", tag)
-          if not match:
-              raise SystemExit(f"invalid release tag: {tag}")
-          version = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
-          if version != match.group(1):
-              raise SystemExit(f"tag {tag} does not match package version {version}")
-          PY
+          python scripts/check_release_version.py "$RELEASE_TAG"
           test "$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq '.draft')" = "false"
       - run: python -m pip install -e .
       - run: HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py' -v

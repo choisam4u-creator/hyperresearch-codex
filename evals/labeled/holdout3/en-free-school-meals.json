@@ -1,0 +1,86 @@
+{
+ "id": "en-free-school-meals",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did universal free school lunch raise participation and help students?",
+ "sources": {
+  "S1": "Starting in fall 2023, the district offered free lunch to all 48,000 students regardless of family income. Daily lunch participation rose from 55 percent to 74 percent of enrolled students.\n\nBreakfast was not included in the program.",
+  "S2": "Teachers in the 12 pilot schools reported fewer afternoon nurse visits for hunger, but the evaluation did not measure test scores. Families who already qualified for free meals saw no change in their meal costs."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did universal free school lunch raise participation and help students?\n\n## Answer\nLunch participation increased by 19 percentage points [S1]. Nearly three quarters of enrolled students ate school lunch daily [S1]. Daily lunch participation went up 19 percent [S1].\n\n## Evidence\n- Free lunch was offered to every student, whatever their family's income [S1].\n- Free breakfast and lunch were offered to all students [S1].\n- About 35,500 students ate lunch on a typical day [S1].\n- The evaluation measured test scores in the pilot schools [S2].\n- Teachers in all district schools reported fewer afternoon nurse visits [S2].\n\n## Counter-evidence and limits\n- Families already eligible for free meals paid the same as before [S2].\n- Families already eligible for free meals saw their meal costs drop [S2].\n- Cafeteria staff hours increased by 20 percent.\n\n## Next actions\n- Track test scores in pilot and non-pilot schools (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Lunch participation increased by 19 percentage points",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "74-55"
+  },
+  {
+   "key": "Nearly three quarters of enrolled students ate school lunch daily",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "74%"
+  },
+  {
+   "key": "Daily lunch participation went up 19 percent",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "%p→%(실제 상대 증가 35%)"
+  },
+  {
+   "key": "Free lunch was offered to every student, whatever their family's income",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "all regardless of income"
+  },
+  {
+   "key": "Free breakfast and lunch were offered to all students",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "breakfast not included"
+  },
+  {
+   "key": "About 35,500 students ate lunch on a typical day",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "48,000×74%"
+  },
+  {
+   "key": "The evaluation measured test scores in the pilot schools",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not measure"
+  },
+  {
+   "key": "Teachers in all district schools reported fewer afternoon nurse visits",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "12 pilot schools"
+  },
+  {
+   "key": "Families already eligible for free meals paid the same as before",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "no change"
+  },
+  {
+   "key": "Families already eligible for free meals saw their meal costs drop",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "no change"
+  },
+  {
+   "key": "Cafeteria staff hours increased by 20 percent",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

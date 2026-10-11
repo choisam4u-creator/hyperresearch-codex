@@ -1,3 +1,5 @@
+베타: 자동 품질 검사가 review_required(종료 코드 3) 경고를 낼 수 있습니다. 결과를 사람이 검토하세요.
+
 # hyperresearch-codex
 
 `hyperresearch-codex` turns one research question into a sourced, adversarially reviewed brief. Python controls the pipeline, Codex model calls run in a read-only sandbox, and deterministic gates check citations and bounded edits.

@@ -1,0 +1,86 @@
+{
+  "id": "en-str-registry",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Did Bayview's short-term rental registration rule return homes to the long-term rental market?",
+  "sources": {
+    "S1": "Bayview Housing Department, Short-Term Rental Registry Report (August 2026). Since July 1, 2025, hosts offering stays under 30 nights must register and display a permit number. Active listings on the two largest platforms fell from 2,480 in June 2025 to 1,610 in June 2026. Of the listings that disappeared, the department matched 210 addresses to new long-term lease registrations.\n\nThe registration fee is $250 per year per unit. Registrations totaled 1,390 by June 2026, meaning some active listings remain unregistered. Enforcement notices were sent to 430 hosts, and the department issued 62 fines.",
+    "S2": "Bayview Rental Market Snapshot (Tri-County Realtors Association, July 2026). Advertised long-term rental vacancies in Bayview rose from 2.1% in mid-2025 to 2.9% in mid-2026, while median asking rent for a one-bedroom rose 1.5% to $1,830 a month. In neighboring Harlow, which has no registry, median rent rose 4.2%.\n\nThe association cautioned that a new 300-unit apartment complex opened in Bayview in March 2026, which may account for part of the vacancy rise."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Bayview's short-term rental registration rule return homes to the long-term rental market?\n\n## Answer\nActive short-term listings fell by 870, or about 35%, in the year after registration became mandatory [S1]. The department traced 2,100 of the vanished listings to new long-term leases [S1].\n\n## Evidence\n- Hosts renting for fewer than 30 nights must register and show a permit number [S1].\n- Only 210 departed listings could be matched to new long-term leases, about a quarter of the drop [S1].\n- The registration fee is $250 per month for each unit [S1].\n- Roughly 220 active listings were still operating without registration in June 2026 [S1].\n- Bayview's one-bedroom median rent rose faster than Harlow's [S2].\n- Long-term vacancy in Bayview climbed by 0.8 percentage points [S2].\n\n## Counter-evidence and limits\n- The new 300-unit apartment complex had no effect on the vacancy rise [S2].\n- The department sent 62 enforcement notices and issued 430 fines [S1].\n- Bayview has about 41,000 rental homes, so the short-term market is a small slice of the total.\n\n## Next actions\n- Separate the effect of the new apartment complex before attributing the vacancy rise to the registry (judgment)\n\n## Sources\n- [S1] Bayview Housing Department, Short-Term Rental Registry Report (Aug 2026)\n- [S2] Tri-County Realtors Association, Bayview Rental Market Snapshot (Jul 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Active short-term listings fell by 870, or about 35%, in the year after registration became mandatory",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 2,480 to 1,610 = -870, -35.1%"
+    },
+    {
+      "key": "The department traced 2,100 of the vanished listings to new long-term leases",
+      "label": "mismatch",
+      "tag": "magnitude",
+      "why": "S1: 210 addresses matched, not 2,100"
+    },
+    {
+      "key": "Hosts renting for fewer than 30 nights must register and show a permit number",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: stays under 30 nights require registration and permit number"
+    },
+    {
+      "key": "Only 210 departed listings could be matched to new long-term leases, about a quarter of the drop",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 210 of 870 = 24%"
+    },
+    {
+      "key": "The registration fee is $250 per month for each unit",
+      "label": "mismatch",
+      "tag": "period",
+      "why": "S1: $250 per year per unit"
+    },
+    {
+      "key": "Roughly 220 active listings were still operating without registration in June 2026",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 1,610 active minus 1,390 registered = 220"
+    },
+    {
+      "key": "Bayview's one-bedroom median rent rose faster than Harlow's",
+      "label": "mismatch",
+      "tag": "comparison",
+      "why": "S2: Bayview +1.5% vs Harlow +4.2%"
+    },
+    {
+      "key": "Long-term vacancy in Bayview climbed by 0.8 percentage points",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S2: 2.1% to 2.9%"
+    },
+    {
+      "key": "The new 300-unit apartment complex had no effect on the vacancy rise",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S2: complex may account for part of the vacancy rise"
+    },
+    {
+      "key": "The department sent 62 enforcement notices and issued 430 fines",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1: 430 notices and 62 fines (values swapped)"
+    },
+    {
+      "key": "Bayview has about 41,000 rental homes, so the short-term market is a small slice of the total",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+ "id": "en-bike-share",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout-2026-10-10",
+ "prompt": "Did the bike share expansion change how people travel downtown?",
+ "sources": {
+  "S1": "The bike share program logged 410,000 trips in 2025, up from 320,000 trips in 2024. The average trip lasted 18 minutes. Docking stations were added only in the downtown core and two adjacent neighborhoods.\n\nA rider survey of 2,300 members found that 44 percent had replaced at least one car trip per week with a bike trip. The survey did not include non-members.",
+  "S2": "City traffic counts showed no measurable change in downtown car volumes after the program expanded. The transportation department said the expansion followed rising demand from commuters, rather than creating that demand."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the bike share expansion change how people travel downtown?\n\n## Answer\nTrips rose from 320,000 to 410,000, an increase of roughly 28 percent [S1]. The average ride lasted 0.3 hours [S1]. The average trip lasted 18 hours [S1].\n\n## Evidence\n- Nearly half of surveyed members said they swapped at least one weekly car trip for a bike ride [S1].\n- Nearly half of all city residents replaced a weekly car trip with a bike trip [S1].\n- Downtown car volumes fell measurably after the expansion [S2].\n- The program's expansion created the rising commuter demand [S2].\n\n## Counter-evidence and limits\n- Stations were placed only downtown and in two neighboring areas [S1].\n- People who were not members were left out of the survey [S1].\n- Bike share users had fewer traffic injuries than drivers.\n\n## Next actions\n- Compare downtown car counts by corridor before and after expansion (judgment)\n\n## Sources\n- [S1] Bike share annual report\n- [S2] City traffic count memo\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Trips rose from 320,000 to 410,000, an increase of roughly 28 percent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "90,000/320,000=28.1%"
+  },
+  {
+   "key": "The average ride lasted 0.3 hours",
+   "label": "ok",
+   "tag": "unit",
+   "why": "18분=0.3시간"
+  },
+  {
+   "key": "The average trip lasted 18 hours",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "분을 시간으로"
+  },
+  {
+   "key": "Nearly half of surveyed members said they swapped",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "44%"
+  },
+  {
+   "key": "Nearly half of all city residents replaced",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "회원 표본 설문"
+  },
+  {
+   "key": "Downtown car volumes fell measurably",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "원문: no measurable change"
+  },
+  {
+   "key": "The program's expansion created the rising commuter demand",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원문: 수요가 먼저, 확장은 뒤따름"
+  },
+  {
+   "key": "Stations were placed only downtown and in two neighboring areas",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1"
+  },
+  {
+   "key": "People who were not members were left out of the survey",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "did not include non-members"
+  },
+  {
+   "key": "Bike share users had fewer traffic injuries than drivers",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

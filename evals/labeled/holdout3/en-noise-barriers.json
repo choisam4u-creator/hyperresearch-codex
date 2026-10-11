@@ -1,0 +1,80 @@
+{
+ "id": "en-noise-barriers",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did highway noise barriers make nearby homes quieter?",
+ "sources": {
+  "S1": "The state built 14 kilometers of noise barriers along Highway 9 in 2022. Measured night-time noise at homes within 100 meters of the road dropped from 68 to 61 decibels.\n\nHomes more than 300 meters from the road showed no measurable change.",
+  "S2": "Complaints about highway noise fell from 240 in 2021 to 90 in 2023. The barriers were built after complaints peaked in 2021."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did highway noise barriers make nearby homes quieter?\n\n## Answer\nNight-time noise near the highway fell by 7 decibels [S1]. About 8.7 miles of noise barriers were built along Highway 9 [S1]. About 14 miles of noise barriers were built along Highway 9 [S1].\n\n## Evidence\n- Homes within 100 meters of the road became quieter at night [S1].\n- Homes beyond 300 meters from the road also became noticeably quieter [S1].\n- Highway noise complaints fell by more than 60 percent between 2021 and 2023 [S2].\n- Highway noise complaints fell by about a third between 2021 and 2023 [S2].\n\n## Counter-evidence and limits\n- Complaints peaked after the barriers were built [S2].\n- The barriers cut noise for every home along the highway corridor [S1].\n- The barriers cost $3 million per kilometer.\n\n## Next actions\n- Measure daytime noise at the same homes (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Night-time noise near the highway fell by 7 decibels",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "68-61"
+  },
+  {
+   "key": "About 8.7 miles of noise barriers were built along Highway 9",
+   "label": "ok",
+   "tag": "unit",
+   "why": "14 km"
+  },
+  {
+   "key": "About 14 miles of noise barriers were built along Highway 9",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "km→mi"
+  },
+  {
+   "key": "Homes within 100 meters of the road became quieter at night",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "68→61"
+  },
+  {
+   "key": "Homes beyond 300 meters from the road also became noticeably quieter",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "no measurable change"
+  },
+  {
+   "key": "Highway noise complaints fell by more than 60 percent between 2021 and 2023",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "150/240=62.5%"
+  },
+  {
+   "key": "Highway noise complaints fell by about a third between 2021 and 2023",
+   "label": "mismatch",
+   "tag": "rounding",
+   "why": "실제 62.5%"
+  },
+  {
+   "key": "Complaints peaked after the barriers were built",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "built after complaints peaked"
+  },
+  {
+   "key": "The barriers cut noise for every home along the highway corridor",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "300m 밖 변화 없음"
+  },
+  {
+   "key": "The barriers cost $3 million per kilometer",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

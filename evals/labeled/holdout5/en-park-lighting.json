@@ -1,0 +1,86 @@
+{
+  "id": "en-park-lighting",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout5-2026-10-11",
+  "prompt": "Did Millbrook's park lighting upgrade reduce evening crime reports and increase evening park use?",
+  "sources": {
+    "S1": "Millbrook Parks Department, Lighting Upgrade Review (August 2026). Between October 2025 and March 2026, Millbrook replaced 1,240 sodium fixtures in 18 neighborhood parks with LED fixtures on motion-dimming controls. The project cost $2.9 million, of which a state safety grant covered $1.1 million and the city's capital budget the rest. Annual electricity use for park lighting fell from 1.6 million kWh to 0.9 million kWh.\n\nPolice-recorded incidents in the 18 parks between 7 p.m. and midnight fell from 412 in the twelve months before the upgrade to 351 in the six months after it. The department noted that the before and after periods differ in length and season, and said it has not yet compared upgraded parks with parks that kept the old fixtures.",
+    "S2": "Millbrook Evening Park Use Counts (June 2026). Automated counters at the entrances of six upgraded parks recorded an average of 2,300 evening visits per week in April-May 2026, compared with 1,700 per week in April-May 2025. Women made up 44% of evening visitors in 2026, up from 37% in 2025.\n\nIn a survey of 600 park users, 62% said they felt safer after dark, while 21% said the new lights were too bright near homes. The counts cover only six of the 18 upgraded parks."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Millbrook's park lighting upgrade reduce evening crime reports and increase evening park use?\n\n## Answer\nEvening visits at the six counted parks rose by about 35%, from 1,700 to 2,300 a week [S2]. The upgrade cut evening police incidents in the 18 parks [S1].\n\n## Evidence\n- Millbrook swapped out 1,240 old sodium lights across 18 neighborhood parks for LEDs with motion dimming [S1].\n- The state safety grant paid for $1.8 million of the $2.9 million project [S1].\n- Park lighting now uses roughly 0.7 million kWh less electricity per year, a drop of about 44% [S1].\n- Recorded evening incidents fell from 412 to 351 over two comparable twelve-month periods [S1].\n- Women's share of evening visitors grew by seven percentage points to 44% [S2].\n- A majority of all Millbrook residents now feel safer in parks after dark [S2].\n\n## Counter-evidence and limits\n- The department has already compared upgraded parks with parks that kept the old fixtures and found no difference [S1].\n- About one in five surveyed users said the new lights were too bright near homes [S2].\n- Millbrook has 46 parks in total, and 28 of them still have no evening lighting at all.\n\n## Next actions\n- Compare monthly incident rates in upgraded parks against parks that kept the old fixtures before claiming a safety effect (judgment)\n\n## Sources\n- [S1] Millbrook Parks Department, Lighting Upgrade Review (Aug 2026)\n- [S2] Millbrook Evening Park Use Counts (Jun 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Evening visits at the six counted parks rose by about 35%, from 1,700 to 2,300 a week",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "S2: 1,700 to 2,300 per week = +35.3%"
+    },
+    {
+      "key": "The upgrade cut evening police incidents in the 18 parks",
+      "label": "mismatch",
+      "tag": "causal_invented",
+      "why": "S1: periods differ (12 vs 6 months) and no comparison parks; no causal finding"
+    },
+    {
+      "key": "Millbrook swapped out 1,240 old sodium lights across 18 neighborhood parks for LEDs with motion dimming",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1: replaced 1,240 sodium fixtures in 18 parks with motion-dimming LEDs"
+    },
+    {
+      "key": "The state safety grant paid for $1.8 million of the $2.9 million project",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1: grant covered $1.1M; the remaining $1.8M came from the capital budget"
+    },
+    {
+      "key": "Park lighting now uses roughly 0.7 million kWh less electricity per year, a drop of about 44%",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S1: 1.6M to 0.9M kWh = -0.7M, -43.75%"
+    },
+    {
+      "key": "Recorded evening incidents fell from 412 to 351 over two comparable twelve-month periods",
+      "label": "mismatch",
+      "tag": "period",
+      "why": "S1: 351 covers six months, not twelve; periods not comparable"
+    },
+    {
+      "key": "Women's share of evening visitors grew by seven percentage points to 44%",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "S2: 37% to 44%"
+    },
+    {
+      "key": "A majority of all Millbrook residents now feel safer in parks after dark",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "S2: 62% of 600 surveyed park users, not all residents"
+    },
+    {
+      "key": "The department has already compared upgraded parks with parks that kept the old fixtures and found no difference",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S1: it has not yet made that comparison"
+    },
+    {
+      "key": "About one in five surveyed users said the new lights were too bright near homes",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "S2: 21% said too bright near homes"
+    },
+    {
+      "key": "Millbrook has 46 parks in total, and 28 of them still have no evening lighting at all",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "Uncited numeric claim"
+    }
+  ]
+}

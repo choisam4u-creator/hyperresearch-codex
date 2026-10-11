@@ -1,0 +1,22 @@
+{
+ "id": "en-utility-rebate",
+ "lang": "en",
+ "baseline_time": "2026-09-30",
+ "prompt": "How much did the utility bill rebate pay, and to whom?",
+ "flaws": [
+  "per_unit_value_as_total",
+  "per_unit_basis_swapped",
+  "per_unit_and_total_kept_ok"
+ ],
+ "sources": {
+  "S1": "The state paid a utility rebate of 350 dollars per household in 2025. A total of 61,000 households received the rebate.",
+  "S2": "The program budget was 21 million dollars in total. Seniors received an extra 120 dollars per person, and 18 percent of recipients were seniors."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How much did the utility bill rebate pay, and to whom?\n\n## Answer\nThe state paid a utility rebate of 350 dollars per household in 2025 [S1]. The utility rebate cost the state 350 dollars in total in 2025 [S1].\n\n## Evidence\n- A total of 61,000 households received the rebate [S1].\n- The program budget was 21 million dollars in total [S2].\n- Seniors received an extra 120 dollars per household [S2].\n\n## Counter-evidence and limits\n- 18 percent of recipients were seniors [S2].\n- These sources do not show how households used the rebate (judgment)\n\n## Next actions\n- Ask the state for payments by recipient type (judgment)\n\n## Sources\n- [S1] State utility rebate payment summary\n- [S2] Rebate program budget report\n"
+   }
+  ]
+ }
+}

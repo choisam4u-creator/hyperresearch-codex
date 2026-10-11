@@ -1,0 +1,73 @@
+{
+  "id": "en-minimum-wage",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "What happened to jobs and prices after the county minimum wage increase?",
+  "sources": {
+    "S1": "The county raised its minimum wage from 13.50 dollars to 15.25 dollars an hour in January 2025. In the following twelve months, restaurant employment in the county was 4.6 percent higher than a year earlier.\n\nThe county economist's analysis found that the increase was not associated with job losses in retail, where employment was flat. Hours worked per employee were not measured.",
+    "S2": "A survey of 120 restaurant owners found that 71 raised menu prices after the increase. The survey was conducted by the county restaurant association, which had opposed the increase."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What happened to jobs and prices after the county minimum wage increase?\n\n## Answer\nThe hourly minimum wage rose from 13.50 to about 15 dollars in January 2025 [S1]. Restaurant employment was nearly 5 percent higher a year later [S1]. The increase was associated with job losses in retail [S1].\n\n## Evidence\n- Restaurant employment rose about 6 percent after the increase [S1].\n- About 59 percent of surveyed restaurant owners raised menu prices [S2].\n- Most restaurant owners in the county raised menu prices [S2].\n\n## Counter-evidence and limits\n- Hours worked per employee were not tracked [S1].\n- The association that ran the survey had opposed the wage increase [S2].\n- Retail employment stayed flat over the year [S1].\n\n## Next actions\n- Ask payroll processors for hours data (judgment)\n\n## Sources\n- [S1] County economist analysis\n- [S2] County restaurant association survey\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The hourly minimum wage rose from 13.50 to about 15 dollars",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "15.25 → about 15"
+    },
+    {
+      "key": "Restaurant employment was nearly 5 percent higher",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "4.6 → nearly 5"
+    },
+    {
+      "key": "The increase was associated with job losses in retail",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "원문: was not associated"
+    },
+    {
+      "key": "Restaurant employment rose about 6 percent",
+      "label": "mismatch",
+      "tag": "rounding",
+      "why": "4.6을 about 6으로"
+    },
+    {
+      "key": "About 59 percent of surveyed restaurant owners",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "71/120=59.2%"
+    },
+    {
+      "key": "Most restaurant owners in the county raised menu prices",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "협회 설문 120명을 군 전체로"
+    },
+    {
+      "key": "Hours worked per employee were not tracked",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1"
+    },
+    {
+      "key": "The association that ran the survey had opposed",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2"
+    },
+    {
+      "key": "Retail employment stayed flat",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S1"
+    }
+  ]
+}

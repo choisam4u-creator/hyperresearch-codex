@@ -1,0 +1,86 @@
+{
+ "id": "en-dynamic-parking",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout2-2026-10-10",
+ "prompt": "Did demand-based parking meter prices make parking easier to find?",
+ "sources": {
+  "S1": "After the city began adjusting meter prices block by block every two months, the share of blocks with at least one open space rose from 64 percent to 79 percent. Average hourly rates fell on 40 percent of blocks and rose on 35 percent.\n\nThe program covered 6 downtown neighborhoods.",
+  "S2": "Drivers spent an average of 4.2 minutes searching for parking in 2024, down from 6.0 minutes in 2022. The study could not separate the pricing effect from a drop in downtown office attendance over the same period."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did demand-based parking meter prices make parking easier to find?\n\n## Answer\nBlocks with an open space rose from 64 percent to 79 percent [S1]. Rates went down on more blocks than they went up [S1]. Rates rose on more blocks than they fell [S1].\n\n## Evidence\n- Average search time fell by 1.8 minutes, or 30 percent [S2].\n- Search time fell from 6.0 hours to 4.2 hours [S2].\n- Search time fell because of the new pricing, not office attendance [S2].\n- Because more blocks had open spaces, the city began adjusting meter prices [S1].\n\n## Counter-evidence and limits\n- The program was limited to six downtown neighborhoods [S1].\n- The program covered every neighborhood in the city [S1].\n- Prices were reset every two months on each block [S1].\n- Parking ticket revenue fell by a third.\n\n## Next actions\n- Compare blocks with and without office buildings (judgment)\n\n## Sources\n- [S1] Parking program evaluation\n- [S2] Driver search-time study\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Blocks with an open space rose from 64 percent to 79 percent",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "Rates went down on more blocks than they went up",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "40>35"
+  },
+  {
+   "key": "Rates rose on more blocks than they fell",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "비교 뒤집기"
+  },
+  {
+   "key": "Average search time fell by 1.8 minutes, or 30 percent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "6.0-4.2"
+  },
+  {
+   "key": "Search time fell from 6.0 hours to 4.2 hours",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "minutes"
+  },
+  {
+   "key": "Search time fell because of the new pricing, not office attendance",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "could not separate"
+  },
+  {
+   "key": "Because more blocks had open spaces, the city began adjusting meter prices",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원인·결과 뒤집기"
+  },
+  {
+   "key": "The program was limited to six downtown neighborhoods",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "6"
+  },
+  {
+   "key": "The program covered every neighborhood in the city",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "도심 6곳"
+  },
+  {
+   "key": "Prices were reset every two months on each block",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1"
+  },
+  {
+   "key": "Parking ticket revenue fell by a third",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

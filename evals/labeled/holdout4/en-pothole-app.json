@@ -1,0 +1,92 @@
+{
+ "id": "en-pothole-app",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout4-2026-10-10",
+ "prompt": "Has Dunmore's pothole reporting app sped up road repairs?",
+ "sources": {
+  "S1": "Dunmore's public works department launched a smartphone app for reporting potholes in May 2025, replacing phone and email reports. In the app's first year, residents submitted 8,600 reports, of which 2,150 were duplicates of existing reports.\n\nThe median time from report to repair fell from 19 days in the year before the app to 11 days in its first year. The department said crews were also expanded from four to six during the same year.",
+  "S2": "An audit by the city comptroller in August 2026 found that reports from the city's northern wards were repaired faster than those from southern wards, where app usage was lower. The audit said the gap could reflect differences in road type and was not necessarily due to the app.\n\nThe comptroller recommended adding a phone reporting option back for residents without smartphones."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Dunmore's pothole reporting app sped up road repairs?\n\n## Answer\nMedian repair times fell by eight days after the app launched [S1]. The app took the place of phone and email as the way to report potholes [S1].\n\n## Evidence\n- Residents filed 8,600 pothole reports through the app in its first year [S1].\n- About a quarter of app reports duplicated existing ones [S1].\n- The faster repairs resulted from the app rather than from extra crews [S1].\n- The number of repair crews was cut from six to four [S1].\n- Southern wards, where app usage was higher, received faster repairs [S2].\n\n## Counter-evidence and limits\n- The comptroller's audit attributed the north-south repair gap to the app [S2].\n- Road type differences might account for the gap between wards [S2].\n- The comptroller suggested restoring a phone option for people without smartphones [S2].\n- The audit was carried out in August 2025 [S2].\n- Dunmore spends about $2 million a year on pothole repairs.\n\n## Next actions\n- Split repair times by crew and ward before crediting the app (judgment)\n\n## Sources\n- [S1] Dunmore Public Works, pothole app first-year report\n- [S2] Dunmore City Comptroller, pothole repair audit (August 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Median repair times fell by eight days after the app launched",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "19 -> 11 days"
+  },
+  {
+   "key": "The app took the place of phone and email as the way to report potholes",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "replacing phone and email reports"
+  },
+  {
+   "key": "Residents filed 8,600 pothole reports through the app in its first year",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "Matches S1"
+  },
+  {
+   "key": "About a quarter of app reports duplicated existing ones",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,150 / 8,600 = 25%"
+  },
+  {
+   "key": "The faster repairs resulted from the app rather than from extra crews",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "Crews expanded the same year; source makes no attribution"
+  },
+  {
+   "key": "The number of repair crews was cut from six to four",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "Crews expanded from four to six"
+  },
+  {
+   "key": "Southern wards, where app usage was higher, received faster repairs",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Northern wards were faster; southern usage was lower"
+  },
+  {
+   "key": "The comptroller's audit attributed the north-south repair gap to the app",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Audit said not necessarily due to the app"
+  },
+  {
+   "key": "Road type differences might account for the gap between wards",
+   "label": "ok",
+   "tag": "hedge",
+   "why": "could reflect differences in road type"
+  },
+  {
+   "key": "The comptroller suggested restoring a phone option for people without smartphones",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Paraphrase of recommendation"
+  },
+  {
+   "key": "The audit was carried out in August 2025",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "August 2026"
+  },
+  {
+   "key": "Dunmore spends about $2 million a year on pothole repairs",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "Not in any source"
+  }
+ ]
+}

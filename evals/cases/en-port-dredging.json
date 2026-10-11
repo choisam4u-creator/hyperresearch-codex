@@ -1,0 +1,22 @@
+{
+  "id": "en-port-dredging",
+  "lang": "en",
+  "baseline_time": "2026-09-30",
+  "prompt": "How much did the harbor dredging project cost and who paid for it?",
+  "flaws": [
+    "magnitude_abbreviation_swapped",
+    "abbreviated_equal_value_ok",
+    "thousand_abbreviation_equal_value_ok"
+  ],
+  "sources": {
+    "S1": "The port authority report says the 2025 harbor dredging project cost 4.6 million dollars. The federal share was 3.8 million dollars and the rest came from port fees.",
+    "S2": "The port authority annual review counts 12,000 vessel calls at the harbor in 2025. It also lists a separate berth repair budget of 2.5 billion won."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How much did the harbor dredging project cost and who paid for it?\n\n## Answer\nThe 2025 harbor dredging project cost $4.6bn [S1]. The federal share was $3.8M and the rest came from port fees [S1].\n\n## Evidence\n- The harbor had about 12k vessel calls in 2025 [S2].\n- A separate berth repair budget of 2.5bn won is listed in the annual review [S2].\n\n## Counter-evidence and limits\n- The report does not break down dredging costs by year (judgment).\n\n## Next actions\n- Ask the port authority for the yearly cost breakdown (judgment)\n\n## Sources\n- [S1] Port authority dredging report\n- [S2] Port authority annual review\n"
+      }
+    ]
+  }
+}

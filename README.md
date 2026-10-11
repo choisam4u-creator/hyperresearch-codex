@@ -1,6 +1,8 @@
+베타: 자동 품질 검사가 review_required(종료 코드 3) 경고를 낼 수 있습니다. 결과를 사람이 검토하세요.
+
 # hyperresearch-codex
 
-[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.5.0-orange)
+[![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.5.0b1-orange)
 
 A Codex-only research pipeline that turns one prompt into a **sourced, adversarially reviewed brief**. Python controls every step, model calls run read-only, and gates check citations and bounded edits before a report is accepted.
 
@@ -17,7 +19,7 @@ Real research uses your configured Codex allowance. Run `hpr run "question" --dr
 
 Built by [samchoi](https://github.com/choisam4u-creator), inspired by [jordan-gibbs/hyperresearch](https://github.com/jordan-gibbs/hyperresearch) (MIT, Claude Code only). This is an independent implementation that shares no code or prompts: the orchestration moved into Python and every model call became a `codex exec` step.
 
-**Status:** beta 0.5.0. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies have separate scopes. The published 20-run input-packet study is a small fixed-input experiment and does not establish general quality or token savings. See [latest maintenance](docs/INTERNAL-POLISH-20260916.md), [measured results](docs/EFFICIENCY-RESULTS-20260914.md), and the [pre-registered protocol](docs/EFFICIENCY-STUDY-PROTOCOL.md). The Korean README is [README.ko.md](README.ko.md).
+**Status:** beta 0.5.0b1. The original release had 10 real runs on `gpt-6-astra` (4 full, 6 light); later controlled studies have separate scopes. The published 20-run input-packet study is a small fixed-input experiment and does not establish general quality or token savings. See [latest maintenance](docs/INTERNAL-POLISH-20260916.md), [measured results](docs/EFFICIENCY-RESULTS-20260914.md), and the [pre-registered protocol](docs/EFFICIENCY-STUDY-PROTOCOL.md). The Korean README is [README.ko.md](README.ko.md).
 
 ## At a glance
 

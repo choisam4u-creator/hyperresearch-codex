@@ -1,0 +1,73 @@
+{
+  "id": "en-library-evening",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "prompt": "Did the extended weekday hours at city library branches increase teen visits?",
+  "sources": {
+    "S1": "The city library system extended weekday closing time by three hours at four of its eleven branches starting in March 2025. Over the following six months, evening visits by patrons aged 13 to 18 at those four branches rose to 3,047, compared with 2,210 in the same months of 2024.\n\nThe extension did not reduce daytime visits at the four branches. The library board has not decided whether to extend hours at the remaining seven branches.",
+    "S2": "A staff survey of 64 librarians at the four branches found that 41 respondents reported more requests for homework help in the extended hours. Evening security incidents were not higher than before the change, according to the branch managers' log.\n\nThe survey did not ask librarians about workload or overtime."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did the extended weekday hours at city library branches increase teen visits?\n\n## Answer\nEvening visits by teens at the four branches rose to 3,047, up from 2,210 a year earlier [S1]. That is an increase of roughly 38 percent over the prior year [S1]. The extension reduced daytime visits at the four branches [S1].\n\n## Evidence\n- Weekday closing time was extended by three hours at all eleven branches [S1].\n- Roughly two-thirds of surveyed librarians reported more homework-help requests during the added hours [S2].\n- Evening security incidents were higher than before the change [S2].\n\n## Counter-evidence and limits\n- The board has yet to choose whether the other seven branches will also stay open later [S1].\n- Librarians were not asked about their workload or overtime [S2].\n- Teen visits fell at branches that kept the old hours.\n\n## Next actions\n- Compare teen visits at the seven unchanged branches (judgment)\n\n## Sources\n- [S1] City library system visit counts\n- [S2] Librarian staff survey\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Evening visits by teens at the four branches rose to 3,047",
+      "label": "ok",
+      "tag": "plain",
+      "why": "S1 그대로"
+    },
+    {
+      "key": "That is an increase of roughly 38 percent",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "3,047/2,210=1.379 → 약 38% 증가"
+    },
+    {
+      "key": "The extension reduced daytime visits",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "원문: did not reduce daytime visits"
+    },
+    {
+      "key": "Weekday closing time was extended by three hours at all eleven branches",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "원문: 11곳 중 4곳"
+    },
+    {
+      "key": "Roughly two-thirds of surveyed librarians",
+      "label": "ok",
+      "tag": "rounding",
+      "why": "41/64=64%"
+    },
+    {
+      "key": "Evening security incidents were higher than before",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "원문: were not higher"
+    },
+    {
+      "key": "The board has yet to choose whether the other seven branches",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "has not decided 바꿔 말함"
+    },
+    {
+      "key": "Librarians were not asked about their workload",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2 둘째 문단"
+    },
+    {
+      "key": "Teen visits fell at branches that kept the old hours",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "어느 출처에도 없음, 인용 없음"
+    }
+  ]
+}

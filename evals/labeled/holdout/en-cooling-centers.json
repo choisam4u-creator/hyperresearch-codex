@@ -1,0 +1,80 @@
+{
+ "id": "en-cooling-centers",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout-2026-10-10",
+ "prompt": "How were cooling centers used during the heat wave, and did heat emergencies fall?",
+ "sources": {
+  "S1": "The county opened 22 cooling centers during the July 2025 heat wave and recorded 8,700 visits over 9 days. Two thirds of visits were by people aged 60 or older.\n\nCenters in the eastern districts stayed open until 10 at night; all others closed at 7 in the evening.",
+  "S2": "Heat-related emergency calls during the 2025 heat wave were 18 percent lower than during a comparable 2023 heat wave. The county's analysis noted that the 2023 event lasted 3 days longer, which limits the comparison."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How were cooling centers used during the heat wave, and did heat emergencies fall?\n\n## Answer\nThe county ran 22 cooling centers during the heat wave and logged 8,700 visits [S1]. That works out to nearly 970 visits a day [S1]. About 67 percent of visits came from people 60 and older [S1].\n\n## Evidence\n- About 67 percent of the county's older residents visited a cooling center [S1].\n- Every center stayed open until 10 at night [S1].\n- Heat-related emergency calls dropped 18 percent compared with a similar 2023 heat wave [S2].\n- The cooling centers cut heat-related emergency calls by 18 percent [S2].\n\n## Counter-evidence and limits\n- The 2023 heat wave ran three days longer, so the comparison is limited [S2].\n- The 2023 heat wave was 3 days shorter [S2].\n- Most visitors arrived by public transit.\n\n## Next actions\n- Normalize emergency calls by heat wave length (judgment)\n\n## Sources\n- [S1] County cooling center log\n- [S2] County heat emergency analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The county ran 22 cooling centers during the heat wave",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "That works out to nearly 970 visits a day",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "8,700/9=967"
+  },
+  {
+   "key": "About 67 percent of visits came from people 60 and older",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "3분의 2"
+  },
+  {
+   "key": "About 67 percent of the county's older residents visited",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "방문 중 몫을 주민 중 몫으로"
+  },
+  {
+   "key": "Every center stayed open until 10 at night",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "동부만"
+  },
+  {
+   "key": "Heat-related emergency calls dropped 18 percent compared",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S2"
+  },
+  {
+   "key": "The cooling centers cut heat-related emergency calls by 18 percent",
+   "label": "mismatch",
+   "tag": "invented_cause",
+   "why": "원인 미확인"
+  },
+  {
+   "key": "The 2023 heat wave ran three days longer",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "3 days longer"
+  },
+  {
+   "key": "The 2023 heat wave was 3 days shorter",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "longer"
+  },
+  {
+   "key": "Most visitors arrived by public transit",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

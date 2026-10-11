@@ -1,0 +1,80 @@
+{
+ "id": "en-bag-fee",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout-2026-10-10",
+ "prompt": "Did the plastic bag fee reduce bag use and beach litter?",
+ "sources": {
+  "S1": "After the 10-cent bag fee took effect in January 2024, single-use bag distribution at the 120 surveyed supermarkets dropped from 2.4 million bags per month to 0.9 million. Sales of reusable bags tripled over the same period.\n\nThe survey excluded convenience stores and street markets.",
+  "S2": "Litter audits on 30 beaches found plastic bags made up 3.1 percent of litter items in 2025, compared with 5.2 percent in 2023. Total litter counts did not decline."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the plastic bag fee reduce bag use and beach litter?\n\n## Answer\nMonthly bag distribution fell from 2.4 million to 0.9 million at the surveyed supermarkets [S1]. That is about 1.5 million fewer bags a month, a cut of more than 60 percent [S1]. Bag distribution fell from 2.4 billion to 0.9 billion per month [S1].\n\n## Evidence\n- Reusable bag sales grew threefold [S1].\n- Plastic bags' share of beach litter fell by 2.1 percent [S2].\n- Plastic bags' share of beach items fell by 2.1 percentage points [S2].\n- Total beach litter declined along with bag litter [S2].\n\n## Counter-evidence and limits\n- Convenience stores and street markets were not part of the survey [S1].\n- The survey covered every retailer in the country [S1].\n- Shoppers spent an average of 40 cents a week on bags.\n\n## Next actions\n- Audit litter at convenience-store-heavy sites (judgment)\n\n## Sources\n- [S1] Supermarket bag survey\n- [S2] Beach litter audit\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Monthly bag distribution fell from 2.4 million to 0.9 million",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S1"
+  },
+  {
+   "key": "That is about 1.5 million fewer bags a month",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "62.5%"
+  },
+  {
+   "key": "Bag distribution fell from 2.4 billion to 0.9 billion",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "million을 billion으로"
+  },
+  {
+   "key": "Reusable bag sales grew threefold",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "tripled"
+  },
+  {
+   "key": "share of beach litter fell by 2.1 percent",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "2.1%p, 상대 40% 감소"
+  },
+  {
+   "key": "share of beach items fell by 2.1 percentage points",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "5.2-3.1"
+  },
+  {
+   "key": "Total beach litter declined along with bag litter",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not decline"
+  },
+  {
+   "key": "Convenience stores and street markets were not part of the survey",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "excluded"
+  },
+  {
+   "key": "The survey covered every retailer in the country",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "120개 슈퍼마켓"
+  },
+  {
+   "key": "Shoppers spent an average of 40 cents a week on bags",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}

@@ -21,16 +21,124 @@ _KOREAN_YEAR_RANGE = re.compile(
 )
 # 날짜 표기는 수치 근거 검사의 대상이 아니다. 다만 연도가 없거나 달력상
 # 해석할 수 없는 표기는 _date_values에서 확정값으로 만들지 않아 별도 검토를 남긴다.
+# 날 숫자 뒤에 '일'이나 날짜 범위가 와야 날짜다 — "2025년 2월 120곳"의 "2월 12"를 날짜로 읽어 수치가 사라지던 결함(9회차 holdout5).
 _KOREAN_DATE_LIKE = re.compile(
-    r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?:\s*일)?(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
+    r"(?<!\d)(?:(?:\d{4})\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}(?!\d)(?:\s*일|(?=\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일))"
+    r"(?:\s*(?:~|[-–—]|부터)\s*\d{1,2}\s*일(?:까지)?)?"
 )
 _KOREAN_PARTIAL_DATE = re.compile(r"(?<!\d)(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
-_UNITS = ("percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
-          "mWh", "mW", "kWh", "Wh", "kW", "W", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
+# 넓이·온도·낱말로 쓴 전력량 단위(2026-10-10 7회차, holdout3): "1만 2,000㎡"↔"1.2헥타르", "2 degrees Fahrenheit"↔"1.1 degrees
+# Celsius" 같은 맞는 환산을 값으로 비교하고, "31 gigawatt-hours"→"31 megawatt-hours"·"화씨 2도"→"섭씨 2도" 같은 단위 바꿔치기를
+# 잡는다. "km"·"m"보다 먼저 맞춰야 "km²"가 길이로 읽히지 않는다.
+_EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
+                "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
+                "제곱킬로미터", "제곱미터", "㎏", "㎞", "마일", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
+                "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
+                "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees",
+                "개월", "months")
+_UNITS = _EXTRA_UNITS + ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
+          "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
+          "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
+          "mWh", "mW", "kWh", "Wh", "kW", "W", "Gbps", "Mbps", "Kbps", "GB", "MB", "TB", "KRW", "USD", "km", "kg", "ms", "%p", "%", "개소", "년", "월", "일", "명", "건", "곳", "대", "회", "종", "개", "배",
           "원", "달러", "초", "분", "시간", "m", "g", "s")
-_QUANTITY = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:" +
-                       "|".join(re.escape(unit) for unit in _UNITS) + r"))?(?![A-Za-z0-9])", re.IGNORECASE)
+# "%p"·"%포인트"·"percentage points"도 퍼센트 차원의 값으로 읽는다. 퍼센트와 퍼센트포인트의 구분은 _percent_point_conflict가 따로 본다.
+# 자릿수 낱말: "420억 원"과 "420만 원", "4.2 million"과 "4.2 billion"은 숫자 글자가 같아도 다른 값이다. 값에 곱해 비교하므로
+# "1.6 million"과 "1,600,000"은 같은 값으로 본다. "만큼"·"만에"의 '만'은 자릿수가 아니다.
+_MAGNITUDES = {"천": 10**3, "만": 10**4, "십만": 10**5, "백만": 10**6, "천만": 10**7, "억": 10**8, "십억": 10**9, "백억": 10**10,
+               "천억": 10**11, "조": 10**12, "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12}
+# 수치 하나를 읽는 순서(2026-10-07 2회차): 숫자 → 한국어 복합 자릿수("1억 2천만", "4천5백만", "3만 5천", "1조 5,000억") 또는
+# 영어 자릿수 낱말·약어("3.8 million", "$3.8M", "2.5bn", "12k") → 단위. 같은 값의 다른 표기를 같은 값으로 읽어 맞는 환산에
+# '(출처 불일치)'가 붙지 않게 하고, 약어로 바꾼 자릿수("4.6 million"→"$4.6bn")도 값으로 비교한다. 소문자 m·b는 통화 기호
+# 바로 뒤 숫자에만 자릿수로 본다(그 밖의 "3.8 m"은 미터). 대문자 M·B·K와 k는 숫자에 붙어 있고 뒤에 영문자가 없을 때만
+# 자릿수다("5MB"는 단위 MB).
+_NUMBER_START = re.compile(r"(?<![A-Za-z0-9])[-+]?\d+(?:,\d{3})*(?:\.\d+)?")
+_NUMBER_PART = re.compile(r"\d+(?:,\d{3})*(?:\.\d+)?")
+_KO_BIG = {"만": 10**4, "억": 10**8, "조": 10**12}
+_KO_SMALL = {"천": 1000, "백": 100, "십": 10}
+_KO_TOKEN = re.compile(r"(\s?\d+(?:,\d{3})*(?:\.\d+)?)?(\s?)([천백십만억조])")
+_EN_MAGNITUDE = re.compile(r"\s+(thousand|million|billion|trillion)(?![A-Za-z])|(\s?(?:bn|mn|mln|tn)|[KMBk])(?![A-Za-z])", re.I)
+_EN_ABBREVIATIONS = {"k": 10**3, "m": 10**6, "mn": 10**6, "mln": 10**6, "b": 10**9, "bn": 10**9, "tn": 10**12}
+_CURRENCY_LEAD = re.compile(r"[$€£₩]\s?$")
+# "12-kilometer stretch"처럼 하이픈으로 붙은 단위도 읽는다(2026-10-10 라벨 평가 회차).
+_UNIT_TAIL = re.compile(r"(?:\s*|-)(?:" + "|".join(re.escape(unit) for unit in _UNITS) + r")(?![A-Za-z0-9])", re.IGNORECASE)
+
+
+def _korean_compound(text: str, pos: int, first: Decimal) -> tuple[Decimal, int] | None:
+    """숫자 바로 뒤의 한국어 자릿수 묶음을 읽어 (값, 끝 위치)를 돌려준다. 자릿수가 없으면 None.
+
+    큰 자릿수(조·억·만)는 내림차순, 묶음 안의 작은 자릿수(천·백·십)도 내림차순이어야 이어 읽는다. "만큼"·"만에"의 '만',
+    낱말 첫 글자인 '십'·'백'(예: "10 백신")은 자릿수가 아니다."""
+    total, group, pending, end = Decimal(0), Decimal(0), first, pos
+    last_big, last_small, used = 10**13, 10**4, False
+    while True:
+        m = _KO_TOKEN.match(text, end)
+        if not m:
+            break
+        number, space, unit = m.group(1), m.group(2), m.group(3)
+        after = text[m.end():m.end() + 1]
+        if number is not None:
+            if pending is not None:
+                break   # 숫자 두 개가 자릿수 없이 이어짐
+            pending = Decimal(number.strip().replace(",", ""))
+            if number[0].isspace() and not used:
+                break
+        if unit == "만" and re.match(r"큼|에(?![가-힣])", text[m.end():]):
+            break
+        if unit in _KO_SMALL:
+            # 작은 자릿수는 숫자에 붙어 있어야 하고, 뒤가 다른 낱말이면 자릿수가 아니다("10 백신", "5천안").
+            if space or (re.match(r"[가-힣]", after) and after not in "천백십만억조명원곳개건대회종배가"):
+                break
+            if _KO_SMALL[unit] >= last_small or pending is None:
+                break
+            group += pending * _KO_SMALL[unit]
+            last_small, pending = _KO_SMALL[unit], None
+        else:
+            value = _KO_BIG[unit]
+            if value >= last_big:
+                break
+            group += pending or 0
+            if group == 0:
+                break
+            total += group * value
+            group, pending, last_big, last_small = Decimal(0), None, value, 10**4
+        used, end = True, m.end()
+    if not used:
+        return None
+    if total and not group and pending is None:
+        # "1만 2,400권"·"3억 5,000"처럼 큰 자릿수 뒤에 자릿수 없이 붙는 나머지(1만 미만) 숫자도 같은 수다.
+        # 연도·월·퍼센트·영문 단위가 붙은 숫자("1만 2025년")는 다른 값으로 둔다.
+        tail = re.match(r"\s?(\d{1,3}(?:,\d{3})?|\d{4})(?![\d,.])(?!\s*(?:년|월|일|%|퍼센트|[A-Za-z]))", text[end:])
+        if tail and Decimal(tail.group(1).replace(",", "")) < 10**4:
+            return total + Decimal(tail.group(1).replace(",", "")), end + tail.end()
+    return total + group + (pending or 0), end
+
+
+def _read_number(text: str, match: re.Match) -> tuple[Decimal, int] | None:
+    """숫자 하나와 뒤따르는 자릿수를 읽어 (값, 끝 위치)를 돌려준다."""
+    try:
+        number = Decimal(match.group(0).replace(",", ""))
+    except InvalidOperation:
+        return None
+    end = match.end()
+    compound = _korean_compound(text, end, number)
+    if compound:
+        return compound
+    en = _EN_MAGNITUDE.match(text, end)
+    if en:
+        if en.group(1):
+            return number * _MAGNITUDES[en.group(1).lower()], en.end()
+        abbr = en.group(2).strip()
+        if abbr in ("K", "k", "M", "B") or abbr.lower() in ("bn", "mn", "mln", "tn"):
+            return number * _EN_ABBREVIATIONS[abbr.lower()], en.end()
+    lead = _CURRENCY_LEAD.search(text, 0, match.start())
+    if lead:
+        cur = re.match(r"([mb])(?![A-Za-z])", text[end:])
+        if cur:
+            return number * _EN_ABBREVIATIONS[cur.group(1)], end + 1
+    return number, end
+
+
 _CONTEXT_WORD = re.compile(r"[A-Za-z가-힣]{2,}")
 _CONTEXT_STOP = {"the", "and", "for", "with", "that", "this", "from", "was", "were", "are", "is", "to", "of", "in", "on", "by",
                  "이다", "있다", "한다", "된다", "그리고", "또는", "대한", "따른", "measured",
@@ -49,14 +157,47 @@ _UNIT_SCALE = {
     "minute": ("time", Decimal("60")), "minutes": ("time", Decimal("60")), "분": ("time", Decimal("60")),
     "hour": ("time", Decimal("3600")), "hours": ("time", Decimal("3600")), "시간": ("time", Decimal("3600")),
     "m": ("length", Decimal("1")), "km": ("length", Decimal("1000")),
-    "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")),
+    "kilometer": ("length", Decimal("1000")), "kilometers": ("length", Decimal("1000")), "kilometre": ("length", Decimal("1000")),
+    "kilometres": ("length", Decimal("1000")), "킬로미터": ("length", Decimal("1000")),
+    "mile": ("length", Decimal("1609.344")), "miles": ("length", Decimal("1609.344")),
+    "g": ("mass", Decimal("1")), "kg": ("mass", Decimal("1000")), "kilogram": ("mass", Decimal("1000")),
+    "kilograms": ("mass", Decimal("1000")), "킬로그램": ("mass", Decimal("1000")),
+    "㎏": ("mass", Decimal("1000")), "㎞": ("length", Decimal("1000")), "마일": ("length", Decimal("1609.344")),   # 한 글자 단위 기호(8회차 holdout4: "꽁초 1㎏")
+    # 톤은 미터법 톤(1,000kg)으로 본다. 미국 short ton(약 907kg)과의 차이는 반올림 허용 범위 밖이라 환산 주장이 표시될 수 있다.
+    "ton": ("mass", Decimal("1000000")), "tons": ("mass", Decimal("1000000")), "tonne": ("mass", Decimal("1000000")),
+    "tonnes": ("mass", Decimal("1000000")), "톤": ("mass", Decimal("1000000")),
+    "gwh": ("energy", Decimal("1000000000")),
     "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
     "개": ("count_item", Decimal("1")), "곳": ("count_place", Decimal("1")), "개소": ("count_place", Decimal("1")),
     "대": ("count_vehicle", Decimal("1")), "회": ("count_occurrence", Decimal("1")), "종": ("count_type", Decimal("1")),
-    "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
-    "tb": ("data_decimal", Decimal("1000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
+    "%": ("percent", Decimal("1")), "percent": ("percent", Decimal("1")), "%p": ("percent", Decimal("1")),
+    "percentage point": ("percent", Decimal("1")), "percentage points": ("percent", Decimal("1")), "gb": ("data_decimal", Decimal("1000")), "mb": ("data_decimal", Decimal("1")),
+    "tb": ("data_decimal", Decimal("1000000")),
+    "kbps": ("data_rate", Decimal("1000")), "mbps": ("data_rate", Decimal("1000000")), "gbps": ("data_rate", Decimal("1000000000")), "usd": ("USD", Decimal("1")), "달러": ("USD", Decimal("1")),
     "krw": ("KRW", Decimal("1")), "원": ("KRW", Decimal("1")),
+    "square kilometers": ("area", Decimal("1000000")), "square kilometres": ("area", Decimal("1000000")),
+    "제곱킬로미터": ("area", Decimal("1000000")), "km²": ("area", Decimal("1000000")), "㎢": ("area", Decimal("1000000")),
+    "square meters": ("area", Decimal("1")), "square metres": ("area", Decimal("1")), "제곱미터": ("area", Decimal("1")),
+    "square kilometer": ("area", Decimal("1000000")), "square kilometre": ("area", Decimal("1000000")),
+    "square meter": ("area", Decimal("1")), "square metre": ("area", Decimal("1")), "square foot": ("area", Decimal("0.09290304")),
+    "square mile": ("area", Decimal("2589988.110336")),
+    "m²": ("area", Decimal("1")), "㎡": ("area", Decimal("1")), "hectares": ("area", Decimal("10000")),
+    "hectare": ("area", Decimal("10000")), "헥타르": ("area", Decimal("10000")), "acres": ("area", Decimal("4046.8564224")),
+    "acre": ("area", Decimal("4046.8564224")), "square feet": ("area", Decimal("0.09290304")),
+    "ft²": ("area", Decimal("0.09290304")), "square miles": ("area", Decimal("2589988.110336")),
+    "gigawatt-hours": ("energy", Decimal("1000000000")), "gigawatt hours": ("energy", Decimal("1000000000")),
+    "megawatt-hours": ("energy", Decimal("1000000")), "megawatt hours": ("energy", Decimal("1000000")),
+    "kilowatt-hours": ("energy", Decimal("1000")), "kilowatt hours": ("energy", Decimal("1000")),
+    # 온도는 화씨·섭씨를 다른 차원으로 둔다(환산에 0점 차이가 있어 배율 하나로 못 맞춘다). 환산 값은 _derived_candidates가 낸다.
+    "degrees celsius": ("temp_c", Decimal("1")), "degree celsius": ("temp_c", Decimal("1")), "°c": ("temp_c", Decimal("1")),
+    "℃": ("temp_c", Decimal("1")), "degrees fahrenheit": ("temp_f", Decimal("1")), "degree fahrenheit": ("temp_f", Decimal("1")),
+    "°f": ("temp_f", Decimal("1")), "℉": ("temp_f", Decimal("1")),
+    # 눈금 없는 "degrees"는 같은 글의 앞 온도 눈금을 따른다("32 degrees Celsius, compared with 61 degrees"). 앞에 없으면
+    # temp_bare로 두고 _absent_values가 인용 원문의 눈금으로 맞춘다.
+    "degrees": ("temp_bare", Decimal("1")),
+    # "10개월"을 "10개"+"월"로 읽던 결함(백로그, 7회차). 달 수는 원문 달 범위("3월부터 12월까지")의 길이로도 뒷받침된다.
+    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")),
 }
 
 
@@ -145,30 +286,71 @@ def _date_like_spans(text: str) -> list[dict]:
     return [{"raw": raw, "start": start, "end": end} for start, end, raw in sorted(spans)]
 
 
+_YEAR_RANGE_HEAD = re.compile(r"\s*[~–—-]\s*(?:19|20)\d\d\s*년")
+_MONTH_RANGE_HEAD = re.compile(r"\s*[~–—]\s*(?:1[0-2]|0?[1-9])\s*월")
+_PER_UNIT_TAIL = re.compile(r"\s?(?:인|명|가구|세대|곳|개소)당")
+
+
 def _quantity_values(text: str, excluded: list[dict]) -> list[dict]:
     values = []
     excluded_spans = [(item["start"], item["end"]) for item in excluded]
-    for match in _QUANTITY.finditer(text):
+    pos = 0
+    while True:
+        match = _NUMBER_START.search(text, pos)
+        if not match:
+            break
+        pos = match.end()
         if any(start <= match.start() < end for start, end in excluded_spans):
             continue
-        raw = match.group(0)
-        split = re.match(r"([-+]?\d+(?:,\d{3})*(?:\.\d+)?)(.*)", raw)
-        if not split:
+        read = _read_number(text, match)
+        if not read:
             continue
-        try:
-            number = Decimal(split.group(1).replace(",", ""))
-        except InvalidOperation:
-            continue
-        unit = split.group(2).strip().lower()
+        number, end = read
+        unit_match = _UNIT_TAIL.match(text, end)
+        unit = unit_match.group(0).strip(" -\t\n").lower() if unit_match else ""
+        stop = unit_match.end() if unit_match else end
+        if re.match(r"[A-Za-z0-9]", text[stop:stop + 1]):
+            continue   # "4.2xyz"처럼 영문·숫자가 바로 붙은 수는 수량으로 읽지 않는다
+        pos = stop
+        raw = text[match.start():stop]
+        if raw == "1" and _PER_UNIT_TAIL.match(text, stop):
+            continue   # "1인당"·"1가구당"의 1은 기준을 말하는 낱말이지 수량이 아니다
+        if number == 1 and text.startswith("당", stop) and (_UNIT_SCALE.get(unit, (unit,))[0].startswith("count_")
+                                                            or unit in ("건", "명", "가구")):
+            continue   # "1곳당"·"1대당"·"1명당"·"1건당"도 같다(세는 말이 단위로 먼저 읽힌다)
+        if not unit and _YEAR_RANGE_HEAD.match(text, stop) and re.fullmatch(r"(?:19|20)\d\d", raw):
+            unit = "년"   # "2023~2025년"의 앞 연도도 연도다(단위 없는 수량 2023으로 읽으면 원문에 없는 값이 된다)
+        if not unit and _MONTH_RANGE_HEAD.match(text, stop) and re.fullmatch(r"1[0-2]|0?[1-9]", raw):
+            unit = "월"   # "9~10월"의 앞 9도 달이다(2026-10-10 5회차, 라벨 평가 오표시)
+        if not unit and text.startswith("도", stop):
+            lead_word = re.search(r"(섭씨|화씨)\s*(?:약|대략)?\s*$", text[:match.start()])
+            if lead_word:   # "섭씨 2도"·"화씨 2도"
+                unit, stop = ("degrees celsius" if lead_word.group(1) == "섭씨" else "degrees fahrenheit"), stop + 1
+                pos, raw = stop, text[match.start():stop]
         dimension, scale = _UNIT_SCALE.get(unit, (unit or "unitless", Decimal("1")))
-        item = {"raw": raw, "value": number * scale, "dimension": dimension,
-                "start": match.start(), "end": match.end()}
+        item = {"raw": raw, "value": number * scale, "dimension": dimension, "start": match.start(), "end": stop,
+                "number": number, "scale": scale}
         # mW/MW는 대소문자에 따라 배율이 달라 지원하지 않는다.
         # 공백 유무와 관계없이 추출하되 근거 일치에는 사용하지 않는다.
         if unit in {"mw", "mwh"}:
-            item["unsupported_unit"] = split.group(2).strip()
+            item["unsupported_unit"] = unit_match.group(0).strip(" -")
         values.append(item)
+    # 범위·변화 앞 값은 뒤 값의 단위를 물려받는다("from 11 to 13 kilometers", "31에서 13GWh로"). 단위 없는 11로 읽으면
+    # 맞는 계산("2 km/h 빨라졌다")도 바꾼 단위("11 to 13 miles")도 비교하지 못한다(2026-10-10 7회차).
+    for before, after in zip(values, values[1:]):
+        if (before["dimension"] == "unitless" and after["dimension"] != "unitless" and not after.get("unsupported_unit")
+                and _RANGE_JOIN.fullmatch(text, before["end"], after["start"])):
+            before.update(dimension=after["dimension"], scale=after["scale"], value=before["number"] * after["scale"])
+    scale_seen = ""
+    for item in values:
+        if item["dimension"] in ("temp_c", "temp_f"):
+            scale_seen = item["dimension"]
+        elif item["dimension"] == "temp_bare" and scale_seen:
+            item["dimension"] = scale_seen
     return values
+
+
+_RANGE_JOIN = re.compile(r"\s*(?:to|and|~|–|—|-|에서|부터)\s*", re.I)
 
 
 def _context_terms(text: str, start: int, end: int) -> set[str]:
@@ -350,9 +532,215 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
           "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
                  "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
-_MARK_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
+# 시각·약어("8:30 a.m. start", "e.g. buses")의 마침표에서는 끊지 않는다. a.m./p.m. 뒤에 대문자가 오면 문장 끝으로 본다(2026-10-10 6회차:
+# 끊으면 표시가 "a.m (출처 없음). start"처럼 문장 가운데 들어가 본문이 깨졌다).
+_ABBREV = r"(?<![ap]\.m\.)(?<!\be\.g\.)(?<!\bi\.e\.)(?<!\bvs\.)(?<!\bU\.S\.)"
+_ABBREV_END = re.compile(r"\b(?:[ap]\.m|e\.g|i\.e|vs|U\.S)\.$")
+_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z]))"
+_MARK_SPLIT = re.compile(_SENTENCE_END + r"(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
                          r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
+
+
+# 어림 표시(2026-10-10 라벨 평가 회차): "about 4 million"·"약 24%"·"171톤가량"은 원문 값을 반올림하거나 원문 수치에서 계산한
+# 값(증감률·비율·합·곱·연간 환산)일 수 있다. 어림 표시가 붙은 값은 그 자릿수 반올림 범위(그리고 10%) 안에 원문 값이나 원문에서
+# 계산한 값이 있으면 원문에 있는 값으로 본다. 어림 표시가 없는 값은 원문 두 값의 합·차만 인정한다.
+_APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)(?:\s+an?)?|약|대략)\s*[$€£₩]?\s*$", re.I)
+# "14권 남짓"·"130억 원꼴"처럼 세는 말 뒤에 오는 어림 낱말도 본다.
+_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴)")
+# 하한 표시("more than 60 percent", "60% 넘게"): 원문(계산) 값이 그 값 이상이고 그 자릿수 한 칸 안에 있을 때만 인정한다.
+_LOWER_LEAD = re.compile(r"\b(?:more than|over|above|at least|upwards of)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
+_LOWER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:넘게|넘는|넘었|이상|초과)")
+_POINTS_TAIL = re.compile(r"\s*(?:percentage[- ])?points?\b|\s*%?\s?포인트|\s*%\s?p\b", re.I)
+_ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:a|per|each) year\b|\bannual(?:ly)?\b|\byearly\b", re.I)
+# 원문의 낱말 몫("two thirds", "절반")도 퍼센트 값으로 본다.
+_WORD_SHARES = {"half": 50, "a third": Decimal(100) / 3, "one third": Decimal(100) / 3, "two thirds": Decimal(200) / 3,
+                "a quarter": 25, "one quarter": 25, "three quarters": 75, "a fifth": 20, "one fifth": 20, "절반": 50}
+_WORD_SHARE = re.compile(r"\b(?:" + "|".join(k for k in _WORD_SHARES if k.isascii()) + r")\b|절반", re.I)
+_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*명)?"
+                       r"(\s*(?:꼴|이상|or more))?", re.I)   # "10명 중 약 8명"(8회차)
+
+
+def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
+    """원문 수치에서 독자가 흔히 계산하는 값: 같은 차원 두 값의 비율·증감률(퍼센트), 퍼센트의 나머지, 값×퍼센트, 연간·월간 환산."""
+    out = [(v["dimension"], abs(v["value"])) for v in values]
+    plain = [v for v in values if v["dimension"] != "percent" and v["value"]]
+    percents = [abs(v["value"]) for v in values if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
+    for a in plain:
+        for b in plain:
+            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+                out.append(("percent", abs(a["value"]) / abs(b["value"]) * 100))
+                out.append(("percent", abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100))
+        for factor in (Decimal(365), Decimal(52), Decimal(12)):
+            out.append((a["dimension"], abs(a["value"]) * factor))
+        for p in percents:
+            out += [(a["dimension"], abs(a["value"]) * p / 100), (a["dimension"], abs(a["value"]) * (100 - p) / 100)]
+    out += [("percent", 100 - p) for p in percents]
+    # 나눗셈(8,700회÷9일, 1,560억 원÷12곳)·배수(128÷52 = 2.5배)·퍼센트끼리의 차(71%−58% = 13%p)
+    for a in plain:
+        for b in plain:
+            if a is not b and abs(b["value"]) > 1:
+                out.append((a["dimension"], abs(a["value"]) / abs(b["value"])))
+                if a["dimension"] == b["dimension"]:
+                    out.append(("배", abs(a["value"]) / abs(b["value"])))
+    out += [("percent", abs(p - q)) for p in percents for q in percents if p != q]
+    # 2026-10-10 7회차: 같은 차원 두 값의 차("9.2회에서 5.1회로" → "about 4"), 단위당 값×개수("㎡당 15만 원"×"1만 2,000㎡" →
+    # "약 18억 원"), 화씨↔섭씨 환산(차이와 절대 온도 둘 다). 어림 표시가 있을 때만 쓰인다.
+    for a in plain:
+        for b in plain:
+            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+                out.append((a["dimension"], abs(abs(a["value"]) - abs(b["value"]))))
+            if a is not b and (a["dimension"] in _COUNT_LIKE or a["dimension"] == b["dimension"] == "unitless"
+                               or (a["dimension"] == "area" and b["dimension"] in ("KRW", "USD"))):
+                out.append((b["dimension"], abs(a["value"]) * abs(b["value"])))
+    for v in values:
+        if v["dimension"] == "temp_f":
+            out += [("temp_c", abs(v["value"]) * 5 / 9), ("temp_c", abs((v["value"] - 32) * 5 / 9))]
+        elif v["dimension"] == "temp_c":
+            out += [("temp_f", abs(v["value"]) * 9 / 5), ("temp_f", abs(v["value"] * 9 / 5 + 32))]
+    return out
+
+
+_COUNT_LIKE = {"unitless", "명", "count_item", "count_place", "count_vehicle", "count_occurrence", "가구", "area", "건"}
+# 세는 말만 다른 개수("410개 점포 가운데 152곳")는 몫을 셀 때 같은 종류로 본다(8회차 holdout4).
+_COUNTS = {"unitless", "명", "가구", "건", "count_item", "count_place", "count_vehicle", "count_occurrence"}
+
+
+def _comparable_counts(a: dict, b: dict) -> bool:
+    """세는 말이 달라도 둘 다 세는 말이 붙은 정수 개수면 몫을 셀 수 있다. 세는 말 없는 수("4주"의 4)와 소수("0.7건")는
+    우연히 맞는 몫이 생기므로 넣지 않는다(고정 case ko-cooling-pilot에서 0.7건÷4 ≈ 18%가 맞는 값처럼 보였다)."""
+    if a["dimension"] == b["dimension"]:
+        return True
+    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS and "unitless" not in (a["dimension"], b["dimension"])
+            and a["value"] == a["value"].to_integral_value() and b["value"] == b["value"].to_integral_value())
+# 기간당 평균("하루 평균 약 130회", "한 달에 약 1만 8,000마리"): 원문 총계를 원문 기간 길이나 1년의 날·주·달 수로 나눈 값.
+_PER_PERIOD = (
+    (re.compile(r"하루|일평균|일 평균|\b(?:a|per|each) day\b|\bdaily\b", re.I), (365, 30, 7),
+     re.compile(r"(\d+)\s*(?:days?\b|일\s*(?:간|동안))", re.I)),
+    (re.compile(r"한 주|주평균|주 평균|매주|\b(?:a|per|each) week\b|\bweekly\b", re.I), (52,),
+     re.compile(r"(\d+)\s*(?:weeks?\b|주\s*(?:간|동안))", re.I)),
+    (re.compile(r"한 달|월평균|월 평균|매달|매월|\b(?:a|per|each) month\b|\bmonthly\b", re.I), (12,),
+     re.compile(r"(\d+|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s*(?:months?\b|개월|달)", re.I)),
+)
+_NATIVE_COUNT = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+
+
+_KO_MONTH_RANGE = re.compile(r"(?<!\d)(1[0-2]|0?[1-9])\s*월\s*(?:부터|~|–|-)\s*(?:\d{4}\s*년\s*)?(1[0-2]|0?[1-9])\s*월")
+_EN_MONTH_RANGE = re.compile(rf"\b(?:from\s+)?({_MONTH_PATTERN})\s+(?:\d{{4}}\s+)?(?:to|through|until|-|–)\s+({_MONTH_PATTERN})\b", re.I)
+
+
+def _month_ranges(text: str) -> list[tuple[int, int]]:
+    out = [(int(m.group(1)), int(m.group(2))) for m in _KO_MONTH_RANGE.finditer(text)]
+    return out + [(_MONTHS[m.group(1).lower()], _MONTHS[m.group(2).lower()]) for m in _EN_MONTH_RANGE.finditer(text)]
+
+
+def _per_period_candidates(sentence: str, values: list[dict], source_text: str) -> list[tuple[str, Decimal]]:
+    out = []
+    for words, defaults, lengths in _PER_PERIOD:
+        if not words.search(sentence):
+            continue
+        spans = [Decimal(_NATIVE_COUNT.get(m.group(1), m.group(1)) if m.group(1) in _NATIVE_COUNT else m.group(1))
+                 for m in lengths.finditer(source_text)]
+        if 12 in defaults:   # 달 범위("3월부터 12월까지", "from March to December")는 양 끝 달을 넣어 센다(백로그, 7회차)
+            spans += [Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a]
+        for n in [Decimal(d) for d in defaults] + [x for x in spans if x > 1]:
+            out += [(v["dimension"], abs(v["value"]) / n) for v in values if v["dimension"] != "percent" and v["value"]]
+    return out
+
+
+def _step(claim: dict) -> Decimal:
+    number = abs(claim.get("number", claim["value"]))
+    return Decimal(10) ** number.normalize().as_tuple().exponent * claim.get("scale", Decimal(1))
+
+
+def _rounds_to(claim: dict, target: Decimal) -> bool:
+    """어림 값이 target을 그 자릿수에서 반올림한 값인가(상대 오차 10% 이하)."""
+    number = abs(claim.get("number", claim["value"]))
+    if not number or not target:
+        return False
+    step = _step(claim)
+    gap = abs(abs(claim["value"]) - target)
+    return gap <= step / 2 and gap <= target / 10
+
+
+_PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
+
+
+def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
+                      all_claimed: list[dict] | None = None) -> set[int]:
+    """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
+    ok: set[int] = set()
+    words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
+             for m in _WORD_SHARE.finditer(source_text)]
+    derived = _derived_candidates(source_values + words) + _per_period_candidates(sentence, source_values, source_text)
+    plain = [v for v in source_values if v["dimension"] != "percent"]
+    percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
+    for value in claim_values:
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        lower = _LOWER_LEAD.search(sentence, 0, value["start"]) or _LOWER_TAIL.match(sentence, value["end"])
+        same = [t for dim, t in derived if dim == value["dimension"]]
+        if hedged and any(_rounds_to(value, t) for t in same):
+            ok.add(value["start"])
+        elif lower and any(abs(value["value"]) <= t < abs(value["value"]) + _step(value) for t in same):
+            ok.add(value["start"])
+        elif _POINTS_TAIL.match(sentence, value["end"]) or re.search(r"points?|포인트|%p", value["raw"], re.I):
+            # 퍼센트포인트 차: 원문 두 퍼센트의 차를 그 자릿수로 반올림한 값
+            if any(abs(abs(value["value"]) - abs(p - q)) <= _step(value) / 2 for p in percents for q in percents if p != q):
+                ok.add(value["start"])
+        elif value["dimension"] == "percent" and any(
+                a is not b and _comparable_counts(a, b) and 0 < abs(a["value"]) < abs(b["value"])
+                and abs(abs(value["value"]) - abs(a["value"]) / abs(b["value"]) * 100) <= _step(value) / 2
+                for a in plain for b in plain):
+            ok.add(value["start"])   # 몫을 반올림한 퍼센트(412명 중 389명 → 94%)
+        elif value["dimension"] == "percent" and any(
+                a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"] and b["value"]
+                and abs(abs(value["value"]) - abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100) <= _step(value) / 2
+                for a in plain for b in plain):
+            ok.add(value["start"])   # 원문 두 값의 증감률을 반올림한 퍼센트(6분→4.2분 → "1.8 minutes, or 30 percent", 7회차)
+        elif value["dimension"] == "배" and any(abs(abs(value["value"]) - t) <= _step(value) / 2 for t in same):
+            ok.add(value["start"])   # 원문 같은 단위 두 값의 배수를 그 자릿수로 말한 값(48만 원÷30만 원 → 1.6배, 9회차 holdout5)
+        elif value["dimension"] == "months" and abs(value["value"]) in {
+                Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a}:
+            ok.add(value["start"])   # 원문 달 범위의 길이("3월부터 12월까지" → "10개월 동안")
+        elif _ANNUAL_WORDS.search(sentence) and any(
+                a["dimension"] == value["dimension"]
+                and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)
+                for a in plain for f in (12, 52, 365)):
+            ok.add(value["start"])   # 연간 환산(월 29만 원 → 1년이면 348만 원)
+        elif value["dimension"] != "percent" and any(
+                a is not b and a["dimension"] == b["dimension"] == value["dimension"]
+                and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
+                for a in plain for b in plain):
+            ok.add(value["start"])
+    # 단위당 값의 환산(8회차 holdout4): 원문 "1g당 20원"을 주장 "1㎏을 가져오면 2만 원"처럼 주장의 다른 수량에 맞춰 늘린 값.
+    # 원문 기준 수량 뒤에 '당'·'per'·'/'가 있을 때만 본다. 맞으면 주장의 그 수량(1㎏)도 원문에서 온 값으로 본다.
+    rates = [(a, b) for a in plain if a["value"] and _PER_BASIS.match(source_text, a["end"])
+             for b in plain if b is not a and b["dimension"] != a["dimension"]]   # 단위당 값은 서로 다른 단위를 잇는다(g→원)
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent":
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        for other in all_claimed or claim_values:
+            if other is value or other["start"] == value["start"]:
+                continue
+            for a, b in rates:
+                if a["dimension"] != other["dimension"] or b["dimension"] != value["dimension"]:
+                    continue
+                target = abs(b["value"]) * abs(other["value"]) / abs(a["value"])
+                if abs(value["value"]) == target or (hedged and _rounds_to(value, target)):
+                    ok.update((value["start"], other["start"]))
+    percents = [t for dim, t in derived if dim == "percent"]
+    for m in _FRACTION.finditer(sentence):
+        part, whole = Decimal(m.group(1)), Decimal(m.group(2))
+        if re.search(r"명\s*중|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
+            part, whole = whole, part
+        if not whole or part > whole:
+            continue
+        share, half = part / whole * 100, Decimal(50) / whole
+        at_least = bool(m.group(3) and re.search(r"이상|or more", m.group(3), re.I))
+        if any((share - half <= t <= share + half) or (at_least and share <= t <= share + 2 * half) for t in percents):
+            ok.update(v["start"] for v in claim_values if m.start() <= v["start"] < m.end())
+    return ok
 
 
 def _absent_values(sentence: str, cited_text: str) -> list[str]:
@@ -367,11 +755,21 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
     if _UNVERIFIED_SCOPE.search(sentence):
         return absent
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
-    for value in _quantity_values(sentence, claim_spans):
-        if value.get("unsupported_unit"):
-            continue
-        if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source):
-            absent.append(value["raw"])
+    claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")
+               and not (value["raw"] == "1년" and re.match(r"이면|간|동안|새|마다", sentence[value["end"]:]))]
+    scales = {v["dimension"] for v in source if v["dimension"] in ("temp_c", "temp_f")}
+    for value in claimed:
+        if value["dimension"] == "temp_bare" and len(scales) == 1:
+            value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
+    # 단위를 앞 값에만 붙인 주장("fell by 9 km/h, from 38 to 29")의 맨 숫자는, 주장에 그 단위 값이 따로 있을 때만 원문의 같은
+    # 숫자("38 km/h")로 본다(9회차 holdout5). 단위를 못 읽은 "38 mph"·"7주"까지 맞다고 보면 단위 바꿔치기를 놓친다.
+    missing = [value for value in claimed
+               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)
+               and not (value["dimension"] == "unitless" and any(
+                   c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
+                   and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
+    approx = _approx_supported(sentence, missing, source, cited_text, claimed) if missing else set()
+    absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
 
@@ -379,7 +777,7 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
 _UP_MARK = re.compile(r"\b(?:increase[sd]?|increasing|rose|rises?|grew|grows?|higher)\b|증가|늘었|늘어|늘렸|상승", re.I)
 _DOWN_MARK = re.compile(r"\b(?:decrease[sd]?|decreasing|fell|falls?|declined?|reduced?|dropped)\b|감소|줄었|줄어|줄였|하락|낮췄|낮아", re.I)
 # "approx. 3.8"처럼 약어 마침표 뒤에서는 끊지 않는다(추정 낱말이 수치와 한 문장에 남게, PR #16 리뷰 반영).
-_SOURCE_SPLIT = re.compile(r"(?<=[.!?。])(?<![Aa]pprox\.)\s+|\n+")
+_SOURCE_SPLIT = re.compile(_SENTENCE_END + r"\s+|\n+")
 _EN_CONTEXT_STOP = {"that", "with", "from", "this", "were", "have", "been", "than", "which", "about", "over", "after", "into",
                     "their", "percent", "compared", "they", "said", "also", "only", "during", "under", "same", "year",
                     "years", "median", "average", "report", "reports", "notes", "source"}
@@ -408,6 +806,46 @@ def _char_bigrams(text: str) -> set[str]:
     return {compact[i:i + 2] for i in range(len(compact) - 1)}
 
 
+def _word_stems(text: str) -> set[str]:
+    """영어 내용 낱말을 앞 5글자로 줄인 것(복수·시제 차이를 넘기려는 근사)."""
+    return {w.lower()[:5] for w in re.findall(r"[A-Za-z]{4,}", text)} - {w[:5] for w in _EN_CONTEXT_STOP | _CONTEXT_STOP}
+
+
+# 출처를 가리키는 틀 낱말("두 독립 출처가 … 확인한다", "according to the report")은 원문 내용이 아니므로 대조 전에 뺀다.
+_SOURCE_FRAME = re.compile(
+    r"(?:두|세|여러|각)?\s*(?:독립(?:된|적인)?\s*)?(?:출처|자료|보고서|문서|기록|기사|메모|설문|조사)(?:들)?(?:가|이|는|은|에서|에|를|을|의)?"
+    r"(?:\s*따르면)?|확인한다|확인했다|확인된다|밝혔다|밝힌다|보고했다|적었다|전했다|따르면"
+    r"|\b(?:according to|(?:the )?(?:reports?|sources?|records?|memo|survey|article|audit)|reported|independent|confirm(?:s|ed)?|"
+    r"note[sd]?|says|said|states|stated|found|finds|shows?|showed|two|three|both)\b", re.I)
+
+
+# 유보·부정 문장("단정하지 않았다", "판단이 이르다", "가능성이 있다", "might explain part of")은 원문보다 덜 말하는 쪽이라
+# 낱말 대조로 표시하지 않는다(8회차: 별도 에이전트가 쓴 holdout4에서 이 검사의 오표시 10건 중 4건, 다른 묶음 4건이 이런 문장).
+_RESTRAINED = re.compile(r"\b(?:might|may|could|possibly|perhaps|not|never|unclear|uncertain|cannot)\b|n't\b|"
+                         r"가능성|수 있|어렵|이르다|않았|않는다|않다|않은|없었|없다|불확실|미지수", re.I)
+
+
+def _wording_unsupported(plain: str, cited_text: str) -> bool:
+    """인용 문장의 내용이 인용 원문에 거의 없으면 True — 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장.
+
+    같은 문자 체계일 때만 본다(한국어 보고서가 영어 원문을 인용하는 번역 인용은 낱말 대조로 판정하지 않는다).
+    한국어는 글자 2-gram 중 원문에 있는 비율이 0.4 미만(2-gram 12개 이상), 영어는 4글자 이상 내용 낱말 중 원문에 있는 비율이
+    0.4 미만(낱말 4개 이상)일 때. 평가 점수기(0.5)보다 엄격하게 둬 바꿔 말한 맞는 문장을 덜 건드린다."""
+    if _RESTRAINED.search(plain):
+        return False
+    hangul, latin = len(re.findall(r"[가-힣]", cited_text)), len(re.findall(r"[A-Za-z]", cited_text))
+    plain = _SOURCE_FRAME.sub(" ", plain)
+    if re.search(r"[가-힣]", plain):
+        if hangul <= latin:
+            return False
+        grams = _char_bigrams(plain)
+        return len(grams) >= 12 and len(grams & _char_bigrams(cited_text)) / len(grams) < 0.4
+    if latin <= hangul:
+        return False
+    stems = _word_stems(plain)
+    return len(stems) >= 4 and len(stems & _word_stems(cited_text)) / len(stems) < 0.4
+
+
 def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     """원문에 같은 값이 있어도 독자를 오도하는 경우만 돌려준다(확정에 가까운 신호만).
 
@@ -418,7 +856,12 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     - causal: 원문이 유보·부정한 인과를 주장이 단정한다.
     - period: 같은 수치를 원문과 다른 기간 단위(하루·한 달·연간·총계)로 말한다.
     - plan: 원문이 계획·목표·전망으로만 말한 수치를 유보 없이 말한다(계획을 실적처럼).
-    - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다."""
+    - scope: 원문의 시범·표본 범위 수치를 전역·전체 결과로 말한다.
+    - year: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 말한다(원문 자리마다 연도가 분명할 때만).
+    - unit: 원문이 퍼센트포인트로만 말한 수치를 퍼센트로(또는 반대로) 말한다.
+    - bound: 원문이 상한(최대·up to)이나 범위 끝값(10~20%)으로만 말한 수치를 상한·범위 표시 없이 말한다.
+    - subject: 원문이 한 대상의 값으로 말한 수치를 같은 종류 수치가 나란히 나오는 다른 대상의 값으로 말한다.
+    - basis: 원문이 1인당·가구당·곳당·대당·학교당·평균 값으로 말한 수치를 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말한다."""
     plain = _plain_claim(sentence)
     sents = [s.strip() for s in _SOURCE_SPLIT.split(cited_text) if s.strip()]
     if not plain or not sents:
@@ -454,20 +897,475 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("period")
     if _plan_overclaim(plain, sents):
         found.append("plan")
-    if _scope_overclaim(plain, sents):
+    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents):
         found.append("scope")
+    if _year_conflict(plain, sents):
+        found.append("year")
+    if _percent_point_conflict(plain, sents):
+        found.append("unit")
+    if _bound_overclaim(plain, sents):
+        found.append("bound")
+    if _subject_swap(plain, sents):
+        found.append("subject")
+    if _basis_conflict(plain, sents):
+        found.append("basis")
+    if _negation_flip(plain, sents):
+        found.append("negation")
+    if _share_overclaim(plain, sents):
+        found.append("share")
+    if "negation" not in found and _null_result_flip(plain, sents):
+        found.append("negation")
+    if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
+                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
+        found.append("antonym")
+    if _causal_reversal(plain, sents):
+        found.append("causal_reversal")
     return found
+
+
+# 몫 과장(2026-10-10 라벨 평가 회차): 원문이 "8곳 중 3곳"·"23 percent of households"·"75명 중 52명"처럼 일부의 몫으로 말한 것을
+# 주장이 "대부분(most·과반)"이나 "모두(all·every·모든)"로 말한다. 주장 절과 같은 대상을 말하는 원문 절(영어 내용 낱말 50%·2개,
+# 한국어 2-gram 40%·4개)의 몫이 대부분형은 50% 이하, 모두형은 100% 미만일 때만 본다. 주장 절이 몫을 직접 말하면 보지 않는다.
+_SMALL_NUMBERS = {w: i for i, w in enumerate(("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                                               "ten", "eleven", "twelve"))}
+_NUM = r"(\d+(?:,\d{3})*(?:\.\d+)?|" + "|".join(_SMALL_NUMBERS) + r")"
+_SHARE_OF = re.compile(_NUM + r"\s+(?:of|out of)\s+(?:the\s+|its\s+|their\s+|all\s+)?" + _NUM + r"\b", re.I)
+_SHARE_KO = re.compile(r"(\d+(?:,\d{3})*)\s*[가-힣]{0,2}\s*[가-힣]{0,3}\s*(?:가운데|중)\s*(\d+(?:,\d{3})*)")
+_SHARE_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+of\b|(?:의|가운데|중)\s*(\d+(?:\.\d+)?)\s*%", re.I)
+_MOST_WORDS = re.compile(r"\b(?:most|majority|bulk)\b|대부분|과반|대다수", re.I)
+_ALL_WORDS = re.compile(r"\b(?:all|every|each)\b|모든|모두|전원|전부", re.I)
+
+
+def _number_word(text: str) -> Decimal:
+    return Decimal(_SMALL_NUMBERS[text.lower()]) if text.lower() in _SMALL_NUMBERS else Decimal(text.replace(",", ""))
+
+
+def _shares(text: str) -> list[Decimal]:
+    out = []
+    for m in _SHARE_OF.finditer(text):
+        part, whole = _number_word(m.group(1)), _number_word(m.group(2))
+        if whole and part <= whole:
+            out.append(part / whole * 100)
+    for m in _SHARE_KO.finditer(text):
+        whole, part = Decimal(m.group(1).replace(",", "")), Decimal(m.group(2).replace(",", ""))
+        if whole and part <= whole:
+            out.append(part / whole * 100)
+    out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_PERCENT.finditer(text)]
+    return out
+
+
+def _share_overclaim(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (4, 0.4) if korean else (2, 0.5)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        most, every = bool(_MOST_WORDS.search(clause)), bool(_ALL_WORDS.search(clause))
+        if not (most or every) or _shares(clause):
+            continue
+        quantifier = _MOST_WORDS if most else _ALL_WORDS
+        bare = quantifier.sub(" ", clause)
+        for source in source_clauses:
+            shares = _shares(source)
+            shared, r = _clause_overlap(bare, source)
+            if not shares or shared < least or r < ratio:
+                continue
+            if (most and all(x <= 50 for x in shares)) or (every and not most and all(x < 100 for x in shares)):
+                return True
+    return False
+
+
+# 부정 뒤집기(2026-10-10 라벨 평가 회차): 원문 낱말을 거의 그대로 쓰면서 부정만 빼거나 넣은 문장("did not reduce" →
+# "reduced", "줄지 않았다" → "줄었다", "has not been funded" → "is planned and funded"). 낱말 대조로는 통과한다.
+# 절마다 부정 여부를 보고, 주장 절과 가장 많이 겹치는 원문 절(영어 내용 낱말 60%·3개 이상, 한국어 글자 2-gram 50%·6개 이상)의
+# 부정 여부가 다르면 불일치로 본다. 'without'·'비(非)'처럼 대상을 한정하는 부정은 세지 않는다.
+# 제외 낱말("left out of", "excluded", "빠졌다", "제외됐다")은 "did not include"·"포함되지 않았다"를 부정 낱말 없이 바꿔 말한 것이라
+# 부정으로 센다(2026-10-10 7회차, 맞는 바꿔 말하기에 붙던 오표시).
+_NEGATION = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet to|lack(?:s|ed|ing)?|fail(?:s|ed)? to|unchanged|"
+                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없|못\s?하|못했|아니|"
+                       r"미측정|미확인|미검증|미집계|빠졌|빠져|빠진|제외", re.I)
+_NEGATION_WORDS = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet|lack\w*|fail\w*|unchanged|unfunded|unmeasured|"
+                             r"unknown|unclear|left out|excluded|omitted)\b", re.I)
+_CLAUSE_SPLIT = re.compile(r"[,;:]|\b(?:and|but|so|while|whereas|where|which|because|although|though)\b|"
+                           r"(?<=[가-힣])(?:고|며|지만|는데|어서|아서|으나)\s|(?<=[가-힣])\s(?:해|하여|해서)\s", re.I)
+
+
+def _clauses(text: str) -> list[str]:
+    return [c.strip() for c in _CLAUSE_SPLIT.split(text) if c and c.strip()]
+
+
+def _clause_overlap(claim: str, source: str) -> tuple[int, float]:
+    if re.search(r"[가-힣]", claim):
+        a, b = _char_bigrams(_NEGATION.sub(" ", claim)), _char_bigrams(_NEGATION.sub(" ", source))
+    else:
+        a, b = _word_stems(_NEGATION_WORDS.sub(" ", claim)), _word_stems(_NEGATION_WORDS.sub(" ", source))
+    shared = len(a & b)
+    return shared, (shared / len(a) if a else 0.0)
+
+
+def _negation_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
+        scored = [(shared, r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for _, r, _ in scored)
+        if all(bool(_NEGATION.search(clause)) != bool(_NEGATION.search(c))
+               and not (_SAME_STATE.search(clause) and _NO_CHANGE.search(c)) for _, r, c in scored if r == best):
+            return True
+    return False
+
+
+# "stayed the same"·"그대로였다"는 "did not change"·"바뀌지 않았다"를 부정 낱말 없이 바꿔 말한 것이다(2026-10-10 6회차).
+_SAME_STATE = re.compile(r"\b(?:stayed|remained|held)\s+(?:flat|the same|steady|level|stable)\b|\bflat\b|그대로|변함\s?없|제자리|"
+                         r"같은 수준", re.I)
+
+
+# 무변화·비유의 결과 뒤집기(2026-10-10 6회차): 원문이 "did not change significantly", "바뀌지 않았다", "차이는 유의하지 않았다"로
+# 말한 결과를 주장이 "caused test scores to rise", "머리 부상 비율이 줄었다", "뚜렷하게 더 높았다"로 쓴다. 낱말을 바꾼 부정이라
+# 절 겹침 문턱(부정 뒤집기)에 걸리지 않는다. 주장과 가장 많이 겹치는(내용 낱말 2개 이상) 원문 문장이 무변화를 말하고, 같은 대상을
+# 말하는 원문 문장 중 주장과 같은 방향을 말하는 것이 없을 때만 본다. 비유의는 주장이 뚜렷함·유의함을 말할 때만 본다.
+_NO_CHANGE = re.compile(r"\b(?:did not|didn't|does not|do not|has not|have not)\s+(?:\w+\s+)?(?:change|differ|improve|rise|fall|decline|"
+                        r"increase|decrease|move)\w*|\bno (?:significant |measurable |meaningful )?(?:change|difference|effect)\b|"
+                        r"\bunchanged\b|\b(?:stayed|remained) (?:flat|the same|steady)\b|"
+                        r"바뀌지\s?않|변하지\s?않|변화가?\s?없|달라지지\s?않|차이가?\s?없|그대로였", re.I)
+_NOT_SIGNIFICANT = re.compile(r"\bnot (?:statistically )?significant|\bno (?:statistically )?significant\b|"
+                              r"유의하지\s?않|유의미하지\s?않|유의한 차이가?\s?없", re.I)
+_SIGNIFICANT_CLAIM = re.compile(r"\b(?:significantly|markedly|substantially|clearly|sharply)\b|뚜렷하게|뚜렷이|유의하게|확연히|크게", re.I)
+
+
+def _null_result_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain):
+        return False
+    claim_dir = _direction_of(plain)
+    significant = bool(_SIGNIFICANT_CLAIM.search(plain))
+    if not (claim_dir or significant or _CAUSAL_CLAIM.search(plain) or _EFFECT_VERB.search(plain)):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = _content_stems(_SIGNIFICANT_CLAIM.sub(" ", _CAUSAL_ANY.sub(" ", plain)))
+    scored = [(len(stems & _content_stems(s)), s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    scored = [(n, s) for n, s in scored if n >= 2]
+    if not scored:
+        return False
+    best = max(n for n, _ in scored)
+    if claim_dir and any(_direction_of(_NO_CHANGE.sub(" ", s)) == claim_dir and not _NOT_SIGNIFICANT.search(s)
+                         for _, s in scored):
+        return False
+    return any(n == best and (_NO_CHANGE.search(s) or (significant and _NOT_SIGNIFICANT.search(s))) for n, s in scored)
+
+
+# 방향 뒤집기(2026-10-10 5회차): 원문 낱말을 그대로 쓰면서 반대말만 바꾼 문장("lasted 3 days longer" → "3 days shorter",
+# "70세 이상이었다" → "70세 미만이었다", "여성이었다" → "남성이었다"). 부정 뒤집기와 같은 문턱으로 가장 많이 겹치는 원문 절을 찾고,
+# 그 절이 같은 반대말 쌍의 다른 쪽만 말하면 불일치로 본다. 어느 한쪽이라도 부정이 있으면 부정 뒤집기에 맡긴다.
+_ANTONYMS = (
+    (r"\blonger\b", r"\bshorter\b"),
+    (r"\b(?:higher|more|increase[sd]?|rose|rising|grew|improved)\b", r"\b(?:lower|fewer|less|decrease[sd]?|fell|falling|declined|dropped|worsened)\b"),
+    (r"\b(?:women|female)\b", r"\b(?:men|male)\b"),
+    (r"\babove\b", r"\bbelow\b"),
+    (r"\bolder\b", r"\byounger\b"),
+    (r"(?<!오)늘었|늘어|증가|상승|높아|높았|많아졌|길어|길었|많았", r"줄었|줄어|감소|하락|낮아|낮았|적어졌|짧아|짧았|적었"),
+    (r"이상(?:이|인|의|으로)", r"미만(?:이|인|의|으로)|이하(?:이|인|의|으로)"),
+    (r"여성", r"남성"),
+)
+_ANTONYM_ANY = re.compile("|".join(a + "|" + b for a, b in _ANTONYMS), re.I)
+
+
+def _antonym_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        if _NEGATION.search(clause) or not _ANTONYM_ANY.search(clause):
+            continue
+        scored = [(_clause_overlap(_ANTONYM_ANY.sub(" ", clause), _ANTONYM_ANY.sub(" ", c)), c) for c in source_clauses]
+        scored = [(r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for r, _ in scored)
+        tops = [c for r, c in scored if r == best]
+        for up, down in _ANTONYMS:
+            for mine, other in ((up, down), (down, up)):
+                if (re.search(mine, clause, re.I) and not re.search(other, clause, re.I)
+                        and all(re.search(other, c, re.I) and not re.search(mine, c, re.I) and not _NEGATION.search(c)
+                                for c in tops)):
+                    return True
+    return False
+
+
+# 변화 전후 뒤집기(2026-10-10 7회차): 원문 두 값을 그대로 쓰면서 전후 순서만 바꾼 문장("6,000 in 2024, up from 4,500" →
+# "fell from 6,000 to 4,500", "42%에서 19%로 떨어졌다" → "19%에서 42%로 올랐다"). 증감 낱말이 원문과 달라도("up from"·"떨어졌")
+# 값 순서로 본다. 원문에 같은 순서의 전후 쌍이 있으면 세지 않는다.
+_FROM_LEAD = re.compile(r"\bfrom\s*(?:an?\s+average\s+of\s+|about\s+)?[$€£₩]?\s*$", re.I)
+
+
+def _transitions(text: str) -> set[tuple[str, Decimal, Decimal]]:
+    values = [v for v in _quantity_values(text, _date_like_spans(text)) if not v.get("unsupported_unit")
+              and not _is_date_number(v, text)]
+    pairs = set()
+    for i, a in enumerate(values):
+        for b in values[i + 1:i + 3]:
+            if a["dimension"] != b["dimension"] or b["start"] - a["end"] > 40 or a["value"] == b["value"]:
+                continue
+            between = text[a["end"]:b["start"]]
+            if ((re.fullmatch(r"\s*(?:[A-Za-z]+\s+)?(?:to|→|->)\s*[$€£₩]?\s*", between, re.I) and _FROM_LEAD.search(text, 0, a["start"]))
+                    or (re.match(r"\s*에서\s", between) and re.match(r"\s*(?:으로|로)", text[b["end"]:])
+                        and len(between) <= 15)):
+                pairs.add((a["dimension"], abs(a["value"]), abs(b["value"])))
+            elif re.search(r"\b(?:up|down)\s+from\s*[$€£₩]?\s*$", between, re.I):
+                pairs.add((a["dimension"], abs(b["value"]), abs(a["value"])))
+    return pairs
+
+
+def _transition_flip(plain: str, sents: list[str]) -> bool:
+    mine = _transitions(plain)
+    if not mine:
+        return False
+    theirs = set().union(*(_transitions(s) for s in sents))
+    return any((d, y, x) in theirs and (d, x, y) not in theirs for d, x, y in mine)
+
+
+# 비교 기준 뒤바꿈(2026-10-10 7회차): "겨울철 주행거리는 여름보다 25% 짧았다" → "여름철 주행거리는 겨울보다 25% 짧았다". 낱말이
+# 모두 원문에 있어 낱말 대조로는 통과한다. 가장 많이 겹치는 원문 절의 '…보다'·'than …' 기준이 주장과 다르고, 두 기준이 서로
+# 상대 절에 나오며, 증감·비교 낱말 쪽이 같을 때만 본다(반대말까지 함께 바꾸면 뜻이 대체로 맞으므로 세지 않는다).
+_THAN_REF = re.compile(r"([가-힣]{1,6}?)(?:철|에)?보다|\bthan\s+(?:the\s+|in\s+|on\s+|at\s+|during\s+)?([A-Za-z]{3,})", re.I)
+
+
+def _comparison_swap(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    least, ratio = (6, 0.5) if korean else (3, 0.6)
+    source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    for clause in _clauses(plain):
+        ref = _THAN_REF.search(clause)
+        if not ref:
+            continue
+        mine = (ref.group(1) or ref.group(2)).lower()
+        scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
+        scored = [(r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
+        if not scored:
+            continue
+        best = max(r for r, _ in scored)
+        for r, c in scored:
+            other = _THAN_REF.search(c)
+            if r != best or not other:
+                continue
+            theirs = (other.group(1) or other.group(2)).lower()
+            same_side = all(bool(re.search(up, clause, re.I)) == bool(re.search(up, c, re.I))
+                            and bool(re.search(down, clause, re.I)) == bool(re.search(down, c, re.I)) for up, down in _ANTONYMS)
+            # "than park fountains"처럼 원문 기준 낱말(fountains)이 주장 기준 쪽에도 있으면 맞바꾼 것이 아니다(9회차)
+            if (mine != theirs and same_side and not (ref.group(2) and theirs in clause[ref.start():].lower())
+                    and mine in c[:other.start()].lower() + c[other.end():].lower()
+                    and theirs in clause[:ref.start()].lower() + clause[ref.end():].lower()):
+                return True
+    return False
+
+
+# 비교 뒤집기(9회차). 주장이 두 대상을 비교하는데("Opposition outweighed support", "A는 B보다 높았다") 원문과 크기 순서가 반대인 문장.
+# 비교 낱말은 반대말 쌍(more↔less, wetter↔drier, 높↔낮 …)으로 묶어 같은 쌍 안에서만 방향을 비교한다. 세 가지로 본다.
+# ① 원문 한 문장이 두 대상의 값을 같은 종류로 하나씩 말하고("58 percent supported …, while 21 percent opposed it") 크기가 반대.
+#    대상은 주장의 비교 낱말 앞·뒤(한국어는 '…보다' 앞·뒤) 쪽에만 있는 내용 낱말로 나누고, 원문 수치마다 같은 절에서 가장 가까이
+#    나오는 쪽 낱말의 대상 값으로 본다(크기 쌍 more·higher·많·높만).
+# ② 원문 문장도 같은 비교 쌍으로 비교하고("직영 만족도 61%보다 높았다"), 주장의 기준('…보다'·'than' 쪽)이 원문의 기준과 같은데
+#    방향이 반대이거나, 주장이 두 대상을 맞바꿨는데 방향이 같다(원문이 주어를 생략해 ①로는 대상을 알 수 없을 때).
+# ③ 주장 스스로 두 값을 말하며 반대로 비교한다("피해율은 6%로 일반 구간 11%보다 높았다").
+# 감소·증가 '폭'을 비교하는 주장은 원문 수치가 수준값이라 ①·③에서 보지 않는다.
+_CMP_PAIRS_EN = (
+    (r"more|greater|larger|higher|bigger|outweigh(?:ed|s)?|outnumber(?:ed|s)?|exceed(?:ed|s)?|surpass(?:ed|es)?",
+     r"less|fewer|lower|smaller|trail(?:ed|s)?"),
+    (r"longer", r"shorter"), (r"faster|quicker", r"slower"), (r"wetter|rainier", r"drier"), (r"warmer|hotter", r"colder|cooler"),
+    (r"earlier", r"later"), (r"older", r"younger"), (r"costlier|pricier", r"cheaper"), (r"busier", r"quieter"))
+_CMP_PAIRS_KO = ((r"높|많|크|컸", r"낮|적|작"), (r"길", r"짧"), (r"빠르|빨랐|빨라", r"느리|느렸|늦"), (r"비싸|비쌌", r"싸|쌌|저렴"))
+_CMP_EN = re.compile(r"\b(?:" + "|".join(f"(?P<u{i}>{u})|(?P<d{i}>{d})" for i, (u, d) in enumerate(_CMP_PAIRS_EN)) + r")\b", re.I)
+_CMP_KO = re.compile(r"보다\s*(?P<between>(?:[^\s.]+\s+){0,6}?)(?:더\s*)?(?:"
+                     + "|".join(f"(?P<u{i}>{u})|(?P<d{i}>{d})" for i, (u, d) in enumerate(_CMP_PAIRS_KO)) + ")")
+_CMP_PLAIN_EN = re.compile(r"^(?:more|greater|larger|higher|bigger|less|fewer|lower|smaller)$", re.I)
+_CMP_CHANGE = re.compile(r"\b(?:declines?|drops?|falls?|increases?|rises?|rose|grew|growth|gains?|reductions?|cuts?|changes?|"
+                         r"improvements?)\b|감소|증가|하락|상승|늘어난|줄어든|개선|폭", re.I)
+
+
+def _cmp_kind(match: re.Match) -> tuple[int, int]:
+    name = next(k for k, v in match.groupdict().items() if v and k[0] in "ud" and k[1:].isdigit())
+    return int(name[1:]), 1 if name[0] == "u" else -1
+
+
+def _comparison_sides(clause: str) -> tuple[str, str, tuple[int, int], int] | None:
+    """(비교 낱말이 말하는 대상 글, 기준('…보다'·'than' 쪽) 글, (비교 쌍, 방향), 기준 글이 끝나는 위치). 비교가 없으면 None."""
+    m = _CMP_KO.search(clause)
+    if m:
+        kind = _cmp_kind(m)
+        before, between = clause[:m.start()], m.group("between")
+        # 기준은 '…보다' 바로 앞 명사구: 마지막 조사 어절(은·는·이·가·로·으로) 뒤("평균 4.8명으로 민간보다" → "민간").
+        tokens = before.split()
+        cut = max((i for i, t in enumerate(tokens[:-1]) if re.search(r"(?:[가-힣]|\d%?)(?:가|이|은|는|로|으로)$", t)), default=None)
+        ref = " ".join(tokens[cut + 1:]) if cut is not None else before
+        if _content_stems(between):   # 대상이 '…보다' 뒤에 오면 앞 전체가 기준이다("외로움이 줄었다고 답한 비율보다 기계 음성이 …")
+            return between, before, kind, m.start()
+        if cut is None:
+            return None
+        return " ".join(tokens[:cut + 1]), ref, kind, m.start()
+    if re.search(r"[가-힣]", clause):
+        return None
+    m = _CMP_EN.search(clause)
+    if not m:
+        return None
+    than = re.search(r"(?<!rather )\bthan\b", clause[m.end():], re.I)
+    if clause[m.end():m.end() + 1] == "-":   # "Lower-income", "longer-term"은 비교가 아니다
+        return None
+    if (_CMP_PLAIN_EN.match(m.group(0)) or m.group(0).lower().endswith("er")) and not than:
+        return None
+    ref = clause[m.end() + than.end():] if than else clause[m.end():]
+    return clause[:m.start()], ref, _cmp_kind(m), len(clause)
+
+
+def _cmp_terms(text: str) -> set[str]:
+    """비교 대상 낱말: 영어는 복수 s를 뗀 앞 5글자와 연도("wetter than 2025"), 한국어는 어절 앞 두 글자, 숫자 붙은 한국어 어절("40~50대")은 그대로."""
+    if re.search(r"[가-힣]", text):
+        return _content_stems(text) | {t for t in re.findall(r"\d[\d~∼-]*[가-힣]+", text)}
+    return {re.sub(r"s$", "", w.lower())[:5] for w in re.findall(r"[A-Za-z]{4,}|\b(?:19|20)\d\d\b", text)} - {
+        w[:5] for w in _EN_CONTEXT_STOP | _CONTEXT_STOP} - {"those", "these", "there", "where", "which", "while", "people"}
+
+
+def _term_positions(text: str, terms: set[str]) -> list[int]:
+    if re.search(r"[가-힣]", text):
+        return [m.start() for t in terms for m in re.finditer(re.escape(t), text)]
+    return [m.start() for m in re.finditer(r"[A-Za-z]{4,}|\b(?:19|20)\d\d\b", text) if re.sub(r"s$", "", m.group(0).lower())[:5] in terms]
+
+
+def _distinct_sides(sides) -> tuple[set[str], set[str]]:
+    big, small = _cmp_terms(sides[0]), _cmp_terms(sides[1])
+    return big - small, small - big
+
+
+def _value_comparison_flip(plain: str, sents: list[str]) -> bool:
+    for clause in re.split(r"[;:()]|(?<!\d),|,(?!\d)", plain):
+        sides = _comparison_sides(clause)
+        if not sides:
+            continue
+        (pair, sign), change = sides[2], bool(_CMP_CHANGE.search(clause))
+        if pair == 0 and not change and _inline_comparison_flip(clause, sides, sign):
+            return True
+        big, small = _distinct_sides(sides)
+        if not big or not small:
+            continue
+        for s in sents:
+            if _source_comparison_flip(s, big, small, sides[2]):
+                return True
+            if pair or change:
+                continue
+            found: dict[str, dict[str, set]] = {}
+            for value in _quantity_values(s, _date_like_spans(s)):
+                if value.get("unsupported_unit"):
+                    continue
+                start, words = _clause_around(s, value)
+                at = value["start"] - start
+                near = {side: min((abs(p - at) for p in _term_positions(words, terms)), default=None)
+                        for side, terms in (("big", big), ("small", small))}
+                if near["big"] is None and near["small"] is None:
+                    continue
+                side = ("small" if near["big"] is None else "big" if near["small"] is None
+                        else "big" if near["big"] < near["small"] else "small" if near["small"] < near["big"] else "")
+                if side:
+                    found.setdefault(value["dimension"], {"big": set(), "small": set()})[side].add(value["value"])
+            for pair_values in found.values():
+                if len(pair_values["big"]) == 1 and len(pair_values["small"]) == 1:
+                    (b,), (sm,) = pair_values["big"], pair_values["small"]
+                    if (b - sm) * sign < 0:
+                        return True
+    return False
+
+
+def _source_comparison_flip(sentence: str, big: set[str], small: set[str], kind: tuple[int, int]) -> bool:
+    """② 원문 문장 자체의 비교와 기준·방향을 맞춰 본다(문장 전체를 한 비교로 본다)."""
+    theirs = _comparison_sides(sentence)
+    if not theirs or theirs[2][0] != kind[0]:
+        return False
+    # 원문 기준은 '…보다'·'than' 바로 곁만 본다("시 직영 공중화장실 만족도 61%보다" → 앞 값 뒤부터).
+    ref = theirs[1]
+    if re.search(r"[가-힣]", sentence):
+        cut = max([m.end() for m in re.finditer(r"\d[\d,.]*\s*%?\s*[가-힣]{0,2}\s*(?:로|으로)?\s*,", ref)], default=0)
+        ref = ref[cut:]
+    ref_terms, other_terms = _cmp_terms(ref), _cmp_terms(theirs[0]) - _cmp_terms(ref)
+    same_ref = bool(small & ref_terms) and not big & ref_terms
+    swapped = bool(big & ref_terms) and not small & ref_terms and bool(small & other_terms)
+    return (same_ref and theirs[2][1] != kind[1]) or (swapped and theirs[2][1] == kind[1])
+
+
+def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
+    """③ 주장 안의 두 값: 기준 값은 '…보다' 바로 앞(한국어)·'than' 바로 뒤(영어) 값, 다른 값은 그 앞의 같은 종류 값 하나."""
+    values = [v for v in _quantity_values(clause, _date_like_spans(clause)) if not v.get("unsupported_unit")]
+    if re.search(r"[가-힣]", clause):
+        at = sides[3]
+        refs = [v for v in values if 0 <= at - v["end"] <= 3]
+    else:
+        than = re.search(r"\bthan\b", clause, re.I)
+        refs = [v for v in values if than and 0 <= v["start"] - than.end() <= 12]
+    if len(refs) != 1:
+        return False
+    ref = refs[0]
+    others = [v for v in values if v is not ref and v["dimension"] == ref["dimension"] and v["end"] <= ref["start"]]
+    return len(others) == 1 and (others[0]["value"] - ref["value"]) * sign < 0
+
+
+# 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
+# because they struggled to recruit" → "struggled to recruit because they adopted"). 원문과 주장 모두에 명시적 인과 표지가 있을 때만
+# (원인, 결과)를 나눠 본다. 주장의 원인이 원문의 결과와 겹치고(내용 낱말 절반 이상) 원문의 원인과는 덜 겹치며, 주장의 결과가
+# 원문의 원인과 겹치면 불일치로 본다.
+_EFFECT_FIRST = re.compile(r"\b(?:because(?: of)?|due to|as a result of|driven by|caused by|followed)\b", re.I)
+_CAUSE_FIRST = re.compile(r"\b(?:caus(?:ed|es)|led to|leads? to|created|creates|made|makes|drove|result(?:ed|s) in)\b"
+                          r"|때문에|때문|바람에|덕분에|덕에|(?:으로|로) 인해|탓에|(?:에|데) 따른|(?:에|데) 따라"
+                          r"|(?<=[가-힣])(?:이어서|여서|해서|아서|어서)\s"
+                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s", re.I)
+
+
+def _causal_pairs(text: str) -> list[tuple[str, str]]:
+    pairs = []
+    for m in _EFFECT_FIRST.finditer(text):
+        pairs.append((text[m.end():], text[:m.start()]))
+    for m in _CAUSE_FIRST.finditer(text):
+        pairs.append((text[:m.start()], text[m.end():]))
+    return [(c, e) for c, e in pairs if c.strip() and e.strip()]
+
+
+def _part_overlap(a: str, b: str) -> float:
+    if re.search(r"[가-힣]", a):
+        x, y = _char_bigrams(_CAUSE_FIRST.sub(" ", a)), _char_bigrams(b)
+    else:
+        x, y = _word_stems(a), _word_stems(b)
+    return len(x & y) / len(x) if x else 0.0
+
+
+def _causal_reversal(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    claim_pairs = _causal_pairs(plain)
+    if not claim_pairs:
+        return False
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c2, e2 in _causal_pairs(s):
+            for c1, e1 in claim_pairs:
+                cross = _part_overlap(c1, e2)
+                if cross >= 0.5 and cross > _part_overlap(c1, c2) and _part_overlap(e1, c2) > 0:
+                    return True
+    return False
 
 
 # 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
 # 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
 _CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
-                           r"driven by|attribut\w*|as a result)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로", re.I)
+                           r"driven by|attribut\w*|as a result|concluded)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
+                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가", re.I)
 _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
 _CAUSAL_DISCLAIM = re.compile(
     r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
     r"(?:establish|determine|show|prove|isolate|distinguish|separate|attribute)\w*|\bobservational\b|\bcorrelation\b|"
-    r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증)하지\s*(?:않|못)|(?:구분|입증)할 수 없", re.I)
+    r"\b(?:cannot|can't|could not|did not|unable to)\s+rule out\b|"
+    r"인과[^.]*?(?:않|못|없)|(?:구분|확인|분석|판단|입증|단정|추정|배제|분리)하지\s*(?:않|못)|(?:구분|입증|단정|배제|분리)할 수 없|"
+    r"단정하기 어렵|"
+    # 8회차(holdout4): "not necessarily due to the app", "감소분 전체를 보상제 효과로 보기는 어렵다", "의미 있는 변화로 보기 어렵다"
+    r"\bnot necessarily (?:due to|caused by|because of|the result of|attributable)|"
+    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
@@ -476,7 +1374,8 @@ _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\
                  "total": r"(?:^|\s)총\s?\d|누적|\bin total\b|\btotal\b|\bcumulative\b|\baltogether\b"}
 
 
-_CLAUSE_BREAK = re.compile(r"[,;:()]|(?<=[.!?。])(?<![Aa]pprox\.)\s")
+# 천 단위 쉼표("1,040명")에서는 끊지 않는다 — 끊으면 수치 앞 대상 낱말을 잃어 대상 바꿈을 오판한다(2026-10-10 5회차).
+_CLAUSE_BREAK = re.compile(r"(?<!\d),|,(?!\d)|[;:()]|" + _SENTENCE_END + r"\s")
 
 
 def _clause_around(text: str, value: dict) -> tuple[int, str]:
@@ -498,13 +1397,58 @@ def _value_period(text: str, value: dict) -> set[str]:
     start, clause = _clause_around(text, value)
     found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
              for name, pattern in _PERIOD_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
-    return {min(found)[1]} if found else set()
+    return {min(found)[1]} if found else _span_period(text)
+
+
+# 9회차(holdout4 기간 바꿈): "In the first twelve months, the utility sent 1,120 leak alerts"처럼 수치 절에 기간 낱말이 없고
+# 문장이 기간 길이만 밝히면, 그 수치는 기간 전체의 합계다. 길이가 정확히 하루·한 주·한 달·한 해면 그 단위와도 맞는다.
+_SPAN_COUNT = {"one": 1, "a": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+               "ten": 10, "eleven": 11, "twelve": 12, "eighteen": 18, "twenty-four": 24, "한": 1, "두": 2, "세": 3, "네": 4}
+_SPAN = re.compile(r"\b(?:first|past|last|over|during|within|in|across)\s+(?:the\s+)?(?:first\s+|past\s+|last\s+)?"
+                   r"(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|eighteen|twenty-four)\s+"
+                   r"(day|week|month|year)s?\b"
+                   r"|(?:첫\s?)?(\d+|한|두|세|네)\s?(일|주|개월|달|년)\s?(?:동안|간)"
+                   r"|(기간\s?(?:중|동안))", re.I)
+_SPAN_UNIT = {"day": "day", "week": "week", "month": "month", "year": "year",
+              "일": "day", "주": "week", "개월": "month", "달": "month", "년": "year"}
+
+
+def _span_period(text: str) -> set[str]:
+    m = _SPAN.search(text)
+    if not m:
+        return set()
+    if m.group(5):
+        return {"total"}
+    count, unit = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+    n = int(count) if count.isdigit() else _SPAN_COUNT[count.lower()]
+    name = _SPAN_UNIT[unit.lower()]
+    periods = {"total"}
+    if n == 1:
+        periods.add(name)
+    elif name == "month" and n == 12:
+        periods.add("year")
+    elif name == "week" and n in (4, 5):
+        periods.add("month")
+    return periods
+
+
+# 효과 동사(2026-10-10 6회차): "LED lighting reduced burglaries", "카메라가 피해 면적을 줄였다", "등록이 입소를 늦췄다"처럼
+# 인과 낱말 없이 주어가 대상을 바꿨다고 말하는 문장도 인과 단정이다. 동사가 행정 행위("구는 어린이집을 늘렸다")일 수도 있어,
+# 이 경우는 유보 문장이 주장과 내용 낱말을 공유할 때만 본다(인과 낱말 주장은 공유를 요구하지 않는다).
+_EFFECT_VERB = re.compile(r"\b(?:reduced|lowered|cut|raised|boosted|improved|increased|decreased|shortened|delayed|prevented|"
+                          r"curbed|lengthened|lifted)\s+(?!by\b|to\b|from\b|\d)\w"
+                          r"|(?:을|를)\s(?:\S+\s){0,4}?\S*?(?:줄였|늦췄|높였|낮췄|늘렸|앞당겼|끌어올렸|떨어뜨렸|막았|개선했|단축했)", re.I)
 
 
 def _causal_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 인과를 단정하는데, 인용 원문이 인과를 유보·부정하는 문장을 담고 인과를 긍정하는 문장은 없으면 True."""
-    if not _CAUSAL_CLAIM.search(plain) or _CAUSAL_DISCLAIM.search(plain):
+    if _CAUSAL_DISCLAIM.search(plain):
         return False
+    if not _CAUSAL_CLAIM.search(plain):
+        stems = _causal_stems(plain)
+        return bool(_EFFECT_VERB.search(plain)) and any(
+            _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents) and not any(
+            _CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents)
     # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
     stems = _causal_stems(plain)
     return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
@@ -526,6 +1470,47 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
                 if not c.get("unsupported_unit") and c["dimension"] == value["dimension"]
                 and abs(c["value"]) == abs(value["value"])]
         if held and all(p and not (p & claim_periods) for p in held):
+            return True
+    return False
+
+
+# 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·곳당·대당·학교당·평균·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
+_BASIS_WORDS = {"person": r"1인당|인당|1명당|명당|\bper (?:person|capita|head|resident|participant|student|worker|employee|recipient|user)\b|"
+                          r"\beach (?:person|resident|participant|student|recipient)\b",
+                "household": r"가구당|세대당|\bper (?:household|home|family|dwelling)\b|\beach household\b",
+                "site": r"곳당|개소당|시설당|지점당|\bper (?:site|facility|center|centre|branch|location|store|clinic)\b|"
+                        r"\beach (?:site|facility|center|centre|branch|location|store|clinic)\b",
+                "vehicle": r"(?<!세)대당|차량당|\bper (?:vehicle|bus|car|truck)\b|\beach (?:vehicle|bus|car|truck)\b",
+                "school": r"학교당|개교당|\bper (?:school|campus)\b|\beach (?:school|campus)\b",
+                "average": r"평균|\b(?:on )?average\b",
+                "total": r"(?:^|(?<=\s))총(?=\s?\d)|총액|총계|합계|누적|통틀어|\bin total\b|\btotal(?:ing|ed|s)?\b|\bcumulative\b|"
+                         r"\baltogether\b|\bcombined\b"}
+
+
+def _bases_agree(a: set[str], b: set[str]) -> bool:
+    """평균은 단위당 값과 어긋나지 않지만(가구 평균 = 가구당) 총계와는 다르다."""
+    if a & b:
+        return True
+    return (a == {"average"} and "total" not in b) or (b == {"average"} and "total" not in a)
+
+
+def _value_basis(text: str, value: dict) -> set[str]:
+    start, clause = _clause_around(text, value)
+    found = [(min(abs(m.start() + start - value["start"]), abs(m.end() + start - value["end"])), name)
+             for name, pattern in _BASIS_WORDS.items() for m in re.finditer(pattern, clause, re.I)]
+    return {min(found)[1]} if found else set()
+
+
+def _basis_conflict(plain: str, sents: list[str]) -> bool:
+    """주장 수치의 기준(1인당·가구당·곳당·대당·학교당·평균·총계)이 같은 값이 나오는 원문 자리마다의 기준과 하나도 겹치지 않으면 True.
+
+    원문 자리 중 기준을 말하지 않는 곳이 하나라도 있으면 표시하지 않는다(값의 기준을 단정할 수 없음)."""
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        claim_basis = _value_basis(plain, value)
+        if value.get("unsupported_unit") or not claim_basis:
+            continue
+        held = [_value_basis(s, c) for s, c in _same_value_spots(sents, value)]
+        if held and all(b and not _bases_agree(b, claim_basis) for b in held):
             return True
     return False
 
@@ -612,6 +1597,234 @@ def _estimate_overclaim(plain: str, sents: list[str]) -> bool:
     return False
 
 
+# 기준 연도 옮김: 원문이 한 해의 값으로 말한 수치를 다른 해의 값으로 쓰는지 본다(2026-10-06 2회차 품질 회차).
+# 수치의 연도는 그 수치가 든 명제에 연도가 하나뿐이면 그것, 명제에 없으면 문장 전체에 연도가 하나뿐일 때 그것이다.
+# 범위("2022~2025년")나 연도가 둘 이상이면 모른다고 보고 표시하지 않는다.
+_YEAR_TOKEN = re.compile(r"(?<![\d,.])((?:19|20)\d\d)(?!\d|,\d|\.\d)")
+
+
+_SENTENCE_HEAD = re.compile(r"(?:^|[.!?]\s+)\s*$")
+
+
+def _year_spans(text: str) -> list[tuple[int, int, int]]:
+    out: list[tuple[int, int, int]] = []
+    for m in _YEAR_TOKEN.finditer(text):
+        before = text[:m.start()]
+        # 'between'은 늘 연도 자리, 'and'는 앞에 연도가 이미 있을 때만("between 2022 and 2025")
+        # 문장 첫머리의 네 자리 수("2023 enrollment reached …")도 연도로 본다(PR #17 리뷰 반영).
+        if (re.match(r"\s?년", text[m.end():]) or _YEAR_RANGE_HEAD.match(text, m.end()) or _YEAR_LEAD.search(before)
+                or re.search(r"\bbetween\s*$", before, re.I) or (_SENTENCE_HEAD.search(before) and re.match(r"\s+[A-Za-z]", text[m.end():]))
+                or (out and re.search(r"\band\s*$", before, re.I))):
+            out.append((int(m.group(1)), m.start(), m.end()))
+    return out
+
+
+def _value_year(text: str, value: dict, years: list[tuple[int, int, int]]) -> int | None:
+    start, clause = _clause_around(text, value)
+    own = _proposition_around(text, value)
+    lo = start + clause.find(own)
+    mine = {y for y, a, _ in years if lo <= a < lo + len(own)} or {y for y, _, _ in years}
+    return next(iter(mine)) if len(mine) == 1 else None
+
+
+def _year_values(text: str) -> list[tuple[dict, int | None]]:
+    years = _year_spans(text)
+    return [(v, _value_year(text, v, years)) for v in _quantity_values(text, _date_like_spans(text))
+            if not v.get("unsupported_unit") and v["dimension"] not in ("년", "월", "일")
+            and not any(a <= v["start"] < b for _, a, b in years)]
+
+
+def _year_conflict(plain: str, sents: list[str]) -> bool:
+    """주장 수치의 기준 연도가 같은 값이 나오는 원문 자리마다의 기준 연도(모두 알려짐)와 하나도 같지 않으면 True."""
+    held_all = [x for s in sents for x in _year_values(s)]
+    for value, year in _year_values(plain):
+        if year is None:
+            continue
+        held = [y for c, y in held_all if c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])]
+        if held and all(y is not None and y != year for y in held):
+            return True
+    return False
+
+
+# 퍼센트와 퍼센트포인트: 41%→47%는 6%포인트 오른 것이지 6% 오른 것이 아니다. 원문이 한쪽으로만 말한 수치를
+# 다른 쪽으로 쓰면 다른 값이다. "6%포인트"는 수치 추출에서 6%와 같은 값으로 잡혀 위 대조를 통과하므로 따로 본다.
+_PERCENT_POINT = re.compile(r"\s*(?:%\s?p\b|%\s?포인트|퍼센트\s?포인트|%\s?points?\b|percentage[- ]points?\b|pp\b)", re.I)
+_PERCENT = re.compile(r"\s*(?:%|퍼센트|percent\b|per cent\b)", re.I)
+_PLAIN_NUMBER = re.compile(r"(?<![A-Za-z0-9.,])\d+(?:,\d{3})*(?:\.\d+)?")
+
+
+def _percent_kinds(text: str) -> list[tuple[Decimal, str]]:
+    out = []
+    for m in _PLAIN_NUMBER.finditer(text):
+        rest = text[m.end():]
+        kind = "pp" if _PERCENT_POINT.match(rest) else "pct" if _PERCENT.match(rest) else ""
+        out.append((Decimal(m.group(0).replace(",", "")), kind))
+    return out
+
+
+def _percent_point_conflict(plain: str, sents: list[str]) -> bool:
+    """주장이 퍼센트로 말한 수치를 원문은 매번 퍼센트포인트로만 말하거나, 그 반대면 True."""
+    held_all = [x for s in sents for x in _percent_kinds(s)]
+    for number, kind in _percent_kinds(plain):
+        if not kind:
+            continue
+        held = [k for n, k in held_all if n == number]
+        if held and all(k and k != kind for k in held):
+            return True
+    return False
+
+
+# 상한·범위 끝값의 대표값화: 원문이 "최대 30%"·"up to 25 percent"처럼 상한으로만, "10~20%"·"between 8 and 12 percent"처럼
+# 범위의 끝값으로만 말한 수치를 주장이 상한·범위 표시 없이 쓰는지 본다(2026-10-08 품질 회차). "from 9,000 to 14,000"·
+# "10%에서 18%로"는 변화 전후 값이라 범위로 보지 않는다.
+_BOUND_LEAD = re.compile(r"\b(?:up to|as (?:much|many|high|low|few|little) as|at (?:most|least)|a (?:maximum|minimum) of|"
+                         r"no (?:more|less|fewer) than|more than|less than|fewer than|over|under|peak(?:ed|ing)? (?:at|of)|"
+                         r"between|range[sd]? from|ranging from)\s*$|(?:최대|최고|최소|많게는|적게는|최저)\s*$", re.I)
+# 단위로 읽지 않는 세는 말("300가구 이상")을 건너 하한·상한 낱말을 본다(2026-10-08 2회차 — 점수기는 이미 보던 자리).
+_BOUND_TAIL = re.compile(r"\s*(?:가구|곳|명|원|개|건|대|회)?\s*(?:이상|이하|미만|초과|까지|이내|안쪽)")
+_RANGE_BEFORE = re.compile(r"\d[\d,.]*\s*(?:%|percent|퍼센트|명|원|가구|곳)?\s*(?:~|–|—|-|\bto\b|\band\b)\s*$", re.I)
+_RANGE_AFTER = re.compile(r"\s*(?:~|–|—|-|\bto\b)\s*\d", re.I)
+_CHANGE_FROM = re.compile(r"\bfrom\s*$", re.I)
+
+
+def _bounded_value(text: str, value: dict) -> bool:
+    """수치가 상한·하한 낱말 뒤에 있거나 범위의 끝값이면 True("from X to Y"의 변화 전후 값은 뺀다)."""
+    before = text[max(0, value["start"] - 40):value["start"]]
+    if _BOUND_LEAD.search(before) or _BOUND_TAIL.match(text, value["end"]):
+        return True
+    prev = _RANGE_BEFORE.search(before)
+    if prev and not _CHANGE_FROM.search(before[:prev.start()]):
+        return True
+    return bool(_RANGE_AFTER.match(text, value["end"])) and not _CHANGE_FROM.search(before)
+
+
+def _bound_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서는 매번 상한·범위 끝값으로만 나오는데, 주장은 상한·범위 표시 없이 말하면 True."""
+    for value in _quantity_values(plain, _date_like_spans(plain)):
+        if value.get("unsupported_unit") or _is_date_number(value, plain) or _bounded_value(plain, value):
+            continue
+        spots = _same_value_spots(sents, value)
+        if spots and all(_bounded_value(s, c) for s, c in spots):
+            return True
+    return False
+
+
+# 대상 바꿈: 원문이 "심야버스 이용객 18%, 지하철 막차 이용객 4%"처럼 같은 종류 수치를 여러 대상에 나란히 말할 때, 주장이 한
+# 대상의 수치를 다른 대상의 값으로 옮겨 쓰는지 본다(2026-10-08 2회차 품질 회차). 값은 원문에 있으므로 수치 대조를 통과하고, 문맥 낱말도
+# 같은 문장 안에서 겹쳐 지금까지는 표시되지 않았다. 수치의 대상 낱말은 그 수치가 든 명제에서 앞 수치 뒤부터 그 수치까지로 근사한다
+# (한국어·영어 모두 대상이 수치 앞에 온다). 앞 수치와 변화·범위로 이어진 수치("10%에서 18%로", "지난해 18분에서 올해 11분으로")는
+# 그 앞까지 거슬러 올라간다.
+_LABEL_STOP = {"the", "and", "for", "was", "are", "its", "has", "had", "not", "but", "all", "per", "new", "one", "two", "who",
+               "percent", "에서", "에는", "에도", "으로", "부터", "까지", "에게"}
+_LINKED_VALUE = re.compile(r"^\s*(?:%|퍼센트|percent|[가-힣]{1,2})?(?:\s*[가-힣A-Za-z]{1,4}){0,2}\s*(?:에서|부터|~|–|-|\bto\b|\band\b|가운데|중)"
+                           r"(?:\s+[가-힣A-Za-z]{1,4}){0,2}\s*$", re.I)
+
+
+def _subject_terms(text: str, value: dict, values: list[dict]) -> set[str]:
+    """수치 앞, 같은 명제 안에서 앞 수치(와 거기 붙은 단위·조사) 뒤부터 수치까지의 낱말."""
+    start, clause = _clause_around(text, value)
+    left = value["start"] - start
+    a = max((m.end() for m in _PROPOSITION_BREAK.finditer(clause, 0, left)), default=0) + start
+    cut = value["start"]
+    for prev in sorted((v for v in values if a <= v["start"] and v["end"] <= cut), key=lambda v: v["start"], reverse=True):
+        if prev["end"] > cut:
+            continue
+        if not _LINKED_VALUE.match(text[prev["end"]:cut]):
+            a = prev["end"] + len(re.match(r"\S*", text[prev["end"]:cut]).group(0))
+            break
+        cut = prev["start"]
+    head = _UP_MARK.sub(" ", _DOWN_MARK.sub(" ", text[a:cut]))
+    english = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", head)} - _EN_CONTEXT_STOP - _CONTEXT_STOP - _LABEL_STOP
+    # 단수·복수는 같은 대상이다("the barrier" ↔ "noise barriers"). 다르게 세면 제 대상을 다른 대상으로 옮긴 것으로 오판한다.
+    english = {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in english}
+    return english | ({w[:2] for w in re.findall(r"[가-힣]{2,}", head)} - _LABEL_STOP)
+
+
+_COUNT_NOUN = re.compile(r"-?\s?([A-Za-z]{3,})")
+_COUNT_NOUN_STOP = {"and", "the", "for", "from", "with", "per", "than", "was", "were", "are", "had", "has", "into", "over",
+                    "after", "before", "since", "while", "but", "percent", "dollars", "dollar"}
+
+
+def _value_kind(value: dict, text: str) -> tuple:
+    """같은 종류 수치: 차원이 같고 퍼센트포인트 여부도 같다. 단위 없는 영어 수치는 바로 뒤 세는 낱말도 같아야 한다
+    ("2.4-mile"과 "71 decibels"는 다른 종류). 세는 낱말이 없으면 비교하지 않는다(종전대로 같은 종류)."""
+    noun = ""
+    if value["dimension"] == "unitless":
+        m = _COUNT_NOUN.match(text, value["end"])
+        word = m.group(1).lower() if m else ""
+        if word and word not in _COUNT_NOUN_STOP:
+            noun = word[:-1] if len(word) > 3 and word.endswith("s") and not word.endswith("ss") else word
+    return value["dimension"], bool(_PERCENT_POINT.search(value["raw"]) or _PERCENT_POINT.match(text, value["end"])), noun
+
+
+def _same_kind(a: tuple, b: tuple) -> bool:
+    return a[:2] == b[:2] and (not a[2] or not b[2] or a[2] == b[2])
+
+
+def _subject_swap(plain: str, sents: list[str]) -> bool:
+    """주장 수치가 원문에서 나오는 자리마다, 그 자리의 대상 낱말은 주장에 없고 같은 종류 다른 수치 자리의 대상 낱말이 주장에 더
+    많이 있으면 True(주장이 수치를 원문의 다른 대상으로 옮겨 붙임)."""
+    claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
+    spots = [(s, v, vals) for s in sents
+             for vals in [[v for v in _quantity_values(s, _date_like_spans(s)) if not v.get("unsupported_unit")]] for v in vals]
+    for value in claim_values:
+        if _is_date_number(value, plain):
+            continue
+        mine = _subject_terms(plain, value, claim_values)
+        kind = _value_kind(value, plain)
+        held = [(s, v, vals) for s, v, vals in spots if v["dimension"] == value["dimension"] and abs(v["value"]) == abs(value["value"])]
+        if not mine or not held or any(_scripts(s) != _scripts(plain) for s, _, _ in held):
+            continue
+
+        def moved(s: str, v: dict, vals: list[dict]) -> bool:
+            own = _subject_terms(s, v, vals)
+            for s2, w, vals2 in spots:
+                if abs(w["value"]) == abs(value["value"]) or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2):
+                    continue
+                other = _subject_terms(s2, w, vals2)
+                toward, away = mine & (other - own), mine & (own - other)
+                # 주장이 원래 자리의 고유 대상 낱말을 모두 담으면 옮긴 것이 아니다. "에너지 바우처는 가구당 15만 원이었고, 사업비는
+                # 총 36억 원"처럼 앞 절의 주제어가 뒤 절에서 생략되면 주제어가 앞 수치의 대상으로만 잡히기 때문이다(2026-10-09).
+                if own - other and toward and len(toward) > len(away) and not (own - other) <= mine:
+                    return True
+            return False
+        if all(moved(s, v, vals) for s, v, vals in held):
+            return True
+    return False
+
+
+# 표본 몫을 모집단 몫으로(8회차 holdout4): 원문 "이용자 450명 설문에서 91%"·"600가구 설문에서 58 percent"를 주장이
+# "주민의 91%"·"A majority of residents"처럼 설문이라는 말 없이 주민·시민 전체의 몫으로 말하면 범위를 넓힌 것이다.
+_POPULATION = re.compile(r"\b(?:residents|citizens|people|population|households|adults|voters|the public)\b|주민|시민|구민|군민|도민|국민", re.I)
+_SAMPLE_WORDS = re.compile(r"\b(?:surveys?|surveyed|polls?|polled|respond\w*|asked|interview\w*|users?|participants?|cyclists|"
+                           r"riders|applicants|patients)\b|설문|응답|조사|이용자|참여자|참가자", re.I)
+# 몫이 모집단에 걸린 꼴만 본다("주민의 91%", "58 percent of residents", "a majority of residents"). "Households statewide saw
+# bills fall 9 percent"처럼 모집단 낱말과 증감률이 한 문장에 있을 뿐인 것은 몫이 아니다.
+_POPULATION_SHARE = re.compile(
+    r"(?:주민|시민|구민|군민|도민|국민)(?:의|\s)\s*(?:약\s*)?\d|"
+    r"\b(?:percent|%|majority|most|two[- ]thirds|half|(?:a|one)[- ]third)\s+of\s+(?:the\s+)?(?:[\w-]+\s+){0,2}"
+    r"(?:residents|citizens|people|population|households|adults|voters|the public)\b|"
+    r"(?:주민|시민|구민|군민|도민|국민)\s*(?:대다수|대부분|과반|절반|3분의)", re.I)
+_SURVEY = re.compile(r"\b(?:surveys?|surveyed|polls?|polled|respond\w*|questionnaire)\b|설문|응답", re.I)
+_SHARE_WORDS = ((re.compile(r"\b(?:a|the) majority\b|\bmost\b|대다수|대부분|과반", re.I), (Decimal(50), Decimal(100))),
+                (re.compile(r"\btwo[- ]thirds\b|3분의 2", re.I), (Decimal(60), Decimal(72))),
+                (re.compile(r"\bhalf\b|절반", re.I), (Decimal(45), Decimal(55))),
+                (re.compile(r"\b(?:a|one)[- ]third\b|3분의 1", re.I), (Decimal(28), Decimal(38))))
+
+
+def _sample_overclaim(plain: str, sents: list[str]) -> bool:
+    """주장이 주민·시민 전체의 몫을 말하고(설문·응답자·이용자 낱말 없이), 그 몫이 나오는 원문 문장이 모두 설문·응답 결과면 True."""
+    if not _POPULATION_SHARE.search(plain) or _SAMPLE_WORDS.search(plain):
+        return False
+    shares = [abs(v["value"]) for v in _quantity_values(plain, _date_like_spans(plain)) if v["dimension"] == "percent"]
+    ranges = [(x - Decimal("0.5"), x + Decimal("0.5")) for x in shares] + [r for rx, r in _SHARE_WORDS if rx.search(plain)]
+    if not ranges:
+        return False
+    held = [s for s in sents if any(lo <= abs(v["value"]) <= hi for v in _quantity_values(s, _date_like_spans(s))
+                                    if v["dimension"] == "percent" for lo, hi in ranges)]
+    return bool(held) and all(_SURVEY.search(s) for s in held)
+
+
 def _scope_overclaim(plain: str, sents: list[str]) -> bool:
     """주장이 전역·전체 범위를 말하는데, 주장 수치가 든 원문 문장이 모두 시범·표본 범위만 말하고 전역 낱말은 없으면 True.
 
@@ -631,6 +1844,31 @@ def _scope_stems(text: str) -> set[str]:
     return _content_stems(_NARROW_SCOPE.sub(" ", _WIDE_SCOPE.sub(" ", text)))
 
 
+# 전체 범위 단정(2026-10-10 6회차): 원문이 "6개 도심 지역", "25mm 미만 비", "강원·경북 산간", "서울 조사"처럼 범위를 한정해 말한
+# 것을 주장이 "every neighborhood", "all storms", "전국", "모든 청년"으로 넓힌다. 원문에 시범·표본 낱말이 없어도 생긴다.
+# 주장과 같은 대상(내용 낱말 2개 이상 공유)을 말하는 원문 문장이 있고 그중 어느 문장에도 전체 낱말이 없을 때만 본다.
+# 개수를 밝힌 "all 6,200 families"·"every two months"·"N percent of all"·"전국 평균"은 범위 단정이 아니라 세지 않는다.
+# 문턱은 dev 로만 정했다(holdout2 는 이 회차 이 세션이 쓴 문장이라 독립 측정이 아님 — QUALITY-LOG 참고).
+_UNIVERSAL = re.compile(
+    r"\b(?:all|every|entire|whole|nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?"
+    r"(?:city|country|nation|state|region|district|county))\b|전국|전역|모든|거의 모두|전체|전원|전부", re.I)
+_UNIVERSAL_SKIP = re.compile(
+    r"\b(?:all|every)\s+(?:\d|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|other|few|day|week|month|year)\w*|"
+    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average", re.I)
+
+
+def _universal_overclaim(plain: str, sents: list[str]) -> bool:
+    text = _UNIVERSAL_SKIP.sub(" ", plain)
+    # "전체 고령자를 대표하지 않는다"처럼 전체 낱말을 부정하는 문장은 범위를 넓히지 않고 한계를 말한다.
+    if not _UNIVERSAL.search(text) or _NEGATION.search(text):
+        return False
+    stems = _content_stems(_UNIVERSAL.sub(" ", text))
+    korean = bool(re.search(r"[가-힣]", plain))
+    related = [s for s in sents if bool(re.search(r"[가-힣]", s)) == korean
+               and len(stems & _content_stems(_UNIVERSAL.sub(" ", s))) >= 2]
+    return bool(related) and not any(_UNIVERSAL.search(_UNIVERSAL_SKIP.sub(" ", s)) for s in related)
+
+
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
 _SIMILAR_WARNED = re.compile(r"\(S\d+(?:·S\d+)+: [^)]*(?:독립 출처가 아닐 수 있음|may not be independent)[^)]*\)")
 _INDEPENDENCE_CLAIM = re.compile(
@@ -647,7 +1885,7 @@ def _with_mark(sentence: str, mark: str) -> str:
     """문장 끝 구두점 앞에 표시를 넣는다. 구두점 뒤 인용이 있으면 맨 끝에 붙인다."""
     body = sentence.rstrip()
     trailing = sentence[len(body):]
-    if body and body[-1] in ".!?。":
+    if body and body[-1] in ".!?。" and not _ABBREV_END.search(body):
         return body[:-1].rstrip() + f" {mark}" + body[-1] + trailing
     return body + f" {mark}" + trailing
 
@@ -658,17 +1896,17 @@ def _with_mismatch(sentence: str, mark: str) -> str:
     if not tail or not tail.group(0).strip().startswith("[S"):
         return _with_mark(sentence, mark)
     head = sentence[:tail.start()].rstrip()
-    if head and head[-1] in ".!?。":        # "문장. [S1]" 꼴은 구두점 앞에 넣는다
+    if head and head[-1] in ".!?。" and not _ABBREV_END.search(head):  # "문장. [S1]" 꼴은 구두점 앞에 넣는다
         return head[:-1].rstrip() + f" {mark}" + head[-1] + " " + tail.group(0).lstrip()
     return head + f" {mark} " + tail.group(0).lstrip()
 
 
 def _trusted_cited_claims(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str]]]:
     """답·근거·한계 절에서 인용이 있고 원문 대조에 걸리지 않은 문장의 (증감 방향, 문맥 낱말) 목록."""
-    return [(direction, stems) for direction, stems, _ in _trusted_cited_rows(report, source_texts, M)]
+    return [(direction, stems) for direction, stems, _, _ in _trusted_cited_rows(report, source_texts, M)]
 
 
-def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str], tuple[str, ...]]]:
+def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> list[tuple[str, set[str], tuple[str, ...], str]]:
     out, section, fenced = [], "", False
     for line in report.split("\n"):
         stripped = line.strip()
@@ -688,7 +1926,7 @@ def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> l
             direction = _direction_of(plain)
             if (direction and cited_text.strip() and not _absent_values(piece, cited_text)
                     and not _value_conflicts(piece, cited_text)):
-                out.append((direction, _content_stems(plain), tuple(cites)))
+                out.append((direction, _content_stems(plain), tuple(cites), plain))
     return out
 
 
@@ -713,15 +1951,25 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
     - 인용이 원문이 유보한 인과를 단정하거나 수치를 원문과 다른 기간 단위로 말하면 '(출처 불일치)'
     - 인용 없는 문장(판단 포함)이 같은 대상의 인용 문장과 반대 방향이거나 출처 수치를 다른 기간으로 말하면 '(출처 불일치)'
     - 인용 문장이 원문의 계획·목표 수치를 이룬 것처럼, 시범·표본 범위 수치를 전역 결과처럼 말하면 '(출처 불일치)'
+    - 인용 문장이 원문 수치를 다른 기준 연도의 값으로 옮기거나 퍼센트포인트를 퍼센트로(또는 반대로) 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 상한(최대·up to)·범위 끝값을 대표값처럼 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 한 대상 수치를 나란히 나오는 다른 대상의 값으로 옮겨 말하면 '(출처 불일치)'
+    - 인용 문장이 원문의 1인당·가구당·곳당·대당·학교당·평균 값을 총계로(또는 반대로, 단위당 기준끼리 바꿔) 말하면 '(출처 불일치)'
+    - 답·근거·한계 절의 인용 문장 내용이 같은 문자 체계의 인용 원문에 거의 없으면(원문에 없는 추론·사실) '(출처 불일치)'
+    - 인용 문장이 원문 낱말 그대로 반대말만 바꾸거나(longer↔shorter, 이상↔미만) 원문의 원인·결과를 뒤집으면 '(출처 불일치)'
     표, 코드, 출처 절은 건드리지 않는다. 다시 돌려도 결과가 같다.
     반환: (표시한 본문, {"mismatch", "no_source", "direction_conflict", "context_conflict", "independence_conflict",
-    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "estimate_dropped": 문장 목록})."""
+    "causal_conflict", "period_conflict", "internal_conflict", "plan_conflict", "scope_conflict", "year_conflict", "unit_conflict", "bound_conflict", "subject_conflict", "basis_conflict", "wording_conflict", "negation_conflict", "share_conflict", "antonym_conflict",
+    "causal_reversal_conflict", "estimate_dropped": 문장 목록})."""
     M = _MARKS.get(lang, _MARKS["ko"])
     marks = (M["judgment"], M["no_source"], M["mismatch"])
     estimate_mark = M["estimate"]
     changes: dict[str, list[str]] = {"mismatch": [], "no_source": [], "direction_conflict": [], "context_conflict": [],
                                      "independence_conflict": [], "causal_conflict": [], "period_conflict": [],
-                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "estimate_dropped": []}
+                                     "internal_conflict": [], "plan_conflict": [], "scope_conflict": [], "year_conflict": [],
+                                     "unit_conflict": [], "bound_conflict": [], "subject_conflict": [], "basis_conflict": [],
+                                     "wording_conflict": [], "negation_conflict": [], "share_conflict": [], "antonym_conflict": [],
+                                     "causal_reversal_conflict": [], "estimate_dropped": []}
     all_text = "\n".join(source_texts.values())
     all_values = [v for v in _quantity_values(all_text, _date_like_spans(all_text)) if not v.get("unsupported_unit")]
     all_dates = {d["value"] for d in _date_values(all_text)}
@@ -776,6 +2024,13 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
                 conflicts = _value_conflicts(piece, cited_text) if cited_text.strip() else []
                 if _independence_overclaim(piece):
                     conflicts.append("independence")
+                # 낱말 대조는 수치 없이 말한 추론·사실용이다. 수치를 담고 그 수치가 모두 원문 값이거나 원문에서 계산한 어림 값이면
+                # ("연간으로 환산하면 약 16만 톤이다") 수치가 주장을 원문에 묶으므로 낱말이 달라도 표시하지 않는다(2026-10-10).
+                anchored = bool(_quantity_values(_plain_claim(piece), _date_like_spans(_plain_claim(piece)))) and \
+                    not _absent_values(piece, cited_text)
+                if (claim_section and cited_text.strip() and not anchored
+                        and _wording_unsupported(_plain_claim(piece), cited_text)):
+                    conflicts.append("wording")
                 if cited_text.strip() and (_absent_values(piece, cited_text) or conflicts):
                     changes["mismatch"].append(piece.strip())
                     for kind in conflicts:
@@ -796,11 +2051,28 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
 
 _CONFLICT_ROW = {"ko": "- 출처끼리 상충: {a}·{b}를 인용한 문장이 같은 대상의 증감을 서로 반대로 말하므로 두 원문의 범위·기간·측정 방식을 확인해야 한다 {j}.",
                  "en": "- Sources disagree: sentences citing {a} and {b} give opposite directions for the same subject, so check each source's scope, period and method {j}."}
+_MAGNITUDE_ROW = {"ko": "- 출처끼리 증감 폭이 크게 다름: {a}·{b}를 인용한 문장이 같은 대상의 증감 폭을 {x}·{y}로 말하므로 두 원문의 범위·기간·측정 방식을 확인해야 한다 {j}.",
+                  "en": "- Sources differ in size: sentences citing {a} and {b} give {x} and {y} for the same subject's change, so check each source's scope, period and method {j}."}
+
+
+def _magnitude_gap(a: str, b: str) -> tuple[str, str] | None:
+    """같은 방향 두 문장이 퍼센트(또는 퍼센트포인트) 수치를 하나씩만 말하고, 같은 종류인데 큰 값이 작은 값의 2배 이상이면
+    두 수치 표기를 돌려준다. 2배는 집계 범위·방법이 다를 때 생기는 차이로 보고 반올림 정도의 차이는 세지 않으려는 문턱이다."""
+    pa = [(n, k) for n, k in _percent_kinds(a) if k]
+    pb = [(n, k) for n, k in _percent_kinds(b) if k]
+    if len(pa) != 1 or len(pb) != 1 or pa[0][1] != pb[0][1]:
+        return None
+    lo, hi = sorted((pa[0][0], pb[0][0]))
+    if lo <= 0 or hi < 2 * lo:
+        return None
+    unit = "%p" if pa[0][1] == "pp" else "%"
+    return f"{pa[0][0].normalize():f}{unit}", f"{pb[0][0].normalize():f}{unit}"
 
 
 def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str = "ko", limit: int = 3) -> tuple[str, list[list[str]]]:
-    """서로 다른 출처를 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상 공유)을 반대 증감 방향으로 말하는데
-    한계 절이 두 출처를 함께 언급하지 않으면, 한계 절 끝에 상충 안내 한 줄을 '(판단)'으로 덧붙인다.
+    """서로 다른 출처를 인용한 두 문장이 같은 대상(문맥 낱말 2개 이상 공유)을 반대 증감 방향으로 말하거나, 같은 방향이라도
+    증감 폭(퍼센트 하나씩)을 2배 이상 다르게 말하는데 한계 절이 두 출처를 함께 언급하지 않으면, 한계 절 끝에 안내 한 줄을
+    '(판단)'으로 덧붙인다.
 
     출처끼리 다른 결과는 정당한 서술이라 본문에 불일치 표시를 하지 않고 독자에게 상충을 알리기만 한다.
     한계 절이 없으면 아무것도 하지 않는다. 다시 돌려도 같다. 반환: (본문, 덧붙인 출처 쌍 목록)."""
@@ -814,19 +2086,29 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     section = "\n".join(lines[index + 1:end])
     rows = _trusted_cited_rows(report, source_texts, M)
     pairs: list[list[str]] = []
-    for i, (d1, stems1, cites1) in enumerate(rows):
-        for d2, stems2, cites2 in rows[i + 1:]:
-            if d1 == d2 or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
+    rows_by_pair: dict[tuple[str, ...], str] = {}
+    for i, (d1, stems1, cites1, plain1) in enumerate(rows):
+        for d2, stems2, cites2, plain2 in rows[i + 1:]:
+            gap = _magnitude_gap(plain1, plain2) if d1 == d2 else None
+            years1, years2 = {y for y, _, _ in _year_spans(plain1)}, {y for y, _, _ in _year_spans(plain2)}
+            if gap and years1 and years2 and not years1 & years2:
+                gap = None   # 서로 다른 해의 증감 폭은 상충이 아니다(PR #17 리뷰 반영)
+            if (d1 == d2 and not gap) or set(cites1) & set(cites2) or len(stems1 & stems2) < 2:
                 continue
             pair = sorted({cites1[0], cites2[0]}, key=lambda c: int(c[1:]))
             # 두 출처를 한 줄에서 함께 다뤄야 상충을 다룬 것으로 본다(따로 떨어진 언급은 치지 않음, PR #15 Codex 리뷰 반영).
             mentioned = any(all(re.search(rf"(?<![A-Za-z0-9]){c}(?!\d)", row) for c in pair) for row in section.split("\n"))
             if pair not in pairs and not mentioned:
                 pairs.append(pair)
+                if gap:
+                    x, y = gap if int(cites1[0][1:]) <= int(cites2[0][1:]) else gap[::-1]
+                    rows_by_pair[tuple(pair)] = _MAGNITUDE_ROW.get(lang, _MAGNITUDE_ROW["ko"]).format(
+                        a=pair[0], b=pair[1], x=x, y=y, j=M["judgment"])
     pairs = pairs[:limit]
     if not pairs:
         return report, []
-    added = [_CONFLICT_ROW.get(lang, _CONFLICT_ROW["ko"]).format(a=a, b=b, j=M["judgment"]) for a, b in pairs]
+    added = [rows_by_pair.get(tuple(p)) or _CONFLICT_ROW.get(lang, _CONFLICT_ROW["ko"]).format(a=p[0], b=p[1], j=M["judgment"])
+             for p in pairs]
     last = end
     while last > index + 1 and not lines[last - 1].strip():
         last -= 1

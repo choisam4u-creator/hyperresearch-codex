@@ -1,0 +1,86 @@
+{
+ "id": "en-congestion-charge",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout3-2026-10-10",
+ "prompt": "Did the congestion charge cut traffic and hurt downtown shops?",
+ "sources": {
+  "S1": "The congestion charge zone began in March 2024. In its first year, weekday vehicle entries into the zone fell from 610,000 to 520,000 per day. Because fewer cars entered the zone, average bus speeds inside it rose from 11 to 13 kilometers per hour.\n\nVehicles registered to zone residents received a 90 percent discount rather than being exempt.",
+  "S2": "Retail sales inside the zone were flat over the same year, while sales in neighboring districts grew 3 percent. The study did not find evidence that the charge caused shoppers to move to neighboring districts."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the congestion charge cut traffic and hurt downtown shops?\n\n## Answer\nDaily weekday vehicle entries dropped by about 90,000 [S1]. Daily weekday entries fell by roughly 15 percent [S1]. Average bus speeds inside the zone rose from 11 to 13 miles per hour [S1].\n\n## Evidence\n- Buses inside the zone sped up by about 2 km/h [S1].\n- Zone residents were exempt from the charge [S1].\n- Residents of the zone got a 90 percent discount on the charge [S1].\n- The charge caused shoppers to move to neighboring districts [S2].\n- Shops inside the zone saw flat sales, while neighboring districts grew 3 percent [S2].\n\n## Counter-evidence and limits\n- Retail sales stayed flat in every district of the city [S2].\n- Because buses got faster, fewer cars entered the zone [S1].\n- The charge is expected to raise $80 million a year.\n\n## Next actions\n- Compare sales by store type inside and outside the zone (judgment)\n\n## Sources\n- [S1] Program report\n- [S2] Follow-up analysis\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Daily weekday vehicle entries dropped by about 90,000",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "610k-520k"
+  },
+  {
+   "key": "Daily weekday entries fell by roughly 15 percent",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "90/610=14.8%"
+  },
+  {
+   "key": "Average bus speeds inside the zone rose from 11 to 13 miles per hour",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "km/h→mph"
+  },
+  {
+   "key": "Buses inside the zone sped up by about 2 km/h",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "13-11"
+  },
+  {
+   "key": "Zone residents were exempt from the charge",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "rather than being exempt"
+  },
+  {
+   "key": "Residents of the zone got a 90 percent discount on the charge",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "received discount"
+  },
+  {
+   "key": "The charge caused shoppers to move to neighboring districts",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "did not find evidence"
+  },
+  {
+   "key": "Shops inside the zone saw flat sales, while neighboring districts grew 3 percent",
+   "label": "ok",
+   "tag": "plain",
+   "why": "S2"
+  },
+  {
+   "key": "Retail sales stayed flat in every district of the city",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "이웃 구역은 3% 증가"
+  },
+  {
+   "key": "Because buses got faster, fewer cars entered the zone",
+   "label": "mismatch",
+   "tag": "causal_reversal",
+   "why": "원인·결과 뒤집음"
+  },
+  {
+   "key": "The charge is expected to raise $80 million a year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "출처 없음"
+  }
+ ]
+}
