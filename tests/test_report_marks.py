@@ -730,6 +730,19 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["plan_conflict"], body)
 
+    def test_funder_swap_for_the_same_amount_is_marked(self):
+        # 12회차(holdout8a): 같은 금액의 재원·부담 주체를 바꾸면 subject_conflict.
+        src = {"S1": "트럭 운영은 지역 농협에 위탁했으며, 군은 차량 구입비 1억 4천만 원을 부담했다.",
+               "S2": "The pilot's first-year cost was $3.1 million, paid from the city's housing trust fund."}
+        for body, lang in (("차량 구입비 1억 4천만 원은 지역 농협이 부담했다 [S1].", "ko"),
+                           ("The first-year cost of $3.1 million came from the general fund [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, lang in (("차량 구입비 1억 4천만 원은 군이 부담했다 [S1].", "ko"),
+                           ("The first-year cost of $3.1 million came from the housing trust fund [S2].", "en")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

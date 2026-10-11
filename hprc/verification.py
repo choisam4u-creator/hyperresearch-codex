@@ -952,7 +952,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("unit")
     if _bound_overclaim(plain, sents):
         found.append("bound")
-    if _subject_swap(plain, sents):
+    if _subject_swap(plain, sents) or _funding_swap(plain, sents):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
