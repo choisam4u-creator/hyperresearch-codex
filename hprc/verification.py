@@ -1627,14 +1627,69 @@ def _funding_swap(plain: str, sents: list[str]) -> bool:
     values = [v for v in _quantity_values(plain, _date_like_spans(plain))
               if not v.get("unsupported_unit") and v["dimension"] in ("KRW", "USD", "unitless")]
     mine = _funder(plain) if values else None
-    if not mine:
+    if mine:
+        for s in sents:
+            if any(abs(c["value"]) == abs(v["value"]) for c in _quantity_values(s, _date_like_spans(s)) for v in values):
+                theirs = _funder(s)
+                if theirs and not theirs & mine:
+                    return True
+    return _payer_swap(plain, sents, values)
+
+
+# 13회차(holdout9): 금액이 없거나 원문과 다른 동사로 재원을 말한 문장. 재원 구(句)를 'funded mainly through …', 'covered by …',
+# '…(으)로 충당·부담·마련'까지 넓혀 읽고, 주장 재원이 원문 어느 재원 구와도 겹치지 않거나(content) 정부 층위(state ↔ federal,
+# 구 ↔ 행정안전부)를 바꿨으면 표시한다. 주장이 '전액'·'entirely'라고 했는데 원문 재원 구가 둘 이상을 나열하면 범위를 넓힌 것이다.
+_PAYER_EN = re.compile(r"\b(?:came from|paid (?:for )?(?:from|by|out of)|(?:funded|financed|covered|paid for|supported|underwritten)"
+                       r"(?:\s+\w+ly)?\s+(?:by|from|through|with|out of))\s+(.+?)(?=[,.;]|\s+(?:while|but|which)\s|$)", re.I)
+_PAYER_KO = re.compile(r"((?:[가-힣A-Za-z0-9,·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z·]+?)(?:으로|로)\s*(?:전액\s*)?(?:충당|부담|마련|조달|지원|집행)"
+                       r"|(?<![가-힣])([가-힣]{1,8}?)(?:이|가)\s+(?:전액\s+)?(?:부담|충당|지원|출연)")
+_PAYER_GENERIC = _FUND_GENERIC | {"mainly", "mostly", "largely", "entirely", "fully", "solely", "partly", "general", "money",
+                                  "a", "an", "its", "their", "program", "pilot", "예산", "사업비", "비용", "재원", "전액", "자체"}
+_TIERS = {"city": "local", "county": "local", "municipal": "local", "town": "local", "state": "state", "federal": "federal",
+          "national": "federal", "시비": "local", "구비": "local", "군비": "local", "시": "local", "구": "local", "군": "local",
+          "도비": "state", "도": "state", "국비": "federal", "국가": "federal", "정부": "federal"}
+_KO_MINISTRY = re.compile(r"[가-힣]+부$|[가-힣]+청$|특별교부세|교부금|국비")
+_ALL_PAID = re.compile(r"\b(?:entirely|fully|solely|wholly|all of)\b|전액|전부|모두", re.I)
+
+
+def _payer_phrases(text: str) -> list[str]:
+    if re.search(r"[가-힣]", text):
+        return [m.group(1) or m.group(2) for m in _PAYER_KO.finditer(text)]
+    return [m.group(1) for m in _PAYER_EN.finditer(text)]
+
+
+def _payer_terms(phrase: str) -> tuple[set[str], set[str]]:
+    words = [re.sub(r"'s$|(?<=[가-힣])(?:과|와)$", "", w.lower()) for w in re.findall(r"[A-Za-z']{2,}|(?<![\d,])[가-힣]+", phrase)]
+    words = [w for w in words if w not in ("원", "the", "remainder", "rest", "나머지")]
+    tiers = {_TIERS[w] for w in words if w in _TIERS} | {"federal" for w in words if _KO_MINISTRY.search(w)}
+    content = {w for w in words if w not in _PAYER_GENERIC and w not in _TIERS and len(w) >= 2}
+    return content, tiers
+
+
+def _payer_swap(plain: str, sents: list[str], values: list[dict]) -> bool:
+    mine = _payer_phrases(plain)
+    if len(mine) != 1:
         return False
+    content, tiers = _payer_terms(mine[0])
+    if not content and not tiers:
+        return False
+    theirs = []
     for s in sents:
-        if any(abs(c["value"]) == abs(v["value"]) for c in _quantity_values(s, _date_like_spans(s)) for v in values):
-            theirs = _funder(s)
-            if theirs and not theirs & mine:
-                return True
-    return False
+        for clause in re.split(r"(?<!\d),(?!\d)|;|했고|하고|이고|이며|으며", s):
+            amounts = {abs(c["value"]) for c in _quantity_values(clause, _date_like_spans(clause))}
+            theirs += [(phrase, amounts) for phrase in _payer_phrases(clause)]
+    if not theirs:
+        return False
+    claimed = {abs(v["value"]) for v in values}
+    same = [(p, a) for p, a in theirs if claimed & a] or ([] if claimed and any(a for _, a in theirs) else theirs)
+    if not same:
+        return False
+    if _ALL_PAID.search(plain) and len(same) == 1 and re.search(r"\s(?:and)\s|과\s|와\s|및", same[0][0]):
+        return True
+    rows = [_payer_terms(p) for p, _ in same]
+    if content and all(c and not (c & content) for c, _ in rows):
+        return True
+    return bool(tiers) and all(t and not (t & tiers) for _, t in rows)
 
 
 def _causal_stems(text: str) -> set[str]:

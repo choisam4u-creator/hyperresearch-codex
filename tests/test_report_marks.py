@@ -764,6 +764,25 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = self.mark("The new fare of $12 was less than $5 [S1].", {"S1": "The new fare was $12, compared with $5 before."}, "en")
         self.assertEqual(1, len(changes["antonym_conflict"]))
 
+    def test_payer_swap_without_the_same_amount_is_marked(self):
+        # 13회차(holdout9): 금액 없이·다른 동사로 말한 재원, 정부 층위 바꿈, '전액'으로 넓힌 재원.
+        src = {"S1": "The pilot budget was $205,000, funded by the city general fund.",
+               "S2": "The $187,000 cost was covered by a federal fire prevention grant.",
+               "S3": "설치비 2억 3,000만 원은 행정안전부 특별교부세로 충당했고, 연간 통신·유지비 1,400만 원은 구가 부담한다.",
+               "S4": "사업비는 1억 2,600만 원으로, 법무부 공모사업비 7,000만 원과 시비로 충당했다."}
+        for body, lang in (("The pilot was funded mainly through a state aging grant [S1].", "en"),
+                           ("The program cost $187,000, funded by a state fire prevention grant [S2].", "en"),
+                           ("설치비 2억 3,000만 원은 구 예산으로 부담했다 [S3].", "ko"),
+                           ("사업비 전액을 법무부 공모사업비로 충당했다 [S4].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, lang in (("The pilot was paid for by the city general fund [S1].", "en"),
+                           ("The program cost $187,000, paid for by a federal fire prevention grant [S2].", "en"),
+                           ("연간 유지비 1,400만 원은 구가 부담한다 [S3].", "ko"),
+                           ("사업비는 법무부 공모사업비와 시비로 충당했다 [S4].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
