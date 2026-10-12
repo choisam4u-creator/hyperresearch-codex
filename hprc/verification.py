@@ -558,7 +558,9 @@ _ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:
 _WORD_SHARES = {"half": 50, "a third": Decimal(100) / 3, "one third": Decimal(100) / 3, "two thirds": Decimal(200) / 3,
                 "a quarter": 25, "one quarter": 25, "three quarters": 75, "a fifth": 20, "one fifth": 20, "절반": 50}
 _WORD_SHARE = re.compile(r"\b(?:" + "|".join(k for k in _WORD_SHARES if k.isascii()) + r")\b|절반", re.I)
-_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*명)?"
+# 14회차: 세는 말이 '곳'·'건'·'가구'인 것도("응답 가구 10곳 중 약 8곳" = 78%, "신청 7건 중 약 1건" = 14%) 같은 몫 표현이다.
+_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:(?:명|곳|건|가구|개|대|채)\s*(?:중|가운데)|분의|in|out of)\s*"
+                       r"(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*(?:명|곳|건|가구|개|대|채))?"
                        r"(\s*(?:꼴|이상|or more))?", re.I)   # "10명 중 약 8명"(8회차)
 
 
@@ -789,7 +791,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
-        if re.search(r"명\s*중|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
+        if re.search(r"(?:명|곳|건|가구|개|대|채)\s*(?:중|가운데)|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
             part, whole = whole, part
         if not whole or part > whole:
             continue
@@ -798,6 +800,16 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if any((share - half <= t <= share + half) or (at_least and share <= t <= share + 2 * half) for t in percents):
             ok.update(v["start"] for v in claim_values if m.start() <= v["start"] < m.end())
     return ok
+
+
+# 14회차: 장소·물건을 세는 말은 서로 바꿔 쓴다("3개 육아종합지원센터" ↔ "센터 3곳"). 원문 세는 말을 못 읽은 개수("300가구")도
+# 주장이 '곳'·'개'로 세면("수급 가구 300곳") 같은 개수로 본다. 사람·차량·횟수 같은 다른 세는 말과는 여전히 다르다.
+_PLACE_ITEM = {"count_place", "count_item"}
+
+
+def _same_count(source_value: dict, claim_value: dict) -> bool:
+    a, b = source_value["dimension"], claim_value["dimension"]
+    return a == b or (b in _PLACE_ITEM and (a in _PLACE_ITEM or a == "unitless"))
 
 
 def _absent_values(sentence: str, cited_text: str) -> list[str]:
@@ -826,7 +838,10 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
              and _PER_BASIS.match(sentence, value["end"])]
     claimed = [value for value in claimed if value not in bases]
     missing = [value for value in claimed
-               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)
+               if not any(_same_count(c, value) and abs(c["value"]) == abs(value["value"]) for c in source)
+               and not (value["dimension"] in ("년", "months") and any(
+                   abs(c["value"]) == abs(value["value"]) * (12 if value["dimension"] == "년" else Decimal(1) / 12)
+                   and c["dimension"] == ("months" if value["dimension"] == "년" else "년") for c in source))
                and not (value["dimension"] == "unitless" and any(
                    c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
                    and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
@@ -968,7 +983,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("unit")
     if _bound_overclaim(plain, sents):
         found.append("bound")
-    if _subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents):
+    if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
+            or _rank_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -2194,6 +2210,52 @@ def _list_member_swap(plain: str, sents: list[str]) -> bool:
             if all(not _mentions(s, mine[0]) and any(_mentions(s, t) and not _mentions(plain, t) for t in group if t != mine[0])
                    for s in held):
                 return True
+    return False
+
+
+# 14회차: 순위 바꿈. 원문이 1위를 밝혔는데("The most common violations were missing smoke detectors, followed by mold",
+# "Soccer accounted for 46 percent, followed by basketball", "단열 보강이 가장 많았고 보일러 교체, 창호 교체 순이었다") 주장은
+# 다른 항목을 1위로 말한다("Mold and water leaks were the most common violation", "가장 많이 한 공사는 보일러 교체였다").
+# 주장에 순위 낱말이 있고, 같은 대상(내용 낱말 2개 이상 겹침)을 말하는 원문 문장에서 1위 항목을 읽을 수 있으며, 주장이
+# 1위 항목 낱말을 하나도 담지 않을 때만 본다.
+_RANK_CLAIM = re.compile(r"\bmost (?:common\w*|frequent\w*|often|popular|cited|used|requested)\b|"
+                         r"\b(?:largest|biggest|leading|top) (?:share|category|source|reason|type|group)\b|"
+                         r"가장\s?(?:많|흔|자주|큰 비중)|최다", re.I)
+_RANK_TOP_EN = (
+    re.compile(r"\bmost (?:[\w-]+ ){0,2}?[\w-]+ (?:was|were|is|are) (?:the |an? )?([^,;.]+)", re.I),
+    re.compile(r"(?:^|[,;] |\bbut |\band )([^,;]+?) (?:was|were|is|are) (?:the )?most (?:common|frequent|often|popular)\w*", re.I),
+    re.compile(r"(?:^|[,;] )([^,;]+?) (?:accounted for|made up|represented|led)[^,;]*, followed by", re.I),
+)
+_RANK_TOP_KO = re.compile(r"([가-힣A-Za-z]+(?:\s[가-힣A-Za-z]+)?)(?:이|가)\s*(?:[\d,.]+\s*[가-힣%]*\s*(?:으로|로)\s*)?"
+                          r"가장\s?(?:많|흔|높|컸|큰)")
+
+
+def _rank_top(sentence: str) -> str | None:
+    if re.search(r"[가-힣]", sentence):
+        m = _RANK_TOP_KO.search(sentence)
+        return re.split(r"(?<=[가-힣])(?:은|는)\s", m.group(1))[-1] if m else None
+    for pattern in _RANK_TOP_EN:
+        m = pattern.search(sentence)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _rank_swap(plain: str, sents: list[str]) -> bool:
+    if not _RANK_CLAIM.search(plain) or _NEGATION.search(plain):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = (lambda t: {w[:2] for w in re.findall(r"[가-힣]{2,}", t)} - {"가장"}) if korean else _word_stems
+    mine = stems(plain)
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        top = _rank_top(s)
+        if not top or len(mine & stems(s)) < 2:
+            continue
+        top_stems = stems(top)
+        if top_stems and not (mine & top_stems):
+            return True
     return False
 
 

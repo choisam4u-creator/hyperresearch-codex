@@ -858,6 +858,35 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = self.mark("전체 학부모의 74%가 설치에 찬성했다 [S4].", src, "ko")
         self.assertEqual(1, len(changes["scope_conflict"]))
 
+    def test_rank_swap_is_marked(self):
+        # 14회차(holdout10): 원문이 밝힌 1위와 다른 항목을 1위로 말한 문장.
+        src = {"S1": "The most common violations were missing or inoperable smoke detectors, followed by mold and water leaks.",
+               "S2": "Soccer accounted for 46 percent of waivers, followed by basketball at 27 percent.",
+               "S3": "공사 유형은 단열 보강이 가장 많았고 보일러 교체, 창호 교체 순이었다."}
+        for body, lang in (("Mold and water leaks were the most common violation [S1].", "en"),
+                           ("Basketball was the most common sport among waiver recipients [S2].", "en"),
+                           ("가장 많이 한 공사는 보일러 교체였다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, lang in (("Missing smoke detectors were the most common violation [S1].", "en"),
+                           ("Soccer was the most common sport among waiver recipients [S2].", "en"),
+                           ("가장 많이 한 공사는 단열 보강이었다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["subject_conflict"], body)
+
+    def test_counter_words_and_small_fractions_are_read(self):
+        # 14회차(holdout10 오표시): '곳'·'건' 몫 표현, 12개월 ↔ 1년, '3개 센터' ↔ '3곳'.
+        src = {"S1": "응답 가구의 78%는 재이용 의사를 밝혔다. 취소된 비율은 14%였다.",
+               "S2": "카시트를 최대 12개월 동안 대여한다. 대여는 시청과 3개 육아종합지원센터에서 받을 수 있다."}
+        for body in ("응답 가구 10곳 중 약 8곳이 다시 이용하겠다고 답했다 [S1].", "신청 7건 중 약 1건은 취소됐다 [S1].",
+                     "대여 기간은 최장 1년이다 [S2].", "카시트는 시청과 육아종합지원센터 3곳에서 빌릴 수 있다 [S2]."):
+            text, changes = self.mark(body, src, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        for body in ("응답 가구 10곳 중 약 5곳이 다시 이용하겠다고 답했다 [S1].", "대여 기간은 최장 2년이다 [S2].",
+                     "카시트는 육아종합지원센터 3명이 빌려준다 [S2]."):
+            text, changes = self.mark(body, src, "ko")
+            self.assertEqual(1, len(changes["mismatch"]), body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
