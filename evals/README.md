@@ -32,6 +32,7 @@ HPR_BACKEND=mock python -m evals.labeled --set holdout5  # 9회차 holdout5(같�
 HPR_BACKEND=mock python -m evals.labeled --set holdout6  # 10회차 holdout6(같은 방식의 별도 에이전트 작성, 12 case·135문장)
 HPR_BACKEND=mock python -m evals.labeled --set holdout7  # 11회차 holdout7(같은 방식의 별도 에이전트 작성, 12 case·134문장)
 HPR_BACKEND=mock python -m evals.labeled --set holdout8  # 12회차 holdout8(같은 방식, 12 case·135문장). 설계용 --set holdout8a, 눈가림 --set holdout8b(case 6개씩); --set all 은 아홉 다
+HPR_BACKEND=mock python -m evals.labeled --set holdout9  # 13회차 holdout9(같은 방식, 12 case·147문장, 코드 수정 전 커밋). --set all 은 열 묶음 다
 ```
 
 - 위 점수기는 코드와 같은 발상이라 100에 닿은 뒤 개선을 구분하지 못한다. `labeled/*.json`은 질문·출처·작성 응답에 더해 문장마다 정답 `labels`(`key`: 보고서에서 그 문장을 찾을 고유 문자열, `label`: `ok`·`mismatch`·`unverified`, `tag`: 결함·바꿔 말하기 유형, `why`: 근거)를 둔다.

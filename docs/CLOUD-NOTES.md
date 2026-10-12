@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-12 (품질 회차 13)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적었다.
+- 점수 전후: 별도 에이전트가 쓴 holdout9(12 case·147문장) 기준선 **F1 65.6 → 76.3**, 오표시율 13.7 → 9.6. 보지 않고 잰 수치: holdout9 +0.0(개선 1·2), **눈가림 holdout8b 60.3 → 62.5**. 설계 때 보지 않은 묶음 dev 88.4→89.7, holdout 83.2→84.2, holdout5 72.9→73.8, holdout6 77.7→78.6, holdout7 74.6→75.6. 오표시가 늘어난 묶음 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout9 먼저(`0d26741`) → 작은 합·차 우연 일치(`ec2c50d`) → 비교 오표시(`7db4886`) → 재원 바꿈(`52134bb`) → 완료 단정(`eca9dde`) → 단위·달 범위·'rather than'(`34ce322`) → 기록, CI holdout9 `--min-f1 70`. 백로그 '판정 동사 바꿈("결정하지 않았다"→"확정했다")' 진행.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 623개 통과(Python 3.11 venv, httpx·pypdf 설치; 시스템 python엔 httpx가 없어 26개 import 오류). 새 시험 5개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 CI 문턱 모두 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 확인하지 못했다.
+- 남은 한계: 눈가림 8b 오표시율 25.8이 그대로다. 낱말 목록 방식이라 보지 않은 묶음 효과가 작다(개선 4만 넓게 일반화). 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "시장 화재 감지기 시범사업의 설치비는 누가 냈고, 소방서가 제안한 개선안은 도입됐나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"subject_conflict"\|"negation_conflict"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-11 (품질 회차 12)
 
 - 점수 전후: 별도 에이전트가 쓴 holdout8(12 case·135문장)을 설계용 8a·눈가림 8b로 나눴다. **눈가림 8b F1 60.3 → 60.3(변화 없음)**, 설계용 8a 62.5 → 73.0, holdout8 전체 61.4 → 66.7(오표시율 24.2 → 17.7). 바깥 묶음 holdout5 70.9 → 72.9, 나머지는 그대로이고 오표시가 늘어난 묶음은 없다. 상세는 `docs/QUALITY-LOG.md`.
