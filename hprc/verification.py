@@ -675,6 +675,16 @@ _PART_OF = re.compile(r"[가-힣]\s(?:가운데|중)\s|\b(?:of|from) (?:the|its|
 _PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
 
 
+# 13회차: 어림 표시 없는 두 원문 값의 합·차는 주장이 합계·차이·증감을 말할 때만 계산 값으로 본다. 작은 정수는 아무 두 값의 합·차와
+# 우연히 맞아 조건·기간을 바꾼 값('aged 16 to 30' = 24+6, 'up to 25 employees' = 7+18, '3년간' = 1년+2년)이 통과하던 결함.
+_SUM_DIFF_CUE = re.compile(
+    r"\b(?:total(?:l?ed|ing)?|combined|together|altogether|in all|overall|sum|remaining|rest|more|fewer|less|gap|difference|"
+    r"apart|net|increase[sd]?|decrease[sd]?|rose|grew|fell|dropped|declined|shr[ai]nk|shrunk|added|cut|higher|lower|"
+    r"before|after|not|other|"
+    r"from\s+[$€£₩]?\d[\d,.]*\s*\S*\s+to)\b"
+    r"|합계|합쳐|모두|총|전체|나머지|차이|더\s|많|적|늘|줄|증가|감소|높|낮|내려|떨어|단축|않|배|에서\s*[\d,.]+\s*\S*\s*(?:로|으로)", re.I)
+
+
 def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
                       all_claimed: list[dict] | None = None, bases: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
@@ -719,7 +729,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)
                 for a in plain for f in (12, 52, 365)):
             ok.add(value["start"])   # 연간 환산(월 29만 원 → 1년이면 348만 원)
-        elif value["dimension"] != "percent" and any(
+        elif value["dimension"] != "percent" and (abs(value["value"]) >= 100 or _SUM_DIFF_CUE.search(sentence)) and any(
                 a is not b and a["dimension"] == b["dimension"] == value["dimension"]
                 and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
                 for a in plain for b in plain):
@@ -797,7 +807,7 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
         return absent
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
     claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")
-               and not (value["raw"] == "1년" and re.match(r"이면|간|동안|새|마다", sentence[value["end"]:]))]
+               and not (value["raw"] == "1년" and re.match(r"\s?(?:이면|간|동안|새|마다)", sentence[value["end"]:]))]
     scales = {v["dimension"] for v in source if v["dimension"] in ("temp_c", "temp_f")}
     for value in claimed:
         if value["dimension"] == "temp_bare" and len(scales) == 1:

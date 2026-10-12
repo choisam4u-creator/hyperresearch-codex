@@ -743,6 +743,18 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_unhedged_small_sum_or_difference_needs_an_arithmetic_cue(self):
+        # 13회차(holdout8a): 작은 정수가 원문 아무 두 값의 합·차와 우연히 맞아 바꾼 조건·기간이 통과하던 결함.
+        from hprc.verification import _absent_values
+        en = ("The city offered a $600 stipend to residents aged 16 to 24 who worked at least 120 hours. "
+              "The city opened all 9 pools, compared with 6 pools in 2024.")
+        ko = "18가구가 공사 후 1년 안에 임대료 인상을 통보받았다. 구의회는 집주인에게 2년간 임대료 동결 확약서를 받으라고 권고했다."
+        self.assertEqual(["30"], _absent_values("Eligibility was open to residents aged 16 to 30 [S1].", en))
+        self.assertEqual(["3년"], _absent_values("구는 집주인에게 3년간 임대료 동결 확약서를 받도록 했다 [S2].", ko))
+        self.assertEqual([], _absent_values("The number of open pools rose by 3 [S1].", en))
+        self.assertEqual([], _absent_values("Altogether 15 pools were open across the two seasons [S1].", en))
+        self.assertEqual([], _absent_values("가람군 놀이터에는 첫 1년 동안 반려견 600마리가 입장했다 [S1].", "반려견 600마리가 입장했다."))
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
