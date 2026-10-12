@@ -1,0 +1,98 @@
+{
+  "id": "en-battery-lockers",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "Did the Harlow County household battery collection locker pilot increase battery recycling?",
+  "sources": {
+    "S1": "From March 2025 to February 2026, Harlow County installed 24 battery collection lockers at grocery stores and fire stations in three towns: Ashby, Corwin and Delmont. Residents could drop off household batteries up to 9 volts; lithium batteries over 100 watt-hours and vehicle batteries were not accepted.\n\nThe lockers collected 18.6 metric tons of batteries during the 12-month pilot, compared with 7.4 tons collected through the county's two drop-off depots in the prior 12 months. Lockers at grocery stores collected 71 percent of the locker total.\n\nThe pilot cost $312,000, of which $240,000 came from a state circular-economy grant and the remainder from the county solid waste fund. Staff recommend expanding to two more towns in 2027, subject to council approval.",
+    "S2": "The auditor found that two lockers in Corwin overheated in July 2025 after damaged lithium batteries were deposited; no injuries were reported and both lockers were replaced by the vendor at no cost to the county.\n\nThe auditor noted that depot collections fell to 5.1 tons during the pilot year, so part of the locker volume may have shifted from depots rather than representing new recycling. The auditor could not determine how much of the increase was new.\n\nThe auditor also found that contamination, meaning non-battery items in the lockers, averaged 6 percent by weight."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did the Harlow County household battery collection locker pilot increase battery recycling?\n\n## Answer\nCollection rose sharply during the pilot, with lockers gathering 18.6 tonnes over 12 months versus 7.4 tonnes at depots the year before [S1]. The auditor confirmed that all of the increase represented new recycling [S2].\n\n## Evidence\n- The 24 lockers were placed at grocery stores and fire stations across three towns [S1].\n- The locker total was about two and a half times the depot total from the previous year [S1].\n- Fire stations accounted for 71 percent of the locker total [S1].\n- The state grant covered roughly three quarters of the $312,000 cost [S1].\n- The county paid $72,000 from its solid waste fund [S1].\n- Vehicle batteries and lithium batteries over 100 watt-hours were accepted at the lockers [S1].\n- Battery fires at waste facilities in the county dropped by half after the lockers were installed.\n\n## Counter-evidence and limits\n- Two Corwin lockers overheated in July 2025, and the county paid to replace them [S2].\n- Depot collections fell to 5.1 tons in the pilot year, suggesting some locker volume may have shifted away from depots [S2].\n- Contamination averaged 6 percent of the locker contents by weight [S2].\n- Staff have expanded the program to two more towns [S1].\n\n## Next steps\n- Ask the auditor to estimate how much of the locker volume was new recycling rather than diverted depot drop-offs (judgment).\n\n## Sources\n- [S1] Harlow County Department of Environmental Services, Battery Locker Pilot Final Report (August 2026)\n- [S2] Harlow County Auditor, Review of Battery Locker Pilot (September 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Collection rose sharply during the pilot, with lockers gathering 18.6 tonnes over 12 months versus 7.4 tonnes at depots the year before",
+      "label": "ok",
+      "tag": "conversion",
+      "why": "Metric tons = tonnes; 18.6 vs 7.4 in prior 12 months matches S1."
+    },
+    {
+      "key": "The auditor confirmed that all of the increase represented new recycling",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S2 says the auditor could not determine how much was new and some volume may have shifted from depots."
+    },
+    {
+      "key": "The 24 lockers were placed at grocery stores and fire stations across three towns",
+      "label": "ok",
+      "tag": "verbatim",
+      "why": "S1 states 24 lockers at grocery stores and fire stations in three towns."
+    },
+    {
+      "key": "The locker total was about two and a half times the depot total from the previous year",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "18.6 / 7.4 = 2.51."
+    },
+    {
+      "key": "Fire stations accounted for 71 percent of the locker total",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1 attributes 71 percent to grocery-store lockers, not fire stations."
+    },
+    {
+      "key": "The state grant covered roughly three quarters of the $312,000 cost",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "240,000 / 312,000 = 77 percent, roughly three quarters."
+    },
+    {
+      "key": "The county paid $72,000 from its solid waste fund",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "312,000 - 240,000 = 72,000, the remainder from the solid waste fund."
+    },
+    {
+      "key": "Vehicle batteries and lithium batteries over 100 watt-hours were accepted at the lockers",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S1 says these were not accepted."
+    },
+    {
+      "key": "Battery fires at waste facilities in the county dropped by half after the lockers were installed",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source mentions waste-facility fires."
+    },
+    {
+      "key": "Two Corwin lockers overheated in July 2025, and the county paid to replace them",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S2 says the vendor replaced them at no cost to the county."
+    },
+    {
+      "key": "Depot collections fell to 5.1 tons in the pilot year, suggesting some locker volume may have shifted away from depots",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2's depot figure and hedged shift explanation."
+    },
+    {
+      "key": "Contamination averaged 6 percent of the locker contents by weight",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: non-battery items averaged 6 percent by weight."
+    },
+    {
+      "key": "Staff have expanded the program to two more towns",
+      "label": "mismatch",
+      "tag": "plan",
+      "why": "S1 only says staff recommend expansion in 2027, subject to council approval."
+    }
+  ]
+}

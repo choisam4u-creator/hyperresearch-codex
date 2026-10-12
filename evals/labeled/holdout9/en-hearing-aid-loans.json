@@ -1,0 +1,92 @@
+{
+  "id": "en-hearing-aid-loans",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "How did Bramford's hearing aid lending pilot for older residents perform?",
+  "sources": {
+    "S1": "Bramford's Office of Aging lent hearing aids to residents aged 65 and older with household incomes below 200 percent of the federal poverty line between September 2025 and May 2026. Loans lasted up to six months, after which participants could buy the device at a subsidized price of $150.\n\nOf 420 applicants, 310 received devices. After three months, 82 percent of recipients said they could follow conversations in noisy rooms more easily, up from 34 percent at enrollment. 96 participants chose to buy their device at the end of the loan.\n\nThe pilot budget was $205,000, funded by the city general fund. The office estimates that each loaned device cost about $560 including fitting, though final invoices from the audiology contractor were still under review.",
+    "S2": "The Ledger reported that 110 eligible applicants were still on a waitlist when the pilot closed, mostly because only one audiologist was available two days a week.\n\nCouncil member Rita Osei said she would propose extending the program in the fall budget but noted that no vote had been scheduled. A survey cited by the paper found that 19 devices had been returned early because of discomfort or feedback noise."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How did Bramford's hearing aid lending pilot for older residents perform?\n\n## Answer\nBramford loaned hearing aids to 310 of 420 applicants, about 74 percent [S1]. The share of recipients reporting easier conversation in noisy rooms rose by 48 percentage points after three months [S1]. The council has already voted to extend the program in the fall budget [S2].\n\n## Evidence\n- The program was open to residents aged 60 and older with incomes below 200 percent of the poverty line [S1].\n- Loans could run as long as six months, after which participants could purchase the aid for $150 [S1].\n- Just under a third of recipients bought their device when the loan ended [S1].\n- Each loaned device cost exactly $560 according to final audiology invoices [S1].\n- The pilot was funded mainly through a state aging grant [S1].\n- Participants who kept their devices reported fewer falls during the following winter.\n\n## Counter-evidence and limits\n- About 110 eligible applicants remained on the waitlist when the pilot closed, largely because of limited audiologist availability [S2].\n- Nineteen devices were returned early due to discomfort or feedback noise [S1].\n- The waitlist formed because the city ran out of devices [S2].\n\n## Next steps\n- Check whether adding audiologist days would clear the waitlist before any extension is voted on (judgment).\n\n## Sources\n- [S1] Bramford City Office of Aging, Hearing Aid Lending Pilot Report (June 2026)\n- [S2] Bramford Daily Ledger, \"Hearing aid waitlist grows as pilot nears end\" (July 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Bramford loaned hearing aids to 310 of 420 applicants, about 74 percent",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "310 / 420 = 73.8 percent."
+    },
+    {
+      "key": "The share of recipients reporting easier conversation in noisy rooms rose by 48 percentage points after three months",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "82 - 34 = 48 points."
+    },
+    {
+      "key": "The council has already voted to extend the program in the fall budget",
+      "label": "mismatch",
+      "tag": "plan",
+      "why": "S2: Osei would propose an extension and no vote had been scheduled."
+    },
+    {
+      "key": "The program was open to residents aged 60 and older with incomes below 200 percent of the poverty line",
+      "label": "mismatch",
+      "tag": "condition",
+      "why": "S1 sets the age threshold at 65."
+    },
+    {
+      "key": "Loans could run as long as six months, after which participants could purchase the aid for $150",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Paraphrase of S1 loan terms."
+    },
+    {
+      "key": "Just under a third of recipients bought their device when the loan ended",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "96 / 310 = 31 percent."
+    },
+    {
+      "key": "Each loaned device cost exactly $560 according to final audiology invoices",
+      "label": "mismatch",
+      "tag": "estimate",
+      "why": "S1 gives about $560 as an estimate; final invoices were still under review."
+    },
+    {
+      "key": "The pilot was funded mainly through a state aging grant",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1 says it was funded by the city general fund."
+    },
+    {
+      "key": "Participants who kept their devices reported fewer falls during the following winter",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source mentions falls."
+    },
+    {
+      "key": "About 110 eligible applicants remained on the waitlist when the pilot closed, largely because of limited audiologist availability",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "S2: 110 on waitlist, mostly because one audiologist was available two days a week."
+    },
+    {
+      "key": "Nineteen devices were returned early due to discomfort or feedback noise",
+      "label": "mismatch",
+      "tag": "wrong_source",
+      "why": "The 19 early returns appear only in S2, not S1."
+    },
+    {
+      "key": "The waitlist formed because the city ran out of devices",
+      "label": "mismatch",
+      "tag": "causal",
+      "why": "S2 attributes the waitlist to limited audiologist time, not device supply."
+    }
+  ]
+}
