@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-12 (품질 회차 14)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, release.yml이 `scripts/check_release_version.py`로 태그·버전 일치를 검사하고 `tests/test_release_version.py`가 `v0.5.0b1`을 받는다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적었다.
+- 점수 전후: 별도 에이전트가 쓴 holdout10(12 case·156문장) 기준선 **F1 55.2 → 61.7**, 오표시율 19.2 → 12.3. 보지 않고 잰 수치: holdout10 +0.0(개선 1~3), **눈가림 holdout8b 62.5 → 63.5·오표시 25.8 → 22.6**. 전체(all) 77.5 → 79.2, 오표시 11.6 → 9.1. 오표시는 dev·holdout2·5·6·7·9에서도 줄었고, 새로 틀린 문장은 없다. 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout10 먼저(`9a42af0`) → 나열 주어 부정·나열 항목 바꿈(`be5fa3a`) → 오표시 줄이기(`5bafbd8`) → 순위 바꿈·세는 말·몫 표현(`d64e841`) → 기록, CI holdout10 `--min-f1 55`. 백로그 '다음 독립 묶음은 코드 수정 전에' 이어 감, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 628개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 5개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 CI 문턱 모두 통과, compileall 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 holdout10에는 개선 1~3이 효과가 없었다. 대상·주체 바꿈(1/9)과 부정(4/13)·범위(2/9)가 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "주거 집수리 지원사업에서 가장 많이 한 공사는 무엇이고 비용은 누가 냈나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"subject_conflict"\|"negation_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-12 (품질 회차 13)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적었다.

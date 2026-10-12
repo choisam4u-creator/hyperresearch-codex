@@ -84,3 +84,6 @@
 - [ ] 품질: 부정 뒤집기 남은 것('exceeded its projections' ↔ 원문 'below', '무관하다고 결론' ↔ '판단하지 못했다') — holdout8a 3건 — 근거: 2026-10-11 12회차
 - [ ] 품질: 교차 출처 계산(분모·곱하는 값이 인용하지 않은 다른 출처에 있음, 'about 370 cases a year')과 몫 바꿔 말하기('roughly a fifth of total spending') 오표시 — 몫 낱말을 건너뛰게 한 규칙은 holdout·holdout4의 실제 결함 2건을 놓쳐 되돌렸다 — 근거: 2026-10-11 12회차
 - [ ] 품질: 원문 '8개월 동안' 같은 기간 표현이 기간 표시(`period_conflict`)를 주장 쪽 바꿔 말하기에도 붙이는지 확인 — 12회차 시험 작성 때 발견 — 근거: 2026-10-11 12회차
+- [ ] 품질: 대상·주체 바꿈 남은 것 — holdout10 1/9('교체 비용은 전액 구비로', 'The school district hires and supervises the guards', 'Replacement devices are also funded by the state grant') — 수치 없이 주어·재원만 바꾼 문장 — 근거: 2026-10-12 14회차
+- [ ] 품질: 포함·제외 뒤집기('도배·장판 같은 단순 내장 공사는 제외' → '도배·장판 공사도 지원 대상에 포함', 'families must still buy uniforms' → 'The waiver also covers uniforms') — holdout10 부정 4/13 — 근거: 2026-10-12 14회차
+- [ ] 품질: 시간 합('7:15–8:45'와 '2:30–3:45' → 'a combined 2 hours 45 minutes')과 합의 몫('$64,300'·'$5,700 unspent' → 'about 92 percent') 오표시 — holdout10 맞는 문장 오표시 — 근거: 2026-10-12 14회차
