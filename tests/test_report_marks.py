@@ -800,6 +800,20 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["plan_conflict"], body)
 
+    def test_metric_tons_cross_year_months_and_rather_than(self):
+        # 13회차: 'metric tons' ↔ 'tonnes', 해를 넘는 달 범위의 길이, 'rather than'으로 부정한 방식을 사실로 말한 문장.
+        from hprc.verification import _absent_values
+        self.assertEqual([], _absent_values("Lockers gathered 18.6 tonnes [S1].", "The lockers collected 18.6 metric tons of batteries."))
+        self.assertEqual([], _absent_values("사업은 2025년 9월부터 10개월간 진행됐다 [S1].",
+                                            "한빛군은 2025년 9월부터 2026년 6월까지 청년에게 취득비를 지원했다."))
+        self.assertEqual(["11개월"], _absent_values("사업은 11개월간 진행됐다 [S1].", "한빛군은 2025년 9월부터 2026년 6월까지 지원했다."))
+        src = {"S1": "The office estimated that the events diverted about 11 metric tons of material, "
+                     "using average item weights rather than measuring each item."}
+        text, changes = self.mark("The events diverted 11 tonnes of material, a figure measured by weighing each item [S1].", src, "en")
+        self.assertEqual(1, len(changes["negation_conflict"]))
+        text, changes = self.mark("The figure used average item weights rather than measuring each item [S1].", src, "en")
+        self.assertEqual([], changes["negation_conflict"])
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

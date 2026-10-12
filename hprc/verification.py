@@ -31,7 +31,7 @@ _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 # 넓이·온도·낱말로 쓴 전력량 단위(2026-10-10 7회차, holdout3): "1만 2,000㎡"↔"1.2헥타르", "2 degrees Fahrenheit"↔"1.1 degrees
 # Celsius" 같은 맞는 환산을 값으로 비교하고, "31 gigawatt-hours"→"31 megawatt-hours"·"화씨 2도"→"섭씨 2도" 같은 단위 바꿔치기를
 # 잡는다. "km"·"m"보다 먼저 맞춰야 "km²"가 길이로 읽히지 않는다.
-_EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
+_EXTRA_UNITS = ("metric tons", "metric ton", "metric tonnes", "square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
                 "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
                 "제곱킬로미터", "제곱미터", "㎏", "㎞", "마일", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
                 "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
@@ -166,6 +166,7 @@ _UNIT_SCALE = {
     # 톤은 미터법 톤(1,000kg)으로 본다. 미국 short ton(약 907kg)과의 차이는 반올림 허용 범위 밖이라 환산 주장이 표시될 수 있다.
     "ton": ("mass", Decimal("1000000")), "tons": ("mass", Decimal("1000000")), "tonne": ("mass", Decimal("1000000")),
     "tonnes": ("mass", Decimal("1000000")), "톤": ("mass", Decimal("1000000")),
+    "metric tons": ("mass", Decimal("1000000")), "metric ton": ("mass", Decimal("1000000")), "metric tonnes": ("mass", Decimal("1000000")),
     "gwh": ("energy", Decimal("1000000000")),
     "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
@@ -633,6 +634,11 @@ _KO_MONTH_RANGE = re.compile(r"(?<!\d)(1[0-2]|0?[1-9])\s*월\s*(?:부터|~|–|-
 _EN_MONTH_RANGE = re.compile(rf"\b(?:from\s+)?({_MONTH_PATTERN})\s+(?:\d{{4}}\s+)?(?:to|through|until|-|–)\s+({_MONTH_PATTERN})\b", re.I)
 
 
+def _month_span(a: int, b: int) -> int | None:
+    """달 범위의 길이. 13회차: 해를 넘는 범위("2025년 9월부터 2026년 6월까지" = 10개월)도 센다."""
+    return b - a + 1 if b > a else b + 12 - a + 1 if b < a else None
+
+
 def _month_ranges(text: str) -> list[tuple[int, int]]:
     out = [(int(m.group(1)), int(m.group(2))) for m in _KO_MONTH_RANGE.finditer(text)]
     return out + [(_MONTHS[m.group(1).lower()], _MONTHS[m.group(2).lower()]) for m in _EN_MONTH_RANGE.finditer(text)]
@@ -646,7 +652,7 @@ def _per_period_candidates(sentence: str, values: list[dict], source_text: str) 
         spans = [Decimal(_NATIVE_COUNT.get(m.group(1), m.group(1)) if m.group(1) in _NATIVE_COUNT else m.group(1))
                  for m in lengths.finditer(source_text)]
         if 12 in defaults:   # 달 범위("3월부터 12월까지", "from March to December")는 양 끝 달을 넣어 센다(백로그, 7회차)
-            spans += [Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a]
+            spans += [Decimal(_month_span(a, b)) for a, b in _month_ranges(source_text) if a != b]
         for n in [Decimal(d) for d in defaults] + [x for x in spans if x > 1]:
             out += [(v["dimension"], abs(v["value"]) / n) for v in values if v["dimension"] != "percent" and v["value"]]
     return out
@@ -722,7 +728,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         elif value["dimension"] == "배" and any(abs(abs(value["value"]) - t) <= _step(value) / 2 for t in same):
             ok.add(value["start"])   # 원문 같은 단위 두 값의 배수를 그 자릿수로 말한 값(48만 원÷30만 원 → 1.6배, 9회차 holdout5)
         elif value["dimension"] == "months" and abs(value["value"]) in {
-                Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a}:
+                Decimal(_month_span(a, b)) for a, b in _month_ranges(source_text) if a != b}:
             ok.add(value["start"])   # 원문 달 범위의 길이("3월부터 12월까지" → "10개월 동안")
         elif _ANNUAL_WORDS.search(sentence) and any(
                 a["dimension"] == value["dimension"]
@@ -970,7 +976,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("negation")
     if _share_overclaim(plain, sents):
         found.append("share")
-    if "negation" not in found and _null_result_flip(plain, sents):
+    if "negation" not in found and (_null_result_flip(plain, sents) or _rather_than_flip(plain, sents)):
         found.append("negation")
     if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
                                     or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
@@ -1095,6 +1101,33 @@ _NO_CHANGE = re.compile(r"\b(?:did not|didn't|does not|do not|has not|have not)\
 _NOT_SIGNIFICANT = re.compile(r"\bnot (?:statistically )?significant|\bno (?:statistically )?significant\b|"
                               r"유의하지\s?않|유의미하지\s?않|유의한 차이가?\s?없", re.I)
 _SIGNIFICANT_CLAIM = re.compile(r"\b(?:significantly|markedly|substantially|clearly|sharply)\b|뚜렷하게|뚜렷이|유의하게|확연히|크게", re.I)
+
+
+# 13회차: 원문이 'A rather than B'·'instead of B'·'B가 아니라 A'로 부정한 B를 주장이 사실로 말한 문장("using average item weights
+# rather than measuring each item" → "a figure measured by weighing each item"). 주장이 B 낱말을 둘 이상 담고, A에만 있는 낱말보다
+# 더 많이 담으며, 주장 자체가 부정·대조 표현이 아닐 때만.
+_RATHER_EN = re.compile(r"(.{0,80}?)\b(?:rather than|instead of)\s+(.+?)(?=[,.;]|$)", re.I)
+_RATHER_KO = re.compile(r"([^,.]{2,40}?)(?:이|가)?\s*아니라\s+([^,.]{2,40})")
+
+
+def _rather_than_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain) or re.search(r"rather than|instead of|아니라|대신", plain, re.I):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = (lambda s: {w[:2] for w in re.findall(r"[가-힣]{2,}", s)}) if korean else _word_stems
+    mine = stems(plain)
+    for s in sents:
+        if korean:
+            pairs = [(m.group(2), m.group(1)) for m in _RATHER_KO.finditer(s)]   # 'B가 아니라 A'
+        else:
+            pairs = [(re.split(r"[,;:]", m.group(1))[-1], m.group(2)) for m in _RATHER_EN.finditer(s)]
+        for kept, denied in pairs:
+            b = stems(denied)
+            a_only = stems(kept) - b
+            hit = len(mine & b)
+            if hit >= 2 and hit > len(mine & a_only):
+                return True
+    return False
 
 
 def _null_result_flip(plain: str, sents: list[str]) -> bool:
