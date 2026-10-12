@@ -2093,6 +2093,16 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
     claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
     spots = [(s, v, vals) for s in sents
              for vals in [[v for v in _quantity_values(s, _date_like_spans(s)) if not v.get("unsupported_unit")]] for v in vals]
+    # 14회차: 원문 세 문장 이상에 나오는 주제 낱말('bus', 'route')은 대상을 가르지 못한다. 'lag of no more than 45 seconds'가
+    # 'bus' 하나 때문에 'when the bus was 10 minutes from their stop'의 대상으로 옮긴 것으로 읽히던 오표시.
+    counts: dict[str, int] = {}
+    for s in sents:
+        words = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", s)}
+        words = {w[:-2] if re.search(r"(?:[sx]|ch|sh)es$", w) and len(w) > 4 else
+                 w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words}
+        for w in words | {w[:2] for w in re.findall(r"[가-힣]{2,}", s)}:
+            counts[w] = counts.get(w, 0) + 1
+    topic = {w for w, n in counts.items() if n >= 3}
     for value in claim_values:
         if _is_date_number(value, plain):
             continue
@@ -2105,9 +2115,11 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
         def moved(s: str, v: dict, vals: list[dict]) -> bool:
             own = _subject_terms(s, v, vals)
             for s2, w, vals2 in spots:
-                if abs(w["value"]) == abs(value["value"]) or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2):
+                # 14회차: 주장이 그 값도 말하면("빈집 30채 중 26채") 그 자리의 대상 낱말이 주장에 있는 것이 당연하다.
+                if (any(abs(w["value"]) == abs(c["value"]) and w["dimension"] == c["dimension"] for c in claim_values)
+                        or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2)):
                     continue
-                other = _subject_terms(s2, w, vals2)
+                other = _subject_terms(s2, w, vals2) - topic
                 toward, away = mine & (other - own), mine & (own - other)
                 # 주장이 원래 자리의 고유 대상 낱말을 모두 담으면 옮긴 것이 아니다. "에너지 바우처는 가구당 15만 원이었고, 사업비는
                 # 총 36억 원"처럼 앞 절의 주제어가 뒤 절에서 생략되면 주제어가 앞 수치의 대상으로만 잡히기 때문이다(2026-10-09).
@@ -2247,6 +2259,9 @@ _UNIVERSAL = re.compile(
 _UNIVERSAL_SKIP = re.compile(
     r"\b(?:all|every)\s+(?:\d|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|other|few|day|week|month|year)\w*|"
     r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average|"
+    # 14회차: '전체 이용의 약 40%'·'전체 신청 가운데 12%'는 몫의 분모다. 사람 집단('전체 학부모의 74%')은 표본 몫을 모집단으로
+    # 넓힌 것일 수 있어 그대로 본다.
+    r"전체\s?(?![가-힣]*(?:부모|학생|주민|시민|구민|군민|도민|국민|가구|교사|주|자|민)\s?(?:의|가운데|중))[가-힣]{1,6}\s?(?:의|가운데|중)\s?(?:약\s?)?\d|"
     # 12회차: '전체 지원액'·'entire budget'은 범위가 아니라 합계다
     r"전체\s?(?:지원액|지원금|사업비|예산|비용|금액|매출|합계|규모|공사비)|\b(?:entire|whole)\s+(?:budget|cost|amount|sum)\b", re.I)
 

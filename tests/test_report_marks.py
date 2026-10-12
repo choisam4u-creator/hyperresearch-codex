@@ -840,6 +840,24 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_paraphrased_subject_and_share_denominator_are_not_flagged(self):
+        # 14회차(holdout9 오표시): 주제 낱말 하나로 대상을 옮겼다고 읽거나, 주장이 함께 말한 값의 대상 낱말을 옮김으로 읽거나,
+        # '전체 이용의 40%'의 '전체'를 범위 넓힘으로 읽던 오표시. 사람 집단을 '전체'로 넓힌 문장은 계속 표시한다.
+        src = {"S1": "The district tested a parent-facing app showing real-time school bus locations on 38 of its 112 routes. "
+                     "Families on pilot routes could receive an alert when the bus was 10 minutes from their stop. "
+                     "Calls about late buses on pilot routes averaged 22 per week. "
+                     "The location data was shown with a delay of up to 45 seconds.",
+               "S2": "서강군은 방치된 빈집 30채를 빌려 리모델링했다. 2026년 3월 기준 30채 중 26채에 입주가 완료됐다.",
+               "S3": "언어별로는 베트남어가 1,920건으로 가장 많았다. 7개월간 이용 건수는 4,830건이었다.",
+               "S4": "학부모 설문 응답자 412명 중 74%가 설치에 찬성했다."}
+        for body, lang in (("Bus positions appeared with a lag of no more than 45 seconds [S1].", "en"),
+                           ("빈집 30채 중 26채, 즉 약 87%에 입주가 이뤄졌다 [S2].", "ko"),
+                           ("베트남어 통화는 전체 이용의 약 40%를 차지했다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["mismatch"], body)
+        text, changes = self.mark("전체 학부모의 74%가 설치에 찬성했다 [S4].", src, "ko")
+        self.assertEqual(1, len(changes["scope_conflict"]))
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
