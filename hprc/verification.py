@@ -1352,6 +1352,10 @@ def _source_comparison_flip(sentence: str, big: set[str], small: set[str], kind:
     return (same_ref and theirs[2][1] != kind[1]) or (swapped and theirs[2][1] == kind[1])
 
 
+_DIFF_AMOUNT = re.compile(r"\s*(?:(?!(?:was|were|is|are|been|be)\b)[^\s\d]+\s+)?(?:more|less|fewer|higher|lower|greater|larger|smaller|bigger|"
+                          r"longer|shorter|faster|slower|cheaper|costlier)\b", re.I)
+
+
 def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
     """③ 주장 안의 두 값: 기준 값은 '…보다' 바로 앞(한국어)·'than' 바로 뒤(영어) 값, 다른 값은 그 앞의 같은 종류 값 하나."""
     values = [v for v in _quantity_values(clause, _date_like_spans(clause)) if not v.get("unsupported_unit")]
@@ -1364,7 +1368,11 @@ def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
     if len(refs) != 1:
         return False
     ref = refs[0]
+    if ref["dimension"] == "unitless" and _is_date_number(ref, clause):
+        return False   # 13회차: 'than in 2024'의 연도는 비교 값이 아니다
     others = [v for v in values if v is not ref and v["dimension"] == ref["dimension"] and v["end"] <= ref["start"]]
+    # 13회차: 비교 낱말 바로 앞 값('3 more pools than', '$200 less than')은 비교 대상이 아니라 차이다.
+    others = [v for v in others if not _DIFF_AMOUNT.match(clause, v["end"])]
     return len(others) == 1 and (others[0]["value"] - ref["value"]) * sign < 0
 
 

@@ -755,6 +755,15 @@ class PlanScopeTests(unittest.TestCase):
         self.assertEqual([], _absent_values("Altogether 15 pools were open across the two seasons [S1].", en))
         self.assertEqual([], _absent_values("가람군 놀이터에는 첫 1년 동안 반려견 600마리가 입장했다 [S1].", "반려견 600마리가 입장했다."))
 
+    def test_difference_amount_and_year_are_not_comparison_sides(self):
+        # 13회차: '3 more pools than in 2024'의 3은 차이, 2024는 연도라 비교 뒤집기가 아니다.
+        src = {"S1": "The city opened all 9 pools, compared with 6 pools in 2024."}
+        for body in ("The city opened 3 more pools than in 2024 [S1].", "Riders paid $7 more than $5 fares [S1]."):
+            text, changes = self.mark(body, {"S1": src["S1"] + " Riders paid $12, up from $5."}, "en")
+            self.assertEqual([], changes["antonym_conflict"], body)
+        text, changes = self.mark("The new fare of $12 was less than $5 [S1].", {"S1": "The new fare was $12, compared with $5 before."}, "en")
+        self.assertEqual(1, len(changes["antonym_conflict"]))
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}
