@@ -814,6 +814,32 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = self.mark("The figure used average item weights rather than measuring each item [S1].", src, "en")
         self.assertEqual([], changes["negation_conflict"])
 
+    def test_negation_over_a_coordinated_subject_is_marked(self):
+        # 14회차: 원문 부정이 'A and B were not accepted'처럼 나열한 주어 전체에 걸린다.
+        src = {"S1": "Residents could drop off household batteries up to 9 volts; lithium batteries over 100 watt-hours "
+                     "and vehicle batteries were not accepted."}
+        text, changes = self.mark("Vehicle batteries and lithium batteries over 100 watt-hours were accepted at the lockers [S1].", src, "en")
+        self.assertEqual(1, len(changes["negation_conflict"]))
+        for body in ("Residents could drop off household batteries up to 9 volts at the lockers [S1].",
+                     "Lithium batteries over 100 watt-hours and vehicle batteries were not accepted [S1]."):
+            text, changes = self.mark(body, src, "en")
+            self.assertEqual([], changes["negation_conflict"], body)
+
+    def test_value_moved_to_another_listed_member_is_marked(self):
+        # 14회차: 원문이 나열한 대상 중 한 곳의 수치를 나열의 다른 대상에 붙인 문장.
+        src = {"S1": "The county installed 24 lockers at grocery stores and fire stations. "
+                     "Lockers at grocery stores collected 71 percent of the locker total.",
+               "S2": "외국인 주민이 주민센터·보건소·학교와 통화할 때 통역사가 연결된다. 통화의 46%는 학교 관련 문의였다."}
+        for body, lang in (("Fire stations accounted for 71 percent of the locker total [S1].", "en"),
+                           ("통화의 46%는 보건소 관련 문의였다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, lang in (("Grocery-store lockers collected 71 percent of the locker total [S1].", "en"),
+                           ("The 24 lockers were placed at grocery stores and fire stations [S1].", "en"),
+                           ("통화의 46%는 학교 관련 문의였다 [S2].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

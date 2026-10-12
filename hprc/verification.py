@@ -968,7 +968,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("unit")
     if _bound_overclaim(plain, sents):
         found.append("bound")
-    if _subject_swap(plain, sents) or _funding_swap(plain, sents):
+    if _subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -1069,10 +1069,31 @@ def _clause_overlap(claim: str, source: str) -> tuple[int, float]:
     return shared, (shared / len(a) if a else 0.0)
 
 
+# 14회차: 영어 원문이 부정을 나열한 주어 전체에 건다("lithium batteries over 100 watt-hours and vehicle batteries were not
+# accepted"). 'and'·'or'에서 절을 나누면 앞 주어 조각엔 부정이 없어 "… were accepted"가 그 조각과 가장 많이 겹쳐 통과했다.
+# 'and'·'or'로만 이어진 이웃 두 절을 합친 것도 원문 절 후보로 더한다. 합친 절은 각 조각보다 주장 낱말을 적게 담을 수 없으므로,
+# 주장 낱말이 한 조각에만 있으면 동점이 되고 동점 중 하나라도 부정이 같으면 표시하지 않는다(종전대로).
+_COORD_SPLIT = re.compile(r"\s+(and|or)\s+", re.I)
+
+
+def _coordinated_clauses(sentence: str) -> list[str]:
+    out = []
+    pieces = _COORD_SPLIT.split(sentence)
+    # pieces = [a, 'and', b, 'or', c, …]; 이웃 두 조각을 접속어째 합친 뒤 다시 절로 나눈 첫·끝 조각을 잇는다.
+    for i in range(0, len(pieces) - 2, 2):
+        left = re.split(r"[,;:]|\b(?:but|so|while|whereas|where|which|because|although|though)\b", pieces[i], flags=re.I)[-1]
+        right = re.split(r"[,;:]|\b(?:and|or|but|so|while|whereas|where|which|because|although|though)\b", pieces[i + 2], flags=re.I)[0]
+        if left.strip() and right.strip():
+            out.append(f"{left.strip()} {pieces[i + 1]} {right.strip()}")
+    return out
+
+
 def _negation_flip(plain: str, sents: list[str]) -> bool:
     korean = bool(re.search(r"[가-힣]", plain))
     least, ratio = (6, 0.5) if korean else (3, 0.6)
     source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    if not korean:
+        source_clauses += [c for s in sents if not re.search(r"[가-힣]", s) for c in _coordinated_clauses(s)]
     for clause in _clauses(plain):
         scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
         scored = [(shared, r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
@@ -2095,6 +2116,72 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
             return False
         if all(moved(s, v, vals) for s, v, vals in held):
             return True
+    return False
+
+
+# 14회차: 나열 항목 바꿔치기. 원문이 대상 여러 개를 나열하고("grocery stores and fire stations", "주민센터·보건소·학교") 다른
+# 문장에서 그중 하나에만 수치를 준다("Lockers at grocery stores collected 71 percent", "통화의 46%는 학교 관련 문의"). 주장이
+# 같은 수치를 나열의 다른 항목에 붙이면("Fire stations accounted for 71 percent", "46%는 보건소 관련 문의") 낱말·수치 대조를 모두
+# 통과한다. 수치가 든 원문 문장마다 나열의 한 항목만 담고 주장 항목은 담지 않으며, 주장은 원문 항목을 담지 않을 때만 본다.
+_LIST_EN = re.compile(r"((?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)((?:\s*,\s*(?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)*)"
+                      r",?\s+(?:and|or)\s+((?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)")
+_LIST_KO = re.compile(r"[가-힣]{2,}(?:\s*·\s*[가-힣]{2,})+|[가-힣]{2,}(?:과|와)\s+[가-힣]{2,}")
+_LIST_STOP = {"the", "a", "an", "and", "or", "of", "in", "at", "to", "for", "with", "from", "by", "on", "its", "their", "his",
+              "her", "was", "were", "is", "are", "be", "been", "has", "had", "have", "two", "three", "four", "both", "all",
+              "more", "less", "than", "including", "such", "as", "other", "then", "also", "each", "per"}
+
+
+def _member_terms(member: str) -> frozenset[str]:
+    if re.search(r"[가-힣]", member):
+        return frozenset({re.sub(r"(?:과|와|은|는|이|가|을|를|의|에|에서|로|으로)$", "", member.strip())})
+    words = [w.lower() for w in re.findall(r"[A-Za-z][\w-]*", member)]
+    words = [w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words if w not in _LIST_STOP]
+    return frozenset(words)
+
+
+def _list_groups(sents: list[str]) -> list[list[frozenset[str]]]:
+    groups = []
+    for s in sents:
+        for m in _LIST_EN.finditer(s):
+            members = [m.group(1)] + [x for x in m.group(2).split(",") if x.strip()] + [m.group(3)]
+            terms = [_member_terms(x) for x in members]
+            if all(terms) and len(set(terms)) == len(terms) and not any(a & b for i, a in enumerate(terms) for b in terms[i + 1:]):
+                groups.append(terms)
+        for m in _LIST_KO.finditer(s):
+            members = re.split(r"\s*·\s*|(?<=[가-힣])(?:과|와)\s+", m.group(0))
+            terms = [_member_terms(x) for x in members if len(x.strip()) >= 2]
+            if len(terms) >= 2 and len(set(terms)) == len(terms):
+                groups.append(terms)
+    return groups
+
+
+def _mentions(text: str, terms: frozenset[str]) -> bool:
+    if any(re.search(r"[가-힣]", t) for t in terms):
+        return all(t in text for t in terms)
+    words = {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w
+             for w in (x.lower() for x in re.findall(r"[A-Za-z][\w-]*", text))}
+    return terms <= words
+
+
+def _list_member_swap(plain: str, sents: list[str]) -> bool:
+    claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain))
+                    if not v.get("unsupported_unit") and not _is_date_number(v, plain)]
+    if not claim_values:
+        return False
+    groups = _list_groups(sents)
+    for value in claim_values:
+        held = [s for s in sents if _scripts(s) == _scripts(plain) and any(
+            c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])
+            for c in _quantity_values(s, _date_like_spans(s)) if not c.get("unsupported_unit"))]
+        if not held:
+            continue
+        for group in groups:
+            mine = [t for t in group if _mentions(plain, t)]
+            if len(mine) != 1:
+                continue
+            if all(not _mentions(s, mine[0]) and any(_mentions(s, t) and not _mentions(plain, t) for t in group if t != mine[0])
+                   for s in held):
+                return True
     return False
 
 
