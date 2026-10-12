@@ -783,6 +783,23 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_completed_action_from_a_proposal_is_marked_without_already(self):
+        # 13회차(holdout9): '이미' 없이 완료로 말했는데 원문은 제안·요청·권고·미확정.
+        src = {"S1": "Staff recommend expanding to two more towns in 2027, subject to council approval.",
+               "S2": "센터는 2026년 하반기 통역사 3명 증원을 요청했으나 예산은 아직 확정되지 않았다.",
+               "S3": "소방서는 점포주 확인 후 출동하는 2단계 절차 도입을 구에 제안했다.",
+               "S4": "The council approved the expansion to two more towns in March."}
+        for body, lang in (("Staff have expanded the program to two more towns [S1].", "en"),
+                           ("시는 하반기 통역사 3명 증원 예산을 확정했다 [S2].", "ko"),
+                           ("구는 점포주 확인 후 출동하는 2단계 절차를 도입했다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["plan_conflict"]), body)
+        for body, lang in (("Staff recommend expanding the program to two more towns [S1].", "en"),
+                           ("The council has approved the expansion to two more towns [S4].", "en"),
+                           ("소방서는 2단계 절차 도입을 구에 제안했다 [S3].", "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["plan_conflict"], body)
+
     def test_magnitude_word_swap_is_marked_and_equal_value_is_not(self):
         src = {"S1": "2025년 노후 하수관 정비 사업에 420억 원이 투입됐다. 정비 구간 주변에는 12만 가구가 산다.",
                "S2": "The state awarded a 4.2 million dollar grant. Annual ridership was 1.6 million trips."}

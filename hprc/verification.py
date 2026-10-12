@@ -1591,9 +1591,20 @@ _INTENT = re.compile(r"\b(?:plans?|planned|intends?|intended|proposed|propose|re
                      r"하겠다|할 계획|할 예정|예정이|계획이|권고|검토|추진할|방침", re.I)
 
 
+# 13회차(holdout9): '이미' 없이 완료로 말한 문장('has expanded', 'agreed to', '확정했다', '도입했다', '신설했다', '완료됐다')도,
+# 가장 많이 겹치는 원문 절이 제안·요청·권고·미확정으로만 말하면 계획을 시행으로 바꾼 것이다.
+_DONE = re.compile(r"\b(?:ha(?:s|ve) (?:\w+ )?(?:expanded|adopted|introduced|implemented|launched|approved|confirmed|agreed|"
+                   r"established|created|completed|finalized|extended|begun|started|added)|agreed to|confirmed|finalized)\b|"
+                   r"도입했|확정했|신설했|시행했|완료됐|완료했|마련했|확대했|승인했|의결했|결정했|채택했|연장했", re.I)
+_UNFINISHED = re.compile(_INTENT.pattern + r"|\b(?:subject to|deferred|requested|asked|suggested|not yet|no vote|until)\b|"
+                         r"제안|요청|아직|않았|않은|미정|보류", re.I)
+
+
 def _already_overclaim(plain: str, sents: list[str]) -> bool:
-    if not _ALREADY.search(plain) or _INTENT.search(plain):
+    if _INTENT.search(plain):
         return False
+    if not _ALREADY.search(plain):
+        return bool(_DONE.search(plain)) and _closest_clause_unfinished(plain, sents)
     korean = bool(re.search(r"[가-힣]", plain))
     bare, best, most = _ALREADY.sub(" ", plain), None, 0
     for s in sents:
@@ -1604,6 +1615,20 @@ def _already_overclaim(plain: str, sents: list[str]) -> bool:
             if shared > most:
                 best, most = c, shared
     return best is not None and most >= (4 if korean else 2) and bool(_INTENT.search(best))
+
+
+def _closest_clause_unfinished(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = s, shared
+    return best is not None and most >= (3 if korean else 2) and bool(_UNFINISHED.search(best)) \
+        and not _DONE.search(best)
 
 
 _FUND_EN = re.compile(r"\b(?:came from|paid (?:for )?(?:from|by|out of)|funded (?:by|from|through)|financed (?:by|from))\s+(.+?)(?:[,.;]|$)",
