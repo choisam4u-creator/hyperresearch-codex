@@ -64,7 +64,7 @@
 - [ ] 품질: 대상 바꿈(수치 없이 결과를 다른 집단·요인에 돌림) — holdout4 결함 8 중 2만 잡음. 원문 문장의 주어·부사구와 주장의 주어를 대응시키는 방법 검토
 - [ ] 품질: 기간 바꿈(총계를 '월'·'하루 평균'으로, 'a year after') — holdout4 결함 8 중 5. 원문에 기간 낱말이 없을 때 총계를 기간당 값으로 말한 것을 보는 기준 검토
 - [ ] 품질: 낱말이 다른 반대말('understated'↔'overstated', '아무 대여함에나'↔'빌린 대여함에만', 'did not fall'↔'declined')
-- [ ] 품질: 계산 값 오표시 남은 4('$62 per cat'×수, '최대 8회'×회당 7만 원, '밤 10시부터 새벽 1시까지'→'하루 세 시간', 'a fifth as long')
+- [ ] 품질: 계산 값 오표시 남은 4('$62 per cat'×수, '최대 8회'×회당 7만 원, '밤 10시부터 새벽 1시까지'→'하루 세 시간', 'a fifth as long') — 15회차 진행: 시각 범위 길이(`_clock_spans`: '오후 7시~오전 8시' → 13시간, 범위 둘의 합)와 두 단계 계산(어림 합, 주장 값의 몫, 두 몫의 배수). 남은 것: 낱말 수 '세 시간'을 값으로 못 읽음, '$62 per cat'×수, 'a fifth as long'
 - [ ] 품질: `wording_conflict`는 유보 문장을 빼도 다섯 묶음에서 단독 이유 오표시가 남는다 — 실제 codex 보고서에서 오표시율을 재고, 높으면 끈다
 
 - [ ] 평가: holdout5 라벨을 사람이 검토(작성 에이전트 라벨, 132문장) — 특히 계산 값 맞음 28문장과 비교 뒤집기 7문장 — 근거: 2026-10-11 9회차, 라벨 대조 점수의 정답이 아직 사람 판정이 아님
@@ -86,4 +86,6 @@
 - [ ] 품질: 원문 '8개월 동안' 같은 기간 표현이 기간 표시(`period_conflict`)를 주장 쪽 바꿔 말하기에도 붙이는지 확인 — 12회차 시험 작성 때 발견 — 근거: 2026-10-11 12회차
 - [ ] 품질: 대상·주체 바꿈 남은 것 — holdout10 1/9('교체 비용은 전액 구비로', 'The school district hires and supervises the guards', 'Replacement devices are also funded by the state grant') — 수치 없이 주어·재원만 바꾼 문장 — 근거: 2026-10-12 14회차
 - [ ] 품질: 포함·제외 뒤집기('도배·장판 같은 단순 내장 공사는 제외' → '도배·장판 공사도 지원 대상에 포함', 'families must still buy uniforms' → 'The waiver also covers uniforms') — holdout10 부정 4/13 — 근거: 2026-10-12 14회차
-- [ ] 품질: 시간 합('7:15–8:45'와 '2:30–3:45' → 'a combined 2 hours 45 minutes')과 합의 몫('$64,300'·'$5,700 unspent' → 'about 92 percent') 오표시 — holdout10 맞는 문장 오표시 — 근거: 2026-10-12 14회차
+- [x] 품질: 시간 합('7:15–8:45'와 '2:30–3:45' → 'a combined 2 hours 45 minutes')과 합의 몫('$64,300'·'$5,700 unspent' → 'about 92 percent') 오표시 — holdout10 맞는 문장 오표시 — 근거: 2026-10-12 14회차 — 15회차 완료(`6bf5a4d` 합의 몫·두 몫의 배수·어림 합, 시각 범위 길이 커밋): holdout10 오표시 12.3→5.5
+- [ ] 품질: holdout11 남은 놓침 — 잡은 수: 대상 바꿈 5/11·재원 0/2('Adjacent property owners are responsible for pruning', '집주인과 시가 절반씩'), 순서 0/3('Rebates are paid out first, and a city inspector checks afterward', '보증금·월세 기준 초과가 가장 많았다'), 방법 0/2('according to flow meters', '방문 면접'), 부정 2/7·인과 4/9 — 근거: 2026-10-13 15회차
+- [ ] 평가: holdout11 라벨을 사람이 검토(작성 에이전트가 경계 라벨 10개를 밝힘: 'just under half'·'nearly six warning letters' ok, '$9.4 million per year' period mismatch 등) — 근거: 2026-10-13 15회차
