@@ -817,6 +817,55 @@ def _same_count(source_value: dict, claim_value: dict) -> bool:
     return a == b or (b in _PLACE_ITEM and (a in _PLACE_ITEM or a == "unitless"))
 
 
+# 15회차: 시각 범위의 길이("오후 7시~오전 8시" → "하룻밤에 13시간", "7:15-8:45 a.m. and 2:30-3:45 p.m." → "a combined 2 hours
+# 45 minutes"). 원문(또는 주장)의 시각 범위마다 길이를 세고, 한 문장에 든 범위들의 합도 후보로 둔다(백로그, 10·14·15회차 holdout).
+_MERIDIEM = r"(a\.m\.|p\.m\.|am\b|pm\b)"
+_EN_CLOCK_RANGE = re.compile(rf"\b(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?\s*(?:-|–|to|until|through)\s*(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?",
+                             re.I)
+_KO_TIME_OF_DAY = r"(오전|오후|저녁|밤|새벽|아침|낮)?"
+_KO_CLOCK_RANGE = re.compile(rf"{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*반)?\s*(?:부터|~|–|-)\s*"
+                             rf"(?:이튿날|다음\s?날)?\s*{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*반)?")
+
+
+def _clock_minutes(hour: str, minute: str | None, part: str | None, half: bool = False) -> int | None:
+    h, m = int(hour), int(minute or (30 if half else 0))
+    if h > 24 or m >= 60:
+        return None
+    part = (part or "").lower()
+    if part.startswith("p") or part in ("오후", "저녁") or (part == "밤" and h >= 6) or (part == "낮" and h < 6):
+        h = h % 12 + 12
+    elif part.startswith("a") or part in ("오전", "새벽", "아침"):
+        h = h % 12
+    return h * 60 + m
+
+
+def _clock_spans(text: str) -> list[Decimal]:
+    """문장마다 시각 범위 길이(초)와 그 합."""
+    out = []
+    for sent in _SOURCE_SPLIT.split(text):
+        spans = []
+        for m in _EN_CLOCK_RANGE.finditer(sent):
+            if not (m.group(2) or m.group(5) or m.group(3) or m.group(6)):
+                continue   # "from 22 to 38"처럼 시각 표시가 없는 범위는 뺀다
+            start_part, end_part = m.group(3) or m.group(6), m.group(6) or m.group(3)
+            a, b = _clock_minutes(m.group(1), m.group(2), start_part), _clock_minutes(m.group(4), m.group(5), end_part)
+            if a is not None and b is not None and not m.group(3) and a > b and end_part and end_part.lower().startswith("p"):
+                a = _clock_minutes(m.group(1), m.group(2), "am")   # "11-1 p.m."
+            if a is not None and b is not None:
+                spans.append((b - a) % (24 * 60))
+        for m in _KO_CLOCK_RANGE.finditer(sent):
+            whole = m.group(0)
+            a = _clock_minutes(m.group(2), m.group(3), m.group(1), "반" in whole.split("부터")[0] if "부터" in whole else False)
+            b = _clock_minutes(m.group(5), m.group(6), m.group(4))
+            if a is not None and b is not None:
+                spans.append((b - a) % (24 * 60))
+        spans = [x for x in spans if x]
+        out += [Decimal(x * 60) for x in spans]
+        if len(spans) > 1:
+            out.append(Decimal(sum(spans) * 60))
+    return out
+
+
 def _absent_values(sentence: str, cited_text: str) -> list[str]:
     """정규화한 날짜·수치가 인용 원문에 아예 없는 것만 돌려준다.
 
@@ -868,6 +917,16 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
                 for whole in (abs(b["value"]), abs(b["value"]) + abs(a["value"])):
                     if whole > abs(a["value"]) and abs(abs(value["value"]) - abs(a["value"]) / whole * 100) <= _step(value) / 2:
                         approx.add(value["start"])
+    spans = _clock_spans(cited_text) + _clock_spans(sentence)
+    times = sorted((v for v in claimed if v["dimension"] == "time"), key=lambda v: v["start"])
+    for i, value in enumerate(times):
+        if value not in missing or value["start"] in approx:
+            continue
+        nxt = times[i + 1] if i + 1 < len(times) and not sentence[value["end"]:times[i + 1]["start"]].strip(" and") else None
+        if abs(value["value"]) in spans:
+            approx.add(value["start"])
+        elif nxt and abs(value["value"]) + abs(nxt["value"]) in spans:
+            approx.update((value["start"], nxt["start"]))
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 

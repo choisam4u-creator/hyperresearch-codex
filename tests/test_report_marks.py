@@ -839,6 +839,16 @@ class PlanScopeTests(unittest.TestCase):
         text, changes = self.mark("Sidewalk widening grew by 16 blocks, from 31 to 47 [S1].", src, "en")
         self.assertEqual([], changes["mismatch"])
 
+    def test_clock_range_length_is_read(self):
+        # 15회차: 시각 범위의 길이와 한 문장에 든 범위들의 합.
+        from hprc.verification import _absent_values
+        en = "The pool opens 6:30-9:00 a.m. and 5:15-8:00 p.m. on weekdays."
+        self.assertEqual([], _absent_values("The pool is open a combined 5 hours 15 minutes each weekday [S1].", en))
+        self.assertEqual(["6 hours", "15 minutes"], _absent_values("The pool is open a combined 6 hours 15 minutes each weekday [S1].", en))
+        ko = "쉼터는 밤(오후 9시~오전 6시)에 문을 연다."
+        self.assertEqual([], _absent_values("쉼터는 하룻밤에 9시간 문을 연다 [S1].", ko))
+        self.assertEqual(["8시간"], _absent_values("쉼터는 하룻밤에 8시간 문을 연다 [S1].", ko))
+
     def test_excluded_item_stated_as_included_is_marked(self):
         # 15회차: 원문이 대상·용도에서 뺀 항목을 주장이 포함·허용으로 말한 문장.
         ko = {"S1": "구는 경로당 냉방비를 지원한다. 지원 대상은 전기요금이며 에어컨 구입비와 수리비는 제외된다. "
