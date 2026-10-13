@@ -992,7 +992,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("negation")
     if _share_overclaim(plain, sents):
         found.append("share")
-    if "negation" not in found and (_null_result_flip(plain, sents) or _rather_than_flip(plain, sents)):
+    if "negation" not in found and (_null_result_flip(plain, sents) or _rather_than_flip(plain, sents)
+                                    or _exclusion_flip(plain, sents)):
         found.append("negation")
     if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
                                     or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
@@ -2384,6 +2385,52 @@ def _condition_flip(plain: str, sents: list[str]) -> bool:
         if claim_only and opened and not only:
             return True
     return False
+
+# 15회차: 원문이 대상·용도에서 뺀 항목("도배·장판 같은 단순 내장 공사는 제외된다", "가공식품과 주류는 살 수 없다",
+# "families must still buy their own uniforms")을 주장이 포함·허용으로 말한 문장("도배·장판 공사도 지원 대상에 포함된다",
+# "주류는 살 수 있다", "The waiver also covers uniforms"). 부정 뒤집기는 절 겹침 문턱 아래라 놓쳤다. 원문 제외 절에만 나오는 낱말
+# (다른 원문 절에 없는 것)을 부정 없는 주장 절이 포함 표현과 함께 말할 때만 본다.
+_EXCLUDE_CUE = re.compile(r"\b(?:excluded|exclude[sd]?|not (?:covered|included|eligible|allowed|accepted)|"
+                          r"(?:does|do|did) not (?:cover|include|pay for|apply to)|cannot be (?:used|spent|bought|redeemed)|"
+                          r"must (?:still )?(?:buy|pay for|purchase|provide|cover)|ineligible)\b|"
+                          r"제외|(?:살|쓸|사용할|이용할|구입할|받을)\s?수\s?없|대상이\s?아니|지원하지\s?않|포함되지\s?않|해당하지\s?않|"
+                          r"직접\s?(?:사야|구입해야|부담해야|마련해야)", re.I)
+_INCLUDE_CUE = re.compile(r"\b(?:also|covers?|covered|includes?|included|including|eligible|allowed|pays? for|paid for|"
+                          r"can (?:also )?(?:be )?(?:used|bought|buy|spend|spent|purchase|redeemed?))\b|"
+                          r"포함|(?:살|쓸|사용할|이용할|구입할|받을)\s?수\s?있|대상(?:이다|이 된|에 들)|[가-힣]도\s", re.I)
+_EXCLUDE_SPLIT = re.compile(r"[;:]|,\s|\b(?:but|while|whereas|although|though)\b|(?<=[가-힣])(?:지만|으나|며|고)[\s,]", re.I)
+_KO_PARTICLE = re.compile(r"(?:과|와|은|는|이|가|을|를|도|만|의|로|으로|에서|에)$")
+
+
+def _exclusion_terms(clause: str) -> set[str]:
+    if re.search(r"[가-힣]", clause):
+        return {_KO_PARTICLE.sub("", w) for w in re.findall(r"[가-힣]{2,}", clause)} - {""}
+    return _word_stems(clause)
+
+
+def _exclusion_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    clauses = [c.strip() for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _EXCLUDE_SPLIT.split(s) if c.strip()]
+    excluded = [c for c in clauses if _EXCLUDE_CUE.search(c)]
+    if not excluded:
+        return False
+    rest = " ".join(c for c in clauses if not _EXCLUDE_CUE.search(c))
+    others = _exclusion_terms(rest) if not korean else set()
+    for part in _EXCLUDE_SPLIT.split(plain):
+        if not part.strip() or _NEGATION.search(part) or _EXCLUDE_CUE.search(part) or not _INCLUDE_CUE.search(part):
+            continue
+        mine = _exclusion_terms(part)
+        for c in excluded:
+            cue = _EXCLUDE_CUE.search(c).group(0)
+            # 한국어는 조사를 떼는 근사가 거칠어('횡단보도는' → '횡단보'), 다른 원문 절 글자에 들어 있는 낱말도 뺀다.
+            only = {t for t in _exclusion_terms(c) - others if len(t) >= 2 and t not in _exclusion_terms(cue)
+                    and not (korean and (t in rest or _KO_PARTICLE.sub("", t[:-1]) and t[:-1] in rest and len(t) > 2))}
+            if korean and any(t in part for t in only if len(t) >= 2 and not re.search(r"(?:된다|했다|한다|없다|있다)$", t)):
+                return True
+            if not korean and mine & only:
+                return True
+    return False
+
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
 _SIMILAR_WARNED = re.compile(r"\(S\d+(?:·S\d+)+: [^)]*(?:독립 출처가 아닐 수 있음|may not be independent)[^)]*\)")

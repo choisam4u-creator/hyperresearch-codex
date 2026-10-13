@@ -825,6 +825,23 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, "en")
             self.assertEqual([], changes["negation_conflict"], body)
 
+    def test_excluded_item_stated_as_included_is_marked(self):
+        # 15회차: 원문이 대상·용도에서 뺀 항목을 주장이 포함·허용으로 말한 문장.
+        ko = {"S1": "구는 경로당 냉방비를 지원한다. 지원 대상은 전기요금이며 에어컨 구입비와 수리비는 제외된다. "
+                    "상품권은 구내 전통시장에서 쓸 수 있으며, 담배와 복권은 살 수 없다."}
+        for body in ("에어컨 구입비도 지원 대상에 포함된다 [S1].", "상품권으로 담배는 살 수 있다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["negation_conflict"]), body)
+        for body in ("경로당 전기요금이 지원 대상에 포함된다 [S1].", "상품권은 전통시장에서 쓸 수 있다 [S1].",
+                     "에어컨 구입비는 지원되지 않는다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["negation_conflict"], body)
+        en = {"S1": "The grant pays tuition for adult learners; students must still buy their own textbooks and laptops."}
+        text, changes = self.mark("The grant also covers textbooks and laptops [S1].", en, "en")
+        self.assertEqual(1, len(changes["negation_conflict"]))
+        text, changes = self.mark("The grant covers tuition for adult learners [S1].", en, "en")
+        self.assertEqual([], changes["negation_conflict"])
+
     def test_value_moved_to_another_listed_member_is_marked(self):
         # 14회차: 원문이 나열한 대상 중 한 곳의 수치를 나열의 다른 대상에 붙인 문장.
         src = {"S1": "The county installed 24 lockers at grocery stores and fire stations. "
