@@ -1,0 +1,104 @@
+{
+ "id": "en-rain-barrels",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "What has Halverton's Backyard Runoff Rebate achieved, and who is using it?",
+ "sources": {
+  "S1": "Halverton's Backyard Runoff Rebate reimburses residential property owners for installing rain barrels and rain gardens. Owners buy and install the equipment themselves and then apply for a rebate covering 75 percent of the cost, up to $150 per rain barrel and $1,200 per rain garden. A city inspector must confirm the installation before the rebate is paid. In 2025 the Stormwater Division paid rebates for 820 rain barrels and 95 rain gardens, totaling $171,000. Commercial properties are not eligible, though the division is studying a separate program for them. The division estimates the installations capture about 3.1 million gallons of runoff a year, based on design capacity and average rainfall rather than measured flows.",
+  "S2": "The Halverton Environmental Advisory Board found that 61 percent of 2025 rebates went to owners in the city's three highest-income wards, which together contain 34 percent of single-family homes. It noted that the upfront purchase requirement may deter lower-income owners, and recommended that the city pilot direct installation at no upfront cost in two lower-income wards in 2027. The board also found that one in five rain barrels in a spring 2026 follow-up sample of 100 sites was disconnected or overflowing. It did not estimate how that affects the division's runoff figure."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What has Halverton's Backyard Runoff Rebate achieved, and who is using it?\n\n## Answer\nHalverton paid rebates on 915 rain barrels and rain gardens in 2025, worth $171,000 in total [S1]. The installations capture about 3.1 million gallons of runoff a year, according to flow meters at participating homes [S1]. Rebates have gone disproportionately to the city's wealthiest wards [S2].\n\n## Evidence\n- Property owners purchase and install the equipment, then seek reimbursement [S1].\n- The rebate covers three-quarters of the cost, capped at $150 for a barrel and $1,200 for a garden [S1].\n- An owner who spends $160 on a rain barrel would get back $120 [S1].\n- Rebates are paid out first, and a city inspector checks the installation afterward [S1].\n- Commercial properties can also apply through a separate track [S1].\n\n## Counter-evidence and limits\n- Owners in the three highest-income wards received 61 percent of rebates while holding about a third of single-family homes [S2].\n- The board found that lower-income owners turned down the rebate because of the upfront cost [S2].\n- The board recommended rolling out no-upfront-cost direct installation citywide in 2027 [S2].\n- In the follow-up sample, about 20 of the 100 inspected sites had a disconnected or overflowing barrel [S2].\n- The board concluded that faulty barrels reduce the city's runoff estimate by a fifth [S2].\n- Halverton's combined sewers overflowed 14 times during 2025.\n\n## Next steps\n- Meter a sample of installations to check the design-capacity estimate (judgment).\n- Track whether the 2027 direct-installation pilot changes the income mix of participants (judgment).\n\n## Sources\n- [S1] Halverton Stormwater Division, \"Backyard Runoff Rebate: 2025 Results\" (February 2026)\n- [S2] Halverton Environmental Advisory Board, \"Review of Green Stormwater Incentives\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Halverton paid rebates on 915 rain barrels and rain gardens in 2025, worth $171,000 in total",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "820 + 95 = 915."
+  },
+  {
+   "key": "The installations capture about 3.1 million gallons of runoff a year, according to flow meters at participating homes",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "The figure is a design-capacity estimate, not measured flows."
+  },
+  {
+   "key": "Rebates have gone disproportionately to the city's wealthiest wards",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "61% of rebates in wards with 34% of homes."
+  },
+  {
+   "key": "Property owners purchase and install the equipment, then seek reimbursement",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S1."
+  },
+  {
+   "key": "The rebate covers three-quarters of the cost, capped at $150 for a barrel and $1,200 for a garden",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "75% up to the stated caps."
+  },
+  {
+   "key": "An owner who spends $160 on a rain barrel would get back $120",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "75% of $160 = $120, under the $150 cap."
+  },
+  {
+   "key": "Rebates are paid out first, and a city inspector checks the installation afterward",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "Inspection must happen before payment."
+  },
+  {
+   "key": "Commercial properties can also apply through a separate track",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "Commercial properties are ineligible; a separate program is only being studied."
+  },
+  {
+   "key": "Owners in the three highest-income wards received 61 percent of rebates while holding about a third of single-family homes",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "34% is about a third."
+  },
+  {
+   "key": "The board found that lower-income owners turned down the rebate because of the upfront cost",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "The board said the requirement may deter them; no finding of actual refusals."
+  },
+  {
+   "key": "The board recommended rolling out no-upfront-cost direct installation citywide in 2027",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "It recommended a pilot in two lower-income wards."
+  },
+  {
+   "key": "In the follow-up sample, about 20 of the 100 inspected sites had a disconnected or overflowing barrel",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "One in five of 100 = 20."
+  },
+  {
+   "key": "The board concluded that faulty barrels reduce the city's runoff estimate by a fifth",
+   "label": "mismatch",
+   "tag": "unsupported",
+   "why": "The board did not estimate the effect on the runoff figure."
+  },
+  {
+   "key": "Halverton's combined sewers overflowed 14 times during 2025",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source reports sewer overflows."
+  }
+ ]
+}

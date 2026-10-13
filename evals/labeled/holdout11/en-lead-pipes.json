@@ -1,0 +1,104 @@
+{
+ "id": "en-lead-pipes",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "How far has Corvale's lead service line replacement program progressed, and is it lowering lead in tap water?",
+ "sources": {
+  "S1": "Corvale Water Utility began a lead service line replacement program in January 2024 after an inventory identified 6,200 lead lines in the city. By December 2025 the utility had replaced 2,950 lines, about 48 percent of the inventory. The utility pays for the full replacement, including the portion of pipe on private property, using a federal low-interest loan; property owners pay nothing but must sign an access agreement. Replacements are prioritized on blocks with schools or child care centers, followed by blocks where water samples exceeded the federal action level. About 410 owners have not returned access agreements, and the utility cannot replace those lines without consent. The utility expects to finish replacing all lines whose owners consent by 2030, assuming the current pace of about 1,475 lines per year continues.",
+  "S2": "In 2025 the Corvale Department of Public Health tested tap water at 300 homes, 150 with replaced lines and 150 still on lead lines. The 90th-percentile lead level was 3 parts per billion in homes with replaced lines and 11 parts per billion in homes still on lead lines; the federal action level is 15 parts per billion. The department notes that homes were not randomly selected and that replaced homes were tested an average of 6 months after replacement, when disturbed pipes can temporarily release more lead. It recommends that residents on lead lines use certified filters, which the department distributes free only to households with children under 6 or pregnant members."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How far has Corvale's lead service line replacement program progressed, and is it lowering lead in tap water?\n\n## Answer\nCorvale had replaced just under half of its 6,200 known lead service lines by the end of 2025 [S1]. Homes with new lines showed a 90th-percentile lead level 8 parts per billion lower than homes still on lead pipes [S2]. Homes still on lead lines were above the federal action level in the 2025 sampling [S2].\n\n## Evidence\n- Property owners pay for the section of pipe that runs across their own land [S1].\n- The work is financed through a low-interest federal loan [S1].\n- Blocks with schools or child care centers are first in line for replacement [S1].\n- Blocks with high water-sample results are replaced ahead of blocks with schools [S1].\n- At the current pace, the remaining 3,250 lines would take a little over two years to replace [S1].\n\n## Counter-evidence and limits\n- Roughly 410 owners have yet to sign access agreements, which blocks work on those lines [S1].\n- The utility will have replaced every lead line in the city by 2030 [S1].\n- The health department selected the tested homes at random from both groups [S2].\n- Replaced homes were sampled about half a year after the work, when disturbed pipes may shed extra lead [S2].\n- The health department gives free certified filters to every household served by a lead line [S2].\n- Replacing a single line costs the utility an average of $9,800.\n\n## Next steps\n- Run a randomized follow-up sample at least a year after replacement (judgment).\n- Contact the roughly 410 non-responding owners before the 2030 target date (judgment).\n\n## Sources\n- [S1] Corvale Water Utility, \"Lead Service Line Replacement Progress Report\" (March 2026)\n- [S2] Corvale Department of Public Health, \"Drinking Water Lead Sampling 2025\" (February 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Corvale had replaced just under half of its 6,200 known lead service lines by the end of 2025",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "2,950 of 6,200 is about 48%."
+  },
+  {
+   "key": "Homes with new lines showed a 90th-percentile lead level 8 parts per billion lower than homes still on lead pipes",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "11 - 3 = 8 ppb."
+  },
+  {
+   "key": "Homes still on lead lines were above the federal action level in the 2025 sampling",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "11 ppb is below the 15 ppb action level."
+  },
+  {
+   "key": "Property owners pay for the section of pipe that runs across their own land",
+   "label": "mismatch",
+   "tag": "payer",
+   "why": "The utility pays for the full replacement, including the private portion."
+  },
+  {
+   "key": "The work is financed through a low-interest federal loan",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S1."
+  },
+  {
+   "key": "Blocks with schools or child care centers are first in line for replacement",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Prioritized first."
+  },
+  {
+   "key": "Blocks with high water-sample results are replaced ahead of blocks with schools",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "Schools and child care blocks come first, then high-sample blocks."
+  },
+  {
+   "key": "At the current pace, the remaining 3,250 lines would take a little over two years to replace",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "6,200 - 2,950 = 3,250; 3,250 / 1,475 is about 2.2 years."
+  },
+  {
+   "key": "Roughly 410 owners have yet to sign access agreements, which blocks work on those lines",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Cannot replace without consent."
+  },
+  {
+   "key": "The utility will have replaced every lead line in the city by 2030",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "The 2030 target covers only consenting owners and assumes the pace holds."
+  },
+  {
+   "key": "The health department selected the tested homes at random from both groups",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Homes were not randomly selected."
+  },
+  {
+   "key": "Replaced homes were sampled about half a year after the work, when disturbed pipes may shed extra lead",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Average of 6 months after replacement."
+  },
+  {
+   "key": "The health department gives free certified filters to every household served by a lead line",
+   "label": "mismatch",
+   "tag": "eligibility",
+   "why": "Free filters only for households with children under 6 or pregnant members."
+  },
+  {
+   "key": "Replacing a single line costs the utility an average of $9,800",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives a per-line cost."
+  }
+ ]
+}
