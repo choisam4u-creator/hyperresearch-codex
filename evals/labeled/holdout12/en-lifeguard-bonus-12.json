@@ -1,0 +1,104 @@
+{
+ "id": "en-lifeguard-bonus-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "Did Glenmora's 2026 lifeguard retention bonus help keep city pools open, and what else changed?",
+ "sources": {
+  "S1": "Glenmora offered a $500 retention bonus to lifeguards who worked at least 200 hours between Memorial Day and Labor Day 2026, paid in a single installment after the season. The city hired 64 lifeguards in 2026, compared with 41 in 2025, and 47 of the 64 qualified for the bonus. With more staff, all four public pools opened seven days a week, whereas in 2025 two pools were open only on weekends. Total pool visits reached 96,000 in 2026, up from 71,500 in 2025. The bonus was paid from pool admission revenue, not the general fund. Applicants had to be at least 16 and hold a current lifeguard certification; the city reimbursed the $210 certification course fee only for hires who completed the season.",
+  "S2": "The board noted that 2026 also had 12 more days above 85°F than 2025, so higher attendance cannot be credited to staffing alone. Lifeguard hourly pay rose from $15.50 to $17.00 in 2026, set by the city council in February. The board recommended extending the season to mid-September in 2027, but staff said this would depend on school-year staffing, since most lifeguards are high school and college students. No drowning incidents occurred at city pools in either year."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Glenmora's 2026 lifeguard retention bonus help keep city pools open, and what else changed?\n\n## Answer\nGlenmora hired 23 more lifeguards in 2026 than in 2025, an increase of more than half [S1]. The advisory board credited the rise in pool visits to 96,000 to the larger lifeguard staff [S2].\n\n## Evidence\n- Visits grew by 24,500, or about 34%, compared with 2025 [S1].\n- The $500 bonus went to lifeguards who logged at least 100 hours over the summer [S1].\n- The bonus was split into monthly installments during the season [S1].\n- Nearly three in four of the lifeguards hired qualified for the bonus [S1].\n- Bonus payouts therefore totaled $23,500 [S1].\n- In 2026 two of the four pools were open only on weekends [S1].\n- The bonus came out of the city's general fund rather than admission revenue [S1].\n- Hires had to be at least 16 with a current lifeguard certification, and the $210 course fee was refunded only to those who finished the season [S1].\n\n## Counter-evidence and limits\n- The advisory board pointed out that 2026 had 12 more days above 85°F than 2025 [S2].\n- Hourly lifeguard pay increased by $1.50, or nearly 10% [S2].\n- Staff agreed to extend the 2027 season to mid-September [S2].\n- Glenmora kept adult pool admission at $4 for the 2026 season.\n\n## Next actions\n- Separate the effects of the pay raise, the bonus and the weather before renewing the bonus for 2027 (judgment).\n\n## Sources\n- [S1] Glenmora Recreation Department, \"Summer 2026 Aquatics Season Report\" (September 2026)\n- [S2] Glenmora Parks Advisory Board, \"Aquatics Review\" (September 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Glenmora hired 23 more lifeguards in 2026 than in 2025, an increase of more than half",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 64 - 41 = 23; 23/41 = 56%."
+  },
+  {
+   "key": "The advisory board credited the rise in pool visits to 96,000 to the larger lifeguard staff",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S2: the board said attendance cannot be credited to staffing alone, citing hotter weather."
+  },
+  {
+   "key": "Visits grew by 24,500, or about 34%, compared with 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 96,000 - 71,500 = 24,500; /71,500 = 34.3%."
+  },
+  {
+   "key": "The $500 bonus went to lifeguards who logged at least 100 hours over the summer",
+   "label": "mismatch",
+   "tag": "wrong number",
+   "why": "S1: the threshold was 200 hours."
+  },
+  {
+   "key": "The bonus was split into monthly installments during the season",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: paid in a single installment after the season."
+  },
+  {
+   "key": "Nearly three in four of the lifeguards hired qualified for the bonus",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S1: 47/64 = 73.4%."
+  },
+  {
+   "key": "Bonus payouts therefore totaled $23,500",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 47 x $500 = $23,500."
+  },
+  {
+   "key": "In 2026 two of the four pools were open only on weekends",
+   "label": "mismatch",
+   "tag": "wrong year",
+   "why": "S1: that was 2025; in 2026 all four pools opened seven days a week."
+  },
+  {
+   "key": "The bonus came out of the city's general fund rather than admission revenue",
+   "label": "mismatch",
+   "tag": "payer",
+   "why": "S1: paid from admission revenue, not the general fund."
+  },
+  {
+   "key": "Hires had to be at least 16 with a current lifeguard certification, and the $210 course fee was refunded only to those who finished the season",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: same age, certification and reimbursement condition."
+  },
+  {
+   "key": "The advisory board pointed out that 2026 had 12 more days above 85°F than 2025",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: 12 more days above 85°F."
+  },
+  {
+   "key": "Hourly lifeguard pay increased by $1.50, or nearly 10%",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S2: $17.00 - $15.50 = $1.50; 1.50/15.50 = 9.7%."
+  },
+  {
+   "key": "Staff agreed to extend the 2027 season to mid-September",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: the board recommended it; staff said it depends on school-year staffing."
+  },
+  {
+   "key": "Glenmora kept adult pool admission at $4 for the 2026 season",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives admission prices; no citation."
+  }
+ ]
+}
