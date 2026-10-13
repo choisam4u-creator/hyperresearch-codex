@@ -1295,3 +1295,17 @@ class LabeledRoundTests(unittest.TestCase):
                      "Summer 2026 was drier than 2025 [S1].", "Lower-income buyers received $1,200 rather than $500 [S1]."):
             text, changes = self.mark(body, en)
             self.assertEqual([], changes["antonym_conflict"], body)
+
+    def test_korean_word_share_matching_source_percent_is_not_wording_conflict(self):
+        # 16회차: '열 명 중 약 여덟 명'은 원문 '78%'를 말로 바꾼 것이라 글자 2-gram이 원문에 없어 내용 대조(wording_conflict)에
+        # 걸렸다(holdout5 맞는 문장). 원문 퍼센트와 맞는 낱말 몫만 대조 전에 빼고, 값이 다르면('세 명' = 30%) 그대로 대조한다.
+        src = {"S1": "학부모·학생 설문(2026년 5월, 학부모 900명·학생 1,500명 응답). 학부모의 78%가 교복비 부담이 줄었다고 답했다. "
+                     "학생의 교복 만족도는 64%였고, 생활복이 포함된 학교의 만족도는 71%였다. "
+                     "학생 응답자의 3분의 1가량은 사이즈 교환 절차가 불편하다고 답했다."}
+        for body in ("학부모 열 명 중 약 여덟 명이 교복비 부담 완화를 체감했다 [S1].",
+                     "학생 응답자 세 명 중 한 명꼴은 사이즈 교환이 번거롭다고 했다 [S1]."):
+            text, changes = self.mark(body, src, "ko")
+            self.assertEqual([], changes["wording_conflict"], body)
+            self.assertNotIn("(출처 불일치)", text, body)
+        text, changes = self.mark("학부모 열 명 중 약 세 명이 교복비 부담 완화를 체감했다 [S1].", src, "ko")
+        self.assertIn("(출처 불일치)", text)

@@ -983,6 +983,42 @@ _RESTRAINED = re.compile(r"\b(?:might|may|could|possibly|perhaps|not|never|uncle
                          r"가능성|수 있|어렵|이르다|않았|않는다|않다|않은|없었|없다|불확실|미지수", re.I)
 
 
+# 16회차: 한국어 낱말 몫("열 명 중 약 여덟 명", "다섯 명 중 한 명꼴", "열에 넷 이상", "절반을 조금 넘는")은 원문 퍼센트를
+# 말로 바꾼 것이라 글자 2-gram이 원문에 없다. 원문 퍼센트와 맞는 낱말 몫은 내용 대조 전에 빼서, 맞게 반올림한 문장이
+# 낱말이 원문에 없다는 이유로 표시되지 않게 한다(값이 원문과 맞지 않으면 그대로 두고 대조한다).
+_KO_COUNT = {"한": 1, "하나": 1, "두": 2, "둘": 2, "세": 3, "셋": 3, "네": 4, "넷": 4, "다섯": 5, "여섯": 6, "일곱": 7,
+             "여덟": 8, "아홉": 9, "열": 10}
+_KO_COUNT_WORD = "|".join(sorted(_KO_COUNT, key=len, reverse=True))
+_KO_SHARE_PHRASE = re.compile(
+    r"(?<![가-힣])(" + _KO_COUNT_WORD + r")\s*(?:명|곳|가구|건|집)?\s*(?:중|가운데|에)\s*(?:약|대략)?\s*(" + _KO_COUNT_WORD +
+    r")\s*(?:명|곳|가구|건|집)?(?:\s*(꼴|이상|넘게|남짓))?"
+    r"|절반(?:을|이|은)?\s*(?:조금\s*)?(넘는|넘게|넘었|이상|가까이|가량|남짓)(?:\s*수)?")
+
+
+def _supported_share_spans(plain: str, cited_text: str) -> list[tuple[int, int]]:
+    """주장의 한국어 낱말 몫 중 인용 원문 퍼센트(반올림 ±5%p, 하한은 15%p 안)와 맞는 것의 자리."""
+    shares = [abs(v["value"]) for v in _quantity_values(cited_text, _date_like_spans(cited_text))
+              if v["dimension"] == "percent" and not v.get("unsupported_unit")]
+    spans = []
+    for m in _KO_SHARE_PHRASE.finditer(plain):
+        if m.group(1):
+            whole, part = _KO_COUNT[m.group(1)], _KO_COUNT[m.group(2)]
+            if part >= whole:
+                continue
+            value, tail = Decimal(part * 100) / whole, m.group(3) or ""
+        else:
+            value, tail = Decimal(50), m.group(4)
+        if tail in ("이상", "넘게", "넘는", "넘었", "남짓"):
+            ok = any(value <= p <= value + 15 for p in shares)
+        elif tail == "가까이":
+            ok = any(value - 15 <= p <= value for p in shares)
+        else:
+            ok = any(abs(p - value) <= 5 for p in shares)
+        if ok:
+            spans.append(m.span())
+    return spans
+
+
 def _wording_unsupported(plain: str, cited_text: str) -> bool:
     """인용 문장의 내용이 인용 원문에 거의 없으면 True — 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장.
 
@@ -996,6 +1032,8 @@ def _wording_unsupported(plain: str, cited_text: str) -> bool:
     if re.search(r"[가-힣]", plain):
         if hangul <= latin:
             return False
+        for start, end in reversed(_supported_share_spans(plain, cited_text)):
+            plain = plain[:start] + " " + plain[end:]
         grams = _char_bigrams(plain)
         return len(grams) >= 12 and len(grams & _char_bigrams(cited_text)) / len(grams) < 0.4
     if latin <= hangul:
