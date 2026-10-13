@@ -825,6 +825,20 @@ class PlanScopeTests(unittest.TestCase):
             text, changes = self.mark(body, src, "en")
             self.assertEqual([], changes["negation_conflict"], body)
 
+    def test_two_step_arithmetic_is_not_marked(self):
+        # 15회차: 어림 표시가 붙은 두 값의 합, 주장이 먼저 말한 값의 몫, 두 몫의 배수, 주장이 함께 말한 두 값의 차.
+        from hprc.verification import _absent_values
+        src = "The program lent 500 tablets. Staff reported that 64 tablets were lost and 21 were broken."
+        self.assertEqual([], _absent_values("About 85 tablets, or roughly 17 percent of the stock, were lost or broken [S1].", src))
+        self.assertEqual(["31 percent"], _absent_values("About 85 tablets, or roughly 31 percent of the stock, were lost or broken [S1].", src))
+        self.assertEqual([], _absent_values("Spending came to $48,600, about 81 percent of the budget [S1].",
+                                            "Spending reached $48,600, leaving $11,400 unspent."))
+        self.assertEqual([], _absent_values("구비는 시비의 3배였다 [S1].", "사업비는 시비 25%, 구비 75%로 구성된다."))
+        self.assertEqual(["2배"], _absent_values("구비는 시비의 2배였다 [S1].", "사업비는 시비 25%, 구비 75%로 구성된다."))
+        src = {"S1": "The city expanded sidewalk widening from 31 to 47 blocks in 2025. Crews also repaired 16 bus shelters."}
+        text, changes = self.mark("Sidewalk widening grew by 16 blocks, from 31 to 47 [S1].", src, "en")
+        self.assertEqual([], changes["mismatch"])
+
     def test_excluded_item_stated_as_included_is_marked(self):
         # 15회차: 원문이 대상·용도에서 뺀 항목을 주장이 포함·허용으로 말한 문장.
         ko = {"S1": "구는 경로당 냉방비를 지원한다. 지원 대상은 전기요금이며 에어컨 구입비와 수리비는 제외된다. "

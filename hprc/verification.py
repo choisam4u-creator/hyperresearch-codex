@@ -589,6 +589,11 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
                 if a["dimension"] == b["dimension"]:
                     out.append(("배", abs(a["value"]) / abs(b["value"])))
     out += [("percent", abs(p - q)) for p in percents for q in percents if p != q]
+    # 15회차: 두 몫의 배수("국비 40%, 시비 60%" → "시비는 국비의 1.5배")와, 어림 표시가 있을 때 같은 차원 두 값의 합
+    # ("41 lost … and 12 damaged" → "about 53 devices").
+    out += [("배", p / q) for p in percents for q in percents if p != q]
+    out += [(a["dimension"], abs(a["value"]) + abs(b["value"])) for i, a in enumerate(plain) for b in plain[i + 1:]
+            if a["dimension"] == b["dimension"]]
     # 2026-10-10 7회차: 같은 차원 두 값의 차("9.2회에서 5.1회로" → "about 4"), 단위당 값×개수("㎡당 15만 원"×"1만 2,000㎡" →
     # "약 18억 원"), 화씨↔섭씨 환산(차이와 절대 온도 둘 다). 어림 표시가 있을 때만 쓰인다.
     for a in plain:
@@ -846,6 +851,23 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
                    c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
                    and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
     approx = _approx_supported(sentence, missing, source, cited_text, claimed, bases) if missing else set()
+    # 15회차: 주장이 먼저 말한 값(원문 값이거나 계산 값)의 몫("about 53 devices, or roughly 18 percent of the fleet" = 53÷300,
+    # "$64,300, about 92 percent of the allocation" = 64,300÷(64,300+5,700))은 그 값과 원문 값으로 셈한 퍼센트로 본다.
+    anchors = [v for v in claimed if v["dimension"] != "percent" and v["value"]
+               and (v not in missing or v["start"] in approx)]
+    plain_source = [c for c in source if c["dimension"] != "percent" and c["value"]]
+    for value in missing:
+        if value["start"] in approx or value["dimension"] != "percent":
+            continue
+        for a in anchors:
+            if a["start"] > value["start"]:
+                continue
+            for b in plain_source:
+                if not _comparable_counts(a, b):
+                    continue
+                for whole in (abs(b["value"]), abs(b["value"]) + abs(a["value"])):
+                    if whole > abs(a["value"]) and abs(abs(value["value"]) - abs(a["value"]) / whole * 100) <= _step(value) / 2:
+                        approx.add(value["start"])
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
@@ -964,6 +986,10 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if stems and not _UNVERIFIED_SCOPE.search(plain):
         for value in claim_values:
             held = holders(value)
+            # 15회차: 주장이 함께 말한 두 값의 차("grew by 16 intersections, from 22 to 38")는 원문 다른 문장의 같은 수와 견주지 않는다.
+            if any(a is not b and a is not value and b is not value and a["dimension"] == b["dimension"] == value["dimension"]
+                   and abs(abs(a["value"]) - abs(b["value"])) == abs(value["value"]) for a in claim_values for b in claim_values):
+                continue
             if (held and all(_scripts(s) == _scripts(plain) for s in held)
                     and not any(any(t in s.lower() for t in stems) for s in held)):
                 found.append("context")
