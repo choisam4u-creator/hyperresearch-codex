@@ -1107,7 +1107,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if _bound_overclaim(plain, sents):
         found.append("bound")
     if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
-            or _rank_swap(plain, sents)):
+            or _rank_swap(plain, sents) or _doer_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -1909,6 +1909,78 @@ def _payer_swap(plain: str, sents: list[str], values: list[dict]) -> bool:
     if content and all(c and not (c & content) for c, _ in rows):
         return True
     return bool(tiers) and all(t and not (t & tiers) for _, t in rows)
+
+
+# 16회차(holdout11 대상 바꿈을 보고 설계): 일을 맡은 주체를 바꾼 문장("Adjacent property owners are responsible for pruning"
+# ← 원문 "The forestry division prunes"; "포획과 수술은 시 직영 동물보호센터가 맡는다" ← "시와 계약한 동물병원 11곳이 맡는다").
+# 주장에서 '누가 무슨 일을 하는지'(주체 구 + 일 동사)를 읽고, 일 낱말(주체 구를 뺀 나머지)이 가장 많이 겹치는 원문 절의 주체 구와
+# 견준다. 원문 절에 주체 구가 있고 그 낱말이 주장 주체 구와 하나도 겹치지 않을 때만 표시한다(주체가 안 보이면 판정하지 않음).
+_DOER_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bthat )|(?<=\bwhile ))((?:[A-Z]?[\w'-]+\s+){0,4}?[\w'-]+)\s+"
+                      r"(?:also |still |directly |now )?"
+                      r"(?:(?:is|are|was|were|remains?|remained) (?:also |still |now )?(?:responsible for|in charge of)|hires?|hired|supervises?|supervised|handles?|handled|prunes?|pruned|"
+                      r"conducts?|conducted|performs?|performed|carr(?:y|ies|ied) (?:the|out)|runs?|ran|operates?|operated|manages?|"
+                      r"managed|maintains?|maintained|inspects?|inspected|installs?|installed|delivers?|delivered|staffs?|staffed|"
+                      r"cleans?|cleaned|visits?|visited|collects?|collected|administers?|administered|reviews?|reviewed|"
+                      r"advances?|advanced|bears?|bore|absorbs?|absorbed|does|did)\b")
+_DOER_EN_BY = re.compile(r"\b(?:is|are|was|were|be|been|being|get|gets)\s+(?:\w+ly\s+)?(?:\w+ed|done|run|paid|borne|made|kept|seen|"
+                         r"taken|given)\s+(?:\w+\s+){0,4}?by\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)(?=[,.;]|\s+(?:and|but|"
+                         r"while|which|at|in|on|for|with|under|through|from)\b|$)", re.I)
+_DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·]+?)(?:이|가|에서)\s+(?:모두\s+|직접\s+|전담해\s+|나눠\s+)*"
+                      r"(?:맡|담당|진행|운영|관리|점검|단속|세척|소독|방문|출동|수행|처리|수거|설치|채용|배치|선발|심사|조사|보관|책임)"
+                      r"|((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,2}?(?<![가-힣])[가-힣A-Za-z0-9·]+?)\s*(?:의\s*)?(?:책임|몫|담당)(?:이다|이며|이고|으로|이었다|이라)")
+_DOER_GENERIC = {"the", "a", "an", "its", "their", "his", "her", "this", "that", "these", "those", "each", "every", "all",
+                 "also", "still", "now", "directly", "who", "which", "program", "pilot", "staff", "it", "they", "them",
+                 "직접", "모두", "각", "소속", "직원", "직원들", "들", "등", "현재", "새", "이", "그", "모든", "실제"}
+
+
+def _doer_words(phrase: str) -> set[str]:
+    words = [re.sub(r"'s$|(?<=[a-z]{3})s$|(?<=[가-힣])(?:과|와|은|는|이|가|도|만|에서|의)$", "", w.lower())
+             for w in re.findall(r"[A-Za-z][\w'-]*|[가-힣]+", phrase)]
+    words = [w for w in words if w and w not in _DOER_GENERIC]
+    # 한 글자 낱말('시'·'구')은 다른 주체 구에도 흔히 붙으므로("시와 계약한 동물병원") 긴 낱말이 있으면 뺀다.
+    longer = {w for w in words if len(w) > 1}
+    return longer or set(words)
+
+
+def _doers(text: str) -> list[tuple[str, int, int]]:
+    """(주체 구, 시작, 끝) — 한국어는 'X가 맡는다'·'X 책임이다', 영어는 'X hires'·'is pruned by X'."""
+    if re.search(r"[가-힣]", text):
+        return [(m.group(1) or m.group(2), m.start(), m.end()) for m in _DOER_KO.finditer(text)]
+    out = [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN.finditer(text)
+           if m.group(1).split()[-1].lower() not in ("is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "not")]
+    return out + [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_BY.finditer(text)]
+
+
+def _doer_swap(plain: str, sents: list[str]) -> bool:
+    mine = _doers(plain)
+    if len(mine) != 1 or _RESTRAINED.search(plain):
+        return False
+    phrase, start, end = mine[0]
+    words = _doer_words(phrase)
+    # 수량 문장("Paramedics averaged nearly 14 visits", "hired 23 more lifeguards", "More than half of inspected buildings")은
+    # 누가 일을 맡는지가 아니라 몇인지를 말하므로 보지 않는다(수치 검사가 맡는다).
+    if (not words or re.search(r"\d", phrase)
+            or re.match(r"(?:more|less|fewer|half|most|about|nearly|over|under|some|many|few|almost|roughly)\b", phrase, re.I)
+            or re.match(r"\s*\S+\s+(?:\w+\s+)?(?:about |nearly |roughly |over |more than |almost )?[$€£₩]?\d", plain[end:])):
+        return False
+    task = plain[:start] + " " + plain[end:]
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    for s in sents:
+        for c in [s] + _clauses(s):
+            theirs = _doers(c)
+            if not theirs:
+                continue
+            rest = c
+            for p, a, b in sorted(theirs, key=lambda t: -t[1]):
+                rest = rest[:a] + " " + rest[b:]
+            shared, _ = _clause_overlap(task, rest)
+            if shared > most:
+                best, most = theirs, shared
+    if best is None or most < (4 if korean else 2):
+        return False
+    # 원문 절 주체 어느 하나라도 주장 주체와 낱말을 나누면(같은 주체를 다르게 부른 것) 표시하지 않는다.
+    return all(_doer_words(p) and not (_doer_words(p) & words) for p, _, _ in best)
 
 
 def _causal_stems(text: str) -> set[str]:

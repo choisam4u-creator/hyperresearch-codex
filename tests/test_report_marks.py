@@ -1309,3 +1309,24 @@ class LabeledRoundTests(unittest.TestCase):
             self.assertNotIn("(출처 불일치)", text, body)
         text, changes = self.mark("학부모 열 명 중 약 세 명이 교복비 부담 완화를 체감했다 [S1].", src, "ko")
         self.assertIn("(출처 불일치)", text)
+
+    def test_doer_swap_is_marked(self):
+        # 16회차(holdout11 대상 바꿈): 일을 맡은 주체를 바꾼 문장. 일 낱말이 가장 많이 겹치는 원문 절의 주체와 견주고,
+        # 주체를 같은 낱말로 부르거나 수량을 말하는 문장은 건드리지 않는다.
+        en = {"S1": "The police department hires and supervises the crossing guards, while the school district reimburses "
+                    "their wages. Trees are pruned and replaced by the forestry division for three years after planting. "
+                    "The department hired 23 more guards in 2026 than in 2025."}
+        ko = {"S1": "포획과 중성화 수술은 시와 계약한 동물병원 11곳이 맡는다. 반납된 카시트는 전문 업체가 세척·소독한다."}
+        for body, src, lang in (("The school district hires and supervises the crossing guards [S1].", en, "en"),
+                                ("Adjacent property owners are responsible for pruning and replacing the trees [S1].", en, "en"),
+                                ("포획과 중성화 수술은 시 직영 동물보호센터가 직접 맡아 진행한다 [S1].", ko, "ko"),
+                                ("반납된 카시트는 시 직원이 직접 세척·소독한다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, src, lang in (("The police department hires and supervises the crossing guards [S1].", en, "en"),
+                                ("The forestry division prunes and replaces the trees for three years [S1].", en, "en"),
+                                ("The department hired 23 more guards in 2026 than in 2025 [S1].", en, "en"),
+                                ("포획과 중성화 수술은 시와 계약한 동물병원들이 맡는다 [S1].", ko, "ko"),
+                                ("반납된 카시트는 전문 업체가 세척과 소독을 맡는다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["subject_conflict"], body)
