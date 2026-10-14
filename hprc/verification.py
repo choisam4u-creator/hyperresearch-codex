@@ -1169,7 +1169,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if _bound_overclaim(plain, sents):
         found.append("bound")
     if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
-            or _rank_swap(plain, sents) or _doer_swap(plain, sents)):
+            or _rank_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -1936,6 +1936,40 @@ def _funder(text: str) -> set[str] | None:
         return {names[-1]} if names else None
     m = _FUND_EN.search(text)
     return ({re.sub(r"'s$", "", w.lower()) for w in re.findall(r"[A-Za-z']{3,}", m.group(1))} - _FUND_GENERIC) if m else None
+
+
+# 17회차(holdout13 재원 몫 뒤바뀜으로 설계): 한국어 재원 나눔에서 기관별 몫·금액을 맞바꾼 문장 — "시비 40%, 구비 60%" →
+# "시가 60%, 구가 40%를 댄다", "국비 3억 원과 군비 1억 원" → "군비 3억 원과 국비 1억 원". 값 바로 앞의 기관 낱말(시·구·군·도·국,
+# 뒤에 비·가·이·에서)을 읽어, 주장이 한 기관에 붙인 값을 원문은 주장에도 나오는 다른 기관에 붙였고 원문의 그 기관 값은 다를 때만.
+_FUNDER_LEAD = re.compile(r"(?:^|[\s,(·])(시|구|군|도|국)(?:비|가|이|에서|는|은)?\s*(?:가|이)?\s*$")
+
+
+def _funder_values(text: str) -> list[tuple[str, Decimal]]:
+    out = []
+    for v in _quantity_values(text, _date_like_spans(text)):
+        if v.get("unsupported_unit") or v["dimension"] not in ("percent", "KRW"):
+            continue
+        lead = _FUNDER_LEAD.search(text, max(0, v["start"] - 8), v["start"])
+        if lead:
+            out.append((lead.group(1), abs(v["value"])))
+    return out
+
+
+def _funder_share_swap(plain: str, sents: list[str]) -> bool:
+    mine = _funder_values(plain)
+    if len({f for f, _ in mine}) < 2:
+        return False
+    for s in sents:
+        theirs = _funder_values(s)
+        if len({f for f, _ in theirs}) < 2:
+            continue
+        for f, v in mine:
+            if (f, v) in theirs:
+                continue
+            others = {g for g, w in theirs if w == v and g != f}
+            if others & {g for g, _ in mine} and any(g == f and w != v for g, w in theirs):
+                return True
+    return False
 
 
 def _funding_swap(plain: str, sents: list[str]) -> bool:

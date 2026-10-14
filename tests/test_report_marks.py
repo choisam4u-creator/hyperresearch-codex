@@ -1347,6 +1347,17 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual(1, len(changes["mismatch"]), body)
 
+    def test_korean_funder_share_swap_is_subject_conflict(self):
+        # 17회차(holdout13): 기관별 재원 몫·금액을 맞바꾼 문장. 같은 몫(50%·50%)이나 원문대로 말한 문장은 건드리지 않는다.
+        ko = {"S1": "재원은 시비 40%, 구비 60%다. 제조 장비는 국비 3억 원과 군비 1억 원으로 구입했다. 설치비는 도비 50%, 시비 50%로 부담했다."}
+        for body in ("재원은 시가 60%, 구가 40%를 댄다 [S1].", "장비 구입비는 군비 3억 원과 국비 1억 원으로 마련했다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body in ("재원은 시가 40%, 구가 60%를 댄다 [S1].", "장비는 국비 3억 원과 군비 1억 원으로 샀다 [S1].",
+                     "설치비는 시비 50%, 도비 50%로 나눠 냈다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_doer_swap_is_marked(self):
         # 16회차(holdout11 대상 바꿈): 일을 맡은 주체를 바꾼 문장. 일 낱말이 가장 많이 겹치는 원문 절의 주체와 견주고,
         # 주체를 같은 낱말로 부르거나 수량을 말하는 문장은 건드리지 않는다.
