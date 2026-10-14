@@ -1,6 +1,6 @@
 """사람 라벨 대조 평가: 문장마다 단 정답(맞음/출처 불일치/미검증)과 보고서 표시를 비교한다.
 
-    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|holdout5|holdout6|holdout7|holdout8|holdout8a|holdout8b|holdout9|holdout10|holdout11|holdout12|holdout13|all] [--case ID] [--verbose] [--json out.json]
+    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|holdout5|holdout6|holdout7|holdout8|holdout8a|holdout8b|holdout9|holdout10|holdout11|holdout12|holdout13|holdout14|all] [--case ID] [--verbose] [--json out.json]
 
 evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점해 천장 100에 닿았다. 이 평가는
 점수기 규칙을 쓰지 않는다. evals/labeled/*.json 의 "labels"(문장 열쇠 → 정답)를 사람이 정하고,
@@ -22,7 +22,8 @@ evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점�
   12 case·156문장, 13회차 끝 코드 기준선을 잰 뒤 코드 수정 전 커밋하고 14회차 개선은 holdout10을 보지 않고 설계), holdout11 = evals/labeled/holdout11/*.json(15회차,
   같은 방식, 12 case·168문장, 14회차 끝 코드 기준선을 잰 뒤 코드 수정 전 커밋), holdout12 = evals/labeled/holdout12/*.json(16회차,
   같은 방식, 12 case·169문장, 15회차 끝 코드 기준선을 잰 뒤 코드 수정 전 커밋), holdout13 = evals/labeled/holdout13/*.json(17회차,
-  같은 방식, 12 case·168문장, 16회차 끝 코드 기준선을 잰 뒤 코드와 함께 보지 않고 커밋). 개선은 dev 로 하고 holdout 들로 과적합을 잰다.
+  같은 방식, 12 case·168문장, 16회차 끝 코드 기준선을 잰 뒤 코드와 함께 보지 않고 커밋), holdout14 = evals/labeled/holdout14/*.json(18회차,
+  같은 방식, 12 case·192문장, 17회차 끝 코드 기준선을 잰 뒤 코드 수정 전 커밋). 개선은 dev 로 하고 holdout 들로 과적합을 잰다.
 라벨·case 를 고쳐 점수를 올리지 않는다. 고칠 때는 docs/QUALITY-LOG.md 에 이유를 적는다.
 """
 import argparse
@@ -54,10 +55,10 @@ SETS = {"dev": ("*.json",), "holdout": ("holdout/*.json",), "holdout2": ("holdou
                                                           "ko-public-laundry", "ko-safety-door-lock", "ko-walking-mileage")),
         "all": ("*.json", "holdout/*.json", "holdout2/*.json", "holdout3/*.json", "holdout4/*.json", "holdout5/*.json",
                 "holdout6/*.json", "holdout7/*.json", "holdout8/*.json", "holdout9/*.json", "holdout10/*.json", "holdout11/*.json", "holdout12/*.json",
-                "holdout13/*.json"),
+                "holdout13/*.json", "holdout14/*.json"),
         "holdout9": ("holdout9/*.json",), "holdout10": ("holdout10/*.json",),
         "holdout11": ("holdout11/*.json",), "holdout12": ("holdout12/*.json",),
-        "holdout13": ("holdout13/*.json",)}
+        "holdout13": ("holdout13/*.json",), "holdout14": ("holdout14/*.json",)}
 
 
 def load_cases(only: str | None = None, which: str = "dev") -> list[dict]:
@@ -163,7 +164,7 @@ def run_all(cases: list[dict]) -> list[dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="사람 라벨 대조 품질 평가")
-    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·holdout5·holdout6·holdout7·holdout8(a·b)·holdout9·holdout10·holdout11·holdout12·holdout13·all")
+    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·holdout5·holdout6·holdout7·holdout8(a·b)·holdout9·holdout10·holdout11·holdout12·holdout13·holdout14·all")
     parser.add_argument("--case")
     parser.add_argument("--json")
     parser.add_argument("--verbose", action="store_true", help="틀린 판정 문장 출력")
