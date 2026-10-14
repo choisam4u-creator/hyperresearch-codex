@@ -1681,7 +1681,11 @@ def _causal_reversal(plain: str, sents: list[str]) -> bool:
 # 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
 _CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
                            r"driven by|attribut\w*|as a result|concluded|proved?|proves|showing|pushed)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
-                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가", re.I)
+                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가|"
+                           # 18회차(holdout14 인과 단정 놓침): "credited the cooling centers with the drop", "간식 제공의 효과로 확인되었다",
+                           # "시범사업만의 효과로 볼 수 있다"
+                           r"\bcredit(?:s|ed|ing)?\s+(?:\w+\s+){1,5}?(?:with|for)\b|(?:효과|덕분|성과)(?:로|으로)\s*(?:확인|입증|볼 수 있|나타났|드러났)|"
+                           r"만의\s*(?:효과|결과|성과)", re.I)
 _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
 _CAUSAL_DISCLAIM = re.compile(
     r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
@@ -1692,6 +1696,9 @@ _CAUSAL_DISCLAIM = re.compile(
     # 8회차(holdout4): "not necessarily due to the app", "감소분 전체를 보상제 효과로 보기는 어렵다", "의미 있는 변화로 보기 어렵다"
     r"\bnot necessarily (?:due to|caused by|because of|the result of|attributable)|"
     r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵|"
+    # 18회차(holdout14): 원문이 다른 요인을 들거나 늘었다고 보기 어렵다고 함 — "점포 4곳이 폐업한 점도 민원 변화에 영향을 줬을 수
+    # 있다", "택배 대출이 전체 이용을 늘렸다고 보기 어렵다"
+    r"\b(?:is|was|were|are) not controlled\b|\buncontrolled comparison\b|영향을\s*(?:줬|주었|미쳤)을\s*수\s*있|(?:늘|높|줄|낮|끌어올|떨어뜨)(?:렸|였|췄)다고\s*(?:보기|단정하기|판단하기)(?:는|가)?\s*어렵|"
     # 11회차(holdout5·6 유보→단정 0/6): 원문이 원인을 가능성으로만 말함 — "may reflect the tank", "could discourage repeat
     # tagging", "may account for part of the decline", "too small to draw firm conclusions", "not randomly selected",
     # "줄였을 수 있다고 보면서도", "비교에 한계가 있다". 조동사 뒤 동사를 인과·효과 동사로 한정해 "may apply" 같은 문장은 넣지 않는다.

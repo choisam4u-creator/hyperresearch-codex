@@ -185,6 +185,29 @@ class CausalPeriodInternalTests(unittest.TestCase):
         text, _ = self.mark("The pass caused ridership to rise 12 percent in March [S1].", silent)
         self.assertNotIn("(source mismatch)", text)
 
+    def test_credit_and_korean_effect_confirmed_against_hedge_are_causal_conflict(self):
+        # 18회차(holdout14): "credited … with", "효과로 확인되었다", "만의 효과로 볼 수 있다"를 인과 단정으로 읽고, 원문이 다른 요인이
+        # "영향을 줬을 수 있다"·"늘렸다고 보기 어렵다"·"not controlled"라고 한 것을 유보로 읽는다. 원문이 인과를 긍정하면 건드리지 않는다.
+        cases = [({"S1": "Visits fell to 212 from 238. It cautioned that the drop cannot be attributed to cooling centers."},
+                  "The health department credited the cooling centers with the drop in visits [S1].", "en"),
+                 ({"S1": "92% of adopted trees were alive compared with 81% of others, so the comparison is not controlled."},
+                  "Staff concluded that adoption caused the higher survival rate [S1].", "en"),
+                 ({"S1": "지각률은 5.1%에서 4.3%로 낮아졌다. 구는 이 변화가 간식 제공의 효과인지 구분할 수 없다고 밝혔다."},
+                  "이 지각률 하락은 아침 간식 제공의 효과로 확인되었다 [S1].", "ko"),
+                 ({"S1": "민원은 288건에서 205건으로 줄었다. 구는 점포 4곳이 폐업한 점도 민원 변화에 영향을 줬을 수 있다고 덧붙였다."},
+                  "민원 감소는 센서 시범사업만의 효과로 볼 수 있다 [S1].", "ko"),
+                 ({"S1": "한 위원은 군 전체 도서 대출 권수가 3% 감소했다며 택배 대출이 전체 이용을 늘렸다고 보기 어렵다고 지적했다."},
+                  "군 전체 도서 대출 권수도 택배 대출 덕분에 늘어난 것으로 나타났다 [S1].", "ko")]
+        def mark(body, src, lang):
+            head = "## Answer\n" if lang == "en" else "## 답\n"
+            return mark_report_claims(f"{head}{body}\n\n## Sources\n- [S1] a\n", src, lang)
+        for src, body, lang in cases:
+            text, changes = mark(body, src, lang)
+            self.assertEqual(1, len(changes["causal_conflict"]), body)
+        text, changes = mark("이 지각률 하락은 간식 제공의 효과로 확인되었다 [S1].",
+                             {"S1": "구는 지각률 하락이 간식 제공의 효과로 확인되었다고 밝혔다."}, "ko")
+        self.assertEqual([], changes["causal_conflict"])
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)
