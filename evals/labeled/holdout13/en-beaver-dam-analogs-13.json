@@ -1,0 +1,104 @@
+{
+ "id": "en-beaver-dam-analogs-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "What did Wren Valley's beaver dam analog project on Alder Creek achieve in its first year?",
+ "sources": {
+  "S1": "In autumn 2024, the Wren Valley Watershed District installed 24 beaver dam analogs, wooden post-and-willow structures, along a 3.2-kilometer reach of Alder Creek. The work cost $186,000, of which a state stream restoration grant paid $140,000 and the district paid the remainder. Installation was carried out by a conservation youth corps crew under district supervision. Monitoring wells showed the summer groundwater level beside the creek rose by an average of 0.4 meters between August 2024 and August 2025. By spring 2025, beavers had moved into the reach and built on 9 of the structures. Five structures were damaged by a January 2025 high-flow event; three were repaired and two were abandoned. The district said one year of data is too short to judge effects on late-summer stream flow.",
+  "S2": "The Downstream Water Users Association's comment letter (March 2026) said two downstream irrigators reported lower summer flows in 2025, though it acknowledged 2025 was also a drier-than-average year. It asked the district to pause any expansion until a second year of monitoring is done. The district has proposed 40 more structures on Birch Fork for 2027, pending a board vote and grant funding. The association also asked to be added to the monitoring committee."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Wren Valley's beaver dam analog project on Alder Creek achieve in its first year?\n\n## Answer\nMonitoring wells recorded an average 0.4-meter rise in summer groundwater beside the creek from August 2024 to August 2025 [S1]. The structures have also increased late-summer stream flow [S1].\n\n## Evidence\n- The 24 structures span about two miles of Alder Creek [S1].\n- The district covered most of the $186,000 cost, with a state grant paying the balance [S1].\n- The district's own share came to $46,000 [S1].\n- District staff built the structures themselves, with a youth corps crew supervising [S1].\n- Beavers had built on 9 of the 24 analogs, or about 38%, by spring 2025 [S1].\n- All five structures damaged in the January 2025 high flows were repaired [S1].\n- The project cost averaged $7,750 per structure [S1].\n- The structures were installed in spring 2025 [S1].\n\n## Counter-evidence and limits\n- Downstream irrigators reported lower 2025 summer flows, but the association conceded the year was drier than average [S2].\n- The board has approved 40 additional structures on Birch Fork for 2027 [S2].\n- The water users association asked the district to hold off on expanding until a second monitoring year is complete [S2].\n- Beaver dam analogs typically last eight to ten years before needing replacement.\n\n## Next actions\n- Wait for the second year of monitoring data before the board votes on Birch Fork (judgment).\n\n## Sources\n- [S1] Wren Valley Watershed District, \"Alder Creek Beaver Dam Analog Project: Year One Monitoring Report\" (October 2025)\n- [S2] Downstream Water Users Association, \"Comment Letter on the Alder Creek Project\" (March 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Monitoring wells recorded an average 0.4-meter rise in summer groundwater beside the creek from August 2024 to August 2025",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: summer groundwater rose average 0.4 m between Aug 2024 and Aug 2025."
+  },
+  {
+   "key": "The structures have also increased late-summer stream flow",
+   "label": "mismatch",
+   "tag": "hedge dropped",
+   "why": "S1: 'one year of data is too short to judge effects on late-summer stream flow'."
+  },
+  {
+   "key": "The 24 structures span about two miles of Alder Creek",
+   "label": "ok",
+   "tag": "unit conversion",
+   "why": "S1: 3.2 km reach; 3.2 km = 1.99 miles."
+  },
+  {
+   "key": "The district covered most of the $186,000 cost, with a state grant paying the balance",
+   "label": "mismatch",
+   "tag": "funder swap",
+   "why": "S1: state grant paid $140,000 (75%); district paid remainder $46,000."
+  },
+  {
+   "key": "The district's own share came to $46,000",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 186,000 - 140,000 = 46,000."
+  },
+  {
+   "key": "District staff built the structures themselves, with a youth corps crew supervising",
+   "label": "mismatch",
+   "tag": "role swap",
+   "why": "S1: youth corps crew installed them under district supervision."
+  },
+  {
+   "key": "Beavers had built on 9 of the 24 analogs, or about 38%, by spring 2025",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 9 of 24; 9/24=37.5%, about 38%."
+  },
+  {
+   "key": "All five structures damaged in the January 2025 high flows were repaired",
+   "label": "mismatch",
+   "tag": "outcome changed",
+   "why": "S1: three repaired, two abandoned."
+  },
+  {
+   "key": "The project cost averaged $7,750 per structure",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: $186,000 / 24 = $7,750."
+  },
+  {
+   "key": "The structures were installed in spring 2025",
+   "label": "mismatch",
+   "tag": "wrong period",
+   "why": "S1: installed in autumn 2024."
+  },
+  {
+   "key": "Downstream irrigators reported lower 2025 summer flows, but the association conceded the year was drier than average",
+   "label": "ok",
+   "tag": "hedge kept",
+   "why": "S2: two irrigators reported lower flows; acknowledged 2025 was drier than average."
+  },
+  {
+   "key": "The board has approved 40 additional structures on Birch Fork for 2027",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: proposed, 'pending a board vote and grant funding'."
+  },
+  {
+   "key": "The water users association asked the district to hold off on expanding until a second monitoring year is complete",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: asked district to pause any expansion until second year of monitoring is done."
+  },
+  {
+   "key": "Beaver dam analogs typically last eight to ten years before needing replacement",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source discusses structure lifespan."
+  }
+ ]
+}

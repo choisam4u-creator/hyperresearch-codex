@@ -1,0 +1,104 @@
+{
+ "id": "en-tenant-mediation-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "Is Larkfield's free landlord-tenant mediation service resolving disputes, and is there evidence it reduces evictions?",
+ "sources": {
+  "S1": "Larkfield's Housing Department began a free landlord-tenant mediation service on 1 September 2025, run under contract by the nonprofit Common Ground Mediation. The city pays Common Ground a flat $380 per completed case, funded from the rental registration fee. Either a landlord or a tenant can request mediation, but both must agree to take part; participation is never mandatory. Sessions are held by video call or at the Larkfield Civic Center, at the parties' choice. In its first nine months, through May 2026, the service received 412 requests, of which 268 proceeded to a session. Of the 268 cases mediated, 191 ended with a signed written agreement. Most requests concerned repairs (44%) and rent arrears (31%). The department said it could not yet tell whether mediation reduced eviction filings, because court data for 2026 were incomplete.",
+  "S2": "The City Council Housing Committee memo (July 2026) said a follow-up of 120 signed agreements found that 84 were still being honored after 60 days. It proposed making mediation a required step before a landlord can file for eviction for arrears under $2,000, a proposal scheduled for a council hearing in November 2026. The memo estimated this could roughly double annual case volume. Committee members cautioned that the follow-up relied on tenants' self-reports."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Larkfield's free landlord-tenant mediation service resolving disputes, and is there evidence it reduces evictions?\n\n## Answer\nAbout seven in ten mediated cases in Larkfield ended in a signed written agreement during the service's first nine months [S1]. The service has already reduced the number of eviction filings in the city [S1].\n\n## Evidence\n- Common Ground Mediation, a nonprofit, runs the service under a city contract [S1].\n- Tenants and landlords split a $380 fee for each completed case [S1].\n- A request from either party obliges the other side to attend a session [S1].\n- Parties may meet either online by video or in person at the Civic Center [S1].\n- Of the 412 requests received, 144 never reached a session [S1].\n- Repairs and rent arrears together accounted for 85% of requests [S1].\n- Rent arrears made up nearly a third of requests, second only to repair disputes [S1].\n- The contract is paid from the city's general fund [S1].\n\n## Counter-evidence and limits\n- A follow-up of 120 agreements found 70% were still being honored after 60 days, though this relied on tenants' own reports [S2].\n- Since July 2026, landlords must attempt mediation before filing for eviction over arrears below $2,000 [S2].\n- The committee projected that a mandatory step could roughly double yearly caseloads [S2].\n- Larkfield's eviction filings fell 12% in 2025 compared with 2024.\n\n## Next actions\n- Request complete 2026 court filing data before the November hearing on mandatory mediation (judgment).\n\n## Sources\n- [S1] Larkfield Housing Department, \"Landlord-Tenant Mediation Service: Nine-Month Report\" (June 2026)\n- [S2] Larkfield City Council Housing Committee, \"Memo on Mediation Outcomes and Proposed Pre-Filing Requirement\" (July 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About seven in ten mediated cases in Larkfield ended in a signed written agreement during the service's first nine months",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S1: 191 of 268 mediated cases; 191/268=71.3%."
+  },
+  {
+   "key": "The service has already reduced the number of eviction filings in the city",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S1: department 'could not yet tell whether mediation reduced eviction filings'."
+  },
+  {
+   "key": "Common Ground Mediation, a nonprofit, runs the service under a city contract",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: run under contract by the nonprofit Common Ground Mediation."
+  },
+  {
+   "key": "Tenants and landlords split a $380 fee for each completed case",
+   "label": "mismatch",
+   "tag": "payer swap",
+   "why": "S1: service is free; the city pays Common Ground $380 per completed case."
+  },
+  {
+   "key": "A request from either party obliges the other side to attend a session",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: both must agree to take part; 'participation is never mandatory'."
+  },
+  {
+   "key": "Parties may meet either online by video or in person at the Civic Center",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: sessions by video call or at the Larkfield Civic Center, at the parties' choice."
+  },
+  {
+   "key": "Of the 412 requests received, 144 never reached a session",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 412 requests, 268 proceeded; 412-268=144."
+  },
+  {
+   "key": "Repairs and rent arrears together accounted for 85% of requests",
+   "label": "mismatch",
+   "tag": "arithmetic",
+   "why": "S1: 44% + 31% = 75%, not 85%."
+  },
+  {
+   "key": "Rent arrears made up nearly a third of requests, second only to repair disputes",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S1: arrears 31% (nearly a third), repairs 44%."
+  },
+  {
+   "key": "The contract is paid from the city's general fund",
+   "label": "mismatch",
+   "tag": "funding source",
+   "why": "S1: funded from the rental registration fee."
+  },
+  {
+   "key": "A follow-up of 120 agreements found 70% were still being honored after 60 days, though this relied on tenants' own reports",
+   "label": "ok",
+   "tag": "arithmetic+hedge",
+   "why": "S2: 84 of 120 honored after 60 days; 84/120=70%; follow-up relied on tenants' self-reports."
+  },
+  {
+   "key": "Since July 2026, landlords must attempt mediation before filing for eviction over arrears below $2,000",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: only proposed; scheduled for council hearing November 2026."
+  },
+  {
+   "key": "The committee projected that a mandatory step could roughly double yearly caseloads",
+   "label": "ok",
+   "tag": "hedge kept",
+   "why": "S2: memo estimated it 'could roughly double annual case volume'."
+  },
+  {
+   "key": "Larkfield's eviction filings fell 12% in 2025 compared with 2024",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives eviction filing trends; S1 says court data incomplete."
+  }
+ ]
+}
