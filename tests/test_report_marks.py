@@ -1331,6 +1331,22 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["plan_conflict"], body)
 
+    def test_rate_times_count_share_of_rate_and_rate_inverse_are_not_mismatch(self):
+        # 17회차(holdout13 오표시): 단위당 값×같은 단위 개수, 단위당 값×원문 몫, 원문 값÷원문 비율(어림).
+        ko = {"S1": "방제 면적은 모두 4,200헥타르였고, 비용은 헥타르당 2만 원으로 이 중 군이 70%, 농가가 30%를 냈다. "
+                    "같은 기간 사용된 바우처는 21,780매였다. 사용률은 배부된 바우처 대비 75%였다."}
+        for body in ("방제단은 4,200헥타르를 방제했고 총비용은 8,400만 원이었다 [S1].",
+                     "농가 부담분은 헥타르당 6,000원이었다 [S1].",
+                     "사용률 75%를 감안하면 배부된 바우처는 약 2만 9,000매였다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        for body in ("방제단은 4,200헥타르를 방제했고 총비용은 9,400만 원이었다 [S1].",
+                     "농가 부담분은 헥타르당 7,000원이었다 [S1].",
+                     "배부된 바우처는 2만 9,040매였다 [S1].",
+                     "방제 비용은 8,400만 원이었다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["mismatch"]), body)
+
     def test_doer_swap_is_marked(self):
         # 16회차(holdout11 대상 바꿈): 일을 맡은 주체를 바꾼 문장. 일 낱말이 가장 많이 겹치는 원문 절의 주체와 견주고,
         # 주체를 같은 낱말로 부르거나 수량을 말하는 문장은 건드리지 않는다.

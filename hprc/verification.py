@@ -709,6 +709,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     derived += [(a["dimension"], abs(a["value"]) * abs(u["value"]) / abs(b["value"])) for u in bases or ()
                 for b in plain if b["dimension"] == u["dimension"] and b["value"] for a in plain if a is not b]
     percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
+    percents_raw = list(percents)
     for value in claim_values:
         hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
         lower = _LOWER_LEAD.search(sentence, 0, value["start"]) or _LOWER_TAIL.match(sentence, value["end"])
@@ -793,6 +794,31 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                        if part_of or any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
                                          for c in all_claimed or claim_values)):
             ok.add(value["start"])
+    # 17회차(holdout13 오표시로 설계): 원문 단위당 값과 그 단위로 센 원문 개수의 곱("1곳당 180만 원" × "120곳" → "설치비 총액
+    # 2억 1,600만 원", "헥타르당 2톤" × "63헥타르" → "약 126톤"), 단위당 값에 원문 몫을 곱한 단위당 값("헥타르당 2만 원"의 30%
+    # → "농가 부담분은 헥타르당 6,000원"), 원문 값을 원문 비율로 되돌린 전체("21,780매, 사용률 75%" → "배부된 바우처는 약
+    # 2만 9,000매"). 곱은 주장이 그 개수나 총계 낱말을 함께 말할 때만, 몫 곱은 주장이 같은 'X당'을 말할 때만, 되돌림은 어림
+    # 표시가 있을 때만 인정한다.
+    products = _rate_products(source_text, plain)
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent":
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        target = abs(value["value"])
+        for dim, product, count, unit in products:
+            if dim != value["dimension"] or not (product == target or (hedged and _rounds_to(value, product))):
+                continue
+            if _TOTAL_WORDS.search(sentence) or any(
+                    abs(c.get("number", c["value"])) == abs(count["number"]) for c in all_claimed or claim_values):
+                ok.add(value["start"])
+        rate_basis = _rate_basis(sentence, value)
+        if rate_basis and any(
+                dim == value["dimension"] and unit == rate_basis and abs(rate["value"]) * p / 100 == target
+                for dim, rate, unit in _rates(source_text, plain) for p in percents_raw):
+            ok.add(value["start"])
+        if hedged and any(a["dimension"] == value["dimension"] and _rounds_to(value, abs(a["value"]) * 100 / p)
+                          for a in plain for p in percents_raw if 0 < p < 100):
+            ok.add(value["start"])
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
@@ -805,6 +831,42 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if any((share - half <= t <= share + half) or (at_least and share <= t <= share + 2 * half) for t in percents):
             ok.update(v["start"] for v in claim_values if m.start() <= v["start"] < m.end())
     return ok
+
+
+_RATE_LEAD = re.compile(r"(?:1\s*)?([가-힣]{1,4})당\s*$")
+_RATE_TAIL = re.compile(r"\s*(?:per|a|an|each)\s+([A-Za-z]{3,})", re.I)
+_TOTAL_WORDS = re.compile(r"총|모두|전체|합계|합쳐|\b(?:in total|total(?:ed|led|ing)?|altogether|combined|overall)\b", re.I)
+
+
+def _rates(source_text: str, plain: list[dict]) -> list[tuple[str, dict, str]]:
+    """원문 단위당 값: (차원, 값, 기준 단위 낱말). '헥타르당 2만 원'·'1곳당 180만 원'·'$40 per acre'."""
+    out = []
+    for v in plain:
+        lead = _RATE_LEAD.search(source_text, 0, v["start"])
+        tail = _RATE_TAIL.match(source_text, v["end"])
+        unit = lead.group(1) if lead else tail.group(1).lower()[:4] if tail else None
+        if unit:
+            out.append((v["dimension"], v, unit))
+    return out
+
+
+def _rate_basis(sentence: str, value: dict) -> str | None:
+    lead = _RATE_LEAD.search(sentence, 0, value["start"])
+    tail = _RATE_TAIL.match(sentence, value["end"])
+    return lead.group(1) if lead else tail.group(1).lower()[:4] if tail else None
+
+
+def _rate_products(source_text: str, plain: list[dict]) -> list[tuple[str, Decimal, dict, str]]:
+    """단위당 값 × 같은 단위로 센 원문 개수(개수의 단위 낱말이 기준 단위와 같을 때만)."""
+    out = []
+    for dim, rate, unit in _rates(source_text, plain):
+        for count in plain:
+            if count is rate or count["dimension"] == dim or not count.get("number"):
+                continue
+            tail = count["raw"][len(re.match(r"[\d,.\s]*", count["raw"]).group(0)):].strip().lower()
+            if tail and (tail.startswith(unit) or unit.startswith(tail[:4])):
+                out.append((dim, abs(rate["value"]) * abs(count["number"]), count, unit))
+    return out
 
 
 # 14회차: 장소·물건을 세는 말은 서로 바꿔 쓴다("3개 육아종합지원센터" ↔ "센터 3곳"). 원문 세는 말을 못 읽은 개수("300가구")도
