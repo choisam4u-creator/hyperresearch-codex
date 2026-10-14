@@ -1169,7 +1169,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if _bound_overclaim(plain, sents):
         found.append("bound")
     if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
-            or _rank_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)):
+            or _rank_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)
+            or _payer_role_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -2039,6 +2040,159 @@ def _payer_swap(plain: str, sents: list[str], values: list[dict]) -> bool:
     if content and all(c and not (c & content) for c, _ in rows):
         return True
     return bool(tiers) and all(t and not (t & tiers) for _, t in rows)
+
+
+# 18회차(holdout13 '부담·납부 주체' 놓침 6건으로 설계, holdout14는 보지 않고 잰다): 누가 비용을 내는지를 바꾼 문장.
+# (1) 같은 비용 항목(한국어 '전기요금'·'운반비', 영어 같은 금액)을 원문은 다른 주체가 냈다고 말함 — "전기요금은 버스 운수회사가
+#     부담했다" ← "전기요금은 … 시가 납부했다", "Tenants and landlords split a $380 fee" ← "The city pays … $380".
+# (2) 원문이 낸다고 말한 주체가 아무것도 내지 않았다거나 무료라고 말함 — "농가는 … 아무 비용도 내지 않았다" ← "농가는 운반비만
+#     부담했다", "CourtNotify provides the service free of charge" ← "provided by … CourtNotify at a cost of $0.04 per message".
+# (3) 영어 재원 몫을 기관끼리 맞바꿈 — "The county's general fund paid three-quarters …, with a federal grant covering the rest"
+#     ← "funded 75% by a federal … grant and 25% by the county's general fund"; "most" ↔ 원문 나머지(remainder) 몫.
+_PAY_VERB_EN = r"(?:pays?|paid|split|splits|covers?|covered|bears?|bore|shoulders?|shouldered|picks? up|picked up)"
+_PAYER_SUBJ_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bwhile )|(?<=\bwhich ))((?:[\w'-]+\s+){0,4}?[\w'-]+)\s+(?:also |still |now )?"
+                            + _PAY_VERB_EN + r"\b(?!\s+(?:for|by|from|out of)\b)", re.I)
+_PAY_VERB_KO = r"(?:부담|납부|냈|낸다|낸|내고|지불|댔|댄다)"
+_PAYER_SUBJ_KO = re.compile(r"(?<![가-힣])([가-힣]{1,8}?)(?:이|가)\s+(?:[가-힣]+\s+){0,2}?" + _PAY_VERB_KO)
+_COST_ITEM_KO = re.compile(r"(?<![가-힣])([가-힣]{1,6}(?:요금|비용|비|료))(?=은|는|을|를|만|도|\s)")
+_NOT_PAID_KO = re.compile(r"(?<![가-힣])([가-힣]{1,8}?)(?:은|는)\s+(?:\S+\s+){0,4}?(?:아무\s+비용도|한\s+푼도|비용을\s+전혀|돈을\s+전혀|"
+                          r"아무것도)\s+(?:내지\s+않|부담하지\s+않|안\s+냈|안\s+낸)")
+_FREE_EN = re.compile(r"\b(?:free of charge|at no (?:cost|charge)|for free|without charge|free to the|no-cost)\b", re.I)
+_COST_EN = re.compile(r"\b(?:at a cost of|costs?|paid|pays|fee|fees|charges?|billed)\b|[$€£]\s?\d", re.I)
+_PAYER_STOP = {"the", "a", "an", "its", "their", "this", "that", "each", "every", "also", "still", "now", "which", "who", "it",
+               "they", "and", "or", "both", "together", "jointly", "with", "of"}
+
+
+def _payer_words(phrase: str) -> set[str]:
+    words = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w.lower()) for w in re.findall(r"[A-Za-z][\w'-]*|[가-힣]+", phrase)}
+    return words - _PAYER_STOP
+
+
+def _same_payer(a: set[str], b: set[str]) -> bool:
+    return any(x == y or x.startswith(y) or y.startswith(x) for x in a for y in b)
+
+
+def _dollar_amounts(text: str) -> list[Decimal]:
+    return [abs(v["value"]) for v in _quantity_values(text, _date_like_spans(text))
+            if not v.get("unsupported_unit") and v["dimension"] in ("USD", "unitless")
+            and re.search(r"[$€£]\s?$", text[max(0, v["start"] - 2):v["start"]])]
+
+
+def _cost_payers(text: str) -> list[tuple[set[str], set, set[str]]]:
+    """(내는 주체 낱말, 금액들, 한국어 비용 항목들) — 절마다(영어) 또는 문장째(한국어)."""
+    out = []
+    if re.search(r"[가-힣]", text):
+        items = set(_COST_ITEM_KO.findall(text))
+        for m in _PAYER_SUBJ_KO.finditer(text):
+            if m.group(1) not in ("것", "원", "비용", "요금"):
+                out.append(({m.group(1)}, set(), items))
+        return out
+    for clause in re.split(r"[;]|,\s+(?=(?:and|while|but|which)\b)|,\s+(?:with)\b", text):
+        amounts = set(_dollar_amounts(clause))
+        for m in _PAYER_SUBJ_EN.finditer(clause):
+            words = _payer_words(m.group(1))
+            if words and not re.search(r"\d", m.group(1)) and m.group(1).split()[-1].lower() not in ("who", "which", "that"):
+                out.append((words, amounts, set()))
+    return out
+
+
+def _cost_payer_swap(plain: str, sents: list[str]) -> bool:
+    mine = _cost_payers(plain)
+    if len(mine) != 1:
+        return False
+    words, amounts, items = mine[0]
+    korean = bool(re.search(r"[가-힣]", plain))
+    linked = []
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for w, a, i in _cost_payers(s):
+            if (korean and items and items & i) or (amounts and amounts & a):
+                linked.append(w)
+    return bool(linked) and not any(_same_payer(words, w) for w in linked)
+
+
+def _not_paid_flip(plain: str, sents: list[str]) -> bool:
+    m = _NOT_PAID_KO.search(plain)
+    if m:
+        who = m.group(1)
+        return any(re.search(rf"(?<![가-힣]){re.escape(who)}(?:은|는|이|가)\s+(?:\S+\s+){{0,3}}?{_PAY_VERB_KO}", s)
+                   and not _NEGATION.search(s) for s in sents)
+    if re.search(r"[가-힣]", plain) or not _FREE_EN.search(plain):
+        return False
+    names = set(re.findall(r"\b[A-Z][a-z]+[A-Z]\w*\b|\b[A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,})+\b", plain))
+    best = _closest_sentence(plain, sents)
+    if not best or _FREE_EN.search(best) or re.search(r"\bfree\b", best, re.I) or not _COST_EN.search(best):
+        return False
+    return not names or any(n in best for n in names)
+
+
+_PAYER_SHARE_WORDS = {"three-quarters": Decimal("0.75"), "three quarters": Decimal("0.75"), "two-thirds": Decimal("0.667"),
+                "one-third": Decimal("0.333"), "a third": Decimal("0.333"), "a quarter": Decimal("0.25"),
+                "one-quarter": Decimal("0.25"), "half": Decimal("0.5"), "most": "most", "the majority": "most",
+                "the bulk": "most", "the rest": "rest", "the remainder": "rest", "the balance": "rest", "the remaining": "rest"}
+_PAYER_SHARE_ALT = "|".join(sorted((re.escape(k) for k in _PAYER_SHARE_WORDS), key=len, reverse=True))
+_SHARE_BY_EN = re.compile(r"(\d+(?:\.\d+)?)\s?(?:%|percent)\s+by\s+((?:[\w'-]+\s+){0,5}?[\w'-]+?)(?=\s+and\b|\s+with\b|[,.;]|$)", re.I)
+_SHARE_SUBJ_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bwith )|(?<=\band )|(?<=\bwhich ))((?:[\w'-]+\s+){0,5}?[\w'-]+)(?<!\bwas)(?<!\bwere)(?<!\bis)(?<!\bare)\s+(?:paid|paying|pays|covered|covering|"
+                            r"covers|funded|funding|provided|providing|contributed|contributing)\s+(?:for\s+)?"
+                            r"(" + _PAYER_SHARE_ALT + r"|\d+(?:\.\d+)?\s?(?:%|percent)|[$]\s?[\d,.]+(?:\s?(?:million|thousand))?)", re.I)
+
+
+def _payer_shares(text: str) -> list[tuple[set[str], object]]:
+    if re.search(r"[가-힣]", text):
+        return []
+    pairs = [(_payer_words(m.group(2)), Decimal(m.group(1)) / 100) for m in _SHARE_BY_EN.finditer(text)]
+    usd = _dollar_amounts(text)
+    for m in _SHARE_SUBJ_EN.finditer(text):
+        raw = m.group(2).lower()
+        if raw in _PAYER_SHARE_WORDS:
+            share = _PAYER_SHARE_WORDS[raw]
+        elif "%" in raw or "percent" in raw:
+            share = Decimal(re.match(r"[\d.]+", raw).group()) / 100
+        else:
+            vals = [abs(v["value"]) for v in _quantity_values(m.group(2), [])]
+            if not vals or not usd or max(usd) <= vals[0]:
+                continue
+            share = vals[0] / max(usd)
+        pairs.append((_payer_words(m.group(1)) - {"grant", "fund"} or _payer_words(m.group(1)), share))
+    known = [s for _, s in pairs if isinstance(s, Decimal)]
+    out = []
+    for w, s in pairs:
+        if s == "rest":
+            s = (Decimal(1) - sum(known)) if len(known) == 1 and len(pairs) == 2 else ("minor" if any(x == "most" for _, x in pairs) else None)
+        if s is not None and w:
+            out.append((w, s))
+    return out
+
+
+def _share_value_clash(a, b) -> bool:
+    def low(x):
+        return x == "minor" or (isinstance(x, Decimal) and x < Decimal("0.5"))
+
+    def high(x):
+        return x == "most" or (isinstance(x, Decimal) and x > Decimal("0.5"))
+    if isinstance(a, Decimal) and isinstance(b, Decimal):
+        return abs(a - b) > Decimal("0.05")
+    return (high(a) and low(b)) or (low(a) and high(b))
+
+
+def _payer_share_swap(plain: str, sents: list[str]) -> bool:
+    mine = _payer_shares(plain)
+    if not mine:
+        return False
+    for s in sents:
+        theirs = _payer_shares(s)
+        if len(theirs) < 2:
+            continue
+        for w, share in mine:
+            match = [t for tw, t in theirs if _same_payer(w, tw)]
+            if len(match) == 1 and _share_value_clash(share, match[0]):
+                return True
+    return False
+
+
+def _payer_role_swap(plain: str, sents: list[str]) -> bool:
+    return _cost_payer_swap(plain, sents) or _not_paid_flip(plain, sents) or _payer_share_swap(plain, sents)
 
 
 # 16회차(holdout11 대상 바꿈을 보고 설계): 일을 맡은 주체를 바꾼 문장("Adjacent property owners are responsible for pruning"

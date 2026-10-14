@@ -1358,6 +1358,31 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_payer_role_swap_is_subject_conflict(self):
+        # 18회차(holdout13 부담·납부 주체): 같은 비용을 다른 주체가 냈다고, 원문이 낸다고 한 주체가 안 냈다고(무료),
+        # 영어 재원 몫을 기관끼리 맞바꿔 말한 문장. 원문대로 말한 문장은 건드리지 않는다.
+        en = {"S1": "The city pays Common Ground a flat $380 per completed case. The program was funded 75% by a federal grant "
+                    "and 25% by the county's general fund. The work cost $186,000, of which a state grant paid $140,000 and "
+                    "the district paid the remainder. The service is provided by the vendor CourtNotify at a cost of $0.04 "
+                    "per message, paid from the court's technology budget."}
+        for body in ("Tenants and landlords split a $380 fee for each completed case [S1].",
+                     "The county's general fund paid three-quarters of the cost, with a federal grant covering the rest [S1].",
+                     "The district covered most of the $186,000 cost, with a state grant paying the balance [S1].",
+                     "CourtNotify provides the service free of charge to the court [S1]."):
+            text, changes = self.mark(body, en, "en")
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body in ("The city pays a flat $380 for each completed case [S1].",
+                     "A federal grant paid three-quarters of the cost, with the county's general fund covering the rest [S1]."):
+            text, changes = self.mark(body, en, "en")
+            self.assertEqual([], changes["subject_conflict"], body)
+        ko = {"S1": "운영 기간 전기요금은 총 2,160만 원이었고 시가 납부했다. 농가는 운반비만 부담했다."}
+        for body in ("전기요금은 버스 운수회사가 부담했다 [S1].", "농가는 운반비를 포함해 아무 비용도 내지 않았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body in ("전기요금은 시가 냈다 [S1].", "농가는 운반비만 냈다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["subject_conflict"], body)
+
     def test_doer_swap_is_marked(self):
         # 16회차(holdout11 대상 바꿈): 일을 맡은 주체를 바꾼 문장. 일 낱말이 가장 많이 겹치는 원문 절의 주체와 견주고,
         # 주체를 같은 낱말로 부르거나 수량을 말하는 문장은 건드리지 않는다.
