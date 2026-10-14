@@ -1789,13 +1789,34 @@ _INTENT = re.compile(r"\b(?:plans?|planned|intends?|intended|proposed|propose|re
 # 가장 많이 겹치는 원문 절이 제안·요청·권고·미확정으로만 말하면 계획을 시행으로 바꾼 것이다.
 _DONE = re.compile(r"\b(?:ha(?:s|ve) (?:\w+ )?(?:expanded|adopted|introduced|implemented|launched|approved|confirmed|agreed|"
                    r"established|created|completed|finalized|extended|begun|started|added)|agreed to|confirmed|finalized)\b|"
-                   r"도입했|확정했|신설했|시행했|완료됐|완료했|마련했|확대했|승인했|의결했|결정했|채택했|연장했", re.I)
+                   r"도입했|확정했|신설했|시행했|완료됐|완료했|마련했|확대했|승인했|의결했|결정했|채택했|연장했"
+                   # 17회차(holdout12 계획→실적 7/11 놓침으로 설계): 수동 완료('has been funded', 'have since been made
+                   # permanent')와 결정 동사('통과시켰다', '인상했다', '이전했다', '증액했다', '폐지했다').
+                   r"|\bha(?:s|ve) (?:since |now |already )?been (?:\w+ )?(?:funded|approved|adopted|made permanent|"
+                   r"implemented|introduced|expanded|extended|finalized|launched|established|created|authorized|enacted|"
+                   r"relocated|moved|raised|increased)\b|\bmade permanent\b|"
+                   r"통과시켰|통과됐|통과되었|가결됐|가결되었|인상했|이전했|증액했|폐지했", re.I)
+# 17회차: 주장이 권고·제안을 '따랐다'고 말하는 명사('the auditor's recommendation', '위원회 권고에 따라')는 계획을 말하는
+# 유보가 아니다. 완료 동사가 있을 때 이 명사구를 지운 뒤에만 의도 낱말을 본다.
+_ADOPTED_ADVICE = re.compile(r"\b(?:recommendations?|proposals?|suggestions?)\b|(?:권고|제안|건의)(?:에 따라|를 받아들여|대로|를 반영해)",
+                             re.I)
+# 17회차: 원문이 제안·회부·논의로만 말한 일을 'will be paid'처럼 확정된 앞날로 말한 문장. 원문 가장 가까운 문장에
+# 제안 낱말이 있고 그 문장 스스로는 'will'로 확정하지 않을 때만.
+_FIRM_FUTURE = re.compile(r"\bwill (?:now |also )?(?:be (?:paid|given|funded|expanded|extended|made|offered|provided|added|"
+                          r"raised|required|eligible)|pay|receive|get|cover|fund|expand|extend|offer|provide|add|open|start|begin)\b",
+                          re.I)
+_PROPOSAL_ONLY = re.compile(r"\b(?:proposed|proposal|referred|discussed|recommend\w*|suggest\w*|considering|under review|"
+                            r"not yet|no decision|undecided)\b", re.I)
 _UNFINISHED = re.compile(_INTENT.pattern + r"|\b(?:subject to|deferred|requested|asked|suggested|not yet|no vote|until)\b|"
                          r"제안|요청|아직|않았|않은|미정|보류", re.I)
 
 
 def _already_overclaim(plain: str, sents: list[str]) -> bool:
-    if _INTENT.search(plain):
+    if _FIRM_FUTURE.search(plain) and not re.search(r"\b(?:may|might|could|proposed|would)\b", plain, re.I):
+        best = _closest_sentence(plain, sents)
+        if best is not None and _PROPOSAL_ONLY.search(best) and not re.search(r"\bwill\b", best, re.I):
+            return True
+    if _INTENT.search(_ADOPTED_ADVICE.sub(" ", plain) if _DONE.search(plain) else plain):
         return False
     if not _ALREADY.search(plain):
         return bool(_DONE.search(plain)) and _closest_clause_unfinished(plain, sents)
@@ -1809,6 +1830,19 @@ def _already_overclaim(plain: str, sents: list[str]) -> bool:
             if shared > most:
                 best, most = c, shared
     return best is not None and most >= (4 if korean else 2) and bool(_INTENT.search(best))
+
+
+def _closest_sentence(plain: str, sents: list[str]) -> str | None:
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = s, shared
+    return best if most >= (3 if korean else 2) else None
 
 
 def _closest_clause_unfinished(plain: str, sents: list[str]) -> bool:

@@ -1310,6 +1310,27 @@ class LabeledRoundTests(unittest.TestCase):
         text, changes = self.mark("학부모 열 명 중 약 세 명이 교복비 부담 완화를 체감했다 [S1].", src, "ko")
         self.assertIn("(출처 불일치)", text)
 
+    def test_proposal_stated_as_passed_or_firm_future_is_plan_conflict(self):
+        # 17회차(holdout12 계획→실적): 수동 완료·결정 동사·권고를 '따랐다'는 문장, 제안을 확정된 앞날로 말한 문장.
+        en = {"S1": "The council has proposed converting a vacant lot into a tenth garden, but no funding has been identified. "
+                    "The auditor recommended, but the council has not yet adopted, a proposal to prioritize blocks near schools. "
+                    "A proposal to pay volunteers an hourly stipend of $18 was discussed and referred to the budget committee."}
+        ko = {"S1": "군의회에는 수당을 연 80만 원으로 올리자는 조례 개정안이 발의되었으나 아직 심사 중이다. "
+                    "위원회는 1면당 지원금을 연 20만 원으로 올리자고 권고했으나, 집행부는 2027년 예산 편성 때 검토하겠다고만 답했다."}
+        for body, src, lang in (("A tenth garden has been funded for the vacant lot [S1].", en, "en"),
+                                ("The council has adopted the auditor's recommendation to prioritize blocks near schools [S1].", en, "en"),
+                                ("Volunteers will be paid an $18 hourly stipend [S1].", en, "en"),
+                                ("군의회는 수당을 연 80만 원으로 올리는 조례 개정안을 통과시켰다 [S1].", ko, "ko"),
+                                ("시는 위원회 권고에 따라 1면당 지원금을 연 20만 원으로 인상했다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["plan_conflict"]), body)
+        for body, src, lang in (("The council has proposed a tenth garden on a vacant lot [S1].", en, "en"),
+                                ("The auditor recommended prioritizing blocks near schools [S1].", en, "en"),
+                                ("군의회에 수당을 연 80만 원으로 올리는 개정안이 발의돼 심사 중이다 [S1].", ko, "ko"),
+                                ("위원회는 1면당 지원금을 연 20만 원으로 올리자고 권고했다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["plan_conflict"], body)
+
     def test_doer_swap_is_marked(self):
         # 16회차(holdout11 대상 바꿈): 일을 맡은 주체를 바꾼 문장. 일 낱말이 가장 많이 겹치는 원문 절의 주체와 견주고,
         # 주체를 같은 낱말로 부르거나 수량을 말하는 문장은 건드리지 않는다.
