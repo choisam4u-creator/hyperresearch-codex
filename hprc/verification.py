@@ -1681,12 +1681,19 @@ _EFFECT_FIRST = re.compile(r"\b(?:because(?: of)?|due to|as a result of|driven b
 _CAUSE_FIRST = re.compile(r"\b(?:caus(?:ed|es)|led to|leads? to|created|creates|made|makes|drove|result(?:ed|s) in)\b"
                           r"|때문에|때문|바람에|덕분에|덕에|(?:으로|로) 인해|탓에|(?:에|데) 따른|(?:에|데) 따라"
                           r"|(?<=[가-힣])(?:이어서|여서|해서|아서|어서)\s"
-                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s", re.I)
+                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s"
+                          # 18회차(백로그 '시간 순서·인과 역전', holdout3): "운행 차량을 늘리자 이용자가 늘었다", "이용자가 늘어 운행 차량을 늘렸다"
+                          r"|(?:늘리|줄이|높이|낮추|올리|내리|하|되)자\s|(?:늘어|줄어|올라|내려|떨어져|높아져|낮아져|많아져|적어져)\s", re.I)
 
 
 def _causal_pairs(text: str) -> list[tuple[str, str]]:
     pairs = []
     for m in _EFFECT_FIRST.finditer(text):
+        if not text[:m.start()].strip() and "," in text[m.end():]:
+            # 18회차: 문장 첫머리 "Because X, Y" — 원인은 첫 쉼표까지, 결과는 그 뒤.
+            cause, effect = text[m.end():].split(",", 1)
+            pairs.append((cause, effect))
+            continue
         pairs.append((text[m.end():], text[:m.start()]))
     for m in _CAUSE_FIRST.finditer(text):
         pairs.append((text[:m.start()], text[m.end():]))

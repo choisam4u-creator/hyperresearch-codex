@@ -1062,6 +1062,19 @@ class LabeledRoundTests(unittest.TestCase):
             text, _ = self.mark(body, ko, "ko")
             self.assertIn("(출처 불일치)", text, body)
 
+    def test_leading_because_and_korean_ja_causal_reversal(self):
+        # 18회차(백로그 인과 역전, holdout3): 문장 첫머리 "Because X, Y"와 한국어 '-자'·'늘어' 연결을 (원인, 결과)로 읽는다.
+        en = {"S1": "Electricity use in the sample rose 18 percent because heat pumps replaced gas furnaces."}
+        text, changes = self.mark("Because electricity use rose 18 percent, heat pumps replaced gas furnaces [S1].", en)
+        self.assertEqual(1, len(changes["causal_reversal_conflict"]))
+        text, changes = self.mark("Because heat pumps replaced gas furnaces, electricity use rose 18 percent [S1].", en)
+        self.assertEqual([], changes["causal_reversal_conflict"])
+        ko = {"S1": "군은 이용자가 늘어 운행 차량을 4대에서 6대로 늘렸다."}
+        text, changes = self.mark("운행 차량을 늘리자 이용자가 늘었다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["causal_reversal_conflict"]))
+        text, changes = self.mark("이용자가 늘자 군은 운행 차량을 6대로 늘렸다 [S1].", ko, "ko")
+        self.assertEqual([], changes["causal_reversal_conflict"])
+
     def test_antonym_flip_and_causal_reversal_are_marked(self):
         en = {"S1": "The council expanded night service because evening ridership had grown on the two routes. "
                     "The 2024 storm season lasted 5 weeks longer than the 2023 season."}
