@@ -1370,6 +1370,25 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, ko, "ko")
             self.assertEqual(1, len(changes["mismatch"]), body)
 
+    def test_upper_bound_wording_and_period_rate_times_length_are_not_mismatch(self):
+        # 18회차(holdout14 오표시): 상한 쪽 어림('채 되지 않았다'·'조금 못 미쳤다'·'just under')과 기간당 값×원문 기간 길이.
+        ko = {"S1": "구는 6개월간 시범 운영했다. 순찰대 운영비 월 600만 원은 구비로 냈다. 예약 후 평균 대기 시간은 18분이었다. "
+                    "1인당 평균 출자액은 약 77만 원이었다."}
+        for body in ("예약 뒤 평균 대기 시간은 20분이 채 되지 않았다 [S1].", "1인당 평균 출자액은 80만 원에 조금 못 미쳤다 [S1].",
+                     "6개월 시범 기간의 순찰대 운영비는 모두 3,600만 원이었다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        for body in ("예약 뒤 평균 대기 시간은 15분이 채 되지 않았다 [S1].", "1인당 평균 출자액은 90만 원에 조금 못 미쳤다 [S1].",
+                     "6개월 시범 기간의 순찰대 운영비는 모두 4,200만 원이었다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["mismatch"]), body)
+        en = {"S1": "The average wait was 18 minutes. Crews were paid $500 a week during the 8-week season."}
+        for body in ("The average wait was just under 20 minutes [S1].", "Crews earned $4,000 each over the 8-week season [S1]."):
+            text, changes = self.mark(body, en, "en")
+            self.assertEqual([], changes["mismatch"], body)
+        text, changes = self.mark("The average wait was just under 30 minutes [S1].", en, "en")
+        self.assertEqual(1, len(changes["mismatch"]))
+
     def test_korean_funder_share_swap_is_subject_conflict(self):
         # 17회차(holdout13): 기관별 재원 몫·금액을 맞바꾼 문장. 같은 몫(50%·50%)이나 원문대로 말한 문장은 건드리지 않는다.
         ko = {"S1": "재원은 시비 40%, 구비 60%다. 제조 장비는 국비 3억 원과 군비 1억 원으로 구입했다. 설치비는 도비 50%, 시비 50%로 부담했다."}

@@ -552,6 +552,12 @@ _APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내
 # 하한 표시("more than 60 percent", "60% 넘게"): 원문(계산) 값이 그 값 이상이고 그 자릿수 한 칸 안에 있을 때만 인정한다.
 _LOWER_LEAD = re.compile(r"\b(?:more than|over|above|at least|upwards of)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
 _LOWER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:넘게|넘는|넘었|이상|초과)")
+# 18회차(holdout14 오표시): 상한 쪽 어림("20분이 채 되지 않았다", "80만 원에 조금 못 미쳤다", "just under 20 minutes"): 원문(계산)
+# 값이 그 값보다 작고 그 자릿수 한 칸 안에 있을 때만 인정한다(하한 표시의 거울).
+_UPPER_LEAD = re.compile(r"\b(?:just under|slightly under|a little under|just below|slightly below|slightly less than|"
+                         r"a little less than|not quite|under|less than|fewer than|below)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
+_UPPER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:이|가|에|을|를)?\s*(?:채\s*(?:되지|안\s*되)|(?:조금\s*|약간\s*)?못\s*미치|"
+                         r"(?:조금\s*|약간\s*)?못\s*미쳤|미만|밑돌)")
 _POINTS_TAIL = re.compile(r"\s*(?:percentage[- ])?points?\b|\s*%?\s?포인트|\s*%\s?p\b", re.I)
 _ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:a|per|each) year\b|\bannual(?:ly)?\b|\byearly\b", re.I)
 # 원문의 낱말 몫("two thirds", "절반")도 퍼센트 값으로 본다.
@@ -698,6 +704,33 @@ _SUM_DIFF_CUE = re.compile(
     r"|합계|합쳐|모두|총|전체|나머지|차이|더\s|많|적|늘|줄|증가|감소|높|낮|내려|떨어|단축|않|배|에서\s*[\d,.]+\s*\S*\s*(?:로|으로)", re.I)
 
 
+# 18회차(holdout14 오표시): 기간당 값(월 600만 원·$500 a week·하루 40건)에 주장과 원문이 함께 말한 기간 길이(6개월·8 weeks)를 곱한 값.
+_PERIOD_RATE_LEAD = ((re.compile(r"(?:월|매달|매월|한 달에?)\s*(?:평균\s*)?$|\b(?:a|per|each) month\b|\bmonthly\b", re.I),
+               re.compile(r"(\d+)\s*(?:개월|months?\b)", re.I)),
+              (re.compile(r"(?:주|매주|한 주에?)\s*(?:평균\s*)?$|\b(?:a|per|each) week\b|\bweekly\b", re.I),
+               re.compile(r"(\d+)\s*(?:주\s*(?:간|동안)|weeks?\b|-week\b)", re.I)),
+              (re.compile(r"(?:하루|일\s*평균|매일)\s*(?:평균\s*)?$|\b(?:a|per|each) day\b|\bdaily\b", re.I),
+               re.compile(r"(\d+)\s*(?:일\s*(?:간|동안)|days?\b|-day\b)", re.I)))
+
+
+def _rate_spans(sentence: str, plain: list[dict], source_text: str) -> list[tuple[dict, Decimal]]:
+    out = []
+    for lead, length in _PERIOD_RATE_LEAD:
+        spans = {Decimal(m.group(1)) for m in length.finditer(sentence)} & {Decimal(m.group(1)) for m in length.finditer(source_text)}
+        spans.discard(Decimal(1))
+        if not spans:
+            continue
+        for a in plain:
+            if a["start"] < 0:
+                continue
+            before = source_text[max(0, a["start"] - 12):a["start"]]
+            after = source_text[a["end"]:a["end"] + 16]
+            if lead.search(before) or re.match(r"\s*\S{0,3}\s*(?:a|per|each)\s+(?:month|week|day)\b|\s*\S{0,3}\s*(?:monthly|weekly|daily)\b",
+                                               after, re.I):
+                out += [(a, n) for n in spans]
+    return out
+
+
 def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
                       all_claimed: list[dict] | None = None, bases: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
@@ -718,6 +751,13 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if hedged and any(_rounds_to(value, t) for t in same):
             ok.add(value["start"])
         elif lower and any(abs(value["value"]) <= t < abs(value["value"]) + _step(value) for t in same):
+            ok.add(value["start"])
+        elif value["dimension"] != "percent" and any(
+                (abs(value["value"]) == abs(a["value"]) * n or (hedged and _rounds_to(value, abs(a["value"]) * n)))
+                for a, n in _rate_spans(sentence, plain, source_text) if a["dimension"] == value["dimension"]):
+            ok.add(value["start"])   # 기간당 값×원문 기간 길이(월 600만 원×6개월 → "6개월 운영비는 모두 3,600만 원", 18회차)
+        elif ((_UPPER_LEAD.search(sentence, 0, value["start"]) or _UPPER_TAIL.match(sentence, value["end"]))
+              and any(abs(value["value"]) - _step(value) < t < abs(value["value"]) for t in same)):
             ok.add(value["start"])
         elif _POINTS_TAIL.match(sentence, value["end"]) or re.search(r"points?|포인트|%p", value["raw"], re.I):
             # 퍼센트포인트 차: 원문 두 퍼센트의 차를 그 자릿수로 반올림한 값
