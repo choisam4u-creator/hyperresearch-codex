@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-14 (품질 회차 18)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout14(12 case·192문장) 기준선 **F1 61.0 → 66.7**, 오표시율 19.8 → 16.3. **보지 않고 잰 holdout14 61.0 → 61.8**(개선 1, +1문장). 눈가림 holdout8b 64.5 → 66.7, holdout13 67.1 → 72.4(개선 1 설계용), holdout3 84.6 → 88.1(개선 4 설계용), holdout7 77.8 → 78.7. 전체 75.3 → 76.5. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout14 먼저(`56de0e2`) → 부담·납부 주체 바꿈(`59169f3`) → 인과 단정 credit·효과로 확인(`e4108d6`) → 상한 어림·기간당 값×기간(`747f9dd`) → 백로그 인과 역전(`963e296`, 백로그 2건 완료) → 기록, CI holdout14 `--min-f1 60`. 개선 4 커밋 메시지의 'holdout3 보지 않음'은 잘못이다(QUALITY-LOG에 바로잡음).
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 641개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 4개는 옛 코드(verification.py만 되돌림)에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열다섯 묶음(holdout13·14 `--min-f1 60` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 17회차 끝 PR #18 CI(mock 3.11~3.13·windows·CodeQL)는 성공을 확인했고, 이번 푸시들의 CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음에 대한 효과는 작다(holdout14 +1, 다른 묶음 결함 3건). 수행 주체·빈도·시간대·방법·조건 바꿈과 '최대' 누락이 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "무더위 쉼터 운영 비용은 누가 냈고, 응급실 온열질환 감소는 쉼터 덕분인가? 근거와 한계를 밝혀라"
+  grep -h -A8 '"subject_conflict"\|"causal_conflict"\|"causal_reversal_conflict"' research/runs/*/report_marks.json   # 부담 주체·인과 표시를 원문과 대조
+  ```
+
 ## 2026-10-14 (품질 회차 17)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
