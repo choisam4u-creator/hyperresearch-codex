@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Mark `(source mismatch)` when a cited sentence calls an item the highest, largest or most (or lowest) but the source lists a larger (smaller) value for another item in the same sentence, even when the source gives no rank word (`Children's cardholders accounted for 38%, adults … 49%` → `Children made up the largest share`) or gives the runner-up in the next sentence (`Millbrook … with 1,140. Westgate was second with 890` → `Westgate saw the largest increase`).
+- Fewer false `(source mismatch)` marks on a source value times a source count or period length (`$500 bonus` × `47 qualified` → `payouts totaled $23,500`; `월 최대 20만 원` × `최장 12개월` → `최대 240만 원`) when the sentence also gives the count or a total/maximum word.
 - Mark `(source mismatch)` when a cited sentence gives a different frequency for the same task than the source (`twice a week` ← `once a week`, `every month` ← `every 3 months`, `매달` ← `분기마다 1회`, `매주 한 번씩` ← `2주에 한 번`); frequencies are read as times per year, so `every three months` ↔ `quarterly` and `twice weekly` ↔ `twice a week` agree.
 - A time followed by a weekday or month name (`8 p.m. Saturday closing time`) no longer ends the sentence, so marks are no longer inserted mid-sentence.
 - Mark `(source mismatch)` on Korean doer swaps with time/place words between the doer and the verb (`도교육청이 직접 학교로 배송한다` ← `낙농협동조합이 오전 8시 30분까지 학교에 직접 배송한다`); `not city staff` is no longer read as a doer.
