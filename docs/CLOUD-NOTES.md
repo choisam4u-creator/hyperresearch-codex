@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-15 (품질 회차 19)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout15(12 case·207문장) 기준선 **F1 60.1 → 64.6**, 오표시율 16.8 → 16.8. **보지 않고 잰 holdout15 60.1 → 61.3**(개선 1, 결함 +2·오표시 +1). holdout13 72.4 → 73.2, holdout14 66.7 → 68.9(개선 4는 보지 않은 1건). 눈가림 holdout8b 66.7 그대로. 전체 75.2 → 75.7. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout15 먼저(`46a02e2`) → 빈도 바꿈(`b1623d3`, 백로그 '빈도·시간대·기간 바꿈' 진행) → 'p.m. 요일' 문장 끊김(`76e811c`) → N 기간마다 빈도(`b5a756b`) → 한국어 수행 주체(`926c30a`) → 기록, CI holdout15 `--min-f1 60`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 644개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 4개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열여섯 묶음(holdout15 `--min-f1 60` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 작다(holdout15 +1.2, holdout14 1건). 순위 바꿈·유보 인과 단정·표본 일반화(holdout15 각 4, 0건 잡음)가 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "농촌 순회 진료 버스는 면마다 얼마나 자주 오고, 운영은 누가 맡나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"period_conflict"\|"subject_conflict"' research/runs/*/report_marks.json   # 빈도·수행 주체 표시를 원문과 대조
+  ```
+
 ## 2026-10-14 (품질 회차 18)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.

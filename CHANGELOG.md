@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Mark `(source mismatch)` when a cited sentence gives a different frequency for the same task than the source (`twice a week` ← `once a week`, `every month` ← `every 3 months`, `매달` ← `분기마다 1회`, `매주 한 번씩` ← `2주에 한 번`); frequencies are read as times per year, so `every three months` ↔ `quarterly` and `twice weekly` ↔ `twice a week` agree.
+- A time followed by a weekday or month name (`8 p.m. Saturday closing time`) no longer ends the sentence, so marks are no longer inserted mid-sentence.
+- Mark `(source mismatch)` on Korean doer swaps with time/place words between the doer and the verb (`도교육청이 직접 학교로 배송한다` ← `낙농협동조합이 오전 8시 30분까지 학교에 직접 배송한다`); `not city staff` is no longer read as a doer.
 - Mark `(source mismatch)` when a cited sentence names a different payer than the source (`Tenants and landlords split a $380 fee` ← `The city pays … $380`; `전기요금은 버스 운수회사가 부담했다` ← `시가 납부했다`), says a payer paid nothing or that a paid service is free (`농가는 … 아무 비용도 내지 않았다` ← `농가는 운반비만 부담했다`; `free of charge` ← `at a cost of $0.04 per message`), or swaps English funding shares between bodies (`The county paid three-quarters` ← `funded 75% by a federal grant`), recorded as `subject_conflict`.
 - Mark `(source mismatch)` on causal claims worded as credit or confirmed effect (`credited the cooling centers with the drop`, `효과로 확인되었다`, `만의 효과로 볼 수 있다`) when the source names another possible cause or says the comparison is not controlled (`영향을 줬을 수 있다`, `늘렸다고 보기 어렵다`, `the comparison is not controlled`).
 - Mark `(source mismatch)` on reversed cause and effect in sentence-initial `Because X, Y` and Korean `-자`/`늘어` links (`운행 차량을 늘리자 이용자가 늘었다` ← `이용자가 늘어 운행 차량을 늘렸다`).
