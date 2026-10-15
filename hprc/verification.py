@@ -862,6 +862,28 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if hedged and any(a["dimension"] == value["dimension"] and _rounds_to(value, abs(a["value"]) * 100 / p)
                           for a in plain for p in percents_raw if 0 < p < 100):
             ok.add(value["start"])
+    # 20회차(holdout12~15 오표시로 설계): 원문 값 × 원문 개수·횟수·기간 길이("$500 bonus" × "47 of the 64 qualified" → "payouts
+    # totaled $23,500", "월 최대 20만 원" × "최장 12개월" → "최대 240만 원", "4 hours" × "13 Sundays" → "52 hours"). 곱셈 후보가
+    # 많아 우연히 맞기 쉬우므로 주장이 합계·상한 낱말을 말하거나 곱한 개수를 함께 말할 때만, 정확히 같거나 어림 표시가 있을 때만 인정한다.
+    total_cue = bool(_TOTAL_WORDS.search(sentence) or _PRODUCT_CUE.search(sentence))
+    word_counts = {Decimal(_SMALL_COUNT[m.group(0).lower()]) for m in _SMALL_COUNT_WORD.finditer(sentence)}
+    multipliers = [n for n in plain if n["dimension"] in _MULTIPLIER_DIMS and n.get("number", n["value"]) == n["value"]
+                   and n["value"] == n["value"].to_integral_value() and 2 <= abs(n["value"]) <= 1000]
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent" or abs(value["value"]) < 10:
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        for n in multipliers:
+            if not (total_cue or abs(n["value"]) in word_counts or any(
+                    c["start"] != value["start"] and abs(c.get("number", c["value"])) == abs(n["value"])
+                    for c in all_claimed or claim_values)):
+                continue
+            if any(a is not n and a["dimension"] == value["dimension"] and abs(a["value"]) > 1
+                   and (abs(a["value"]) * abs(n["value"]) == abs(value["value"])
+                        or (hedged and _rounds_to(value, abs(a["value"]) * abs(n["value"]))))
+                   for a in plain):
+                ok.add(value["start"])
+                break
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
@@ -879,6 +901,13 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
 _RATE_LEAD = re.compile(r"(?:1\s*)?([가-힣]{1,4})당\s*$")
 _RATE_TAIL = re.compile(r"\s*(?:per|a|an|each)\s+([A-Za-z]{3,})", re.I)
 _TOTAL_WORDS = re.compile(r"총|모두|전체|합계|합쳐|\b(?:in total|total(?:ed|led|ing)?|altogether|combined|overall)\b", re.I)
+# 20회차: 원문 값×개수 곱을 인정하는 낱말(합계 낱말 밖의 상한·누적 표현).
+_PRODUCT_CUE = re.compile(r"최대|최고|상한|누적|\b(?:maximum|at most|up to|across|over the (?:summer|season|year|period))\b", re.I)
+_MULTIPLIER_DIMS = {"unitless", "명", "가구", "건", "count_item", "count_place", "count_vehicle", "count_occurrence", "months"}
+_SMALL_COUNT = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "twelve": 12,
+                "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+_SMALL_COUNT_WORD = re.compile(r"\b(?:two|three|four|five|six|seven|eight|nine|ten|twelve)\b|(?<![\w가-힣])(?:두|세|네|다섯|여섯|일곱|여덟|아홉|열)(?=\s?(?:곳|개|대|명|번|차례|가구|달|해|주|쌍|학교|개월))",
+                               re.I)
 
 
 def _rates(source_text: str, plain: list[dict]) -> list[tuple[str, dict, str]]:

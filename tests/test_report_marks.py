@@ -1506,3 +1506,18 @@ class LabeledRoundTests(unittest.TestCase):
         en = {"S1": "Safety orientations are led by volunteer mentors, not city staff, and last 20 minutes."}
         text, changes = self.mark("City staff conduct the 20-minute safety orientations [S1].", en)
         self.assertEqual(1, len(changes["subject_conflict"]))
+
+    def test_value_times_count_with_total_or_cap_word(self):
+        # 20회차(holdout12~15 오표시): 원문 값×원문 개수·기간 길이는 주장이 합계·상한 낱말이나 곱한 개수를 말할 때만 계산 값이다.
+        en = {"S1": "Each branch received $68,000 for startup equipment. The program opened 4 branches in 2026, and 47 lifeguards earned a $500 bonus."}
+        text, changes = self.mark("Across the four branches, startup equipment cost $272,000 in total [S1].", en)
+        self.assertEqual([], changes["mismatch"])
+        text, changes = self.mark("Bonus payouts totaled $23,500 [S1].", en)
+        self.assertEqual([], changes["mismatch"])
+        text, changes = self.mark("Each branch received $272,000 for startup equipment [S1].", en)
+        self.assertEqual(1, len(changes["mismatch"]))
+        ko = {"S1": "시는 청년에게 월 최대 20만 원의 월세를 최장 12개월 지원한다."}
+        text, changes = self.mark("한 사람이 받을 수 있는 지원액은 최대 240만 원이다 [S1].", ko, "ko")
+        self.assertEqual([], changes["mismatch"])
+        text, changes = self.mark("한 사람이 받을 수 있는 월 지원액은 240만 원이다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["mismatch"]))
