@@ -1476,3 +1476,8 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["period_conflict"], body)
 
+    def test_pm_before_weekday_does_not_split_sentence(self):
+        # 19회차(holdout15 '8 p.m. Saturday'): 시각 뒤 요일·달 이름에서 문장을 끊으면 표시가 문장 가운데 들어갔다.
+        src = {"S1": "The board will vote in November on a proposal to close at 8 p.m. on Saturdays."}
+        text, changes = self.mark("The board approved an 8 p.m. Saturday closing time [S1].", src)
+        self.assertNotIn("p.m. (", text)

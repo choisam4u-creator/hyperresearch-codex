@@ -537,7 +537,10 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
 # 끊으면 표시가 "a.m (출처 없음). start"처럼 문장 가운데 들어가 본문이 깨졌다).
 _ABBREV = r"(?<![ap]\.m\.)(?<!\be\.g\.)(?<!\bi\.e\.)(?<!\bvs\.)(?<!\bU\.S\.)"
 _ABBREV_END = re.compile(r"\b(?:[ap]\.m|e\.g|i\.e|vs|U\.S)\.$")
-_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z]))"
+# 19회차: 대문자가 요일·달 이름이면("8 p.m. Saturday closing time", "6 a.m. Monday") 시각을 꾸미는 말이라 끊지 않는다.
+_DAY_MONTH = (r"(?:Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)days?\b|(?:January|February|March|April|May|June|July|August|September|"
+              r"October|November|December)\b")
+_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z])(?!\s+" + _DAY_MONTH + r"))"
 _MARK_SPLIT = re.compile(_SENTENCE_END + r"(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
                          r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
