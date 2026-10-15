@@ -1458,3 +1458,21 @@ class LabeledRoundTests(unittest.TestCase):
                                 ("반납된 카시트는 전문 업체가 세척과 소독을 맡는다 [S1].", ko, "ko")):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
+
+    def test_frequency_swap_is_marked(self):
+        # 19회차(백로그 빈도 바꿈, holdout13·14로 설계): 일의 빈도를 해마다 횟수로 읽어, 일 낱말이 가장 겹치는 원문 절의 빈도와 견준다.
+        en = {"S1": "Volunteers water each planter with 10 gallons once a week from June through August. "
+                    "Inspectors visit every site quarterly."}
+        ko = {"S1": "돌봄 활동은 매월 일지를 제출해 확인하고, 구청 담당자가 분기마다 1회 가정을 방문해 점검한다."}
+        for body, src, lang in (("Volunteers water each planter with 10 gallons twice a week [S1].", en, "en"),
+                                ("Inspectors visit every site monthly [S1].", en, "en"),
+                                ("구청 담당자는 매달 가정을 방문해 점검한다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual(1, len(changes["period_conflict"]), body)
+        for body, src, lang in (("Volunteers water each planter with 10 gallons weekly [S1].", en, "en"),
+                                ("Inspectors visit every site once every three months [S1].", en, "en"),
+                                ("구청 담당자는 분기에 한 번 가정을 방문해 점검한다 [S1].", ko, "ko"),
+                                ("구청은 월별 일지와 분기별 가정 방문으로 돌봄 활동을 확인한다 [S1].", ko, "ko")):
+            text, changes = self.mark(body, src, lang)
+            self.assertEqual([], changes["period_conflict"], body)
+

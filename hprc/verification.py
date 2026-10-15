@@ -1195,7 +1195,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
                 break
     if _causal_overclaim(plain, sents) or _reason_swap(plain, sents):
         found.append("causal")
-    if _period_conflict(plain, sents):
+    if _period_conflict(plain, sents) or _frequency_swap(plain, sents):
         found.append("period")
     if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents):
         found.append("plan")
@@ -2337,6 +2337,88 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
         if held and all(p and not (p & claim_periods) for p in held):
             return True
     return False
+
+
+# 19회차: 일의 빈도(once a week·주 2회·매달·분기마다)를 해마다 횟수로 읽는다. 기간 낱말만 있는 '월 600만 원'·'하루 4시간'은
+# 빈도가 아니므로 횟수 낱말(번·회·차례·once·twice·times)이나 '매-·마다·every·-ly'가 붙을 때만 센다.
+_FREQ_COUNT_KO = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6}
+_FREQ_COUNT_EN = {"once": 1, "twice": 2, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
+_FREQ_PER_YEAR = {"day": 365, "week": 52, "2week": 26, "month": 12, "quarter": 4, "half": 2, "year": 1}
+_FREQ_KO_PERIOD = {"매일": "day", "날마다": "day", "매주": "week", "주마다": "week", "격주": "2week", "매달": "month", "매월": "month",
+                   "달마다": "month", "월별": "month", "주별": "week", "일별": "day", "연별": "year",
+                   "분기마다": "quarter", "분기별": "quarter", "반기마다": "half", "매년": "year", "해마다": "year"}
+_FREQ_KO = re.compile(r"(매일|날마다|매주|주마다|격주|매달|매월|달마다|월별|주별|일별|연별|분기마다|분기별로?|반기마다|매년|해마다)"
+                      r"(?:\s*(\d+|한|두|세|네|다섯|여섯)\s*(?:번|회|차례))?"
+                      r"|(?:(하루|일주일|주|한\s?달|월|분기|1년|연)\s*(?:에|당)?\s*(\d+|한|두|세|네|다섯|여섯)\s*(?:번|회|차례))")
+_FREQ_KO_UNIT = {"하루": "day", "일주일": "week", "주": "week", "한 달": "month", "한달": "month", "월": "month", "분기": "quarter",
+                 "1년": "year", "연": "year"}
+_FREQ_EN = re.compile(r"\b(?:(once|twice|(?:one|two|three|four|five|six|\d+) times)\s+(?:a|per|each|every)\s+(day|week|month|quarter|year)"
+                      r"|every (other week|two weeks|three months|six months|day|week|month|quarter|year)"
+                      r"|(?:(once|twice|(?:one|two|three|four|five|six|\d+) times)\s+)?(daily|weekly|biweekly|fortnightly|monthly|quarterly|annually|yearly))\b",
+                      re.I)
+_FREQ_EN_WORD = {"daily": "day", "weekly": "week", "biweekly": "2week", "fortnightly": "2week", "monthly": "month",
+                 "quarterly": "quarter", "annually": "year", "yearly": "year", "other week": "2week", "two weeks": "2week",
+                 "three months": "quarter", "six months": "half"}
+
+
+def _frequencies(text: str) -> list[tuple[float, int, int]]:
+    """(해마다 횟수, 시작, 끝) 목록."""
+    out = []
+    for m in _FREQ_KO.finditer(text):
+        if m.group(1):
+            period = _FREQ_KO_PERIOD.get(m.group(1), "quarter" if m.group(1).startswith("분기") else None)
+            raw = m.group(2)
+        else:
+            period, raw = _FREQ_KO_UNIT.get(m.group(3)), m.group(4)
+        count = 1 if raw is None else (int(raw) if raw.isdigit() else _FREQ_COUNT_KO.get(raw, 0))
+        if period and count:
+            out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
+    for m in _FREQ_EN.finditer(text):
+        if m.group(1):
+            raw = m.group(1).lower().split()[0]
+            count, period = (int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)), m.group(2).lower()
+        else:
+            # 'twice weekly'는 'twice a week'와 같다.
+            word, raw = (m.group(3) or m.group(5)).lower(), (m.group(4) or "once").lower().split()[0]
+            count, period = (int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)), _FREQ_EN_WORD.get(word, word)
+        if count and period in _FREQ_PER_YEAR:
+            out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
+    return out
+
+
+def _frequency_swap(plain: str, sents: list[str]) -> bool:
+    """주장이 한 가지 빈도로 말한 일을, 그 일 낱말이 가장 겹치는 원문 절(빈도를 말한 절)이 다른 빈도로 말하면 True.
+
+    빈도 낱말을 뺀 나머지로 겹침을 재고, 가장 많이 겹치는 절이 여럿이면 그 빈도를 모두 인정한다."""
+    mine = _frequencies(plain)
+    if not mine or len({r for r, _, _ in mine}) != 1:
+        return False
+    rate = mine[0][0]
+    task = plain
+    for _, a, b in sorted(mine, key=lambda t: -t[1]):
+        task = task[:a] + " " + task[b:]
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = set(), 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        # 문장 전체는 빈도가 하나뿐일 때만 후보로 둔다(여러 빈도가 든 문장은 절마다 본다).
+        whole = [s] if len({r for r, _, _ in _frequencies(s)}) == 1 else []
+        for c in whole + _clauses(s):
+            theirs = _frequencies(c)
+            if not theirs:
+                continue
+            rest = c
+            for _, a, b in sorted(theirs, key=lambda t: -t[1]):
+                rest = rest[:a] + " " + rest[b:]
+            shared, _ = _clause_overlap(task, rest)
+            if shared > most:
+                best, most = {r for r, _, _ in theirs}, shared
+            elif shared == most:
+                best |= {r for r, _, _ in theirs}
+    if not best or most < (4 if korean else 2):
+        return False
+    return all(abs(r - rate) > 0.1 * max(r, rate) for r in best)
 
 
 # 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·곳당·대당·학교당·평균·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
