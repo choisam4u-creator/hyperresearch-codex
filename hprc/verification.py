@@ -2267,7 +2267,9 @@ _DOER_EN_BY = re.compile(r"\b(?:is|are|was|were|be|been|being|get|gets)\s+(?:\w+
                          r"taken|given)\s+(?:\w+\s+){0,4}?by\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)(?=[,.;]|\s+(?:and|but|"
                          r"while|which|at|in|on|for|with|under|through|from)\b|$)", re.I)
 _DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·]+?)(?:이|가|에서)\s+(?:모두\s+|직접\s+|전담해\s+|나눠\s+)*"
-                      r"(?:맡|담당|진행|운영|관리|점검|단속|세척|소독|방문|출동|수행|처리|수거|설치|채용|배치|선발|심사|조사|보관|책임)"
+                      # 19회차: 주체와 일 동사 사이의 때·곳 말('오전 8시 30분까지 학교에 직접 배송한다')을 두 어절까지 건넌다.
+                      r"(?:(?:[가-힣0-9:]+\s+){0,2}[가-힣0-9:]+(?:까지|에|로|으로|에게)\s+(?:직접\s+)?){0,2}"
+                      r"(?:맡|담당|진행|운영|관리|점검|단속|세척|소독|방문|출동|수행|처리|수거|설치|채용|배치|선발|심사|조사|보관|책임|배송|배달|실시|교체)"
                       r"|((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,2}?(?<![가-힣])[가-힣A-Za-z0-9·]+?)\s*(?:의\s*)?(?:책임|몫|담당)(?:이다|이며|이고|으로|이었다|이라)")
 _DOER_GENERIC = {"the", "a", "an", "its", "their", "his", "her", "this", "that", "these", "those", "each", "every", "all",
                  "also", "still", "now", "directly", "who", "which", "program", "pilot", "staff", "it", "they", "them",
@@ -2287,8 +2289,10 @@ def _doers(text: str) -> list[tuple[str, int, int]]:
     """(주체 구, 시작, 끝) — 한국어는 'X가 맡는다'·'X 책임이다', 영어는 'X hires'·'is pruned by X'."""
     if re.search(r"[가-힣]", text):
         return [(m.group(1) or m.group(2), m.start(), m.end()) for m in _DOER_KO.finditer(text)]
+    # 19회차: 'not city staff'는 주체가 아니다('staff'를 동사로 읽었다).
     out = [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN.finditer(text)
-           if m.group(1).split()[-1].lower() not in ("is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "not")]
+           if m.group(1).split()[-1].lower() not in ("is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "not")
+           and m.group(1).split()[0].lower() not in ("not", "no")]
     return out + [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_BY.finditer(text)]
 
 

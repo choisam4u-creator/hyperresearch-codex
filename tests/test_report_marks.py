@@ -1494,3 +1494,15 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertEqual(1, len(changes["period_conflict"]))
         text, changes = self.mark("이동 도서관은 마을마다 격주로 찾아간다 [S1].", ko, "ko")
         self.assertEqual([], changes["period_conflict"])
+
+    def test_doer_across_time_place_words_and_not_phrase(self):
+        # 19회차(holdout15 수행 주체 놓침): 주체와 일 동사 사이 때·곳 말('오전 7시까지 경로당에 직접 배달한다')을 건너고,
+        # 'not city staff'의 'not city'를 주체로 읽지 않는다.
+        ko = {"S1": "도시락은 지역 자활센터가 오전 7시까지 경로당에 직접 배달한다."}
+        text, changes = self.mark("도시락은 군청이 직접 경로당으로 배달한다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["subject_conflict"]))
+        text, changes = self.mark("도시락은 지역 자활센터가 경로당에 배달한다 [S1].", ko, "ko")
+        self.assertEqual([], changes["subject_conflict"])
+        en = {"S1": "Safety orientations are led by volunteer mentors, not city staff, and last 20 minutes."}
+        text, changes = self.mark("City staff conduct the 20-minute safety orientations [S1].", en)
+        self.assertEqual(1, len(changes["subject_conflict"]))
