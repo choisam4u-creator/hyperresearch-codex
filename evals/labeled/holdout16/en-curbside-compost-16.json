@@ -1,0 +1,134 @@
+{
+  "id": "en-curbside-compost-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "Is the Lindqvist City curbside food-scrap collection pilot on track to meet its diversion goal?",
+  "sources": {
+    "S1": "Lindqvist City began a curbside food-scrap collection pilot in October 2025 covering 6,400 single-family households in three neighborhoods. Participation is opt-in, and households receive a 13-gallon cart and a kitchen caddy at no charge. Collection takes place every week on the same day as trash pickup. After nine months, 3,710 households had enrolled, and the average set-out rate among enrolled households was 54%. The pilot collected 612 tons of food scraps, which the department estimates diverted about 4% of the pilot area's residential waste from landfill. The city's stated goal is 10% diversion in pilot areas by the end of 2026. Ridgeview had the highest enrollment rate at 68%, followed by Alder Park at 57% and Southmoor at 49%. Composting is done under contract by GreenCycle Organics at a tipping fee of $38 per ton, lower than the $61 per ton landfill fee. The department says the gap to the goal is likely related to low set-out rates but has not yet studied the reasons. Apartment buildings with five or more units were excluded from the pilot.",
+    "S2": "Public radio reporting found that contamination, mostly plastic bags, was detected in 7% of carts inspected during spot checks of 1,200 carts. Households with contaminated carts received a tag warning on the first offense and a skipped pickup after the third. The city spent $1.9 million on carts, caddies and outreach, funded entirely by a state organics grant. Alder Park residents told reporters that the carts were often knocked over by raccoons. The Sanitation Commissioner said she would recommend expanding the pilot citywide in 2027 if diversion reaches at least 7% by December. A council member noted that the department's diversion figure excludes yard waste, which is collected separately."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Is the Lindqvist City curbside food-scrap collection pilot on track to meet its diversion goal?\n\n## Answer\nThe pilot diverted an estimated 4% of residential waste, well short of the 10% goal for the end of 2026 [S1]. The department links the shortfall to low set-out rates but has not studied the reasons [S1].\n\n## Evidence\n- About 58% of eligible households had enrolled after nine months [S1].\n- Participation is mandatory for single-family households in the three neighborhoods [S1].\n- Households pay a one-time fee for the cart and kitchen caddy [S1].\n- Food scraps are collected every other week, alternating with trash pickup [S1].\n- More than half of all eligible households set out their carts in a typical week [S1].\n- Alder Park had the highest enrollment rate at 68% [S1].\n- Ridgeview's enrollment rate was 19 percentage points higher than Southmoor's [S1].\n- Composting through GreenCycle costs $23 per ton less than landfilling [S1].\n- The 612 tons collected saved the city about $14,000 in disposal fees compared with landfilling [S1].\n- The pilot diverted exactly 4% of the area's residential waste, according to measured landfill tonnage [S1].\n- Only apartment buildings with more than five units were excluded from the pilot [S1].\n\n## Counterevidence and limits\n- Spot checks of 1,200 carts found contamination in 7% of them, mostly plastic bags [S2].\n- Households with contaminated carts had pickup skipped after a second offense [S2].\n- The $1.9 million for carts, caddies and outreach was split between the city and a state grant [S2].\n- The Sanitation Commissioner has approved a citywide expansion for 2027 [S2].\n- The diversion figure does not count yard waste, which is collected separately [S2].\n- Neighboring cities with mandatory programs report diversion rates near 15%.\n\n## Next actions\n- Survey enrolled households that rarely set out carts to identify barriers before December (judgment).\n\n## Sources\n- [S1] Lindqvist City Department of Sanitation, \"Curbside Food-Scrap Pilot: Nine-Month Report\" (2026-08-20)\n- [S2] Lindqvist Public Radio, \"Compost pilot faces raccoons, plastic bags and a tough target\" (2026-09-12)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The pilot diverted an estimated 4% of residential waste, well short of the 10% goal for the end of 2026",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'the department estimates diverted about 4% ... The city's stated goal is 10% diversion in pilot areas by the end of 2026.'"
+    },
+    {
+      "key": "The department links the shortfall to low set-out rates but has not studied the reasons",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'the gap to the goal is likely related to low set-out rates but has not yet studied the reasons.'"
+    },
+    {
+      "key": "About 58% of eligible households had enrolled after nine months",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: '6,400 single-family households', '3,710 households had enrolled' -> 58.0%"
+    },
+    {
+      "key": "Participation is mandatory for single-family households in the three neighborhoods",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: 'Participation is opt-in'"
+    },
+    {
+      "key": "Households pay a one-time fee for the cart and kitchen caddy",
+      "label": "mismatch",
+      "tag": "cost_changed",
+      "why": "S1: 'households receive a 13-gallon cart and a kitchen caddy at no charge.'"
+    },
+    {
+      "key": "Food scraps are collected every other week, alternating with trash pickup",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S1: 'Collection takes place every week on the same day as trash pickup.'"
+    },
+    {
+      "key": "More than half of all eligible households set out their carts in a typical week",
+      "label": "mismatch",
+      "tag": "subgroup_generalized",
+      "why": "S1: 'average set-out rate among enrolled households was 54%' -> about 31% of eligible households"
+    },
+    {
+      "key": "Alder Park had the highest enrollment rate at 68%",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Ridgeview had the highest enrollment rate at 68%, followed by Alder Park at 57%'"
+    },
+    {
+      "key": "Ridgeview's enrollment rate was 19 percentage points higher than Southmoor's",
+      "label": "ok",
+      "tag": "percentage_points_correct",
+      "why": "S1: Ridgeview 68% vs Southmoor 49% -> 19 points"
+    },
+    {
+      "key": "Composting through GreenCycle costs $23 per ton less than landfilling",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: '$38 per ton, lower than the $61 per ton landfill fee' -> $23"
+    },
+    {
+      "key": "The 612 tons collected saved the city about $14,000 in disposal fees compared with landfilling",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 612 tons x ($61 - $38) = $14,076"
+    },
+    {
+      "key": "according to measured landfill tonnage",
+      "label": "mismatch",
+      "tag": "estimate_as_fact",
+      "why": "S1: 'which the department estimates diverted about 4%'"
+    },
+    {
+      "key": "Only apartment buildings with more than five units were excluded from the pilot",
+      "label": "mismatch",
+      "tag": "threshold_changed",
+      "why": "S1: 'Apartment buildings with five or more units were excluded' -> five-unit buildings were also excluded"
+    },
+    {
+      "key": "Spot checks of 1,200 carts found contamination in 7% of them, mostly plastic bags",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'contamination, mostly plastic bags, was detected in 7% of carts inspected during spot checks of 1,200 carts.'"
+    },
+    {
+      "key": "Households with contaminated carts had pickup skipped after a second offense",
+      "label": "mismatch",
+      "tag": "number_changed",
+      "why": "S2: 'a tag warning on the first offense and a skipped pickup after the third.'"
+    },
+    {
+      "key": "The $1.9 million for carts, caddies and outreach was split between the city and a state grant",
+      "label": "mismatch",
+      "tag": "funding_source_changed",
+      "why": "S2: '$1.9 million ... funded entirely by a state organics grant.'"
+    },
+    {
+      "key": "The Sanitation Commissioner has approved a citywide expansion for 2027",
+      "label": "mismatch",
+      "tag": "recommendation_as_approved",
+      "why": "S2: 'she would recommend expanding the pilot citywide in 2027 if diversion reaches at least 7% by December.'"
+    },
+    {
+      "key": "The diversion figure does not count yard waste, which is collected separately",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'the department's diversion figure excludes yard waste, which is collected separately.'"
+    },
+    {
+      "key": "Neighboring cities with mandatory programs report diversion rates near 15%",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "Neither source mentions neighboring cities."
+    }
+  ]
+}
