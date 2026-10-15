@@ -1241,7 +1241,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if _bound_overclaim(plain, sents):
         found.append("bound")
     if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
-            or _rank_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)
+            or _rank_swap(plain, sents) or _rank_value_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)
             or _payer_role_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
@@ -2926,6 +2926,54 @@ def _rank_swap(plain: str, sents: list[str]) -> bool:
             continue
         top_stems = stems(top)
         if top_stems and not (mine & top_stems):
+            return True
+    return False
+
+
+# 20회차(holdout16 순위 바꿈 놓침): 원문이 순위 낱말 없이 수치만 나란히 말하거나("Children's cardholders accounted for 38%,
+# adults … for 49%, and seniors for 13%"), 1위를 다음 문장의 '2위'와 함께 말할 때("Millbrook … the largest jump, with 1,140.
+# Westgate was second with 890"). 주장의 주어("Westgate saw the largest …", "누리시가 … 가장 많았다")가 원문에서 바로 뒤따르는
+# 같은 차원 수치를 그 대상의 값으로 보고, 같은 문장(과 '2위'·'뒤를 이어' 다음 문장)의 같은 차원 수치 가운데 가장 크지(작지) 않으면
+# 순위를 바꾼 것이다. 주어 낱말이 원문 한 곳에만 있고 그 뒤 같은 차원 수치가 둘 이상일 때만 본다.
+_RANK_MAX = re.compile(r"\bthe (?:highest|largest|biggest|greatest|most)\b|\b(?:highest|largest|biggest)\b|가장\s?(?:많|높|컸|큰|크)|최다|최고", re.I)
+_RANK_MIN = re.compile(r"\bthe (?:lowest|smallest|fewest|least)\b|\b(?:lowest|smallest|fewest)\b|가장\s?(?:적|낮|작)|최저|최소", re.I)
+_EN_SUBJECT = re.compile(r"^\s*(?:the\s+)?((?:[\w'-]+\s+){0,3}?[\w'-]+)\s+(?:had|has|was|were|is|are|made up|accounted for|saw|recorded|"
+                         r"received|drew|led|got|showed|posted|reported)\b", re.I)
+_KO_SUBJECT = re.compile(r"^\s*(?:[가-힣]+(?:별로는|에서는)\s+)?([가-힣A-Za-z]{2,})(?:이|가|은|는)\s")
+_EN_STOP_SUBJECTS = {"this", "that", "these", "those", "there", "most", "each", "every", "some", "many", "about", "nearly", "only"}
+_RANK_FOLLOW = re.compile(r"\bsecond\b|뒤를 이|두 번째|그다음|다음으로", re.I)
+
+
+def _rank_value_swap(plain: str, sents: list[str]) -> bool:
+    top = _RANK_MAX.search(plain)
+    bottom = _RANK_MIN.search(plain)
+    if bool(top) == bool(bottom) or _NEGATION.search(plain) or re.search(r"[,;]", plain[:(top or bottom).start()]):
+        return False   # 순위 낱말이 주어와 같은 절에 있을 때만("…, with federal loans covering the largest share"는 다른 주어)
+    korean = bool(re.search(r"[가-힣]", plain))
+    m = (_KO_SUBJECT if korean else _EN_SUBJECT).match(plain)
+    if not m:
+        return False
+    subject = re.sub(r"'s$", "", m.group(1).split()[0])
+    if not korean and (len(subject) < 4 or subject.lower() in _EN_STOP_SUBJECTS):
+        return False
+    stem = subject.lower()[:max(4, len(subject) - 2)] if not korean else subject[:max(2, len(subject) - 1)]
+    for i, sent in enumerate(sents):
+        text = sent + (" " + sents[i + 1] if i + 1 < len(sents) and _RANK_FOLLOW.search(sents[i + 1]) else "")
+        spots = [x.start() for x in re.finditer(re.escape(stem), text, re.I)]
+        if len(spots) != 1:
+            continue
+        values = [v for v in _quantity_values(text, _date_like_spans(text)) if not v.get("unsupported_unit") and v["value"]]
+        after = [v for v in values if v["start"] > spots[0]]
+        if not after:
+            continue
+        mine = after[0]
+        if text[spots[0]:mine["start"]].count(",") > 1 or re.search(r"[.;]", text[spots[0]:mine["start"]]):
+            continue
+        peers = [v for v in values if v["dimension"] == mine["dimension"] and not _is_date_number(v, text)]
+        if len(peers) < 2:
+            continue
+        best = max(abs(v["value"]) for v in peers) if top else min(abs(v["value"]) for v in peers)
+        if abs(mine["value"]) != best:
             return True
     return False
 

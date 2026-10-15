@@ -1521,3 +1521,19 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertEqual([], changes["mismatch"])
         text, changes = self.mark("한 사람이 받을 수 있는 월 지원액은 240만 원이다 [S1].", ko, "ko")
         self.assertEqual(1, len(changes["mismatch"]))
+
+    def test_rank_claim_checked_against_listed_values(self):
+        # 20회차(holdout16 순위 바꿈 놓침): 원문이 수치만 나란히 말하거나 1위를 다음 문장의 '2위'와 함께 말할 때, 주장 주어의 원문
+        # 수치가 같은 목록에서 가장 크지 않으면 순위를 바꾼 것이다. 주어가 다른 절의 순위 낱말("…, with grants covering the largest
+        # share")은 보지 않는다.
+        en = {"S1": "Seniors made up 22% of riders, students 51%, and commuters 27%. Oak Hill logged 2,400 trips. "
+                    "Elm Park was second with 1,900 trips."}
+        text, changes = self.mark("Commuters made up the largest share of riders [S1].", en)
+        self.assertEqual(1, len(changes["mismatch"]))
+        text, changes = self.mark("Students made up the largest share of riders [S1].", en)
+        self.assertEqual([], changes["mismatch"])
+        ko = {"S1": "지역별로는 한빛시가 신청자의 52%로 가장 많았고 누리시가 18%로 뒤를 이었다."}
+        text, changes = self.mark("누리시가 신청자의 18%로 가장 많았다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["mismatch"]))
+        text, changes = self.mark("한빛시가 신청자의 52%로 가장 많았다 [S1].", ko, "ko")
+        self.assertEqual([], changes["mismatch"])
