@@ -1,0 +1,128 @@
+{
+  "id": "en-swim-lessons-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "What does Harbor City's free learn-to-swim program offer, and what were its summer 2026 results?",
+  "sources": {
+    "S1": "Harbor City offers free learn-to-swim lessons to children aged 4 to 12 at 6 public pools. Each session runs 8 classes over 4 weeks, with classes held twice a week for 40 minutes each. Class sizes are capped at 6 children per instructor. Instructors are certified city lifeguards who receive a $3 per hour pay supplement for teaching. Priority registration is given to children enrolled in the free or reduced-price school lunch program; remaining spots open to all residents 7 days later. The 2026 budget of $185,000 is funded 70% by a state drowning-prevention grant and 30% by the city's recreation fund. Children who miss 3 or more classes are not eligible for a completion certificate. Sessions run from June through August; no lessons are offered in the fall.",
+    "S2": "A total of 1,920 children enrolled across all Harbor City learn-to-swim sessions in summer 2026, up from 1,350 in 2025. Of enrolled children, 1,510 completed a session. Instructors assessed children at the first and last class; 68% of completers advanced at least one skill level. Waitlists reached 430 children at the end of June. Parents of 240 children answered a voluntary survey, and 91% of them rated lessons as good or excellent. The aquatics division suggested that the lessons 'may contribute' to water safety but noted no local drowning data were analyzed. Staff recommended adding a fall session at 2 indoor pools; the parks board will consider it in November."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What does Harbor City's free learn-to-swim program offer, and what were its summer 2026 results?\n\n## Answer\nHarbor City provides free swim lessons for children aged 4 to 12 at six public pools [S1]. Enrollment rose by more than half between 2025 and 2026 [S2].\n\n## Evidence\n- Each session consists of eight 40-minute classes held twice weekly over four weeks [S1].\n- That adds up to 320 minutes, or 5 hours and 20 minutes, of instruction per session [S1].\n- Classes are capped at 8 children per instructor [S1].\n- Instructors are hired from a contracted private swim school [S1].\n- Lifeguards who teach get an extra $3 an hour [S1].\n- Lessons are reserved exclusively for children in the free or reduced-price lunch program [S1].\n- The state grant covers $55,500 of the budget [S1].\n- The city's recreation fund contributes $55,500 [S1].\n- Children who miss 2 or more classes cannot receive a completion certificate [S1].\n- About 79% of enrolled children completed a session [S2].\n\n## Counter-evidence and limits\n- 68% of all enrolled children advanced at least one skill level [S2].\n- 91% of participating families rated the lessons good or excellent [S2].\n- The division did not analyze local drowning data, so any water-safety effect remains unconfirmed [S2].\n- A fall session at two indoor pools has been approved [S2].\n- Waitlists hit 430 children by the end of June [S2].\n- Most waitlisted children live in neighborhoods without a public pool.\n\n## Next actions\n- Ask the aquatics division for completion rates by pool before the parks board's November review (judgment)\n\n## Sources\n- [S1] Harbor City Aquatics Division, \"Learn-to-Swim Initiative\" (2026-04-20)\n- [S2] Harbor City Aquatics Division, \"Summer 2026 Learn-to-Swim Results\" (2026-09-12)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Harbor City provides free swim lessons for children aged 4 to 12 at six public pools",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'free learn-to-swim lessons to children aged 4 to 12 at 6 public pools'"
+    },
+    {
+      "key": "Enrollment rose by more than half between 2025 and 2026",
+      "label": "mismatch",
+      "tag": "inflated_percent",
+      "why": "S2: 1,350 -> 1,920 is a 42% increase"
+    },
+    {
+      "key": "Each session consists of eight 40-minute classes held twice weekly over four weeks",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: '8 classes over 4 weeks … twice a week for 40 minutes each'"
+    },
+    {
+      "key": "That adds up to 320 minutes, or 5 hours and 20 minutes, of instruction per session",
+      "label": "ok",
+      "tag": "unit_conversion",
+      "why": "S1: 8 x 40 min = 320 min = 5 h 20 min"
+    },
+    {
+      "key": "Classes are capped at 8 children per instructor",
+      "label": "mismatch",
+      "tag": "wrong_number",
+      "why": "S1: 'capped at 6 children per instructor'"
+    },
+    {
+      "key": "Instructors are hired from a contracted private swim school",
+      "label": "mismatch",
+      "tag": "wrong_actor",
+      "why": "S1: 'Instructors are certified city lifeguards'"
+    },
+    {
+      "key": "Lifeguards who teach get an extra $3 an hour",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: '$3 per hour pay supplement for teaching'"
+    },
+    {
+      "key": "Lessons are reserved exclusively for children in the free or reduced-price lunch program",
+      "label": "mismatch",
+      "tag": "priority_as_exclusive",
+      "why": "S1: lunch-program children get priority; 'remaining spots open to all residents 7 days later'"
+    },
+    {
+      "key": "The state grant covers $55,500 of the budget",
+      "label": "mismatch",
+      "tag": "swapped_shares",
+      "why": "S1: state grant is 70% = $129,500; $55,500 is the city's 30%"
+    },
+    {
+      "key": "The city's recreation fund contributes $55,500",
+      "label": "ok",
+      "tag": "computed_share",
+      "why": "S1: 30% of $185,000 = $55,500"
+    },
+    {
+      "key": "Children who miss 2 or more classes cannot receive a completion certificate",
+      "label": "mismatch",
+      "tag": "threshold_changed",
+      "why": "S1: 'Children who miss 3 or more classes are not eligible'"
+    },
+    {
+      "key": "About 79% of enrolled children completed a session",
+      "label": "ok",
+      "tag": "computed_percent",
+      "why": "S2: 1,510 / 1,920 = 78.6%"
+    },
+    {
+      "key": "68% of all enrolled children advanced at least one skill level",
+      "label": "mismatch",
+      "tag": "wrong_base",
+      "why": "S2: '68% of completers', not of all enrolled children"
+    },
+    {
+      "key": "91% of participating families rated the lessons good or excellent",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S2: only parents of 240 children answered a voluntary survey"
+    },
+    {
+      "key": "The division did not analyze local drowning data, so any water-safety effect remains unconfirmed",
+      "label": "ok",
+      "tag": "limit_restated",
+      "why": "S2: 'may contribute' to water safety but 'no local drowning data were analyzed'"
+    },
+    {
+      "key": "A fall session at two indoor pools has been approved",
+      "label": "mismatch",
+      "tag": "recommendation_as_approved",
+      "why": "S2: 'the parks board will consider it in November'"
+    },
+    {
+      "key": "Waitlists hit 430 children by the end of June",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'Waitlists reached 430 children at the end of June'"
+    },
+    {
+      "key": "Most waitlisted children live in neighborhoods without a public pool",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source describes where waitlisted children live"
+    }
+  ]
+}
