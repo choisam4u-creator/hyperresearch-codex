@@ -2364,9 +2364,28 @@ _FREQ_EN_WORD = {"daily": "day", "weekly": "week", "biweekly": "2week", "fortnig
                  "three months": "quarter", "six months": "half"}
 
 
+# 'every 3 months'·'2주에 한 번'·'3개월마다'처럼 N 기간마다 한 번(또는 M번).
+_FREQ_EVERY_EN = re.compile(r"\bevery\s+(\d+|two|three|four|five|six)\s+(day|week|month|year)s\b", re.I)
+_FREQ_EVERY_KO = re.compile(r"(\d+|두|세|네|여섯)\s*(일|주|개월|달|년)\s*(?:에|마다)(?:\s*(\d+|한|두|세|네)\s*(?:번|회|차례))?")
+_FREQ_KO_SPAN = {"일": "day", "주": "week", "개월": "month", "달": "month", "년": "year"}
+
+
 def _frequencies(text: str) -> list[tuple[float, int, int]]:
     """(해마다 횟수, 시작, 끝) 목록."""
     out = []
+    for m in _FREQ_EVERY_EN.finditer(text):
+        raw = m.group(1).lower()
+        n = int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)
+        if n:
+            out.append((_FREQ_PER_YEAR[m.group(2).lower()] / n, m.start(), m.end()))
+    for m in _FREQ_EVERY_KO.finditer(text):
+        n = int(m.group(1)) if m.group(1).isdigit() else _FREQ_COUNT_KO.get(m.group(1), 0)
+        raw = m.group(3)
+        count = 1 if raw is None else (int(raw) if raw.isdigit() else _FREQ_COUNT_KO.get(raw, 0))
+        # 'N달에'·'N년에'는 횟수 낱말이 있을 때만 빈도다('3년에 걸쳐'와 구별).
+        if n and count and (m.group(0).endswith("마다") or raw is not None):
+            out.append((count * _FREQ_PER_YEAR[_FREQ_KO_SPAN[m.group(2)]] / n, m.start(), m.end()))
+    taken = [(a, b) for _, a, b in out]
     for m in _FREQ_KO.finditer(text):
         if m.group(1):
             period = _FREQ_KO_PERIOD.get(m.group(1), "quarter" if m.group(1).startswith("분기") else None)
@@ -2374,7 +2393,7 @@ def _frequencies(text: str) -> list[tuple[float, int, int]]:
         else:
             period, raw = _FREQ_KO_UNIT.get(m.group(3)), m.group(4)
         count = 1 if raw is None else (int(raw) if raw.isdigit() else _FREQ_COUNT_KO.get(raw, 0))
-        if period and count:
+        if period and count and not any(a <= m.start() < b for a, b in taken):
             out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
     for m in _FREQ_EN.finditer(text):
         if m.group(1):
@@ -2384,7 +2403,7 @@ def _frequencies(text: str) -> list[tuple[float, int, int]]:
             # 'twice weekly'는 'twice a week'와 같다.
             word, raw = (m.group(3) or m.group(5)).lower(), (m.group(4) or "once").lower().split()[0]
             count, period = (int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)), _FREQ_EN_WORD.get(word, word)
-        if count and period in _FREQ_PER_YEAR:
+        if count and period in _FREQ_PER_YEAR and not any(a <= m.start() < b for a, b in taken):
             out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
     return out
 

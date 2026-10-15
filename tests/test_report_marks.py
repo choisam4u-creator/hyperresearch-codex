@@ -1481,3 +1481,16 @@ class LabeledRoundTests(unittest.TestCase):
         src = {"S1": "The board will vote in November on a proposal to close at 8 p.m. on Saturdays."}
         text, changes = self.mark("The board approved an 8 p.m. Saturday closing time [S1].", src)
         self.assertNotIn("p.m. (", text)
+
+    def test_every_n_period_frequency(self):
+        # 19회차(holdout15 빈도 놓침): 'every 3 months'·'2주에 한 번'처럼 N 기간마다 한 번인 빈도도 읽는다. '3년에 걸쳐'는 빈도가 아니다.
+        en = {"S1": "Pump seals are replaced by county crews every 3 months, or sooner after a flood."}
+        ko = {"S1": "이동 도서관은 마을마다 2주에 한 번 찾아가며, 운영 시간은 오후 1시부터 5시까지다."}
+        text, changes = self.mark("County crews replace the pump seals every month [S1].", en)
+        self.assertEqual(1, len(changes["period_conflict"]))
+        text, changes = self.mark("County crews replace the pump seals every three months [S1].", en)
+        self.assertEqual([], changes["period_conflict"])
+        text, changes = self.mark("이동 도서관은 마을마다 매주 한 번씩 찾아간다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["period_conflict"]))
+        text, changes = self.mark("이동 도서관은 마을마다 격주로 찾아간다 [S1].", ko, "ko")
+        self.assertEqual([], changes["period_conflict"])
