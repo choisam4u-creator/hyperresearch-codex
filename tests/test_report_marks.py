@@ -1568,3 +1568,23 @@ class LabeledRoundTests(unittest.TestCase):
         for body in ("Residential streets get 3000K fixtures [S1].", "Lower-income recipients received $1,200 rather than $500 [S1]."):
             text, changes = self.mark(body, en)
             self.assertEqual([], changes["mismatch"], body)
+
+    def test_listed_values_compared_backwards_is_marked(self):
+        # 22회차(holdout15·17 비교 뒤집기 놓침): 원문이 한 문장에 이름마다 값을 나열하는데("해솔동 88건, 서하1동 64건, 미림동 52건",
+        # "Harbor Avenue (1,040), Quill Street (760), North Ring Road (610)") 주장이 두 이름을 반대로 비교한 문장.
+        ko = {"S1": "동별 설치 건수는 해솔동 88건, 서하1동 64건, 미림동 52건, 기타 37건이었다. "
+                    "진료 과목은 고혈압 관리(41%), 당뇨 관리(23%), 근골격계 통증(18%) 순으로 많았다."}
+        for body in ("미림동의 설치 건수가 서하1동보다 많았다 [S1].", "당뇨 관리가 고혈압 관리보다 많았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["antonym_conflict"]), body)
+        for body in ("서하1동의 설치 건수가 미림동보다 많았다 [S1].", "고혈압 관리가 당뇨 관리보다 많았다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        en = {"S1": "Locations ranked by confirmed flags were Harbor Avenue (1,040), Quill Street (760), and North Ring Road (610). "
+                    "Cedarbrook planted 1,800 street trees, and residents adopted 640 of them."}
+        text, changes = self.mark("Quill Street ranked behind North Ring Road in confirmed flags [S1].", en)
+        self.assertEqual(1, len(changes["antonym_conflict"]))
+        for body in ("Quill Street ranked ahead of North Ring Road in confirmed flags [S1].",
+                     "Harbor Avenue had more confirmed flags than Quill Street [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["mismatch"], body)

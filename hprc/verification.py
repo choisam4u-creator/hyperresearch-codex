@@ -1265,7 +1265,8 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
                                     or _exclusion_flip(plain, sents)):
         found.append("negation")
     if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
-                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
+                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)
+                                    or _list_order_flip(plain, sents)):
         found.append("antonym")
     if _causal_reversal(plain, sents):
         found.append("causal_reversal")
@@ -1714,6 +1715,101 @@ def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
     # 13회차: 비교 낱말 바로 앞 값('3 more pools than', '$200 less than')은 비교 대상이 아니라 차이다.
     others = [v for v in others if not _DIFF_AMOUNT.match(clause, v["end"])]
     return len(others) == 1 and (others[0]["value"] - ref["value"]) * sign < 0
+
+
+# 22회차(holdout12~17 비교 뒤집기 놓침): 원문이 한 문장에 이름마다 값을 나열하고("동별 설치 건수는 해솔동 88건, 서하1동 64건,
+# 미림동 52건", "Harbor Avenue (1,040), Quill Street (760), North Ring Road (610)") 주장은 두 이름을 반대로 비교한다("미림동의
+# 설치 건수가 서하1동보다 많았다", "Quill Street ranked behind North Ring Road"). ①은 수치마다 가장 가까운 대상 낱말을 보므로
+# 이름이 셋 이상 나열되면 값이 두 쪽에 섞여 판정하지 못했다. 나열 값마다 바로 앞 이름(한국어 어절 하나, 영어 낱말 셋까지)을 읽고,
+# 주장 비교의 두 쪽이 각각 다른 나열 항목 하나씩만 가리킬 때 그 두 값의 크기를 비교한다. 같은 두 항목을 맞게 비교하는 나열이
+# 원문 어디에라도 있으면 세지 않는다. 증감 폭 비교와 부정 문장은 보지 않는다.
+_RANK_ORDER_EN = re.compile(r"\b(?:ranked|placed|came|finished|was|were|sat)\s+(?:just\s+|second\s+|third\s+|well\s+)?"
+                            r"(?P<down>behind|below|after)\b|\b(?:ranked|placed|came|finished|was|were|sat)\s+"
+                            r"(?:just\s+|second\s+|third\s+|well\s+)?(?P<up>ahead of|above)\b|\b(?P<up2>outpaced|outranked)\b", re.I)
+_LIST_NAME_EXTRA = {"while", "followed", "remaining", "combined", "other", "others", "rest", "sites", "confirmed"}
+
+
+def _listed_values(sentence: str) -> list[tuple[list[str], dict]]:
+    """(이름 낱말들, 값): 값 바로 앞 이름(한국어 어절 둘, 영어 낱말 셋까지). 이름 없는 값·연도·날짜·증감 절 값은 뺀다."""
+    text = re.sub(r"\s*\((\$?\d[\d,.]*\s*(?:%|[가-힣]{1,2})?)\)", r" \1", sentence)
+    out = []
+    for v in _quantity_values(text, _date_like_spans(text)):
+        if v.get("unsupported_unit") or not v["value"] or _is_date_number(v, text) or re.fullmatch(r"(?:19|20)\d\d", v["raw"].strip()):
+            continue
+        head = re.split(r"[,;:(]|\b(?:and|while|with)\b|(?<=[가-힣])(?:고|며)\s", text[:v["start"]])[-1]
+        if _PAIR_CHANGE.search(head + text[v["end"]:v["end"] + 6]):
+            continue
+        if re.search(r"[가-힣]", head):
+            words = [_PAIR_PARTICLE.sub("", w) for w in re.findall(r"[가-힣A-Za-z0-9]+", head)][-2:]
+            words = [w for w in words if len(w) >= 2 and not re.fullmatch(r"\d+", w)]
+        else:
+            # "Soccer accounted for the largest share of vouchers (34%)": 이름은 동사 앞 주어다.
+            head = re.split(r"\b(?:accounted for|made up|represented)\b", head, flags=re.I)[0]
+            # 동사("Cedarbrook planted 1,800", "residents adopted 640")는 이름이 아니다.
+            words = [w for w in re.findall(r"[A-Za-z][\w'-]*", head)
+                     if w.lower() not in _LIST_STOP | _LIST_NAME_EXTRA and not re.search(r"(?:ed|ing)$", w.lower())][-3:]
+        if words:
+            out.append((words, v))
+    return out
+
+
+def _name_keys(names: list[list[str]]) -> list[list[str]]:
+    """이름마다 나열 안에서 홀로 가리키는 가장 짧은 끝 낱말들("고혈압 관리"·"당뇨 관리"는 '관리'만으로 가를 수 없다)."""
+    keys = []
+    for i, words in enumerate(names):
+        key = []
+        for n in range(1, len(words) + 1):
+            tail = words[-n:]
+            if not any(j != i and other[-n:] == tail for j, other in enumerate(names)):
+                key = tail
+                break
+        keys.append(key)
+    return keys
+
+
+def _names_in(text: str, key: list[str]) -> bool:
+    if not key:
+        return False
+    if any(re.search(r"[가-힣]", w) for w in key):
+        return all(w in text for w in key)
+    words = {w.lower() for w in re.findall(r"[A-Za-z][\w'-]*", text)}
+    return all(w.lower() in words for w in key)
+
+
+def _list_order_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain) or _CMP_CHANGE.search(plain):
+        return False
+    pairs = []
+    for clause in re.split(r"[;:()]|(?<!\d),(?!\d)", plain):
+        rank = _RANK_ORDER_EN.search(clause) if not re.search(r"[가-힣]", clause) else None
+        if rank:
+            pairs.append((clause[:rank.start()], clause[rank.end():], -1 if rank.group("down") else 1))
+            continue
+        sides = _comparison_sides(clause)
+        if sides and sides[2][0] == 0:
+            pairs.append((sides[0], sides[1], sides[2][1]))
+    # 주장이 단위 있는 수치를 말하면 그 차원의 나열만 본다("11 percentage points higher"를 인원 나열로 판정하지 않는다;
+    # "서하1동"의 1 같은 이름 속 숫자는 보지 않는다).
+    dims = {v["dimension"] for v in _quantity_values(plain, _date_like_spans(plain))
+            if not v.get("unsupported_unit") and not _is_date_number(v, plain) and v["dimension"] != "unitless"}
+    for big_text, small_text, sign in pairs:
+        verdicts = set()
+        for s in sents:
+            if _scripts(s) != _scripts(plain):
+                continue
+            items = _listed_values(s)
+            for dim in {v["dimension"] for _, v in items} - (set() if not dims else {v["dimension"] for _, v in items} - dims):
+                kin = [(n, v) for n, v in items if v["dimension"] == dim]
+                if len(kin) < 2:
+                    continue
+                kin = list(zip(_name_keys([n for n, _ in kin]), [v for _, v in kin]))
+                big = [v for n, v in kin if _names_in(big_text, n) and not _names_in(small_text, n)]
+                small = [v for n, v in kin if _names_in(small_text, n) and not _names_in(big_text, n)]
+                if len(big) == 1 and len(small) == 1 and big[0]["value"] != small[0]["value"]:
+                    verdicts.add((big[0]["value"] - small[0]["value"]) * sign > 0)
+        if verdicts == {False}:
+            return True
+    return False
 
 
 # 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
