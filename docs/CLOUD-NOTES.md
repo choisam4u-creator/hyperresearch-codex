@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-16 (품질 회차 21)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout17(12 case·229문장) 기준선 **F1 58.5 → 59.5**, 오표시율 22.2 → 21.3 — **두 개선 모두 holdout17을 보지 않고 설계해 잰 값**. holdout16 62.7 → 64.7(오표시 17.3 → 15.4), holdout15 65.2 → 66.7, holdout12 67.6 → 68.0, holdout5 74.6 → 75.6, holdout9 81.5 → 82.4. 눈가림 holdout8b 66.7 그대로. 전체 73.6 → 74.0(오표시 12.1 → 11.9). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout17 먼저(`d93a946`) → 시각 범위 끝 시각·시간당 값×시간·낱말 개수 평균(`4f4b68d`) → 나열 값-이름 맞바꿈(`4295e12`) → 기록, CI holdout17 `--min-f1 55`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 648개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열여덟 묶음(holdout17 `--min-f1 55` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 +1.0으로 작다. 출처 없는 단정·인과 단정·순위 바꿈·부정 뒤집기·표본 일반화가 여전히 큰 약점이고, 맞는 계산 문장(곱·차·퍼센트) 오표시가 holdout17 오표시의 절반이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "야간 연장 돌봄센터는 몇 시간 운영되고, 운영비는 국비·시비·구비가 각각 얼마씩 냈나? 근거와 한계를 밝혀라"
+  grep -h -B2 -A8 '"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json | head -60   # 재원 몫·시간 계산 문장 표시를 원문과 대조
+  ```
+
 ## 2026-10-15 (품질 회차 20)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
