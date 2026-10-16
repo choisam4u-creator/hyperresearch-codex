@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-16 (품질 회차 22)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout18(12 case·239문장) 기준선 **F1 53.9 → 55.3**, 오표시율 21.1 → 21.1 — **두 개선 모두 holdout18을 보지 않고 설계해 잰 값**. holdout17 59.5 → 62.5(오표시 21.3 → 20.4), holdout15 66.7 → 68.4. 전체 72.6 → 73.0(오표시 12.6 → 12.4). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout18 먼저(`5dd8562`) → 나열 값 비교 뒤집기(`bef64aa`) → 주체별 몫×총액 계산 인정(`8502c85`) → 기록, CI holdout18 `--min-f1 50`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 650개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열아홉 묶음(holdout18 `--min-f1 50` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 +1.4로 작다. 부담·운영 주체 바꿈, 인용 없는 미검증 문장, 인과 단정, 순위 뒤집기가 holdout18의 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "동네 공동배송 사업은 시장별로 거래액이 얼마였고, 비용은 누가 얼마씩 냈나? 근거와 한계를 밝혀라"
+  grep -h -B2 -A8 '"antonym_conflict"\|"mismatch"' research/runs/*/report_marks.json | head -60   # 시장 간 비교·몫 계산 문장 표시를 원문과 대조
+  ```
+
 ## 2026-10-16 (품질 회차 21)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
