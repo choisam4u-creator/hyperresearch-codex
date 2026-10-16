@@ -811,6 +811,10 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     # 10회차(holdout6): 어림 표시가 없어도 원문 두 값의 나눗셈이나 원문 몫(퍼센트·'절반')을 곱한 값과 정확히 같으면 계산한 값이다
     # ("9,720회 ÷ 36곳 = 한 곳당 270회", "3억 8천만 원의 절반 = 1억 9천만 원"). 10 미만 값은 우연히 맞기 쉬워 뺀다.
     shares = percents + [Decimal(_WORD_SHARES[m.group(0).lower()]) for m in _WORD_SHARE.finditer(source_text)]
+    # 21회차: 원문이 개수를 낱말로 말하면("two new gardens with 110 plots", "센터 두 곳") 단위당 평균의 나누는 수로도 쓴다
+    # ("The two new gardens average 55 plots each"). 정확히 나눠떨어질 때만 인정하는 아래 나눗셈에만 쓴다.
+    source_words = [{"dimension": "unitless", "value": Decimal(_SMALL_COUNT[m.group(0).lower()]), "start": -1}
+                    for m in _SMALL_COUNT_WORD.finditer(source_text)]
     part_of = bool(_PART_OF.search(sentence))
     for value in claim_values:
         if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle"):
@@ -831,7 +835,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         # 나눗셈은 주장이 단위당 값이라고 말할 때만('한 곳당', 'per volunteer', '평균'), 몫 곱은 주장이 전체 값도 함께 말할 때만
         # 인정한다(PR #18 Codex 리뷰: '$100 million, 20 volunteers' → 'The project cost 5 million dollars'가 통과하던 것).
         if (_PER_UNIT_WORDS.search(sentence) and any(
-                abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain
+                abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain + source_words
                 if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"})) \
                 or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares
                        if part_of or any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
@@ -869,6 +873,9 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     word_counts = {Decimal(_SMALL_COUNT[m.group(0).lower()]) for m in _SMALL_COUNT_WORD.finditer(sentence)}
     multipliers = [n for n in plain if n["dimension"] in _MULTIPLIER_DIMS and n.get("number", n["value"]) == n["value"]
                    and n["value"] == n["value"].to_integral_value() and 2 <= abs(n["value"]) <= 1000]
+    # 21회차: 원문 시각 범위의 시간 수도 곱하는 수로 쓴다("시간당 2천 원" × "오후 7시부터 10시까지" → "3시간을 모두 이용하면 6천 원").
+    multipliers += [{"dimension": "unitless", "value": h, "start": -1} for h in {x / 3600 for x in _clock_spans(source_text)}
+                    if h == h.to_integral_value() and 2 <= h <= 24]
     for value in claim_values:
         if value["start"] in ok or value["dimension"] == "percent" or abs(value["value"]) < 10:
             continue
@@ -990,7 +997,11 @@ def _clock_spans(text: str) -> list[Decimal]:
         for m in _KO_CLOCK_RANGE.finditer(sent):
             whole = m.group(0)
             a = _clock_minutes(m.group(2), m.group(3), m.group(1), "반" in whole.split("부터")[0] if "부터" in whole else False)
-            b = _clock_minutes(m.group(5), m.group(6), m.group(4))
+            # 21회차: 끝 시각에 때 낱말이 없으면 앞 시각의 것을 잇는다("오후 7시부터 10시까지" = 3시간, 15시간으로 읽던 결함).
+            # 오전에 시작해 더 작은 시각에 끝나면("오전 9시부터 6시까지") 오후로 읽는다.
+            b = _clock_minutes(m.group(5), m.group(6), m.group(4) or m.group(1))
+            if a is not None and b is not None and not m.group(4) and m.group(1) in ("오전", "아침") and b < a <= b + 720:
+                b += 720
             if a is not None and b is not None:
                 spans.append((b - a) % (24 * 60))
         spans = [x for x in spans if x]

@@ -1537,3 +1537,17 @@ class LabeledRoundTests(unittest.TestCase):
         self.assertEqual(1, len(changes["mismatch"]))
         text, changes = self.mark("한빛시가 신청자의 52%로 가장 많았다 [S1].", ko, "ko")
         self.assertEqual([], changes["mismatch"])
+
+    def test_clock_range_end_inherits_time_of_day_and_word_counts_divide(self):
+        # 21회차(holdout12·16 오표시): "오후 7시부터 10시까지"는 3시간이다(끝 시각에 때 낱말이 없어 15시간으로 읽던 결함). 그 시간 수는
+        # 시간당 값과 곱할 수 있고, 원문이 낱말로 말한 개수("two new gardens")는 단위당 평균의 나누는 수가 된다.
+        from hprc.verification import _absent_values
+        ko = "센터 5곳에서 오후 7시부터 10시까지 돌봄을 운영했다. 이용료는 시간당 2천 원이다."
+        self.assertEqual([], _absent_values("센터는 오후 7시부터 10시까지 하루 3시간 운영되었다 [S1].", ko))
+        self.assertEqual(["4시간"], _absent_values("센터는 오후 7시부터 10시까지 하루 4시간 운영되었다 [S1].", ko))
+        self.assertEqual([], _absent_values("3시간을 모두 이용하면 하루 6천 원이다 [S1].", ko))
+        self.assertEqual(["8천 원"], _absent_values("3시간을 모두 이용하면 하루 8천 원이다 [S1].", ko))
+        self.assertEqual([], _absent_values("센터는 오전 9시부터 6시까지 9시간 문을 연다 [S1].", "센터는 오전 9시부터 6시까지 문을 연다."))
+        en = "The city added two new gardens with 110 plots in spring 2026."
+        self.assertEqual([], _absent_values("The two new gardens average 55 plots each [S1].", en))
+        self.assertEqual(["45"], _absent_values("The two new gardens average 45 plots each [S1].", en))
