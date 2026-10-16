@@ -1253,7 +1253,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("bound")
     if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
             or _rank_swap(plain, sents) or _rank_value_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)
-            or _payer_role_swap(plain, sents)):
+            or _payer_role_swap(plain, sents) or _pair_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -2783,6 +2783,68 @@ def _value_kind(value: dict, text: str) -> tuple:
 
 def _same_kind(a: tuple, b: tuple) -> bool:
     return a[:2] == b[:2] and (not a[2] or not b[2] or a[2] == b[2])
+
+
+# 21회차(holdout15·16 값-이름 맞바꿈 놓침으로 설계): 원문이 한 문장에서 이름마다 값을 나열할 때("환경부 보조 50%, 시비 30%, 관리주체
+# 20%", "3000K … in residential areas and 4000K on arterial roads", "시가 40만 원, 가구가 20만 원") 주장이 한 값을 다른 이름에
+# 붙인 문장. 절마다 값이 하나뿐인 원문 절을 (이름 낱말, 값)으로 읽고, 주장 절의 이름 낱말이 원문의 다른 값 절과는 겹치고 같은 값
+# 절과는 하나도 겹치지 않으며, 원문 어디에도 그 값과 주장 이름 낱말을 함께 담은 절이 없을 때만 표시한다.
+_PAIR_SPLIT = re.compile(r"[;:()]|,(?!\d)|\s(?:and|but|while|whereas|compared with|versus|vs\.?)\s|(?<=[가-힣])(?:고|며|지만)\s", re.I)
+_PAIR_PARTICLE = re.compile(r"(?:으로|에서|에게|까지|부터|이며|이고|은|는|이|가|을|를|의|로|와|과|도|에)$")
+_PAIR_STOP = _EN_CONTEXT_STOP | {"the", "and", "for", "its", "per", "each", "share", "cost", "costs", "total", "while", "get", "gets",
+                                 "received", "receive", "receives", "paid", "pays", "pay", "covers", "covered", "contributes",
+                                 "contributed", "came", "comes", "went", "rest", "remaining", "accounted", "made", "makes"}
+
+
+def _pair_terms(segment: str) -> set[str]:
+    text = re.sub(r"[$€£₩]?\d[\d,.]*\s*(?:%|퍼센트|percent)?", " ", segment)
+    out = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", text)} - _PAIR_STOP
+    for w in re.findall(r"[가-힣]+", text):
+        w = _PAIR_PARTICLE.sub("", w) if len(w) > 1 else w
+        if w and not re.fullmatch(r"[천만억조원명곳건개대중약총모두했다였다이다있다되었다됐다부담했다냈다]+", w):
+            out.add(w[:3])
+    return out
+
+
+_PAIR_CHANGE = re.compile(r"\bfrom\b|\bto\b|에서|으로|로\s|증가|감소|늘|줄|\b(?:rose|fell|grew|dropped|increased|decreased|up|down)\b", re.I)
+
+
+def _pair_segments(text: str) -> list[tuple[set[str], dict]]:
+    """절마다 같은 차원 값이 하나뿐인 (이름 낱말, 값). 증감·범위 절("from 52 to 37", "236명에서 214명으로")은 뺀다."""
+    out = []
+    for seg in _PAIR_SPLIT.split(text):
+        if not seg or not seg.strip() or _PAIR_CHANGE.search(seg):
+            continue
+        vals = [v for v in _quantity_values(seg, _date_like_spans(seg)) if not v.get("unsupported_unit") and v["value"]
+                and not _is_date_number(v, seg)
+                and not (v["dimension"] == "unitless" and re.fullmatch(r"(?:19|20)\d\d", v["raw"].strip()))]
+        # 한 절에 값이 여럿이면("사업비 3억 원은 시비가 70%") 값마다 앞 값 뒤부터 다음 값 앞까지를 그 값의 이름으로 본다.
+        vals.sort(key=lambda v: v["start"])
+        for i, v in enumerate(vals):
+            if sum(1 for w in vals if w["dimension"] == v["dimension"]) > 1:
+                continue
+            lo = vals[i - 1]["end"] if i else 0
+            hi = vals[i + 1]["start"] if i + 1 < len(vals) else len(seg)
+            out.append((_pair_terms(seg[lo:v["start"]] + " " + seg[v["end"]:hi]), v))
+    return out
+
+
+def _pair_swap(plain: str, sents: list[str]) -> bool:
+    same = lambda a, b: a["dimension"] == b["dimension"] and abs(a["value"]) == abs(b["value"])
+    pairs = [_pair_segments(s) for s in sents]
+    for terms, value in _pair_segments(plain):
+        if not terms or any(same(v, value) and t & terms for segs in pairs for t, v in segs):
+            continue
+        for segs in pairs:
+            kin = [(t, v) for t, v in segs if v["dimension"] == value["dimension"]]
+            if len(kin) < 2:
+                continue
+            # 나열 절 둘 이상에 나오는 낱말("설치비", "부담")은 이름을 가르지 못한다.
+            own = [t - set().union(*(u for j, (u, _) in enumerate(kin) if j != i)) for i, (t, _) in enumerate(kin)]
+            if (any(same(v, value) and not t & terms for t, (_, v) in zip(own, kin))
+                    and any(not same(v, value) and t & terms for t, (_, v) in zip(own, kin))):
+                return True
+    return False
 
 
 def _subject_swap(plain: str, sents: list[str]) -> bool:

@@ -1551,3 +1551,20 @@ class LabeledRoundTests(unittest.TestCase):
         en = "The city added two new gardens with 110 plots in spring 2026."
         self.assertEqual([], _absent_values("The two new gardens average 55 plots each [S1].", en))
         self.assertEqual(["45"], _absent_values("The two new gardens average 45 plots each [S1].", en))
+
+    def test_value_moved_to_other_listed_name_is_marked(self):
+        # 21회차(holdout15·16 값-이름 맞바꿈 놓침): 원문이 한 문장에 이름마다 값을 나열할 때 주장이 값을 다른 이름에 붙인 문장.
+        # 증감 절("236명에서 214명으로")과 천 단위 쉼표("$1,200")는 나열로 읽지 않는다.
+        ko = {"S1": "사업비 3억 2천만 원은 시비가 70%, 도비가 30%를 부담했다. 온열질환자는 236명에서 214명으로 줄었다."}
+        text, changes = self.mark("사업비 3억 2천만 원 가운데 도비가 70%를 부담했다 [S1].", ko, "ko")
+        self.assertEqual(1, len(changes["subject_conflict"]))
+        for body in ("사업비 가운데 시비가 70%를 부담했다 [S1].", "온열질환자는 236명에서 214명으로 약 9% 줄었다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        en = {"S1": "Fixtures use 3000K color temperature in residential areas and 4000K on arterial roads. "
+                    "Lower-income recipients got $1,200, and other recipients got $500."}
+        text, changes = self.mark("Residential streets get 4000K fixtures while arterial roads get 3000K [S1].", en)
+        self.assertEqual(1, len(changes["subject_conflict"]))
+        for body in ("Residential streets get 3000K fixtures [S1].", "Lower-income recipients received $1,200 rather than $500 [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["mismatch"], body)
