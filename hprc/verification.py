@@ -734,6 +734,35 @@ def _rate_spans(sentence: str, plain: list[dict], source_text: str) -> list[tupl
     return out
 
 
+# 22회차(holdout15·17 맞는 몫 계산 오표시로 설계): 원문이 부담 주체마다 몫을 나열할 때("funded 70% by a state … grant and 30% by
+# the city's recreation fund", "60% from the state Clean Homes Fund") 주장이 그 주체의 몫·부담액을 말하면("The city's recreation
+# fund contributes $55,500", "The state's portion of the first-year budget works out to $1.08 million") 그 주체의 몫만 곱하는
+# 수로 쓴다. 주장에 몫·부담 낱말이 있고, 주장 낱말이 그 몫 절의 고유 이름 낱말(다른 몫 절에 없는 낱말)과 겹칠 때만이다.
+_SHARE_CUE = re.compile(r"\b(?:portion|share|half|part|contribut\w*|covers?|covered|pays?|paid|funds?|funded|chips? in)\b|"
+                        r"몫|부담|분담|지원액|냈|낸다|댔|댄다", re.I)
+
+
+# 몫 절은 'from'으로 주체를 말하므로("60% from the state … Fund") 'from 52 to 37'처럼 수치 앞뒤의 from·to만 증감으로 본다.
+_SHARE_CHANGE = re.compile(r"\b(?:from|to)\s+[$€£₩]?\d|\d[\d,.]*\s*%?\s*(?:to|에서)\s|증가|감소|늘|줄|"
+                           r"\b(?:rose|fell|grew|dropped|increased|decreased)\b", re.I)
+
+
+def _named_shares(sentence: str, source_text: str) -> set[Decimal]:
+    if not _SHARE_CUE.search(sentence):
+        return set()
+    mine = _pair_terms(sentence)
+    out = set()
+    for s in re.split(r"(?<=[.!?])\s+", source_text):
+        segs = [(t, v) for t, v in _pair_segments(s, _SHARE_CHANGE) if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
+        if len(segs) < 2:
+            continue
+        for i, (terms, v) in enumerate(segs):
+            own = terms - set().union(*(u for j, (u, _) in enumerate(segs) if j != i))
+            if own & mine:
+                out.add(abs(v["value"]))
+    return out
+
+
 def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
                       all_claimed: list[dict] | None = None, bases: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
@@ -816,6 +845,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
     source_words = [{"dimension": "unitless", "value": Decimal(_SMALL_COUNT[m.group(0).lower()]), "start": -1}
                     for m in _SMALL_COUNT_WORD.finditer(source_text)]
     part_of = bool(_PART_OF.search(sentence))
+    named = _named_shares(sentence, source_text)
     for value in claim_values:
         if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle"):
             continue
@@ -837,6 +867,7 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if (_PER_UNIT_WORDS.search(sentence) and any(
                 abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain + source_words
                 if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"})) \
+                or any(abs(a["value"]) * p / 100 == target for a in kin for p in named) \
                 or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares
                        if part_of or any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
                                          for c in all_claimed or claim_values)):
@@ -2905,11 +2936,11 @@ def _pair_terms(segment: str) -> set[str]:
 _PAIR_CHANGE = re.compile(r"\bfrom\b|\bto\b|에서|으로|로\s|증가|감소|늘|줄|\b(?:rose|fell|grew|dropped|increased|decreased|up|down)\b", re.I)
 
 
-def _pair_segments(text: str) -> list[tuple[set[str], dict]]:
+def _pair_segments(text: str, change: re.Pattern = _PAIR_CHANGE) -> list[tuple[set[str], dict]]:
     """절마다 같은 차원 값이 하나뿐인 (이름 낱말, 값). 증감·범위 절("from 52 to 37", "236명에서 214명으로")은 뺀다."""
     out = []
     for seg in _PAIR_SPLIT.split(text):
-        if not seg or not seg.strip() or _PAIR_CHANGE.search(seg):
+        if not seg or not seg.strip() or change.search(seg):
             continue
         vals = [v for v in _quantity_values(seg, _date_like_spans(seg)) if not v.get("unsupported_unit") and v["value"]
                 and not _is_date_number(v, seg)

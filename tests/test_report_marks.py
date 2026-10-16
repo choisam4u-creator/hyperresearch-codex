@@ -1588,3 +1588,16 @@ class LabeledRoundTests(unittest.TestCase):
                      "Harbor Avenue had more confirmed flags than Quill Street [S1]."):
             text, changes = self.mark(body, en)
             self.assertEqual([], changes["mismatch"], body)
+
+    def test_named_payer_share_of_total_is_not_marked(self):
+        # 22회차(holdout15·17 맞는 몫 계산 오표시): 원문이 주체마다 몫을 나열할 때 그 주체의 몫×총액을 말한 문장은 계산 값이다.
+        # 다른 주체의 몫을 곱한 값은 여전히 원문에 없는 수치로 표시한다.
+        en = {"S1": "The 2026 budget of $185,000 is funded 70% by a state drowning-prevention grant and 30% by the city's recreation fund. "
+                    "Funding came 60% from the state Clean Homes Fund and 40% from the county's utility franchise fee revenue. "
+                    "The first-year budget was $1.8 million."}
+        for body in ("The city's recreation fund contributes $55,500 [S1].",
+                     "The state's portion of the first-year budget works out to $1.08 million [S1]."):
+            text, changes = self.mark(body, en)
+            self.assertEqual([], changes["mismatch"], body)
+        text, changes = self.mark("The city's recreation fund contributes $129,500 [S1].", en)
+        self.assertEqual(1, len(changes["mismatch"]))
