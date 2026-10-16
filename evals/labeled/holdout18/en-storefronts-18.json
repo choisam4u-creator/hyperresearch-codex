@@ -1,0 +1,140 @@
+{
+ "id": "en-storefronts-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "Has Dunmore's Open Storefronts grant program reduced downtown retail vacancies?",
+ "sources": {
+  "S1": "The City of Dunmore's Economic Development Office launched the Open Storefronts program in March 2025 to fill vacant ground-floor retail spaces on Main Street and Canal Street. New tenants that sign a lease of at least 3 years in a space vacant for 6 months or more can receive up to $25,000 for interior build-out, paid as a reimbursement after receipts are submitted. Landlords must agree to cap rent increases at 3% per year for the lease term. Chain businesses with more than 10 locations are not eligible. As of July 2026, 47 grants had been awarded totaling $942,000, and 39 businesses had opened; 8 were still in build-out. The vacancy rate in the program area fell from 18.2% in March 2025 to 11.6% in June 2026. The office notes that a new 300-unit apartment complex opened nearby in late 2025 and may have increased foot traffic, so the change cannot be credited to the program alone. Of the businesses that opened, 15 were restaurants or cafes, 11 were retail shops, 8 were personal services, and 5 were other uses. Four of the 39 had closed by July 2026. The program is funded by $1.5 million from the city's share of a regional economic development fund; no general fund money is used. The Downtown Business Alliance, a nonprofit, handles applications and site visits, while the city approves grants and makes payments. The office estimates the opened businesses created 210 jobs, based on owners' self-reported staffing, which has not been verified.",
+  "S2": "The Dunmore Daily reported that several grantees waited more than four months for reimbursement. Bakery owner Sam Torres said the grant 'made the difference between opening and not.' Some existing Main Street merchants complained that the program favors newcomers over long-time tenants facing rent hikes. Landlord Helen Price said the 3% rent cap discouraged her from participating. City Councilor Omar Reyes has proposed extending the program to Mill Road."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Dunmore's Open Storefronts grant program reduced downtown retail vacancies?\n\n## Answer\nThe vacancy rate in the program area dropped 6.6 percentage points, from 18.2% to 11.6% [S1]. Open Storefronts is responsible for that drop [S1].\n\n## Evidence\n- Grants reimburse up to $25,000 of interior build-out after the tenant submits receipts [S1].\n- A space must have been vacant for at least three months to qualify [S1].\n- Chains with more than 10 locations may apply on the same terms [S1].\n- Awarded grants averaged about $20,000 each [S1].\n- The 47 awards used up about 63% of the $1.5 million program fund [S1].\n- Vacancy in the program area fell by 6.6% [S1].\n- Restaurants and cafes were the largest group among businesses that opened [S1].\n- Personal services outnumbered retail shops among the new businesses [S1].\n- About 90% of the businesses that opened were still operating in July 2026 [S1].\n- The Downtown Business Alliance approves grants and issues payments [S1].\n- The program draws partly on the city's general fund [S1].\n- The new businesses have created 210 verified jobs [S1].\n- Landlords who take part must hold rent increases to 3% a year during the lease [S1].\n\n## Counterevidence and limits\n- The office points out that a new 300-unit apartment complex opened nearby in late 2025 and may have boosted foot traffic [S1].\n- Some grantees waited more than six months to be reimbursed [S2].\n- At least one landlord said the rent cap put her off joining [S2].\n- The program has been extended to Mill Road [S2].\n- Main Street foot traffic counts rose 14% over the period.\n\n## Next actions\n- Compare vacancy trends on Main and Canal streets with a similar downtown corridor that had no grants before any Mill Road expansion (judgment).\n\n## Sources\n- [S1] City of Dunmore Economic Development Office, \"Open Storefronts: Program Update\" (2026-08-10)\n- [S2] The Dunmore Daily, \"Empty windows are filling, but grantees wait to be paid\" (2026-09-08)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The vacancy rate in the program area dropped 6.6 percentage points, from 18.2% to 11.6%",
+   "label": "ok",
+   "tag": "derived_difference_pp",
+   "why": "S1: 'fell from 18.2% in March 2025 to 11.6% in June 2026'; 18.2 - 11.6 = 6.6 points."
+  },
+  {
+   "key": "Open Storefronts is responsible for that drop",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: a new 300-unit apartment complex 'may have increased foot traffic, so the change cannot be credited to the program alone.'"
+  },
+  {
+   "key": "Grants reimburse up to $25,000 of interior build-out after the tenant submits receipts",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'up to $25,000 for interior build-out, paid as a reimbursement after receipts are submitted.'"
+  },
+  {
+   "key": "A space must have been vacant for at least three months to qualify",
+   "label": "mismatch",
+   "tag": "condition_changed",
+   "why": "S1: 'a space vacant for 6 months or more'; 3 is the minimum lease length in years."
+  },
+  {
+   "key": "Chains with more than 10 locations may apply on the same terms",
+   "label": "mismatch",
+   "tag": "negation_flipped",
+   "why": "S1: 'Chain businesses with more than 10 locations are not eligible.'"
+  },
+  {
+   "key": "Awarded grants averaged about $20,000 each",
+   "label": "ok",
+   "tag": "derived_average",
+   "why": "S1: '47 grants had been awarded totaling $942,000'; 942,000/47 = $20,043."
+  },
+  {
+   "key": "The 47 awards used up about 63% of the $1.5 million program fund",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: $942,000 / $1,500,000 = 62.8%."
+  },
+  {
+   "key": "Vacancy in the program area fell by 6.6%",
+   "label": "mismatch",
+   "tag": "percent_vs_percentage_point",
+   "why": "S1: 18.2% to 11.6% is a 6.6 percentage-point fall, a relative decline of about 36%."
+  },
+  {
+   "key": "Restaurants and cafes were the largest group among businesses that opened",
+   "label": "ok",
+   "tag": "ranking",
+   "why": "S1: '15 were restaurants or cafes, 11 were retail shops, 8 were personal services, and 5 were other uses.'"
+  },
+  {
+   "key": "Personal services outnumbered retail shops among the new businesses",
+   "label": "mismatch",
+   "tag": "ranking_flipped",
+   "why": "S1: 11 retail shops vs 8 personal services."
+  },
+  {
+   "key": "About 90% of the businesses that opened were still operating in July 2026",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: 'Four of the 39 had closed by July 2026'; 35/39 = 89.7%."
+  },
+  {
+   "key": "The Downtown Business Alliance approves grants and issues payments",
+   "label": "mismatch",
+   "tag": "wrong_operator",
+   "why": "S1: the Alliance 'handles applications and site visits, while the city approves grants and makes payments.'"
+  },
+  {
+   "key": "The program draws partly on the city's general fund",
+   "label": "mismatch",
+   "tag": "wrong_payer",
+   "why": "S1: 'funded by $1.5 million from the city's share of a regional economic development fund; no general fund money is used.'"
+  },
+  {
+   "key": "The new businesses have created 210 verified jobs",
+   "label": "mismatch",
+   "tag": "estimate_as_fact",
+   "why": "S1: 'The office estimates ... 210 jobs, based on owners' self-reported staffing, which has not been verified.'"
+  },
+  {
+   "key": "Landlords who take part must hold rent increases to 3% a year during the lease",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Landlords must agree to cap rent increases at 3% per year for the lease term.'"
+  },
+  {
+   "key": "The office points out that a new 300-unit apartment complex opened nearby in late 2025 and may have boosted foot traffic",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: 'a new 300-unit apartment complex opened nearby in late 2025 and may have increased foot traffic.'"
+  },
+  {
+   "key": "Some grantees waited more than six months to be reimbursed",
+   "label": "mismatch",
+   "tag": "number_changed",
+   "why": "S2: 'several grantees waited more than four months for reimbursement.'"
+  },
+  {
+   "key": "At least one landlord said the rent cap put her off joining",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'Landlord Helen Price said the 3% rent cap discouraged her from participating.'"
+  },
+  {
+   "key": "The program has been extended to Mill Road",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S2: 'City Councilor Omar Reyes has proposed extending the program to Mill Road.'"
+  },
+  {
+   "key": "Main Street foot traffic counts rose 14% over the period",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source reports foot traffic counts."
+  }
+ ]
+}
