@@ -1,0 +1,134 @@
+{
+  "id": "en-noise-camera-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "What do Port Velden's vehicle noise camera pilot results show so far, and how reliable are they?",
+  "sources": {
+    "S1": "Port Velden installed 8 acoustic noise cameras at fixed locations on 2026-01-15 as a one-year pilot. A camera flags a vehicle when its noise exceeds 86 decibels at 15 meters, and a staff reviewer must confirm each flag before a notice is mailed. During the first six months, cameras recorded 5,420 flags, of which reviewers confirmed 3,180. First violations receive a warning letter only; second and later violations carry a $150 fine, rising to $300 for violations within 30 days of a prior fine. Fines issued through June totaled $211,500. Locations ranked by confirmed flags were Harbor Avenue (1,040), Quill Street (760), North Ring Road (610), and the remaining five sites combined (770). Repeat-flag rates fell from 22% of flagged vehicles in February to 13% in June. The department cautions that the decline coincides with seasonal changes in traffic and a police enforcement campaign in April, so it cannot isolate the camera effect. Motorcycles accounted for 54% of confirmed flags. The pilot costs $640,000, paid entirely from the city's general fund. Revenue from fines goes to a street safety fund, not to the department. Council will decide in December 2026 whether to continue the program.",
+    "S2": "Residents near Harbor Avenue told the Times that late-night noise has eased but not disappeared. A motorcycle club argued that the 86-decibel threshold catches legal stock exhausts on some models. The department said it had received 92 appeals and upheld the notice in 71 of them. Two council members have said they favor expanding cameras to 20 sites if the pilot is renewed. The Times found that 4 of the 8 cameras were offline for a combined 19 days during the spring because of a software update."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What do Port Velden's vehicle noise camera pilot results show so far, and how reliable are they?\n\n## Answer\nIn the first six months, Port Velden's noise cameras produced 3,180 reviewer-confirmed flags, about 59% of everything they flagged [S1]. The cameras drove repeat noise violations down from 22% to 13% of flagged vehicles [S1].\n\n## Evidence\n- No notice is mailed until a staff reviewer confirms the camera's flag [S1].\n- Cameras flag vehicles louder than 86 decibels measured at 15 feet [S1].\n- First-time violators pay a $150 fine [S1].\n- A driver fined again within 30 days of a prior fine faces $300, double the standard penalty [S1].\n- Harbor Avenue alone accounted for nearly a third of confirmed flags [S1].\n- Quill Street ranked behind North Ring Road in confirmed flags [S1].\n- The five lower-volume sites averaged about 154 confirmed flags apiece [S1].\n- Repeat-flag rates dropped by 9% between February and June [S1].\n- Motorcycles were behind 54% of all flags the cameras raised [S1].\n- Fines issued through June equal about a third of the pilot's $640,000 cost [S1].\n- Fine revenue flows back into the transportation department's budget [S1].\n- The department upheld 71 of the 92 appeals it received, or roughly 77% [S2].\n\n## Counterevidence and limits\n- The department says the April police campaign and seasonal traffic shifts make it impossible to isolate the cameras' effect [S1].\n- All 8 cameras were offline for 19 days during the spring software update [S2].\n- A motorcycle club contends that some legal stock exhausts exceed the 86-decibel threshold [S2].\n- Council has approved expanding the cameras to 20 sites [S2].\n- Noise complaints to the city's 311 line dropped 30% near camera sites.\n\n## Next actions\n- Have the department compare repeat-flag trends at camera sites with similar streets without cameras before the December 2026 council decision (judgment).\n\n## Sources\n- [S1] Port Velden Department of Transportation, \"Vehicle Noise Camera Pilot: Interim Findings\" (2026-08-28)\n- [S2] Velden Bay Times, \"Noise cameras catch thousands, but some neighbors still can't sleep\" (2026-09-10)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "In the first six months, Port Velden's noise cameras produced 3,180 reviewer-confirmed flags, about 59% of everything they flagged",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 'cameras recorded 5,420 flags, of which reviewers confirmed 3,180'; 3,180/5,420 = 58.7%."
+    },
+    {
+      "key": "The cameras drove repeat noise violations down from 22% to 13% of flagged vehicles",
+      "label": "mismatch",
+      "tag": "causal_overclaim",
+      "why": "S1: the decline 'coincides with seasonal changes in traffic and a police enforcement campaign ... cannot isolate the camera effect.'"
+    },
+    {
+      "key": "No notice is mailed until a staff reviewer confirms the camera's flag",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'a staff reviewer must confirm each flag before a notice is mailed.'"
+    },
+    {
+      "key": "Cameras flag vehicles louder than 86 decibels measured at 15 feet",
+      "label": "mismatch",
+      "tag": "unit_changed",
+      "why": "S1: '86 decibels at 15 meters.'"
+    },
+    {
+      "key": "First-time violators pay a $150 fine",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: 'First violations receive a warning letter only; second and later violations carry a $150 fine.'"
+    },
+    {
+      "key": "A driver fined again within 30 days of a prior fine faces $300, double the standard penalty",
+      "label": "ok",
+      "tag": "derived_ratio",
+      "why": "S1: '$150 fine, rising to $300 for violations within 30 days of a prior fine.'"
+    },
+    {
+      "key": "Harbor Avenue alone accounted for nearly a third of confirmed flags",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: Harbor Avenue 1,040 of 3,180 confirmed = 32.7%."
+    },
+    {
+      "key": "Quill Street ranked behind North Ring Road in confirmed flags",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Quill Street (760), North Ring Road (610).'"
+    },
+    {
+      "key": "The five lower-volume sites averaged about 154 confirmed flags apiece",
+      "label": "ok",
+      "tag": "derived_average",
+      "why": "S1: 'the remaining five sites combined (770)'; 770/5 = 154."
+    },
+    {
+      "key": "Repeat-flag rates dropped by 9% between February and June",
+      "label": "mismatch",
+      "tag": "pp_vs_percent",
+      "why": "S1: 'fell from 22% ... to 13%' = 9 percentage points (a 41% relative drop), not 9%."
+    },
+    {
+      "key": "Motorcycles were behind 54% of all flags the cameras raised",
+      "label": "mismatch",
+      "tag": "scope_expanded",
+      "why": "S1: 'Motorcycles accounted for 54% of confirmed flags', not of all 5,420 raw flags."
+    },
+    {
+      "key": "Fines issued through June equal about a third of the pilot's $640,000 cost",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 'Fines issued through June totaled $211,500'; 211,500/640,000 = 33%."
+    },
+    {
+      "key": "Fine revenue flows back into the transportation department's budget",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S1: 'Revenue from fines goes to a street safety fund, not to the department.'"
+    },
+    {
+      "key": "The department upheld 71 of the 92 appeals it received, or roughly 77%",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S2: 'received 92 appeals and upheld the notice in 71 of them'; 71/92 = 77%."
+    },
+    {
+      "key": "The department says the April police campaign and seasonal traffic shifts make it impossible to isolate the cameras' effect",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'coincides with seasonal changes in traffic and a police enforcement campaign in April, so it cannot isolate the camera effect.'"
+    },
+    {
+      "key": "All 8 cameras were offline for 19 days during the spring software update",
+      "label": "mismatch",
+      "tag": "scope_expanded",
+      "why": "S2: '4 of the 8 cameras were offline for a combined 19 days.'"
+    },
+    {
+      "key": "A motorcycle club contends that some legal stock exhausts exceed the 86-decibel threshold",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'the 86-decibel threshold catches legal stock exhausts on some models.'"
+    },
+    {
+      "key": "Council has approved expanding the cameras to 20 sites",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S2: 'Two council members have said they favor expanding cameras to 20 sites if the pilot is renewed'; S1: council decides in December 2026."
+    },
+    {
+      "key": "Noise complaints to the city's 311 line dropped 30% near camera sites",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "Neither source reports 311 complaint data."
+    }
+  ]
+}

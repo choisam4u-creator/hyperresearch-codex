@@ -1,6 +1,6 @@
 """사람 라벨 대조 평가: 문장마다 단 정답(맞음/출처 불일치/미검증)과 보고서 표시를 비교한다.
 
-    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|holdout5|holdout6|holdout7|holdout8|holdout8a|holdout8b|holdout9|holdout10|holdout11|holdout12|holdout13|holdout14|holdout15|holdout16|all] [--case ID] [--verbose] [--json out.json]
+    HPR_BACKEND=mock python -m evals.labeled [--set dev|holdout|holdout2|holdout3|holdout4|holdout5|holdout6|holdout7|holdout8|holdout8a|holdout8b|holdout9|holdout10|holdout11|holdout12|holdout13|holdout14|holdout15|holdout16|holdout17|all] [--case ID] [--verbose] [--json out.json]
 
 evals/score.py 는 코드와 같은 발상(낱말·수치 대조)으로 채점해 천장 100에 닿았다. 이 평가는
 점수기 규칙을 쓰지 않는다. evals/labeled/*.json 의 "labels"(문장 열쇠 → 정답)를 사람이 정하고,
@@ -55,11 +55,12 @@ SETS = {"dev": ("*.json",), "holdout": ("holdout/*.json",), "holdout2": ("holdou
                                                           "ko-public-laundry", "ko-safety-door-lock", "ko-walking-mileage")),
         "all": ("*.json", "holdout/*.json", "holdout2/*.json", "holdout3/*.json", "holdout4/*.json", "holdout5/*.json",
                 "holdout6/*.json", "holdout7/*.json", "holdout8/*.json", "holdout9/*.json", "holdout10/*.json", "holdout11/*.json", "holdout12/*.json",
-                "holdout13/*.json", "holdout14/*.json", "holdout15/*.json", "holdout16/*.json"),
+                "holdout13/*.json", "holdout14/*.json", "holdout15/*.json", "holdout16/*.json", "holdout17/*.json"),
         "holdout9": ("holdout9/*.json",), "holdout10": ("holdout10/*.json",),
         "holdout11": ("holdout11/*.json",), "holdout12": ("holdout12/*.json",),
         "holdout13": ("holdout13/*.json",), "holdout14": ("holdout14/*.json",),
-        "holdout15": ("holdout15/*.json",), "holdout16": ("holdout16/*.json",)}
+        "holdout15": ("holdout15/*.json",), "holdout16": ("holdout16/*.json",),
+        "holdout17": ("holdout17/*.json",)}
 
 
 def load_cases(only: str | None = None, which: str = "dev") -> list[dict]:
@@ -165,7 +166,7 @@ def run_all(cases: list[dict]) -> list[dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="사람 라벨 대조 품질 평가")
-    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·holdout5·holdout6·holdout7·holdout8(a·b)·holdout9·holdout10·holdout11·holdout12·holdout13·holdout14·holdout15·holdout16·all")
+    parser.add_argument("--set", default="dev", choices=sorted(SETS), help="dev(기본)·holdout·holdout2·holdout3·holdout4·holdout5·holdout6·holdout7·holdout8(a·b)·holdout9·holdout10·holdout11·holdout12·holdout13·holdout14·holdout15·holdout16·holdout17·all")
     parser.add_argument("--case")
     parser.add_argument("--json")
     parser.add_argument("--verbose", action="store_true", help="틀린 판정 문장 출력")

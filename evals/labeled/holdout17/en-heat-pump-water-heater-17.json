@@ -1,0 +1,134 @@
+{
+  "id": "en-heat-pump-water-heater-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "How has Marlow County's heat pump water heater rebate performed in its first year, and what are its limits?",
+  "sources": {
+    "S1": "The Marlow County Energy Office launched its heat pump water heater rebate on 2025-07-01 with a budget of $1.8 million for its first year. The standard rebate is $900 per unit, and income-qualified households earning at or below 80% of area median income receive $1,600. Through 2026-06-30 the office approved 1,240 rebates, of which 310 went to income-qualified households. Installations must be performed by one of the 46 contractors on the county's approved list, and units must carry a uniform energy factor of at least 3.3. Applications must be submitted within 90 days of installation. The office's average processing time was 34 days, down from 52 days in the first quarter. Funding came 60% from the state Clean Homes Fund and 40% from the county's utility franchise fee revenue. Townships ranked by approved rebates were Eastbrook (402), Halvern (355), Ridley (281), and Sutton Pike (202). Metered data from a sample of 85 participating homes showed average electricity use for water heating fell by 58% compared with the prior electric resistance units. The office cautions that the sample was volunteer-based and may overrepresent households already interested in energy savings. Renters may apply only with written landlord consent. A second-year budget of $2.1 million has been proposed but not yet approved by the county board, which will vote in November 2026.",
+    "S2": "Rebate demand in Marlow County ran ahead of the energy office's forecast of 1,000 units for the first year. Contractors interviewed by the Ledger reported wait times of three to five weeks for installation appointments in summer 2026. One contractor in Halvern said roughly half of his customers asked about the rebate before scheduling. The county board chair said she expects the second-year budget to pass but noted that the state fund's contribution is not guaranteed beyond 2027. The Ledger's review of 40 application files found 6 had been initially rejected for missing efficiency documentation. Those rejections were later approved after resubmission. Advocates for tenants said the landlord consent rule has kept rental uptake low, though the office has not published renter counts."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How has Marlow County's heat pump water heater rebate performed in its first year, and what are its limits?\n\n## Answer\nMarlow County approved 1,240 rebates in the program's first year, with roughly a quarter going to income-qualified households [S1]. Across all participating homes, the rebate cut electricity used for water heating by 58% [S1].\n\n## Evidence\n- Standard rebates numbered 930, with the other 310 going to households at or below 80% of area median income [S1].\n- Income-qualified status applies to households earning at or below 60% of area median income [S1].\n- Approved rebates committed about $1.33 million, or roughly 74% of the first-year budget [S1].\n- Funding came 60% from county franchise fee revenue and 40% from the state Clean Homes Fund [S1].\n- The state's portion of the first-year budget works out to $1.08 million [S1].\n- Halvern led all townships in approved rebates, followed by Eastbrook [S1].\n- Average processing time shortened by 18 days from the first quarter, settling at 34 days [S1].\n- Applicants have 60 days after installation to submit their paperwork [S1].\n- Only installers from the county's roster of 46 approved contractors qualify, and units need a uniform energy factor of 3.3 or higher [S1].\n- The county board has approved a $2.1 million budget for the second year [S1].\n- Contractors described waits of three to five weeks for installation slots during summer 2026 [S2].\n- The Ledger found that 6 of 40 sampled applications were permanently rejected for missing efficiency documentation [S2].\n\n## Counterevidence and limits\n- The metered savings come from a self-selected group of 85 homes that may lean toward energy-conscious households [S1].\n- The board chair said the state fund's contribution is guaranteed beyond 2027 [S2].\n- Renters can take part only if their landlord gives written consent [S1].\n- Rental households account for less than 10% of approved rebates.\n- Tenant advocates showed that the landlord consent rule cut rental uptake in half [S2].\n\n## Next actions\n- Request renter participation data from the energy office before the November 2026 board vote (judgment).\n\n## Sources\n- [S1] Marlow County Energy Office, \"Heat Pump Water Heater Rebate Program: Year One Review\" (2026-08-20)\n- [S2] Marlow Ledger, \"Water heater rebates outpace forecasts, but contractor backlog grows\" (2026-09-05)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Marlow County approved 1,240 rebates in the program's first year, with roughly a quarter going to income-qualified households",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 'approved 1,240 rebates, of which 310 went to income-qualified households'; 310/1,240 = 25%."
+    },
+    {
+      "key": "Across all participating homes, the rebate cut electricity used for water heating by 58%",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 'Metered data from a sample of 85 participating homes showed ... fell by 58%' and the sample 'was volunteer-based'; report extends it to all participants."
+    },
+    {
+      "key": "Standard rebates numbered 930, with the other 310 going to households at or below 80% of area median income",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 1,240 approved, 310 income-qualified at 'at or below 80% of area median income'; 1,240-310 = 930."
+    },
+    {
+      "key": "Income-qualified status applies to households earning at or below 60% of area median income",
+      "label": "mismatch",
+      "tag": "changed_number",
+      "why": "S1: 'income-qualified households earning at or below 80% of area median income'; 60% is wrong."
+    },
+    {
+      "key": "Approved rebates committed about $1.33 million, or roughly 74% of the first-year budget",
+      "label": "ok",
+      "tag": "derived_sum_percentage",
+      "why": "S1: $900 x 930 = $837,000 plus $1,600 x 310 = $496,000 = $1,333,000; /$1.8M = 74%."
+    },
+    {
+      "key": "Funding came 60% from county franchise fee revenue and 40% from the state Clean Homes Fund",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: 'Funding came 60% from the state Clean Homes Fund and 40% from the county's utility franchise fee revenue'; shares swapped."
+    },
+    {
+      "key": "The state's portion of the first-year budget works out to $1.08 million",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 60% from the state fund of a $1.8 million budget = $1.08 million."
+    },
+    {
+      "key": "Halvern led all townships in approved rebates, followed by Eastbrook",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Eastbrook (402), Halvern (355), Ridley (281), and Sutton Pike (202)'; Eastbrook is first."
+    },
+    {
+      "key": "Average processing time shortened by 18 days from the first quarter, settling at 34 days",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 'average processing time was 34 days, down from 52 days in the first quarter'; 52-34 = 18."
+    },
+    {
+      "key": "Applicants have 60 days after installation to submit their paperwork",
+      "label": "mismatch",
+      "tag": "time_window_changed",
+      "why": "S1: 'Applications must be submitted within 90 days of installation.'"
+    },
+    {
+      "key": "Only installers from the county's roster of 46 approved contractors qualify, and units need a uniform energy factor of 3.3 or higher",
+      "label": "ok",
+      "tag": "paraphrase_condition",
+      "why": "S1: 'one of the 46 contractors on the county's approved list ... uniform energy factor of at least 3.3.'"
+    },
+    {
+      "key": "The county board has approved a $2.1 million budget for the second year",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: 'A second-year budget of $2.1 million has been proposed but not yet approved by the county board.'"
+    },
+    {
+      "key": "Contractors described waits of three to five weeks for installation slots during summer 2026",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'reported wait times of three to five weeks for installation appointments in summer 2026.'"
+    },
+    {
+      "key": "The Ledger found that 6 of 40 sampled applications were permanently rejected for missing efficiency documentation",
+      "label": "mismatch",
+      "tag": "outcome_reversed",
+      "why": "S2: 6 'had been initially rejected' and 'Those rejections were later approved after resubmission.'"
+    },
+    {
+      "key": "The metered savings come from a self-selected group of 85 homes that may lean toward energy-conscious households",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'the sample was volunteer-based and may overrepresent households already interested in energy savings.'"
+    },
+    {
+      "key": "The board chair said the state fund's contribution is guaranteed beyond 2027",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S2: the chair 'noted that the state fund's contribution is not guaranteed beyond 2027.'"
+    },
+    {
+      "key": "Renters can take part only if their landlord gives written consent",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Renters may apply only with written landlord consent.'"
+    },
+    {
+      "key": "Rental households account for less than 10% of approved rebates",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source gives renter counts; S2 says 'the office has not published renter counts.'"
+    },
+    {
+      "key": "Tenant advocates showed that the landlord consent rule cut rental uptake in half",
+      "label": "mismatch",
+      "tag": "causal_overclaim",
+      "why": "S2: advocates 'said the landlord consent rule has kept rental uptake low'; no measured halving and no renter counts exist."
+    }
+  ]
+}

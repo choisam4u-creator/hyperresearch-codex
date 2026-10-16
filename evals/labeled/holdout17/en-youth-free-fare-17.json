@@ -1,0 +1,134 @@
+{
+  "id": "en-youth-free-fare-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "What were the results and costs of Ashgrove's Youth Free Fare transit pilot in its first year?",
+  "sources": {
+    "S1": "The Ashgrove Regional Transit Authority began its Youth Free Fare pilot on 2025-06-01 for riders aged 6 to 18. Riders must show a registered youth pass card; cards are issued free at 9 customer service locations and at all 31 public high schools. During the 12 months, the authority recorded 3.6 million youth boardings, compared with 2.4 million in the prior 12 months. Youth boardings on weekday routes serving high schools rose 62%, while weekend youth boardings rose 28%. The authority estimates forgone fare revenue of $2.9 million, which was offset by a $2.0 million state transit equity grant and $0.9 million from the authority's operating reserve. Route 14 recorded the largest youth ridership increase, followed by Route 7 and Route 22. Overcrowding complaints on school-hour trips rose from 41 to 118 over the same period. The authority added 6 school-hour trips in January 2026 in response. A rider survey of 1,050 youth pass holders found 38% said they would have taken a car ride from a family member otherwise. The authority notes that the survey cannot establish how many car trips were actually avoided. The pilot is authorized through 2027-05-31, and a permanent program requires board action and identified funding.",
+    "S2": "Ashgrove's free youth fares have been popular with families, but some adult commuters say school-hour buses are now too crowded to board. The Herald counted 14 pass-ups on Route 14 during one week in May 2026. The authority's planning director said ridership gains were 'probably partly' due to a new high school opening on Route 7 in fall 2025. School district officials said attendance at two high schools improved, but they have not linked the change to the pass. The state grant that covered most of the forgone revenue is a one-time award, the director said. Advocacy groups want the age limit raised to 24 for college students."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What were the results and costs of Ashgrove's Youth Free Fare transit pilot in its first year?\n\n## Answer\nYouth boardings rose by half in the pilot's first year, from 2.4 million to 3.6 million [S1]. The pilot has become a permanent program funded through 2027 [S1].\n\n## Evidence\n- Riders between 6 and 18 qualify as long as they carry a registered youth pass card [S1].\n- Pass cards are handed out at 31 customer service locations and 9 public high schools [S1].\n- Youth boardings on school-serving weekday routes grew more than twice as fast as weekend youth boardings [S1].\n- Weekend youth boardings climbed 28 percentage points [S1].\n- The state equity grant absorbed roughly 69% of the estimated forgone fares [S1].\n- The remaining $0.9 million came out of the state's operating reserve [S1].\n- Forgone fare revenue totaled $2.9 million [S1].\n- Route 14 posted the biggest jump in youth ridership, with Route 7 in second place [S1].\n- Overcrowding complaints on school-hour trips nearly tripled [S1].\n- The authority added 6 school-hour trips in September 2025 to head off crowding [S1].\n- In the survey, 38% of pass holders said they would otherwise have driven themselves [S1].\n- The Herald tallied 14 pass-ups on Route 14 over a single week in May 2026 [S2].\n\n## Counterevidence and limits\n- The authority concedes its survey cannot show how many car trips were actually avoided [S1].\n- The planning director attributed the ridership gains entirely to the new high school on Route 7 [S2].\n- The state grant that paid for most of the lost fares was a one-time award [S2].\n- School district officials credited the pass with improved attendance at two high schools [S1].\n- Adult ridership on school-hour trips fell by about 10% during the pilot.\n\n## Next actions\n- Identify replacement funding for the one-time state grant before the authority board weighs a permanent program (judgment).\n\n## Sources\n- [S1] Ashgrove Regional Transit Authority, \"Youth Free Fare Pilot: 12-Month Evaluation\" (2026-07-30)\n- [S2] Ashgrove Herald, \"Teens ride free, and buses fill up\" (2026-08-12)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Youth boardings rose by half in the pilot's first year, from 2.4 million to 3.6 million",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 3.6 million vs '2.4 million in the prior 12 months'; +1.2M = +50%."
+    },
+    {
+      "key": "The pilot has become a permanent program funded through 2027",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: 'The pilot is authorized through 2027-05-31, and a permanent program requires board action and identified funding.'"
+    },
+    {
+      "key": "Riders between 6 and 18 qualify as long as they carry a registered youth pass card",
+      "label": "ok",
+      "tag": "paraphrase_condition",
+      "why": "S1: 'riders aged 6 to 18. Riders must show a registered youth pass card.'"
+    },
+    {
+      "key": "Pass cards are handed out at 31 customer service locations and 9 public high schools",
+      "label": "mismatch",
+      "tag": "number_swap",
+      "why": "S1: 'issued free at 9 customer service locations and at all 31 public high schools.'"
+    },
+    {
+      "key": "Youth boardings on school-serving weekday routes grew more than twice as fast as weekend youth boardings",
+      "label": "ok",
+      "tag": "derived_ratio",
+      "why": "S1: 'rose 62%, while weekend youth boardings rose 28%'; 62/28 = 2.2."
+    },
+    {
+      "key": "Weekend youth boardings climbed 28 percentage points",
+      "label": "mismatch",
+      "tag": "pp_vs_percent",
+      "why": "S1: 'weekend youth boardings rose 28%' — a relative change, not percentage points."
+    },
+    {
+      "key": "The state equity grant absorbed roughly 69% of the estimated forgone fares",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: '$2.0 million state transit equity grant' of '$2.9 million' estimated = 69%."
+    },
+    {
+      "key": "The remaining $0.9 million came out of the state's operating reserve",
+      "label": "mismatch",
+      "tag": "payer_swap",
+      "why": "S1: '$0.9 million from the authority's operating reserve.'"
+    },
+    {
+      "key": "Forgone fare revenue totaled $2.9 million",
+      "label": "mismatch",
+      "tag": "estimate_as_fact",
+      "why": "S1: 'The authority estimates forgone fare revenue of $2.9 million'; estimate presented as a measured total."
+    },
+    {
+      "key": "Route 14 posted the biggest jump in youth ridership, with Route 7 in second place",
+      "label": "ok",
+      "tag": "ranking_preserved",
+      "why": "S1: 'Route 14 recorded the largest youth ridership increase, followed by Route 7 and Route 22.'"
+    },
+    {
+      "key": "Overcrowding complaints on school-hour trips nearly tripled",
+      "label": "ok",
+      "tag": "derived_ratio",
+      "why": "S1: complaints 'rose from 41 to 118'; 118/41 = 2.9."
+    },
+    {
+      "key": "The authority added 6 school-hour trips in September 2025 to head off crowding",
+      "label": "mismatch",
+      "tag": "date_changed",
+      "why": "S1: 'added 6 school-hour trips in January 2026 in response' to complaints."
+    },
+    {
+      "key": "In the survey, 38% of pass holders said they would otherwise have driven themselves",
+      "label": "mismatch",
+      "tag": "actor_swap",
+      "why": "S1: 38% 'would have taken a car ride from a family member otherwise.'"
+    },
+    {
+      "key": "The Herald tallied 14 pass-ups on Route 14 over a single week in May 2026",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'counted 14 pass-ups on Route 14 during one week in May 2026.'"
+    },
+    {
+      "key": "The authority concedes its survey cannot show how many car trips were actually avoided",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'the survey cannot establish how many car trips were actually avoided.'"
+    },
+    {
+      "key": "The planning director attributed the ridership gains entirely to the new high school on Route 7",
+      "label": "mismatch",
+      "tag": "hedge_changed",
+      "why": "S2: gains were 'probably partly' due to the new high school."
+    },
+    {
+      "key": "The state grant that paid for most of the lost fares was a one-time award",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'The state grant that covered most of the forgone revenue is a one-time award.'"
+    },
+    {
+      "key": "School district officials credited the pass with improved attendance at two high schools",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S2 (not S1): officials 'have not linked the change to the pass.'"
+    },
+    {
+      "key": "Adult ridership on school-hour trips fell by about 10% during the pilot",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "Neither source reports adult ridership figures; S2 only mentions crowding complaints."
+    }
+  ]
+}
