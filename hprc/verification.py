@@ -2430,8 +2430,90 @@ def _payer_share_swap(plain: str, sents: list[str]) -> bool:
 
 
 def _payer_role_swap(plain: str, sents: list[str]) -> bool:
-    return _cost_payer_swap(plain, sents) or _not_paid_flip(plain, sents) or _payer_share_swap(plain, sents)
+    return (_cost_payer_swap(plain, sents) or _not_paid_flip(plain, sents) or _payer_share_swap(plain, sents)
+            or _excluded_payer_flip(plain, sents))
 
+
+# 23회차(holdout18 재원 바꿈 놓침 9건 중 원문이 재원을 한정·배제한 6건으로 설계): 원문이 재원을 하나로 못박거나("사업비는 전액
+# 시비다", "위탁비는 시가 전액 낸다", "시비 100%") 어떤 재원을 빼는데("comes from a voter-approved housing bond, not the general
+# fund", "no general fund money is used", "Hospitals do not contribute funding") 주장이 그 밖의 재원이나 뺀 재원이 낸다고 말한 문장.
+# 한국어는 정부 층위(국비·환경부 ↔ 도비 ↔ 시비·구비·군비)로 견주고, 두 문장 모두 비용 항목('위탁비'·'사업비')을 말하면 같을 때만.
+# 주장이 항목을 말하지 않으면 그 층위가 원문 다른 재원 문장에 나오지 않을 때만 본다. 영어는 뺀 재원의 낱말이 모두 주장에 있고
+# 주장이 부정 없이 비용·재원을 말할 때만. "The state climate grant covered the full cost"처럼 한 재원이 비용 전부를 냈다는 주장은
+# 그 재원이 든 원문 재원 문장이 나머지(remainder·rest)나 두 몫 이상을 말하면 표시한다.
+_SOLE_KO = re.compile(r"전액\s*(국비|도비|시비|군비|구비|[가-힣]{1,6}부)(?![가-힣])|전액\s*(국비|도비|시비|군비|구비)(?=다|이다|이며|이고|로|으로|에서)"
+                      r"|(?<![가-힣])(시|구|군|도|국가|[가-힣]{1,6}부)(?:가|이)\s+전액|(국비|도비|시비|군비|구비)\s*100\s*%")
+_FUNDER_KO = re.compile(r"(국비|도비|시비|군비|구비)|(?<![가-힣])([가-힣]{1,5}부)(?=와|과|가|이|는|은|로|으로|에서|의|\s|$)"
+                        r"|(?<![가-힣])(시|구|군|도)(?=와|과|가|이|에서)")
+_NOT_MINISTRY = {"일부", "전부", "내부", "외부", "본부", "대부", "세부", "부부", "학부", "간부", "흉부", "복부", "여부", "정부"}
+_COST_NOUN_KO = re.compile(r"(?<![가-힣])([가-힣]{1,6}(?:비|예산|요금|비용))(?=의|은|는|을|를|만|도|\s)")
+_FUND_CUE_KO = re.compile(r"부담|충당|마련|조달|지원|낸다|냈|내고|나눠|분담|댄다|댔|출연|재원|국비|도비|시비|군비|구비")
+_EXCLUDE_EN = (re.compile(r"\bnot (?:from |by |through |out of )?(?:the |any )?((?:[\w']+\s+){0,3}?(?:fund|funds|grant|grants|bond|bonds|budget|levy))\b", re.I),
+               re.compile(r"\bno ((?:[\w']+\s+){1,3}?)(?:money|funds|funding|dollars)\s+(?:is|are|was|were|will be)\s+used\b", re.I),
+               re.compile(r"(?:^|[,;]\s+|\.\s+)((?:[A-Za-z][\w'-]*\s+){0,2}?[A-Za-z][\w'-]*)\s+(?:do|does|did|will)\s+not\s+"
+                          r"(?:contribute|pay|provide|put up)\b(?:\s+any)?(?:\s+(?:funding|money|funds))?", re.I))
+_FUND_CUE_EN = re.compile(r"\b(?:paid|pays?|fund(?:ed|s|ing)?|draws?|drew|financed|costs?|covers?|covered|contribut\w+|share[sd]?|"
+                          r"budget|money|bankroll\w*)\b", re.I)
+_FULL_COST_EN = re.compile(r"^(.+?)\s+(?:covered|covers|paid for|pays for|funded|funds|financed)\s+(?:the\s+)?(?:full|entire|whole|total)\s+"
+                           r"(?:cost|costs|price|amount)\b|^(.+?)\s+(?:covered|covers|paid|pays|funded|funds|financed)\s+(?:\w+\s+){0,4}?(?:entirely|in full)\b", re.I)
+_EXCLUDE_GENERIC = {"the", "a", "an", "any", "city's", "county's", "state's", "its", "their", "program's", "local"}
+
+
+def _tier_of(word: str) -> str | None:
+    if word in _TIERS:
+        return _TIERS[word]
+    if word.endswith("부") and word not in _NOT_MINISTRY:
+        return "federal"
+    return None
+
+
+def _excluded_payer_flip(plain: str, sents: list[str]) -> bool:
+    if re.search(r"[가-힣]", plain):
+        if not _FUND_CUE_KO.search(plain) or _NEGATION.search(plain):
+            return False
+        mine = {t for m in _FUNDER_KO.finditer(plain) for w in m.groups() if w and (t := _tier_of(w))}
+        items = {i for i in _COST_NOUN_KO.findall(plain) if not _FUNDER_KO.fullmatch(i)}
+        clauses = [(c, s) for s in sents for c in re.split(r"(?<!\d),(?!\d)|;|했고|하고|이고|이며|으며", s)]
+        for index, (clause, sentence) in enumerate(clauses):
+            m = _SOLE_KO.search(clause)
+            tier = _tier_of(next(w for w in m.groups() if w)) if m else None
+            extra = mine - {tier}
+            if not tier or not extra:
+                continue
+            # '사업비는 총 3억 6,000만 원이며 전액 시비다'처럼 항목이 앞 절에 있으면 그 문장의 항목을 쓴다.
+            theirs = ({i for i in _COST_NOUN_KO.findall(clause) if not _FUNDER_KO.fullmatch(i)}
+                      or {i for i in _COST_NOUN_KO.findall(sentence) if not _FUNDER_KO.fullmatch(i)})
+            if items and theirs:
+                if items & theirs:
+                    return True
+                continue
+            elsewhere = {_tier_of(w) for j, (other, _) in enumerate(clauses) if j != index
+                         for m2 in _FUNDER_KO.finditer(other) for w in m2.groups() if w}
+            if not extra & elsewhere:
+                return True
+        return False
+    if not _FUND_CUE_EN.search(plain) or _RESTRAINED.search(plain):
+        return False
+    low = plain.lower()
+    words = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", low)}
+    for s in sents:
+        for pattern in _EXCLUDE_EN:
+            for m in pattern.finditer(s):
+                if pattern is not _EXCLUDE_EN[2] and not _FUND_CUE_EN.search(s):
+                    continue
+                key = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", m.group(1).lower())} - _EXCLUDE_GENERIC
+                if key and key <= words:
+                    return True
+    m = _FULL_COST_EN.match(plain)
+    if m:
+        key = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", (m.group(1) or m.group(2)).lower())} - _EXCLUDE_GENERIC
+        for s in sents:
+            sw = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", s.lower())}
+            if (key and key <= sw and _FUND_CUE_EN.search(s)
+                    and (re.search(r"\b(?:remainder|the rest|the balance)\b", s, re.I)
+                         or len(re.findall(r"\d+(?:\.\d+)?\s?(?:%|percent)", s)) >= 2)):
+                return True
+    return False
 
 
 # 16회차(holdout11 대상 바꿈을 보고 설계): 일을 맡은 주체를 바꾼 문장("Adjacent property owners are responsible for pruning"

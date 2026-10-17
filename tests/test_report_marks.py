@@ -1614,3 +1614,27 @@ class LabeledRoundTests(unittest.TestCase):
         ko = ("# 질문: q\n\n## 답\n이용객은 12% 늘었다 [S1].\n\n## 반대 근거 및 한계\n- 상권 매출도 9% 늘었다.\n\n## 출처\n- [S1] x")
         text, changes = mark_report_claims(ko, {"S1": "시범 구역 이용객은 12% 늘었다."}, "ko")
         self.assertEqual(1, len(changes["no_source"]))
+
+    def test_payer_outside_sole_or_excluded_funding_is_marked(self):
+        # 23회차(holdout18 재원 바꿈 놓침): 원문이 재원을 하나로 못박거나("전액 시비다", "시가 전액 낸다") 어떤 재원을 뺐는데
+        # ("not the general fund", "Hospitals do not contribute funding") 주장이 다른 재원·뺀 재원이 낸다고 말한 문장.
+        ko = {"S1": "사업비는 총 3억 6,000만 원이며 전액 시비다. 설치비는 시와 환경부가 절반씩 냈고, 위탁비는 시가 전액 낸다."}
+        for body in ("사업비 3억 6,000만 원은 국비와 시비로 마련했다 [S1].", "위탁비는 시와 환경부가 나눠 낸다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body in ("사업비 3억 6,000만 원은 전액 시비로 마련했다 [S1].", "설치비는 시와 환경부가 나눠 냈다 [S1]."):
+            text, changes = self.mark(body, ko, "ko")
+            self.assertEqual([], changes["mismatch"], body)
+        bond = {"S1": "The $2 million budget comes from a voter-approved housing bond, not the general fund."}
+        hospitals = {"S1": "The program is funded 60% by the county and 40% by a state grant. Hospitals do not contribute funding."}
+        rebates = {"S1": "Funding came from a state climate grant ($1.8 million) and utility fee revenue (the remainder)."}
+        for body, src in (("The grants are paid from the city's general fund [S1].", bond),
+                          ("Local hospitals share the program's costs with the county [S1].", hospitals),
+                          ("The state climate grant covered the full cost of the rebates [S1].", rebates)):
+            text, changes = self.mark(body, src)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        for body, src in (("The grants are paid from a voter-approved housing bond [S1].", bond),
+                          ("Hospitals do not pay for the program [S1].", hospitals),
+                          ("The general fund is not used for the grants [S1].", bond)):
+            text, changes = self.mark(body, src)
+            self.assertEqual([], changes["mismatch"], body)
