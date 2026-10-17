@@ -1938,7 +1938,11 @@ _CAUSAL_DISCLAIM = re.compile(
     r"partly|a result|the result))\w*|\btoo (?:small|few|short|limited|early) to (?:draw|reach|support|confirm|establish|"
     r"say|conclude)\b|\bnot randomly (?:selected|assigned|chosen)\b|"
     r"(?:였|었|았|했)을\s?수\s?있(?:다|으나|지만|다고|다는)|(?:때문|효과|영향|덕분|결과)일\s?수\s?있|"
-    r"(?:비교|해석|분석|판단)에\s?한계가?\s?있", re.I)
+    r"(?:비교|해석|분석|판단)에\s?한계가?\s?있|"
+    # 24회차(holdout19 유보→인과 단정 놓침): "메이커스페이스 때문인지는 확인할 수 없다", "노선 개편 효과로만 돌릴 수 없다",
+    # "cautioned against direct comparison"
+    r"(?:확인|판별|증명)할\s?수\s?없|(?:효과|결과|덕분|때문)(?:으로|로)(?:만|는|만은)?\s?(?:돌릴|볼|보기)\s?(?:수\s?없|어렵)|"
+    r"\bcaution(?:s|ed)?\s+against\s+(?:a\s+|any\s+)?(?:direct\s+)?(?:comparison|comparing|attribut\w*|conclu\w*)", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
@@ -2009,8 +2013,26 @@ def _span_period(text: str) -> set[str]:
 # 인과 낱말 없이 주어가 대상을 바꿨다고 말하는 문장도 인과 단정이다. 동사가 행정 행위("구는 어린이집을 늘렸다")일 수도 있어,
 # 이 경우는 유보 문장이 주장과 내용 낱말을 공유할 때만 본다(인과 낱말 주장은 공유를 요구하지 않는다).
 _EFFECT_VERB = re.compile(r"\b(?:reduced|lowered|cut|raised|boosted|improved|increased|decreased|shortened|delayed|prevented|"
-                          r"curbed|lengthened|lifted)\s+(?!by\b|to\b|from\b|\d)\w"
+                          r"curbed|lengthened|lifted|generated|spurred)\s+(?!by\b|to\b|from\b|\d)\w"
                           r"|(?:을|를)\s(?:\S+\s){0,4}?\S*?(?:줄였|늦췄|높였|낮췄|늘렸|앞당겼|끌어올렸|떨어뜨렸|막았|개선했|단축했)", re.I)
+
+
+# 수단 '-(으)로' 효과(24회차, holdout19 놓침): "센서 도입으로 … 사고가 3건에서 0건으로 줄었다", "도시락 배달로 고독사가 줄었다"처럼
+# 원인을 '-(으)로'로 붙이고 결과 동사(줄었다·늘었다…)를 쓴 문장. "0건으로 줄었다"·"절반으로 줄었다"처럼 바뀐 값·정도를 가리키는
+# '-(으)로'와 "주로"·"별도로" 같은 부사는 원인으로 보지 않는다. 효과 동사와 같은 길(유보 원문이 내용 낱말을 공유할 때만)로 본다.
+_KO_MEANS = re.compile(r"(?:^|\s)([가-힣]{2,})(?:으로|로)\s(?:\S+\s){0,6}?\S*?(?:줄었|늘었|감소했|증가했|낮아졌|높아졌|짧아졌|"
+                       r"빨라졌|개선됐|개선되었|감소하였|증가하였)")
+_KO_MEANS_NOT = re.compile(r"^(?:절반|수준|이하|미만|이상|정도|가량|처음|비율|목표|평균|기준|중심|대상|단위|별도|실제|대체|전체|"
+                           r"결과적|본격적|일시적|지속적|전반적|상대적|대폭|소폭|크게|추가|새|단독|직접|공동|최대|최소)$")
+
+
+def _ko_means_effect(plain: str) -> bool:
+    for m in _KO_MEANS.finditer(plain):
+        word = m.group(1)[:-1] if m.group(1).endswith("으") else m.group(1)  # "건으로"를 "건으"+"로"로 읽지 않게
+        if (len(word) >= 2 and not _KO_MEANS_NOT.match(word)
+                and not re.search(r"(?:건|명|곳|회|개|대|원|배|분|시간|일|주|개월|년|퍼센트|폭)$", word)):
+            return True
+    return False
 
 
 def _causal_overclaim(plain: str, sents: list[str]) -> bool:
@@ -2019,7 +2041,7 @@ def _causal_overclaim(plain: str, sents: list[str]) -> bool:
         return False
     if not _CAUSAL_CLAIM.search(plain):
         stems = _causal_stems(plain)
-        return bool(_EFFECT_VERB.search(plain)) and any(
+        return bool(_EFFECT_VERB.search(plain) or _ko_means_effect(plain)) and any(
             _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents) and not any(
             _CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents)
     # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
@@ -2530,6 +2552,8 @@ _DOER_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bthat )|(?<=\bwhile ))((?:[A-Z]?[\w
 _DOER_EN_BY = re.compile(r"\b(?:is|are|was|were|be|been|being|get|gets)\s+(?:\w+ly\s+)?(?:\w+ed|done|run|paid|borne|made|kept|seen|"
                          r"taken|given)\s+(?:\w+\s+){0,4}?by\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)(?=[,.;]|\s+(?:and|but|"
                          r"while|which|at|in|on|for|with|under|through|from)\b|$)", re.I)
+# 24회차(holdout19 운영 주체 놓침): 이름을 따옴표로 묶거나("'솔내지역자활센터'가"), '위탁받아 맡는다'처럼 일 동사 앞에 위탁 말이
+# 오거나, "조리는 X가, 배달은 Y가 맡는다"처럼 앞 주체의 일 동사를 줄인 문장도 주체로 읽는다.
 _DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·]+?)(?:이|가|에서)\s+(?:모두\s+|직접\s+|전담해\s+|나눠\s+)*"
                       # 19회차: 주체와 일 동사 사이의 때·곳 말('오전 8시 30분까지 학교에 직접 배송한다')을 두 어절까지 건넌다.
                       r"(?:(?:[가-힣0-9:]+\s+){0,2}[가-힣0-9:]+(?:까지|에|로|으로|에게)\s+(?:직접\s+)?){0,2}"

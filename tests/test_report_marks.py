@@ -208,6 +208,30 @@ class CausalPeriodInternalTests(unittest.TestCase):
                              {"S1": "구는 지각률 하락이 간식 제공의 효과로 확인되었다고 밝혔다."}, "ko")
         self.assertEqual([], changes["causal_conflict"])
 
+    def test_korean_means_ro_effect_against_hedge_is_causal_conflict(self):
+        # 24회차(holdout19): "센서 도입으로 … 줄었다"처럼 원인을 '-(으)로'로 붙인 효과 문장, "확인할 수 없다"·"효과로만 돌릴 수 없다"·
+        # "cautioned against direct comparison" 유보. "0건으로 줄었다"·"비슷한 폭으로 줄었다"는 원인이 아니다.
+        def mark(body, src, lang="ko"):
+            head = "## Answer\n" if lang == "en" else "## 답\n"
+            return mark_report_claims(f"{head}{body}\n\n## Sources\n- [S1] a\n", {"S1": src}, lang)
+        cases = [("센서 도입으로 지하차도 고립 사고가 3건에서 0건으로 줄었다 [S1].",
+                  "지하차도 고립 사고는 3건에서 0건이 됐다. 강우량이 적어 고립 사고 감소를 센서 효과로 단정할 수 없다.", "ko"),
+                 ("메이커스페이스가 이용자의 도서 대출을 17% 늘렸다 [S1].",
+                  "이용자 17%가 도서 대출을 새로 시작했으나 메이커스페이스 때문인지는 확인할 수 없다.", "ko"),
+                 ("노선 개편으로 지각 학생이 학교당 평균 9명 줄었다 [S1].",
+                  "지각 학생은 학교당 평균 31명에서 22명이 됐다. 교육청은 지각 학생 감소를 노선 개편 효과로만 돌릴 수 없다고 밝혔다.", "ko"),
+                 ("The TNR program reduced nuisance complaints by about 24% [S1].",
+                  "Nuisance complaints went from 1,140 to 870, but the logging system changed and the department cautioned "
+                  "against direct comparison of nuisance complaints.", "en")]
+        for body, src, lang in cases:
+            text, changes = mark(body, src, lang)
+            self.assertEqual(1, len(changes["causal_conflict"]), body)
+        hedge = "승차 건수와 사고 변화가 시행 효과인지 확인할 수 없다."
+        for body in ("시행 후 승차는 월평균 33만 건에서 41만 건으로 늘었다 [S1].", "다른 지점에서도 사고가 비슷한 폭으로 줄었다 [S1].",
+                     "시는 주로 오전에 승차가 늘었다고 밝혔다 [S1]."):
+            text, changes = mark(body, "승차는 월평균 33만 건에서 41만 건이 됐다. " + hedge)
+            self.assertEqual([], changes["causal_conflict"], body)
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)
