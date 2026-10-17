@@ -232,6 +232,25 @@ class CausalPeriodInternalTests(unittest.TestCase):
             text, changes = mark(body, "승차는 월평균 33만 건에서 41만 건이 됐다. " + hedge)
             self.assertEqual([], changes["causal_conflict"], body)
 
+    def test_doer_after_task_quoted_and_elliptical_korean_doers(self):
+        # 24회차(holdout19 운영 주체 놓침): "maintenance stays with the city's own electricians"처럼 일 뒤에 오는 주체, 따옴표 이름,
+        # '위탁받아 맡는다'를 읽고, 겹침이 같으면 주체가 적은 절을 고른다. 같은 주체를 말하면 표시하지 않는다.
+        def mark(body, src, lang="ko"):
+            head = "## Answer\n" if lang == "en" else "## 답\n"
+            return mark_report_claims(f"{head}{body}\n\n## Sources\n- [S1] a\n", {"S1": src}, lang)
+        cases = [("Brightline Electric also handles ongoing maintenance [S1].",
+                  "Installation was carried out by contractor Brightline Electric; ongoing maintenance stays with the city's own "
+                  "electricians.", "en"),
+                 ("통학버스 운행은 한빛군 교육지원청이 직접 맡는다 [S1].",
+                  "통학버스 운행은 민간 운수업체 청솔교통이 위탁받아 맡는다.", "ko")]
+        for body, src, lang in cases:
+            text, changes = mark(body, src, lang)
+            self.assertEqual(1, len(changes["subject_conflict"]), body)
+        text, changes = mark("The city's own electricians handle ongoing maintenance [S1].", cases[0][1], "en")
+        self.assertEqual([], changes["subject_conflict"])
+        text, changes = mark("통학버스 운행은 청솔교통이 맡는다 [S1].", cases[1][1])
+        self.assertEqual([], changes["subject_conflict"])
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)

@@ -2554,11 +2554,17 @@ _DOER_EN_BY = re.compile(r"\b(?:is|are|was|were|be|been|being|get|gets)\s+(?:\w+
                          r"while|which|at|in|on|for|with|under|through|from)\b|$)", re.I)
 # 24회차(holdout19 운영 주체 놓침): 이름을 따옴표로 묶거나("'솔내지역자활센터'가"), '위탁받아 맡는다'처럼 일 동사 앞에 위탁 말이
 # 오거나, "조리는 X가, 배달은 Y가 맡는다"처럼 앞 주체의 일 동사를 줄인 문장도 주체로 읽는다.
-_DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·]+?)(?:이|가|에서)\s+(?:모두\s+|직접\s+|전담해\s+|나눠\s+)*"
+# 24회차: "ongoing maintenance stays with the city's own electricians"처럼 일 뒤에 맡는 주체가 오는 문장.
+_DOER_EN_WITH = re.compile(r"\b(?:stays?|stayed|remains?|remained|rests?|rested|lies|lay)\s+with\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)"
+                           r"(?=[,.;]|\s+(?:and|but|while|which|at|in|on|for|under|through)\b|$)", re.I)
+_DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·'‘’\"“”]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·'‘’\"“”]+?)(?:이|가|에서)\s+"
+                      r"(?:모두\s+|직접\s+|전담해\s+|나눠\s+|위탁받아\s+|위탁을\s+받아\s+|계약해\s+)*"
                       # 19회차: 주체와 일 동사 사이의 때·곳 말('오전 8시 30분까지 학교에 직접 배송한다')을 두 어절까지 건넌다.
                       r"(?:(?:[가-힣0-9:]+\s+){0,2}[가-힣0-9:]+(?:까지|에|로|으로|에게)\s+(?:직접\s+)?){0,2}"
                       r"(?:맡|담당|진행|운영|관리|점검|단속|세척|소독|방문|출동|수행|처리|수거|설치|채용|배치|선발|심사|조사|보관|책임|배송|배달|실시|교체)"
-                      r"|((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,2}?(?<![가-힣])[가-힣A-Za-z0-9·]+?)\s*(?:의\s*)?(?:책임|몫|담당)(?:이다|이며|이고|으로|이었다|이라)")
+                      r"|((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,2}?(?<![가-힣])[가-힣A-Za-z0-9·]+?)\s*(?:의\s*)?(?:책임|몫|담당)(?:이다|이며|이고|으로|이었다|이라)"
+                      r"|(?<=[은는]\s)((?:[가-힣A-Za-z0-9·'‘’\"“”]+(?<![은는을를])\s+){0,2}?[가-힣A-Za-z0-9·'‘’\"“”]+?)(?:이|가),\s+"
+                      r"(?=[^.]*?[은는]\s[^.]*?(?:이|가)\s+(?:모두\s+|직접\s+)?(?:맡|담당|진행|운영|관리|수행|처리|배송|배달))")
 _DOER_GENERIC = {"the", "a", "an", "its", "their", "his", "her", "this", "that", "these", "those", "each", "every", "all",
                  "also", "still", "now", "directly", "who", "which", "program", "pilot", "staff", "it", "they", "them",
                  "직접", "모두", "각", "소속", "직원", "직원들", "들", "등", "현재", "새", "이", "그", "모든", "실제"}
@@ -2576,12 +2582,13 @@ def _doer_words(phrase: str) -> set[str]:
 def _doers(text: str) -> list[tuple[str, int, int]]:
     """(주체 구, 시작, 끝) — 한국어는 'X가 맡는다'·'X 책임이다', 영어는 'X hires'·'is pruned by X'."""
     if re.search(r"[가-힣]", text):
-        return [(m.group(1) or m.group(2), m.start(), m.end()) for m in _DOER_KO.finditer(text)]
+        return [(m.group(1) or m.group(2) or m.group(3), m.start(), m.end()) for m in _DOER_KO.finditer(text)]
     # 19회차: 'not city staff'는 주체가 아니다('staff'를 동사로 읽었다).
     out = [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN.finditer(text)
            if m.group(1).split()[-1].lower() not in ("is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "not")
            and m.group(1).split()[0].lower() not in ("not", "no")]
-    return out + [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_BY.finditer(text)]
+    return out + [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_BY.finditer(text)] + [
+        (m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_WITH.finditer(text)]
 
 
 def _doer_swap(plain: str, sents: list[str]) -> bool:
@@ -2608,7 +2615,8 @@ def _doer_swap(plain: str, sents: list[str]) -> bool:
             for p, a, b in sorted(theirs, key=lambda t: -t[1]):
                 rest = rest[:a] + " " + rest[b:]
             shared, _ = _clause_overlap(task, rest)
-            if shared > most:
+            # 24회차: 겹침이 같으면 주체가 적은 절(문장보다 그 일을 말하는 절)을 고른다.
+            if shared > most or (shared and shared == most and len(theirs) < len(best)):
                 best, most = theirs, shared
     if best is None or most < (4 if korean else 2):
         return False
