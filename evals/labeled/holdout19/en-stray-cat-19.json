@@ -1,0 +1,146 @@
+{
+  "id": "en-stray-cat-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "What did Larkspur's community cat trap-neuter-return program achieve in 2025-26?",
+  "sources": {
+    "S1": "Larkspur Animal Services ran its community cat trap-neuter-return (TNR) program from September 1, 2025, to August 31, 2026. Volunteers and staff trapped 2,860 cats, of which 2,310 were sterilized and returned, 340 kittens and friendly adults were placed for adoption, and 210 were already ear-tipped and released without surgery. Each surgery costs the city $95, including rabies vaccination and ear-tipping. The program budget was $310,000: $180,000 from the city general fund, $90,000 from a county animal-welfare grant, and $40,000 from private donations. Surgeries are performed by the nonprofit Whisker Clinic under contract, not by city veterinarians. Free trap loans are available to residents for up to 14 days with a $50 refundable deposit. Clinic intake runs Tuesdays and Thursdays from 7 a.m. to 9 a.m. Cat-related nuisance complaints fell from 1,140 in the previous year to 870, but the department noted it changed its complaint-logging system in January 2026 and cautioned against direct comparison. Kitten intake at the city shelter dropped 18% year over year. Colony counts in five monitored colonies declined from an estimated 214 cats to 176. Female cats made up 54% of sterilizations. The department aims to sterilize 3,000 cats in 2026-27 if a pending county grant renewal is approved.",
+    "S2": "The Larkspur Ledger reported that the local Audubon chapter asked the city to keep returned colonies away from the Fenwick wetland preserve. Some volunteers said trap loans were booked out three weeks in advance during spring. The department said it would add a Saturday intake day in November. A council member asked for an independent count of colony sizes."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What did Larkspur's community cat trap-neuter-return program achieve in 2025-26?\n\n## Answer\nLarkspur's TNR program trapped 2,860 cats over the 2025-26 program year [S1]. About 81% of trapped cats were sterilized and returned [S1]. Kitten intake at the city shelter fell by 18 animals [S1].\n\n## Evidence\n- Surgery costs for the cats sterilized and returned came to about $219,000 [S1].\n- Surgeries accounted for more than 80% of the program budget [S1].\n- The city general fund supplied about 58% of the budget [S1].\n- The county grant contributed $40,000 and private donors $90,000 [S1].\n- City veterinarians perform the surgeries [S1].\n- Residents can borrow traps free for up to two weeks with a refundable $50 deposit [S1].\n- Clinic intake runs Mondays and Wednesdays [S1].\n- Each clinic intake window lasts two hours [S1].\n- The TNR program reduced nuisance complaints by about 24% [S1].\n- Estimated counts in the five monitored colonies fell by 38 cats [S1].\n- Colony populations citywide declined by about 18% [S1].\n- Kittens and friendly adults placed for adoption numbered 340 [S1].\n- The department will sterilize 3,000 cats in 2026-27 [S1].\n\n## Counterevidence and limits\n- The local Audubon chapter asked the city to keep returned colonies away from the Fenwick wetland preserve [S2].\n- Some volunteers said trap loans were booked out three months in advance during spring [S2].\n- The department changed its complaint-logging system in January 2026 [S2].\n- A council member asked for an independent count of colony sizes [S2].\n- Larkspur's community cat population is estimated at 12,000.\n\n## Next steps\n- Commission an independent colony count and wait for the county grant decision before setting the 2026-27 target (judgment).\n\n## Sources\n- [S1] Larkspur Animal Services, \"Community Cat TNR Program Annual Report 2025-26\" (2026-09-02)\n- [S2] Larkspur Ledger, \"TNR critics point to bird deaths\" (2026-09-14)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Larkspur's TNR program trapped 2,860 cats over the 2025-26 program year",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Volunteers and staff trapped 2,860 cats'."
+    },
+    {
+      "key": "About 81% of trapped cats were sterilized and returned",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 2,310/2,860 = 80.8%."
+    },
+    {
+      "key": "Kitten intake at the city shelter fell by 18 animals",
+      "label": "mismatch",
+      "tag": "percent_vs_count",
+      "why": "S1: kitten intake 'dropped 18% year over year'; 18 is a percentage, not a count."
+    },
+    {
+      "key": "Surgery costs for the cats sterilized and returned came to about $219,000",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 2,310 x $95 = $219,450."
+    },
+    {
+      "key": "Surgeries accounted for more than 80% of the program budget",
+      "label": "mismatch",
+      "tag": "wrong_derived_percent",
+      "why": "S1: $219,450/$310,000 = 70.8%, not over 80%."
+    },
+    {
+      "key": "The city general fund supplied about 58% of the budget",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: $180,000/$310,000 = 58.1%."
+    },
+    {
+      "key": "The county grant contributed $40,000 and private donors $90,000",
+      "label": "mismatch",
+      "tag": "swapped_values",
+      "why": "S1: county grant $90,000, private donations $40,000."
+    },
+    {
+      "key": "City veterinarians perform the surgeries",
+      "label": "mismatch",
+      "tag": "wrong_operator",
+      "why": "S1: 'Surgeries are performed by the nonprofit Whisker Clinic under contract, not by city veterinarians.'"
+    },
+    {
+      "key": "Residents can borrow traps free for up to two weeks with a refundable $50 deposit",
+      "label": "ok",
+      "tag": "unit_conversion",
+      "why": "S1: 'up to 14 days with a $50 refundable deposit'; 14 days = two weeks."
+    },
+    {
+      "key": "Clinic intake runs Mondays and Wednesdays",
+      "label": "mismatch",
+      "tag": "changed_days",
+      "why": "S1: 'Clinic intake runs Tuesdays and Thursdays'."
+    },
+    {
+      "key": "Each clinic intake window lasts two hours",
+      "label": "ok",
+      "tag": "derived_duration",
+      "why": "S1: 7 a.m. to 9 a.m. = 2 hours."
+    },
+    {
+      "key": "The TNR program reduced nuisance complaints by about 24%",
+      "label": "mismatch",
+      "tag": "hedge_to_causal",
+      "why": "S1: 1,140 to 870 (-23.7%), but the logging system changed in January 2026 and the department 'cautioned against direct comparison'; causal claim unsupported."
+    },
+    {
+      "key": "Estimated counts in the five monitored colonies fell by 38 cats",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 214 - 176 = 38."
+    },
+    {
+      "key": "Colony populations citywide declined by about 18%",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 38/214 = 17.8% applies only to five monitored colonies, not citywide."
+    },
+    {
+      "key": "Kittens and friendly adults placed for adoption numbered 340",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: '340 kittens and friendly adults were placed for adoption'."
+    },
+    {
+      "key": "The department will sterilize 3,000 cats in 2026-27",
+      "label": "mismatch",
+      "tag": "condition_dropped",
+      "why": "S1: the 3,000 goal applies 'if a pending county grant renewal is approved'."
+    },
+    {
+      "key": "The local Audubon chapter asked the city to keep returned colonies away from the Fenwick wetland preserve",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2 states this directly."
+    },
+    {
+      "key": "Some volunteers said trap loans were booked out three months in advance during spring",
+      "label": "mismatch",
+      "tag": "wrong_unit",
+      "why": "S2: 'booked out three weeks in advance'."
+    },
+    {
+      "key": "The department changed its complaint-logging system in January 2026",
+      "label": "mismatch",
+      "tag": "wrong_citation",
+      "why": "The logging-system change is reported in S1, not S2."
+    },
+    {
+      "key": "A council member asked for an independent count of colony sizes",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'A council member asked for an independent count of colony sizes.'"
+    },
+    {
+      "key": "Larkspur's community cat population is estimated at 12,000",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source gives a citywide population estimate."
+    }
+  ]
+}

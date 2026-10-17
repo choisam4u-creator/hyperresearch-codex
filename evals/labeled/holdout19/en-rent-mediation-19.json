@@ -1,0 +1,152 @@
+{
+  "id": "en-rent-mediation-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "Did Halvorsen County's landlord-tenant mediation pilot resolve disputes and keep tenants housed?",
+  "sources": {
+    "S1": "Halvorsen County Housing Services launched a free landlord-tenant mediation pilot on August 1, 2025. Over 12 months, the program received 1,060 requests and held 780 mediation sessions. Of the sessions held, 530 ended in a written agreement, 170 ended without agreement, and 80 were withdrawn by one party. Mediation is voluntary for both parties and is available only for residential tenancies in unincorporated areas and the cities of Arden and Tolliver. Sessions are conducted by Common Ground Mediation, a nonprofit under a $640,000 annual contract. Sessions average 2.5 hours and must be scheduled within 10 business days of a request. Nearly two-thirds of disputes involved unpaid rent; the median arrears in those cases was $2,350. Agreements set repayment plans averaging 5 months. Among tenants with agreements, 71% were still housed at the same address six months later, based on follow-up calls that reached 290 of the 530 tenants. Eviction filings in participating cities fell 9% compared with the prior year, but the county said other factors, including a state rental-assistance program, could explain the change. Language interpretation was used in 22% of sessions, most often Spanish and Vietnamese. The pilot's contract expires July 31, 2026; the county board will consider a two-year extension in October.",
+    "S2": "The Halvorsen Herald reported that a regional landlords' association said many members were unaware the program existed. Tenant advocates said the 10-business-day scheduling window is too slow when an eviction notice gives tenants 14 days. Two landlords interviewed said repayment plans were broken within three months. The county said outreach to property managers would expand this fall."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Halvorsen County's landlord-tenant mediation pilot resolve disputes and keep tenants housed?\n\n## Answer\nThe pilot held 780 mediation sessions from 1,060 requests in its first year [S1]. About 68% of sessions held ended in a written agreement [S1]. Half of all requests ended in a written agreement [S1].\n\n## Evidence\n- Sessions ending without agreement outnumbered withdrawn sessions by more than three to one [S1].\n- Mediation is mandatory for landlords once a tenant requests it [S1].\n- The pilot is open to residential tenancies anywhere in the county [S1].\n- Common Ground Mediation, a nonprofit, conducts the sessions under contract [S1].\n- The contract works out to about $820 per session held [S1].\n- The contract cost about $1,500 per written agreement [S1].\n- Sessions must be scheduled within 10 calendar days of a request [S1].\n- Sessions average two and a half hours [S1].\n- Median arrears in unpaid-rent disputes were $2,350 [S1].\n- Agreements set repayment plans averaging 5 weeks [S1].\n- 71% of all tenants with agreements remained at the same address after six months [S1].\n- Follow-up calls reached about 55% of tenants with agreements [S1].\n- The mediation pilot cut eviction filings by 9% [S1].\n- Interpretation was used in about one in five sessions [S1].\n- The county board approved a two-year extension in October [S1].\n\n## Counterevidence and limits\n- Tenant advocates said the 10-business-day window is too slow when an eviction notice gives 14 days [S2].\n- Two landlords said repayment plans were broken within three months, showing most agreements fail [S2].\n- The county said outreach to property managers would expand this fall [S2].\n- Common Ground Mediation also runs similar programs in two neighboring counties.\n\n## Next steps\n- Request repayment-plan completion data and better follow-up coverage before the board's extension vote (judgment).\n\n## Sources\n- [S1] Halvorsen County Housing Services, \"Landlord-Tenant Mediation Pilot: 12-Month Evaluation\" (2026-08-18)\n- [S2] Halvorsen Herald, \"Landlords skeptical of mediation pilot\" (2026-09-03)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The pilot held 780 mediation sessions from 1,060 requests in its first year",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'received 1,060 requests and held 780 mediation sessions'."
+    },
+    {
+      "key": "About 68% of sessions held ended in a written agreement",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 530/780 = 67.9%."
+    },
+    {
+      "key": "Half of all requests ended in a written agreement",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 530/1,060 = 50%."
+    },
+    {
+      "key": "Sessions ending without agreement outnumbered withdrawn sessions by more than three to one",
+      "label": "mismatch",
+      "tag": "wrong_derived_ratio",
+      "why": "S1: 170/80 = 2.1 to 1, not more than three to one."
+    },
+    {
+      "key": "Mediation is mandatory for landlords once a tenant requests it",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S1: 'Mediation is voluntary for both parties'."
+    },
+    {
+      "key": "The pilot is open to residential tenancies anywhere in the county",
+      "label": "mismatch",
+      "tag": "scope_widened",
+      "why": "S1: available 'only for residential tenancies in unincorporated areas and the cities of Arden and Tolliver'."
+    },
+    {
+      "key": "Common Ground Mediation, a nonprofit, conducts the sessions under contract",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Sessions are conducted by Common Ground Mediation, a nonprofit under a $640,000 annual contract.'"
+    },
+    {
+      "key": "The contract works out to about $820 per session held",
+      "label": "ok",
+      "tag": "derived_per_unit",
+      "why": "S1: $640,000/780 = $820.5."
+    },
+    {
+      "key": "The contract cost about $1,500 per written agreement",
+      "label": "mismatch",
+      "tag": "wrong_per_unit",
+      "why": "S1: $640,000/530 = about $1,208 per agreement, not $1,500."
+    },
+    {
+      "key": "Sessions must be scheduled within 10 calendar days of a request",
+      "label": "mismatch",
+      "tag": "changed_time_unit",
+      "why": "S1: 'within 10 business days of a request'."
+    },
+    {
+      "key": "Sessions average two and a half hours",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Sessions average 2.5 hours'."
+    },
+    {
+      "key": "Median arrears in unpaid-rent disputes were $2,350",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'the median arrears in those cases was $2,350'."
+    },
+    {
+      "key": "Agreements set repayment plans averaging 5 weeks",
+      "label": "mismatch",
+      "tag": "wrong_unit",
+      "why": "S1: 'repayment plans averaging 5 months'."
+    },
+    {
+      "key": "71% of all tenants with agreements remained at the same address after six months",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 71% is based on follow-up calls that reached only 290 of the 530 tenants."
+    },
+    {
+      "key": "Follow-up calls reached about 55% of tenants with agreements",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 290/530 = 54.7%."
+    },
+    {
+      "key": "The mediation pilot cut eviction filings by 9%",
+      "label": "mismatch",
+      "tag": "hedge_to_causal",
+      "why": "S1: filings fell 9% but 'other factors, including a state rental-assistance program, could explain the change'."
+    },
+    {
+      "key": "Interpretation was used in about one in five sessions",
+      "label": "ok",
+      "tag": "rounded",
+      "why": "S1: 'Language interpretation was used in 22% of sessions'."
+    },
+    {
+      "key": "The county board approved a two-year extension in October",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: 'the county board will consider a two-year extension in October'; no approval is reported."
+    },
+    {
+      "key": "Tenant advocates said the 10-business-day window is too slow when an eviction notice gives 14 days",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2 states this directly."
+    },
+    {
+      "key": "Two landlords said repayment plans were broken within three months, showing most agreements fail",
+      "label": "mismatch",
+      "tag": "anecdote_generalized",
+      "why": "S2 reports two landlords' anecdotes only; it does not show that most agreements fail."
+    },
+    {
+      "key": "The county said outreach to property managers would expand this fall",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'outreach to property managers would expand this fall'."
+    },
+    {
+      "key": "Common Ground Mediation also runs similar programs in two neighboring counties",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source mentions other counties' programs."
+    }
+  ]
+}

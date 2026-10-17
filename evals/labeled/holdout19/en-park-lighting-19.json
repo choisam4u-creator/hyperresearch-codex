@@ -1,0 +1,146 @@
+{
+  "id": "en-park-lighting-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "Has Westover's park LED lighting upgrade saved money and improved park safety?",
+  "sources": {
+    "S1": "Westover replaced 1,820 sodium and metal-halide fixtures with dimmable LED fixtures across 34 city parks between October 2025 and June 2026. The project cost $2.73 million, funded by a $1.2 million state energy-efficiency grant, $1.05 million in city capital bonds, and a $480,000 rebate from Westover Electric. Electricity use for park lighting fell from 2.4 million kWh to 1.1 million kWh on an annualized basis. At the city's rate of $0.14 per kWh, the department estimates annual savings of $182,000. Fixtures dim to 30% brightness between midnight and 5 a.m. and brighten to full output when motion sensors detect activity. Lights on athletic fields are excluded from dimming and remain on until 10:30 p.m. on scheduled game nights. Installation was carried out by contractor Brightline Electric; ongoing maintenance stays with the city's own electricians. Fixture outages reported through the 311 line fell from an average of 46 per month to 12 per month. In a survey of 820 park users conducted at six parks, 64% said they felt safer after dark, up from 49% before the upgrade. Reported vandalism incidents in parks dropped from 310 to 255, but police noted that a new patrol schedule began at the same time and said the lighting's effect could not be isolated. Fixtures carry a 10-year warranty. Lighting by park type: neighborhood parks 980 fixtures, community parks 560, trails and greenways 280. The department proposes extending the program to 12 remaining parks in 2027, pending budget approval.",
+    "S2": "The Westover Tribune reported that some residents near Calloway Park said motion sensors left paths dark for several seconds before lights brightened. A dark-sky group praised the shielded fixtures for reducing glare. Council member Ana Ruiz asked whether the 30% dimming level met state lighting guidance. The department said it would review sensor delays by December."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Has Westover's park LED lighting upgrade saved money and improved park safety?\n\n## Answer\nWestover replaced 1,820 park light fixtures with dimmable LEDs across 34 parks [S1]. Annualized park-lighting electricity use fell by about 54% [S1]. At the estimated savings rate, the project pays for itself in about 8 years [S1].\n\n## Evidence\n- The state grant covered about 44% of project cost [S1].\n- The utility rebate was larger than the city's bond contribution [S1].\n- The project averaged $1,500 per fixture [S1].\n- Annual savings of $182,000 come from cutting 1.1 million kWh [S1].\n- Fixtures dim to 30% brightness from midnight to 5 a.m. unless motion sensors detect activity [S1].\n- Fixtures begin dimming at 10:30 p.m. [S1].\n- Athletic field lights are dimmed overnight like other fixtures [S1].\n- Brightline Electric also handles ongoing maintenance [S1].\n- Monthly fixture outages reported to 311 dropped by 34 [S1].\n- Outage reports fell by about 74 percentage points [S1].\n- Among surveyed park users, the share feeling safer after dark rose 15 percentage points [S1].\n- 64% of Westover residents now feel safer in parks after dark [S1].\n- The new lighting reduced park vandalism by 55 incidents [S1].\n- Neighborhood parks received more than half of the new fixtures [S1].\n\n## Counterevidence and limits\n- A dark-sky group praised the shielded fixtures for reducing glare [S2].\n- Residents near Calloway Park said motion sensors left paths dark for several seconds before brightening [S2].\n- The department said it would review sensor delays by December 2027 [S2].\n- Westover is the first city in the state to dim all park lights after midnight.\n\n## Next steps\n- Wait for the sensor-delay review and a vandalism comparison that controls for patrol changes before extending to the remaining 12 parks (judgment).\n\n## Sources\n- [S1] Westover Parks and Recreation Department, \"Park Lighting Upgrade Program: Year One Results\" (2026-09-12)\n- [S2] Westover Tribune, \"Dimmed park lights spark neighbor concerns\" (2026-09-25)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Westover replaced 1,820 park light fixtures with dimmable LEDs across 34 parks",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'replaced 1,820 sodium and metal-halide fixtures with dimmable LED fixtures across 34 city parks'."
+    },
+    {
+      "key": "Annualized park-lighting electricity use fell by about 54%",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: (2.4 - 1.1)/2.4 = 1.3/2.4 = 54.2%."
+    },
+    {
+      "key": "At the estimated savings rate, the project pays for itself in about 8 years",
+      "label": "mismatch",
+      "tag": "wrong_derived_ratio",
+      "why": "S1: $2.73M/$182,000 = 15 years (12.4 years even net of the $480,000 rebate); not about 8."
+    },
+    {
+      "key": "The state grant covered about 44% of project cost",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: $1.2M/$2.73M = 44.0%."
+    },
+    {
+      "key": "The utility rebate was larger than the city's bond contribution",
+      "label": "mismatch",
+      "tag": "reversed_comparison",
+      "why": "S1: rebate $480,000 < city bonds $1.05 million."
+    },
+    {
+      "key": "The project averaged $1,500 per fixture",
+      "label": "ok",
+      "tag": "derived_per_unit",
+      "why": "S1: $2,730,000/1,820 = $1,500."
+    },
+    {
+      "key": "Annual savings of $182,000 come from cutting 1.1 million kWh",
+      "label": "mismatch",
+      "tag": "wrong_derived_difference",
+      "why": "S1: savings come from cutting 2.4M - 1.1M = 1.3 million kWh (1.3M x $0.14 = $182,000); 1.1M kWh is the new usage."
+    },
+    {
+      "key": "Fixtures dim to 30% brightness from midnight to 5 a.m. unless motion sensors detect activity",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'dim to 30% brightness between midnight and 5 a.m. and brighten to full output when motion sensors detect activity'."
+    },
+    {
+      "key": "Fixtures begin dimming at 10:30 p.m.",
+      "label": "mismatch",
+      "tag": "changed_time_window",
+      "why": "S1: dimming runs 'between midnight and 5 a.m.'; 10:30 p.m. is when athletic field lights go off on game nights."
+    },
+    {
+      "key": "Athletic field lights are dimmed overnight like other fixtures",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S1: 'Lights on athletic fields are excluded from dimming'."
+    },
+    {
+      "key": "Brightline Electric also handles ongoing maintenance",
+      "label": "mismatch",
+      "tag": "wrong_operator",
+      "why": "S1: 'ongoing maintenance stays with the city's own electricians'."
+    },
+    {
+      "key": "Monthly fixture outages reported to 311 dropped by 34",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 46 - 12 = 34 per month."
+    },
+    {
+      "key": "Outage reports fell by about 74 percentage points",
+      "label": "mismatch",
+      "tag": "percent_vs_pp",
+      "why": "S1: 46 to 12 per month is a 34/46 = 73.9% decline in a count, not a change in percentage points."
+    },
+    {
+      "key": "Among surveyed park users, the share feeling safer after dark rose 15 percentage points",
+      "label": "ok",
+      "tag": "percentage_point",
+      "why": "S1: 64% - 49% = 15 points."
+    },
+    {
+      "key": "64% of Westover residents now feel safer in parks after dark",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 64% is from a survey of 820 park users at six parks, not all residents."
+    },
+    {
+      "key": "The new lighting reduced park vandalism by 55 incidents",
+      "label": "mismatch",
+      "tag": "hedge_to_causal",
+      "why": "S1: 310 to 255 (-55), but police said 'the lighting's effect could not be isolated' given a new patrol schedule."
+    },
+    {
+      "key": "Neighborhood parks received more than half of the new fixtures",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 980/1,820 = 53.8%."
+    },
+    {
+      "key": "A dark-sky group praised the shielded fixtures for reducing glare",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2 states this directly."
+    },
+    {
+      "key": "Residents near Calloway Park said motion sensors left paths dark for several seconds before brightening",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'motion sensors left paths dark for several seconds before lights brightened'."
+    },
+    {
+      "key": "The department said it would review sensor delays by December 2027",
+      "label": "mismatch",
+      "tag": "wrong_year",
+      "why": "S2 (2026-09-25): review 'by December', i.e. December 2026, not 2027."
+    },
+    {
+      "key": "Westover is the first city in the state to dim all park lights after midnight",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source makes any statewide comparison."
+    }
+  ]
+}

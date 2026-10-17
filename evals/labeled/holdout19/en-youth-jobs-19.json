@@ -1,0 +1,146 @@
+{
+  "id": "en-youth-jobs-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "How did Brennan City's 2026 Summer Youth Employment Program perform?",
+  "sources": {
+    "S1": "Brennan City's Summer Youth Employment Program placed 1,450 residents aged 14 to 21 in paid jobs between June 22 and August 14, 2026. The program received 3,900 applications, and placements were assigned by lottery after eligibility checks. Participants worked up to 25 hours per week at $16.50 per hour, the city minimum wage. Total wages paid were $4.1 million, and the program's full cost, including supervision and training, was $5.6 million. Funding came from the city general fund ($3.2 million), a state workforce grant ($1.5 million), and employer cost-sharing ($0.9 million). Private employers hosted 520 youth and paid half of their wages; the remaining placements were at city departments and nonprofits. Wages are paid by the city's payroll contractor, BrightPay, every two weeks. Each participant completed a 12-hour job-readiness course before starting. Completion rate, defined as working at least 80% of scheduled hours, was 84%. In a post-program survey answered by 610 participants, 72% said they felt more confident applying for jobs. Sixty-one employers offered at least one participant a continuing part-time position, but the office said it does not yet know how many accepted. Placements by sector: parks and recreation 410, retail and food service 360, health care support 240, office and administrative 230, and other sectors 210. The office plans to lower the minimum age to 13 in 2027 if council amends the ordinance.",
+    "S2": "The Brennan Daily reported that more than 2,400 eligible applicants were not placed. Youth advocates argued the lottery should prioritize applicants from households receiving public assistance. Several parks supervisors said heat advisories in July cut outdoor work hours. The office said it is studying a waitlist for 2027."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How did Brennan City's 2026 Summer Youth Employment Program perform?\n\n## Answer\nBrennan City placed 1,450 young people in summer jobs in 2026 [S1]. Roughly half of the 3,900 applicants were placed [S1]. The program ran for about eight weeks [S1].\n\n## Evidence\n- Participants worked a fixed 25 hours per week [S1].\n- A participant working the maximum weekly hours earned $412.50 per week [S1].\n- Wages made up about 73% of the program's full cost [S1].\n- The full program cost averaged about $2,830 per participant [S1].\n- The state grant covered about 27% of program costs [S1].\n- Employer cost-sharing provided $1.5 million [S1].\n- Private employers paid the full wages of the 520 youth they hosted [S1].\n- Private employers hosted roughly 36% of placements [S1].\n- Wages are paid weekly [S1].\n- Participants completed a 12-hour job-readiness course before starting [S1].\n- 72% of participants felt more confident applying for jobs after the program [S1].\n- Sixty-one participants accepted continuing part-time positions [S1].\n- Parks and recreation was the largest placement sector, followed by retail and food service [S1].\n- Health care support placements outnumbered retail and food service placements [S1].\n\n## Counterevidence and limits\n- More than 2,400 eligible applicants were not placed [S2].\n- Several parks supervisors said heat advisories in July cut outdoor work hours [S2].\n- The office has created a waitlist for 2027 [S2].\n- About 40% of 2026 participants had also worked in the 2025 program.\n\n## Next steps\n- Ask the office for acceptance data on continuing positions and decide whether lottery priority rules need revision before 2027 (judgment).\n\n## Sources\n- [S1] Brennan City Office of Workforce Development, \"Summer Youth Employment Program 2026 Outcomes\" (2026-09-20)\n- [S2] Brennan Daily, \"Youth jobs lottery leaves thousands out\" (2026-08-30)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Brennan City placed 1,450 young people in summer jobs in 2026",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'placed 1,450 residents aged 14 to 21 in paid jobs'."
+    },
+    {
+      "key": "Roughly half of the 3,900 applicants were placed",
+      "label": "mismatch",
+      "tag": "wrong_derived_percent",
+      "why": "S1: 1,450/3,900 = 37.2%, closer to a third than half."
+    },
+    {
+      "key": "The program ran for about eight weeks",
+      "label": "ok",
+      "tag": "derived_duration",
+      "why": "S1: June 22 to August 14 is 53 days, about 7.6 weeks, roughly eight weeks."
+    },
+    {
+      "key": "Participants worked a fixed 25 hours per week",
+      "label": "mismatch",
+      "tag": "upper_bound_dropped",
+      "why": "S1: 'worked up to 25 hours per week'; 25 is a cap."
+    },
+    {
+      "key": "A participant working the maximum weekly hours earned $412.50 per week",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 25 x $16.50 = $412.50."
+    },
+    {
+      "key": "Wages made up about 73% of the program's full cost",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: $4.1M/$5.6M = 73.2%."
+    },
+    {
+      "key": "The full program cost averaged about $2,830 per participant",
+      "label": "mismatch",
+      "tag": "wrong_base",
+      "why": "S1: $5.6M/1,450 = about $3,862. $2,830 is wages only ($4.1M/1,450 = $2,828)."
+    },
+    {
+      "key": "The state grant covered about 27% of program costs",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: $1.5M/$5.6M = 26.8%."
+    },
+    {
+      "key": "Employer cost-sharing provided $1.5 million",
+      "label": "mismatch",
+      "tag": "swapped_funder_share",
+      "why": "S1: employer cost-sharing $0.9M; $1.5M is the state workforce grant."
+    },
+    {
+      "key": "Private employers paid the full wages of the 520 youth they hosted",
+      "label": "mismatch",
+      "tag": "wrong_share",
+      "why": "S1: private employers 'paid half of their wages'."
+    },
+    {
+      "key": "Private employers hosted roughly 36% of placements",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 520/1,450 = 35.9%."
+    },
+    {
+      "key": "Wages are paid weekly",
+      "label": "mismatch",
+      "tag": "changed_frequency",
+      "why": "S1: wages are paid by BrightPay 'every two weeks'."
+    },
+    {
+      "key": "Participants completed a 12-hour job-readiness course before starting",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Each participant completed a 12-hour job-readiness course before starting.'"
+    },
+    {
+      "key": "72% of participants felt more confident applying for jobs after the program",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 72% of the 610 survey respondents, not of all 1,450 participants."
+    },
+    {
+      "key": "Sixty-one participants accepted continuing part-time positions",
+      "label": "mismatch",
+      "tag": "hedge_to_fact",
+      "why": "S1: 61 employers made offers; the office 'does not yet know how many accepted'."
+    },
+    {
+      "key": "Parks and recreation was the largest placement sector, followed by retail and food service",
+      "label": "ok",
+      "tag": "comparison",
+      "why": "S1: parks and recreation 410 > retail and food service 360 > others."
+    },
+    {
+      "key": "Health care support placements outnumbered retail and food service placements",
+      "label": "mismatch",
+      "tag": "reversed_comparison",
+      "why": "S1: health care support 240 < retail and food service 360."
+    },
+    {
+      "key": "More than 2,400 eligible applicants were not placed",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'more than 2,400 eligible applicants were not placed'; consistent with S1 (3,900 - 1,450 = 2,450)."
+    },
+    {
+      "key": "Several parks supervisors said heat advisories in July cut outdoor work hours",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2 states this directly."
+    },
+    {
+      "key": "The office has created a waitlist for 2027",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S2: the office 'is studying a waitlist for 2027'."
+    },
+    {
+      "key": "About 40% of 2026 participants had also worked in the 2025 program",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source reports returning participants."
+    }
+  ]
+}
