@@ -1,0 +1,170 @@
+{
+ "id": "en-toollibrary-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "How well is the Brindle Falls Public Library's tool lending program performing?",
+ "sources": {
+  "S1": "Brindle Falls Public Library opened its tool lending collection at the Eastgate branch in September 2024 and expanded it to the Riverside branch in March 2026. The collection held 1,250 items at the end of fiscal year 2026 (June 30), up from 700 a year earlier. Any Brindle Falls resident aged 18 or older with a library card in good standing may borrow tools; non-residents may borrow only from the Riverside branch and pay a $20 annual fee. Borrowers may check out up to three tools at a time for seven days, with one renewal if no hold is placed. Power tools require a one-time 30-minute safety orientation. Checkouts totaled 9,400 in FY2026, compared with 5,200 in FY2025. Eastgate accounted for 6,800 FY2026 checkouts and Riverside for 2,600, although Riverside was open for tool lending only four months of the year. The program's FY2026 budget was $210,000: the library's operating budget covered $126,000, a county sustainability grant $63,000, and a hardware retailer sponsorship $21,000. Staffing consists of one full-time coordinator and volunteer repair technicians who logged 1,900 hours. Late fees were eliminated in July 2025; instead, borrowing privileges are suspended until items are returned. The on-time return rate was 86% in FY2026, versus 90% in FY2025 when late fees were still charged. The library cautions that the drop may reflect the larger and newer borrower base rather than the fee change. Lost or damaged items cost $18,400 to replace, about 1.6% of the collection's estimated $1.15 million replacement value. A borrower survey (n=380) found that 64% had avoided buying a tool they used for a one-time project. The library estimates borrowers saved $1.9 million in avoided purchases, based on retail prices of borrowed items; it describes this as an upper-bound figure. The library aims to reach 2,000 items and open a third location at the Northfield branch by FY2028, subject to county funding.",
+  "S2": "The library's most popular items, including pressure washers and tile saws, often have waiting lists of several weeks. A local hardware store owner said the program has cut into his rental business, though he declined to share figures. Some patrons said the safety orientation is offered only on weekday afternoons. Library officials said they plan to add Saturday sessions this fall."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How well is the Brindle Falls Public Library's tool lending program performing?\n\n## Answer\nTool checkouts in Brindle Falls rose about 81% in FY2026, from 5,200 to 9,400 [S1]. Eliminating late fees caused the on-time return rate to slip from 90% to 86% [S1]. Popular items still carry waits of several weeks, so access remains uneven [S2].\n\n## Evidence\n- The collection grew by 550 items over the year, to 1,250 [S1].\n- The collection grew by about 90% over the year [S1].\n- Non-residents can borrow from either branch for a $20 annual fee [S1].\n- Borrowers can hold up to three tools at once for a week, renewable once if nobody has placed a hold [S1].\n- Every borrower must complete a 30-minute safety orientation before checking out any tool [S1].\n- Eastgate handled about 72% of FY2026 checkouts [S1].\n- Per month of operation, Riverside lent fewer tools than Eastgate [S1].\n- The county sustainability grant covered 30% of the $210,000 budget [S1].\n- The hardware retailer sponsorship supplied $63,000, or 30% of the budget [S1].\n- Late fees ended in July 2025 and were replaced by a suspension of borrowing privileges until items come back [S1].\n- Lost or damaged items cost $18,400, about 16% of the collection's replacement value [S1].\n- Losses and damage came to less than 2% of the collection's estimated $1.15 million replacement value [S1].\n- Most Brindle Falls residents have avoided buying a tool for a one-time project thanks to the library [S1].\n- Borrowers saved $1.9 million in avoided purchases [S1].\n- The tool library has attracted more than 3,000 distinct borrowers since launch.\n- Volunteer repair technicians logged 1,900 hours during the year [S1].\n- A third location at the Northfield branch is scheduled to open by FY2028 [S1].\n\n## What cuts the other way\n- Pressure washers, tile saws and other popular items often have waiting lists of several weeks [S2].\n- A local hardware store owner reported that his rental revenue fell sharply [S2].\n- Saturday safety orientations were added this fall [S2].\n- Some patrons say safety orientations are offered only on weekday afternoons [S2].\n- The library itself notes the dip in on-time returns may stem from a larger, newer borrower base [S1].\n\n## Next actions\n- Ask the library for on-time return rates split by new versus returning borrowers (judgment).\n\n## Sources\n- [S1] Brindle Falls Public Library, \"Library of Things: Tool Lending Annual Review FY2026\" (2026-09-06)\n- [S2] Brindle Falls Courier, \"Borrowing a drill? Get in line\" (2026-09-22)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Tool checkouts in Brindle Falls rose about 81% in FY2026, from 5,200 to 9,400",
+   "label": "ok",
+   "tag": "derived_growth",
+   "why": "S1: 'Checkouts totaled 9,400 in FY2026, compared with 5,200 in FY2025.' 9,400/5,200 = 1.808 -> +80.8%, about 81%. Correct."
+  },
+  {
+   "key": "Eliminating late fees caused the on-time return rate to slip from 90% to 86%",
+   "label": "mismatch",
+   "tag": "hedge_to_fact",
+   "why": "S1: 'The library cautions that the drop may reflect the larger and newer borrower base rather than the fee change.' Causation asserted against the source's caveat."
+  },
+  {
+   "key": "Popular items still carry waits of several weeks, so access remains uneven",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'most popular items ... often have waiting lists of several weeks'. Matches."
+  },
+  {
+   "key": "The collection grew by 550 items over the year, to 1,250",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: '1,250 items ... up from 700 a year earlier'. 1,250-700 = 550. Correct."
+  },
+  {
+   "key": "The collection grew by about 90% over the year",
+   "label": "mismatch",
+   "tag": "percent_arithmetic",
+   "why": "S1: 700 -> 1,250. 550/700 = 78.6%, not about 90%."
+  },
+  {
+   "key": "Non-residents can borrow from either branch for a $20 annual fee",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'non-residents may borrow only from the Riverside branch and pay a $20 annual fee'. Branch restriction dropped."
+  },
+  {
+   "key": "Borrowers can hold up to three tools at once for a week, renewable once if nobody has placed a hold",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'up to three tools at a time for seven days, with one renewal if no hold is placed'. Matches."
+  },
+  {
+   "key": "Every borrower must complete a 30-minute safety orientation before checking out any tool",
+   "label": "mismatch",
+   "tag": "scope_changed",
+   "why": "S1: 'Power tools require a one-time 30-minute safety orientation.' Only power tools, not any tool."
+  },
+  {
+   "key": "Eastgate handled about 72% of FY2026 checkouts",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: Eastgate 6,800 of 9,400. 6,800/9,400 = 72.3%. Correct."
+  },
+  {
+   "key": "Per month of operation, Riverside lent fewer tools than Eastgate",
+   "label": "mismatch",
+   "tag": "comparison_reversed",
+   "why": "S1: Riverside 2,600 checkouts in 'only four months' -> 650/month; Eastgate 6,800 over 12 months -> 567/month. Riverside's monthly rate is higher."
+  },
+  {
+   "key": "The county sustainability grant covered 30% of the $210,000 budget",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: 'a county sustainability grant $63,000' of $210,000. 63/210 = 30%. Correct."
+  },
+  {
+   "key": "The hardware retailer sponsorship supplied $63,000, or 30% of the budget",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: 'a county sustainability grant $63,000, and a hardware retailer sponsorship $21,000'. The sponsorship was $21,000 (10%); $63,000 is the county grant."
+  },
+  {
+   "key": "Late fees ended in July 2025 and were replaced by a suspension of borrowing privileges until items come back",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Late fees were eliminated in July 2025; instead, borrowing privileges are suspended until items are returned.' Matches."
+  },
+  {
+   "key": "Lost or damaged items cost $18,400, about 16% of the collection's replacement value",
+   "label": "mismatch",
+   "tag": "decimal_error",
+   "why": "S1: '$18,400 ... about 1.6% of the collection's estimated $1.15 million replacement value'. 18,400/1,150,000 = 1.6%, not 16%."
+  },
+  {
+   "key": "Losses and damage came to less than 2% of the collection's estimated $1.15 million replacement value",
+   "label": "ok",
+   "tag": "derived_comparison",
+   "why": "S1: 'about 1.6%' (18,400/1,150,000 = 1.6%) < 2%. Correct."
+  },
+  {
+   "key": "Most Brindle Falls residents have avoided buying a tool for a one-time project thanks to the library",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: 'A borrower survey (n=380) found that 64% had avoided buying a tool'. A borrower sample is generalized to all residents."
+  },
+  {
+   "key": "Borrowers saved $1.9 million in avoided purchases",
+   "label": "mismatch",
+   "tag": "estimate_as_fact",
+   "why": "S1: 'The library estimates borrowers saved $1.9 million ... it describes this as an upper-bound figure.' An upper-bound estimate is stated as a realized fact."
+  },
+  {
+   "key": "The tool library has attracted more than 3,000 distinct borrowers since launch",
+   "label": "unverified",
+   "tag": "unsupported_claim",
+   "why": "No citation, and neither source reports a count of distinct borrowers."
+  },
+  {
+   "key": "Volunteer repair technicians logged 1,900 hours during the year",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'volunteer repair technicians who logged 1,900 hours'. Matches."
+  },
+  {
+   "key": "A third location at the Northfield branch is scheduled to open by FY2028",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'aims to ... open a third location at the Northfield branch by FY2028, subject to county funding'. An aim conditional on funding is presented as scheduled."
+  },
+  {
+   "key": "Pressure washers, tile saws and other popular items often have waiting lists of several weeks",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2 first sentence. Matches."
+  },
+  {
+   "key": "A local hardware store owner reported that his rental revenue fell sharply",
+   "label": "mismatch",
+   "tag": "magnitude_added",
+   "why": "S2: the owner 'said the program has cut into his rental business, though he declined to share figures'. 'Fell sharply' adds a magnitude he did not give."
+  },
+  {
+   "key": "Saturday safety orientations were added this fall",
+   "label": "mismatch",
+   "tag": "plan_as_achieved",
+   "why": "S2: 'Library officials said they plan to add Saturday sessions this fall.' Plan stated as done."
+  },
+  {
+   "key": "Some patrons say safety orientations are offered only on weekday afternoons",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'Some patrons said the safety orientation is offered only on weekday afternoons.' Matches."
+  },
+  {
+   "key": "The library itself notes the dip in on-time returns may stem from a larger, newer borrower base",
+   "label": "ok",
+   "tag": "hedge_preserved",
+   "why": "S1: 'the drop may reflect the larger and newer borrower base rather than the fee change'. Matches."
+  }
+ ]
+}
