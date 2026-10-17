@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-17 (품질 회차 24)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout20(12 case·292문장, 한계 절 제목도 에이전트가 고름) 기준선 **F1 56.2 → 56.8**, 오표시율 18.7 → 18.7 — **두 개선 모두 holdout20을 보지 않고 설계해 잰 값**. 설계용 holdout19 56.5 → 61.1, holdout16 69.2 → 69.8. 전체 71.8 → 72.1(오표시 13.1 그대로). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout20 먼저(`6d6a425`) → '-(으)로' 인과 단정·유보 표현(`1a8bc58`) → 일 뒤 운영 주체·위탁(`cb44dad`) → 백로그 `report_lint` 제목 규칙(`b0a6fa8`) → 기록, CI holdout20 `--min-f1 50`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 655개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run --min-total 97` 99.9, 라벨 평가 스물한 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다. 커밋 댓글 도구가 없어 AGENTS.md 커밋 댓글 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 보지 않은 측정의 효과는 +0.6으로 작다 — 회차마다 앞 holdout 형태에 맞춘 좁은 규칙이 다음 holdout에 잘 옮겨지지 않는다. holdout20 큰 약점은 조건 빠짐·계획을 실적처럼·값 맞바꿈·표본/일화 일반화·유보를 사실로, 오표시는 바꿔 말하기. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "통학버스 노선 개편은 지각을 줄였나? 운행은 누가 맡나? 근거와 한계를 밝혀라"
+  grep -h -A6 '"causal_conflict"\|"subject_conflict"' research/runs/*/report_marks.json | head -40   # 표시 문장을 원문과 대조
+  ```
+
 ## 2026-10-17 (품질 회차 23)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Mark `(출처 불일치)` when a Korean sentence names a cause with `-(으)로` (`센서 도입으로 … 줄었다`, `도시락 배달로 고독사가 줄었다`) while the source says the effect cannot be confirmed; read `확인할 수 없다`, `효과로만 돌릴 수 없다` and `cautioned against direct comparison` as hedges. `0건으로 줄었다`-style target values are not causes.
+- Mark `(source mismatch)` when a sentence names a different operator than a source that puts the task after the doer (`maintenance stays with the city's own electricians`) or says `위탁받아 맡는다`.
+- `report_lint` no longer asks for review over heading variants such as `## Counterevidence and Limitations` or `## 반대 근거 및 한계`.
 - Check claim sections whose headings differ slightly from the template (`## Counterevidence and limits`, `## Counter evidence and limitations`, `## 반대 근거 및 한계`); before, every sentence under such a heading skipped citation and `(no source)` checks.
 - Mark `(source mismatch)` when the cited source names a sole funder (`전액 시비`, `시가 전액 낸다`, `시비 100%`) or excludes one (`not the general fund`, `no general fund money is used`, `Hospitals do not contribute funding`) and the sentence says another or the excluded funder pays, or that one of two listed funders `covered the full cost`.
 - Mark `(source mismatch)` when a source lists a value per name in one sentence (`해솔동 88건, 서하1동 64건, 미림동 52건`, `Harbor Avenue (1,040), Quill Street (760), North Ring Road (610)`) and a cited sentence compares two of those names the wrong way round (`미림동의 설치 건수가 서하1동보다 많았다`, `Quill Street ranked behind North Ring Road`), recorded as `antonym_conflict`.
