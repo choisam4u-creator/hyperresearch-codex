@@ -1,0 +1,134 @@
+{
+  "id": "en-fine-free-library-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "Did eliminating overdue fines at Corrigan County Libraries bring back lapsed borrowers?",
+  "sources": {
+    "S1": "Corrigan County Libraries eliminated overdue fines for all materials on July 1, 2025, and cleared $212,000 in outstanding fine balances. Fees for lost or damaged items remain in place, and an item is considered lost 45 days after its due date. Fine revenue had averaged $96,000 per year over the previous three years, about 1.1% of the system's operating budget. In the twelve months after the change, 4,870 previously blocked cardholders checked out at least one item. Children's cardholders accounted for 38% of these returning borrowers, adults aged 18 to 64 for 49%, and seniors for 13%. Total circulation rose 6.2% compared with the prior twelve months. The memo says the circulation increase probably reflects both fine elimination and the opening of the renovated Westgate branch in September 2025, and the two effects cannot be separated. On-time returns fell slightly, from 88% to 86% of loans. The board voted in June 2026 to keep the policy permanently. Staff time spent on fine disputes dropped by an estimated 600 hours per year.",
+    "S2": "The Times obtained branch-level data showing that the Millbrook branch, which serves the county's lowest-income zip codes, saw the largest jump in returning borrowers, with 1,140. Westgate was second with 890 returning borrowers. Library staff told the Times that most returning borrowers first came in for children's story times. Some patrons said they did not know fines had ended until months later, because the system's outreach relied mainly on its email newsletter. The county's budget office covered the lost fine revenue from the general fund for fiscal year 2026 only. A survey of 300 returning borrowers conducted by a local university found that 64% cited fine elimination as a reason for coming back."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did eliminating overdue fines at Corrigan County Libraries bring back lapsed borrowers?\n\n## Answer\nIn the year after fines ended, 4,870 previously blocked cardholders checked out at least one item [S1]. A university survey found that 64% of 300 returning borrowers cited fine elimination as a reason for returning [S2].\n\n## Evidence\n- The system ended overdue fines on July 1, 2025, and forgave $212,000 in outstanding balances [S1].\n- Fees for lost or damaged items were also eliminated [S1].\n- An item is treated as lost 30 days after its due date [S1].\n- The fines had brought in an average of $96,000 a month [S1].\n- Adults aged 18 to 64 made up nearly half of the returning borrowers [S1].\n- Children made up the largest share of returning borrowers [S1].\n- Roughly 1,850 of the returning borrowers were children [S1].\n- Fine elimination drove a 6.2% rise in total circulation [S1].\n- On-time returns declined by 2 percentage points, from 88% to 86% [S1].\n- The board voted in June 2026 to make the fine-free policy permanent [S1].\n- Staff saved exactly 600 hours on fine disputes in the first year [S1].\n\n## Counterevidence and limits\n- Westgate saw the largest increase in returning borrowers, with 1,140 [S2].\n- Millbrook and Westgate together accounted for 2,030 returning borrowers [S2].\n- Some patrons learned about the change late because outreach relied mainly on an email newsletter [S2].\n- The county budget office has committed to cover the lost fine revenue from the general fund on an ongoing basis [S2].\n- Nearly two-thirds of all returning borrowers said fines had kept them away [S2].\n- Library visits nationally also rose by about 4% over the same period.\n\n## Next actions\n- Separate the Westgate reopening effect by comparing circulation at branches outside its service area (judgment).\n\n## Sources\n- [S1] Corrigan County Library System, \"Board Memo: Fine-Free Policy One-Year Review\" (2026-07-22)\n- [S2] Corrigan Valley Times, \"Fine-free libraries draw back 4,870 borrowers, led by Millbrook\" (2026-08-30)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "In the year after fines ended, 4,870 previously blocked cardholders checked out at least one item",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'In the twelve months after the change, 4,870 previously blocked cardholders checked out at least one item.'"
+    },
+    {
+      "key": "A university survey found that 64% of 300 returning borrowers cited fine elimination as a reason for returning",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'A survey of 300 returning borrowers ... found that 64% cited fine elimination as a reason for coming back.'"
+    },
+    {
+      "key": "The system ended overdue fines on July 1, 2025, and forgave $212,000 in outstanding balances",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'eliminated overdue fines for all materials on July 1, 2025, and cleared $212,000 in outstanding fine balances.'"
+    },
+    {
+      "key": "Fees for lost or damaged items were also eliminated",
+      "label": "mismatch",
+      "tag": "scope_expanded",
+      "why": "S1: 'Fees for lost or damaged items remain in place'"
+    },
+    {
+      "key": "An item is treated as lost 30 days after its due date",
+      "label": "mismatch",
+      "tag": "number_changed",
+      "why": "S1: 'an item is considered lost 45 days after its due date.'"
+    },
+    {
+      "key": "The fines had brought in an average of $96,000 a month",
+      "label": "mismatch",
+      "tag": "period_changed",
+      "why": "S1: 'Fine revenue had averaged $96,000 per year'"
+    },
+    {
+      "key": "Adults aged 18 to 64 made up nearly half of the returning borrowers",
+      "label": "ok",
+      "tag": "magnitude_word_correct",
+      "why": "S1: 'adults aged 18 to 64 for 49%'"
+    },
+    {
+      "key": "Children made up the largest share of returning borrowers",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: children 38%, adults 49% -> adults were largest"
+    },
+    {
+      "key": "Roughly 1,850 of the returning borrowers were children",
+      "label": "ok",
+      "tag": "derived_arithmetic",
+      "why": "S1: 4,870 x 38% = 1,851"
+    },
+    {
+      "key": "Fine elimination drove a 6.2% rise in total circulation",
+      "label": "mismatch",
+      "tag": "causal_overclaim",
+      "why": "S1: 'probably reflects both fine elimination and the opening of the renovated Westgate branch ... the two effects cannot be separated.'"
+    },
+    {
+      "key": "On-time returns declined by 2 percentage points, from 88% to 86%",
+      "label": "ok",
+      "tag": "percentage_points_correct",
+      "why": "S1: 'On-time returns fell slightly, from 88% to 86% of loans.'"
+    },
+    {
+      "key": "The board voted in June 2026 to make the fine-free policy permanent",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'The board voted in June 2026 to keep the policy permanently.'"
+    },
+    {
+      "key": "Staff saved exactly 600 hours on fine disputes",
+      "label": "mismatch",
+      "tag": "estimate_as_fact",
+      "why": "S1: 'dropped by an estimated 600 hours per year.'"
+    },
+    {
+      "key": "Westgate saw the largest increase in returning borrowers, with 1,140",
+      "label": "mismatch",
+      "tag": "attribution_swap",
+      "why": "S2: 'the Millbrook branch ... saw the largest jump in returning borrowers, with 1,140. Westgate was second with 890'"
+    },
+    {
+      "key": "Millbrook and Westgate together accounted for 2,030 returning borrowers",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S2: 1,140 + 890 = 2,030"
+    },
+    {
+      "key": "Some patrons learned about the change late because outreach relied mainly on an email newsletter",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'did not know fines had ended until months later, because the system's outreach relied mainly on its email newsletter.'"
+    },
+    {
+      "key": "The county budget office has committed to cover the lost fine revenue from the general fund on an ongoing basis",
+      "label": "mismatch",
+      "tag": "timeframe_changed",
+      "why": "S2: 'covered the lost fine revenue from the general fund for fiscal year 2026 only.'"
+    },
+    {
+      "key": "Nearly two-thirds of all returning borrowers said fines had kept them away",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S2: 'A survey of 300 returning borrowers ... 64% cited fine elimination as a reason for coming back' — a sample, and a different claim"
+    },
+    {
+      "key": "Library visits nationally also rose by about 4% over the same period",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "Neither source reports national library visit trends."
+    }
+  ]
+}

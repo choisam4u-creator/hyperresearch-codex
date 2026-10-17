@@ -1,0 +1,122 @@
+{
+  "id": "en-streetlight-led-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "Where does Lakemont's LED streetlight conversion stand, and what savings and side effects has it produced?",
+  "sources": {
+    "S1": "Lakemont completed the conversion of 8,400 of its 12,000 high-pressure sodium streetlights to LED fixtures by June 30, 2026. The remaining 3,600 fixtures are scheduled for conversion by December 2027. The project budget is $9.6 million, financed through a 10-year utility on-bill loan that the city repays from energy savings. Installation is performed by the regional electric utility's crews, while the city's public works department handles post-installation inspections. Converted fixtures use 3000K color temperature in residential areas and 4000K on arterial roads. Annual electricity use for converted lights fell from 5.1 million kWh to 2.3 million kWh. Each LED fixture carries a 10-year manufacturer warranty. Residents may request a house-side shield if light enters a bedroom window, and requests are fulfilled within 30 days. Adaptive dimming to 50% between midnight and 5 a.m. is being piloted on 400 fixtures.",
+    "S2": "The Lakemont Budget Office estimates annual energy cost savings of $364,000 at the current rate of 13 cents per kWh. Streetlight maintenance calls dropped from an average of 210 per month in 2024 to 95 per month in the first half of 2026. The office notes that part of the drop may reflect a backlog-clearing effort in late 2024, so not all of it can be attributed to LEDs. The memo projects loan payoff in 8 years if electricity rates rise as forecast, versus 10 years at flat rates. Nighttime crash data on converted corridors show 14 crashes in the first half of 2026 versus 19 in the first half of 2025, but the memo calls the sample too small to draw conclusions. A council member proposed using savings to fund sidewalk repairs; the council has not taken up the proposal."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Where does Lakemont's LED streetlight conversion stand, and what savings and side effects has it produced?\n\n## Answer\nLakemont had converted 70% of its streetlights to LED as of mid-2026 [S1]. The conversion of all 12,000 streetlights was completed in June 2026 [S1].\n\n## Evidence\n- The remaining 3,600 fixtures are slated for conversion by the end of 2027 [S1].\n- The $9.6 million project is funded by a state infrastructure grant [S1].\n- City public works crews install the new LED fixtures [S1].\n- The utility's crews do the installation, and public works inspects the lights afterward [S1].\n- Residential streets get 4000K fixtures while arterial roads get 3000K [S1].\n- Annual electricity use for converted lights dropped by 2.8 million kWh, a reduction of about 55% [S1].\n- At 13 cents per kWh, that reduction is worth about $364,000 a year [S2].\n- The budget office projects that the loan will be paid off in 8 years [S2].\n- Residents can request a house-side shield for any streetlight they find too bright [S1].\n- Adaptive dimming to 50% between midnight and 5 a.m. is only being piloted, on 400 fixtures [S1].\n\n## Counter-evidence and limits\n- Maintenance calls fell from about 210 a month in 2024 to 95 a month in early 2026, a drop of more than half [S2].\n- The budget office attributes the full drop in maintenance calls to the LED fixtures [S2].\n- Nighttime crashes on converted corridors went from 19 to 14 between the first halves of 2025 and 2026, but the memo says the sample is too small for conclusions [S2].\n- The council voted to direct LED savings to sidewalk repairs [S2].\n- Lakemont residents have filed few complaints about glare since the conversion.\n\n## Next actions\n- Request the dimming pilot's energy and complaint data before deciding whether to extend dimming citywide (judgment)\n\n## Sources\n- [S1] City of Lakemont Public Works, \"LED Streetlight Conversion Update\" (2026-07-22)\n- [S2] Lakemont Budget Office, \"LED Conversion Savings Memo\" (2026-09-03)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Lakemont had converted 70% of its streetlights to LED as of mid-2026",
+      "label": "ok",
+      "tag": "computed_percent",
+      "why": "S1: 8,400 of 12,000 = 70% by June 30, 2026"
+    },
+    {
+      "key": "The conversion of all 12,000 streetlights was completed in June 2026",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: only 8,400 done; 'remaining 3,600 fixtures are scheduled for conversion by December 2027'"
+    },
+    {
+      "key": "The remaining 3,600 fixtures are slated for conversion by the end of 2027",
+      "label": "ok",
+      "tag": "paraphrase_date",
+      "why": "S1: 'scheduled for conversion by December 2027'"
+    },
+    {
+      "key": "The $9.6 million project is funded by a state infrastructure grant",
+      "label": "mismatch",
+      "tag": "wrong_funding_source",
+      "why": "S1: 'financed through a 10-year utility on-bill loan that the city repays from energy savings'"
+    },
+    {
+      "key": "City public works crews install the new LED fixtures",
+      "label": "mismatch",
+      "tag": "wrong_actor",
+      "why": "S1: 'Installation is performed by the regional electric utility's crews'"
+    },
+    {
+      "key": "The utility's crews do the installation, and public works inspects the lights afterward",
+      "label": "ok",
+      "tag": "roles_correct",
+      "why": "S1: utility crews install; 'public works department handles post-installation inspections'"
+    },
+    {
+      "key": "Residential streets get 4000K fixtures while arterial roads get 3000K",
+      "label": "mismatch",
+      "tag": "swapped_values",
+      "why": "S1: '3000K color temperature in residential areas and 4000K on arterial roads'"
+    },
+    {
+      "key": "Annual electricity use for converted lights dropped by 2.8 million kWh, a reduction of about 55%",
+      "label": "ok",
+      "tag": "computed_reduction",
+      "why": "S1: 5.1 -> 2.3 million kWh; 2.8/5.1 = 54.9%"
+    },
+    {
+      "key": "At 13 cents per kWh, that reduction is worth about $364,000 a year",
+      "label": "ok",
+      "tag": "computed_value",
+      "why": "S2: '$364,000 at the current rate of 13 cents per kWh' (2.8M x $0.13)"
+    },
+    {
+      "key": "The budget office projects that the loan will be paid off in 8 years",
+      "label": "mismatch",
+      "tag": "condition_dropped",
+      "why": "S2: 8 years only 'if electricity rates rise as forecast, versus 10 years at flat rates'"
+    },
+    {
+      "key": "Residents can request a house-side shield for any streetlight they find too bright",
+      "label": "mismatch",
+      "tag": "condition_broadened",
+      "why": "S1: shield available 'if light enters a bedroom window'"
+    },
+    {
+      "key": "Adaptive dimming to 50% between midnight and 5 a.m. is only being piloted, on 400 fixtures",
+      "label": "ok",
+      "tag": "pilot_restated",
+      "why": "S1: 'is being piloted on 400 fixtures'"
+    },
+    {
+      "key": "Maintenance calls fell from about 210 a month in 2024 to 95 a month in early 2026, a drop of more than half",
+      "label": "ok",
+      "tag": "computed_reduction",
+      "why": "S2: 210 -> 95; drop of 115 = 55%"
+    },
+    {
+      "key": "The budget office attributes the full drop in maintenance calls to the LED fixtures",
+      "label": "mismatch",
+      "tag": "hedge_as_fact",
+      "why": "S2: 'not all of it can be attributed to LEDs' due to backlog clearing"
+    },
+    {
+      "key": "Nighttime crashes on converted corridors went from 19 to 14 between the first halves of 2025 and 2026, but the memo says the sample is too small for conclusions",
+      "label": "ok",
+      "tag": "limit_restated",
+      "why": "S2: '14 crashes … versus 19 … sample too small to draw conclusions'"
+    },
+    {
+      "key": "The council voted to direct LED savings to sidewalk repairs",
+      "label": "mismatch",
+      "tag": "proposal_as_approved",
+      "why": "S2: 'the council has not taken up the proposal'"
+    },
+    {
+      "key": "Lakemont residents have filed few complaints about glare since the conversion",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source reports glare complaint counts"
+    }
+  ]
+}

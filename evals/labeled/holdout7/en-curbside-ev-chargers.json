@@ -1,0 +1,86 @@
+{
+ "id": "en-curbside-ev-chargers",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "How well did Port Aldine's streetlight EV charger pilot work?",
+ "sources": {
+  "S1": "Port Aldine installed 40 Level 2 chargers on existing streetlight poles in four residential neighborhoods where most homes lack off-street parking. Installation finished in August 2025 at a cost of $5,600 per charger, about one-third the cost the city had estimated for conventional pedestal chargers. Users paid $0.32 per kilowatt-hour, and an idle fee of $2 per hour applied after 4 hours, except overnight between 9 p.m. and 7 a.m.\n\nFrom September 2025 through August 2026 the chargers delivered 182,500 kilowatt-hours across 21,900 sessions. Average uptime was 96 percent; most outages were caused by streetlight circuit work rather than charger faults.",
+  "S2": "Among 380 registered users, 71 percent lived within a 5-minute walk of a charger, and 44 percent said they had bought or leased an EV after the chargers were announced, although the survey did not ask whether the chargers influenced that decision.\n\nThe city plans to add 60 more pole chargers in 2027 if a state grant application succeeds. Residents near two sites complained about cables crossing sidewalks; the city is testing cable management arms at those sites."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How well did Port Aldine's streetlight EV charger pilot work?\n\n## Answer\nPort Aldine's 40 pole-mounted chargers delivered about 183 megawatt-hours in their first year [S1]. Each charger cost $5,600, roughly three times the city's estimate for pedestal chargers [S1].\n\n## Evidence\n- Charging sessions averaged about 8.3 kilowatt-hours each [S1].\n- The chargers were installed across all of the city's residential neighborhoods [S1].\n- Users were charged an idle fee of $2 per hour after 4 hours, including overnight [S1].\n- The chargers were available about 96 percent of the time [S1].\n- Most outages stemmed from work on streetlight circuits, not from faults in the chargers themselves [S1].\n- Nearly three-quarters of registered users live within a 5-minute walk of a charger [S2].\n\n## Counter-evidence and limits\n- The chargers prompted 44 percent of users to buy or lease an EV [S2].\n- The 60 additional chargers are fully funded for 2027 [S2].\n- Charging revenue covered the city's electricity costs in the first year.\n\n## Next actions\n- Check the state grant decision date and the cable-arm test results before planning 2027 sites (judgment)\n\n## Sources\n- [S1] Port Aldine Public Works, Streetlight Charging Pilot Year One Report\n- [S2] Port Aldine registered charger user survey and expansion memo\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Aldine's 40 pole-mounted chargers delivered about 183 megawatt-hours in their first year",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "182,500 kWh = 182.5 MWh"
+  },
+  {
+   "key": "Each charger cost $5,600, roughly three times the city's estimate for pedestal chargers",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "cost was about one-third of the pedestal estimate, not three times"
+  },
+  {
+   "key": "Charging sessions averaged about 8.3 kilowatt-hours each",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "182,500 / 21,900 = 8.33"
+  },
+  {
+   "key": "The chargers were installed across all of the city's residential neighborhoods",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "only four residential neighborhoods"
+  },
+  {
+   "key": "Users were charged an idle fee of $2 per hour after 4 hours, including overnight",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "idle fee did not apply 9 p.m. to 7 a.m."
+  },
+  {
+   "key": "The chargers were available about 96 percent of the time",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "average uptime 96 percent"
+  },
+  {
+   "key": "Most outages stemmed from work on streetlight circuits, not from faults in the chargers themselves",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "same cause stated in source"
+  },
+  {
+   "key": "Nearly three-quarters of registered users live within a 5-minute walk of a charger",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "71 percent"
+  },
+  {
+   "key": "The chargers prompted 44 percent of users to buy or lease an EV",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "survey did not ask whether chargers influenced the purchase"
+  },
+  {
+   "key": "The 60 additional chargers are fully funded for 2027",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "expansion depends on a state grant application succeeding"
+  },
+  {
+   "key": "Charging revenue covered the city's electricity costs in the first year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "revenue vs cost not reported"
+  }
+ ]
+}

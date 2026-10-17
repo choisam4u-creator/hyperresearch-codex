@@ -1,0 +1,98 @@
+{
+ "id": "en-bulky-waste-pickup",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Did Harlow City's free bulky-item pickup reduce illegal dumping?",
+ "sources": {
+  "S1": "Harlow City replaced its $35 bulky-item pickup fee with a free service on April 1, 2025. Each household may book up to two free pickups per calendar year, with a limit of five items per pickup; additional pickups still cost $35. Requests are made by phone or through the city's 311 app, and pickups are scheduled within 10 business days.\n\nFrom April 2025 through March 2026, crews completed 18,700 pickups, up from 6,200 in the previous twelve months. The sanitation department hired six additional drivers and leased three extra trucks, for an added annual cost of $1.1 million, paid from the solid waste enterprise fund rather than general taxes.\n\nReports of illegally dumped furniture and appliances fell from 4,900 to 3,650 over the same comparison periods. The department notes that it also installed 40 surveillance cameras at dumping hot spots in September 2025, so the decline cannot be attributed to free pickup alone.",
+  "S2": "A survey by the Eastside Neighborhood Council of 520 residents found that 71 percent were aware that bulky pickup was now free. Awareness was lower among renters (58 percent) than among homeowners (83 percent).\n\nSeveral property managers told the council that tenants moving out often leave more than five items, which pushes them to dump the excess. The council has asked the city to consider a move-out pickup for apartment buildings but says the city has not responded."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Harlow City's free bulky-item pickup reduce illegal dumping?\n\n## Answer\nCompleted pickups roughly tripled, from 6,200 to 18,700 a year [S1]. Reports of illegal dumping fell by about a quarter after the fee was removed [S1]. The city credits the drop in dumping entirely to the free pickup service [S1].\n\n## Evidence\n- Households can book two free pickups per year, each with up to five items [S1].\n- Pickups beyond the free allowance are charged $25 [S1].\n- Residents can request pickups by phone or through the 311 app [S1].\n- The added $1.1 million annual cost is covered by general tax revenue [S1].\n- Surveillance cameras were installed at dumping hot spots before the free service began [S1].\n- The expansion required six more drivers and three newly purchased trucks [S1].\n\n## Counter-evidence and limits\n- Renters were 25 percentage points less likely than homeowners to know the service was free [S2].\n- Property managers said departing tenants often exceed the five-item limit and dump the rest [S2].\n- The city has agreed to pilot a move-out pickup for apartment buildings [S2].\n- Fines for illegal dumping were doubled during the same period.\n\n## Next steps\n- Compare dumping reports near camera sites with areas without cameras to separate the two effects (judgment).\n- Ask the city to respond to the move-out pickup request for apartment buildings (judgment).\n\n## Sources\n- [S1] Harlow City Sanitation Department, \"Free Bulky-Item Pickup: First-Year Review\" (May 2026)\n- [S2] Eastside Neighborhood Council, \"Resident Survey on Bulky Waste Services\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Completed pickups roughly tripled, from 6,200 to 18,700 a year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "18,700/6,200 = 3.02."
+  },
+  {
+   "key": "Reports of illegal dumping fell by about a quarter after the fee was removed",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "(4,900-3,650)/4,900 = 25.5%."
+  },
+  {
+   "key": "The city credits the drop in dumping entirely to the free pickup service",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The department says the decline cannot be attributed to free pickup alone because cameras were also installed."
+  },
+  {
+   "key": "Households can book two free pickups per year, each with up to five items",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S1."
+  },
+  {
+   "key": "Pickups beyond the free allowance are charged $25",
+   "label": "mismatch",
+   "tag": "number",
+   "why": "Additional pickups cost $35."
+  },
+  {
+   "key": "Residents can request pickups by phone or through the 311 app",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "Matches S1."
+  },
+  {
+   "key": "The added $1.1 million annual cost is covered by general tax revenue",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Paid from the solid waste enterprise fund rather than general taxes."
+  },
+  {
+   "key": "Surveillance cameras were installed at dumping hot spots before the free service began",
+   "label": "mismatch",
+   "tag": "time",
+   "why": "Cameras went in September 2025, after the April 2025 launch."
+  },
+  {
+   "key": "The expansion required six more drivers and three newly purchased trucks",
+   "label": "mismatch",
+   "tag": "modifier",
+   "why": "The trucks were leased, not purchased."
+  },
+  {
+   "key": "Renters were 25 percentage points less likely than homeowners to know the service was free",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "83% - 58% = 25 points."
+  },
+  {
+   "key": "Property managers said departing tenants often exceed the five-item limit and dump the rest",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S2."
+  },
+  {
+   "key": "The city has agreed to pilot a move-out pickup for apartment buildings",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "The council asked; the city has not responded."
+  },
+  {
+   "key": "Fines for illegal dumping were doubled during the same period",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions fines."
+  }
+ ]
+}

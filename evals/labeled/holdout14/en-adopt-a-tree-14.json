@@ -1,0 +1,116 @@
+{
+ "id": "en-adopt-a-tree-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "Is Cedarbrook's Adopt-a-Tree watering program improving young street tree survival?",
+ "sources": {
+  "S1": "Cedarbrook planted 1,800 street trees in spring 2025, and residents adopted 640 of them through the Adopt-a-Tree program. Adopters agree to water their tree with 15 gallons once a week from May through September, and they log waterings in a city app. The city supplies a free 20-gallon slow-release watering bag to each adopter; adopters supply the water. By March 2026, 92% of adopted trees were alive compared with 81% of non-adopted trees planted the same spring. Forestry staff caution that adopted trees were disproportionately in neighborhoods with more shade and newer, irrigation-friendly tree pits, so the comparison is not controlled. Only 55% of adopters logged at least 15 waterings over the season. The city's contractor, not adopters, is responsible for pruning and mulching during the first three years.",
+  "S2": "The commission recommended a randomized pilot in 2027 in which half of new plantings on selected blocks would be offered for adoption and half would not. The recommendation has not yet been taken up by the city council. The commission estimated that each street tree that dies within two years costs the city about $420 to remove and replace. It also noted that 2025 had an unusually wet June, which may have raised survival for all trees."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Cedarbrook's Adopt-a-Tree watering program improving young street tree survival?\n\n## Answer\nAdopted trees survived at a rate 11 percentage points higher than non-adopted trees planted the same spring [S1]. Forestry staff concluded that adoption caused the higher survival rate [S1]. Residents adopted a little over a third of the 1,800 trees planted in spring 2025 [S1].\n\n## Evidence\n- Adopters commit to watering their tree with 15 gallons twice a week during the season [S1].\n- The watering season runs from May through September [S1].\n- The city delivers the water used to fill each adopter's watering bag [S1].\n- Each adopter gets a free 20-gallon slow-release watering bag from the city [S1].\n- Survival among adopted trees was 11% higher than among non-adopted trees [S1].\n- Roughly 940 of the non-adopted trees were still alive by March 2026 [S1].\n- Adopted trees were concentrated in neighborhoods with less shade and older tree pits [S1].\n- Adopters are also responsible for pruning and mulching during the first three years [S1].\n- Fewer than three in five adopters logged 15 or more waterings over the season [S1].\n- Neighboring Ellery Park saw survival rise to 95% after launching a similar program.\n\n## Counter-evidence and limits\n- A randomized adoption pilot is scheduled for 2027 following council approval [S2].\n- The commission estimates that replacing a tree that dies within two years costs about $420 [S2].\n- An unusually dry June in 2025 may have lowered survival for all trees [S2].\n\n## Next actions\n- Support the randomized 2027 pilot so adopted and non-adopted trees can be compared on similar blocks (judgment)\n\n## Sources\n- [S1] Cedarbrook Urban Forestry Division, \"Adopt-a-Tree 2025 Results\" (2026-03-05)\n- [S2] Cedarbrook Environmental Commission, \"Memo on Tree Program Expansion\" (2026-08-14)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Adopted trees survived at a rate 11 percentage points higher than non-adopted trees planted the same spring",
+   "label": "ok",
+   "tag": "percentage-point difference",
+   "why": "S1: 92% vs 81%."
+  },
+  {
+   "key": "Forestry staff concluded that adoption caused the higher survival rate",
+   "label": "mismatch",
+   "tag": "correlation stated as causation",
+   "why": "S1: staff caution the comparison is not controlled."
+  },
+  {
+   "key": "Residents adopted a little over a third of the 1,800 trees planted in spring 2025",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 640 / 1,800 = 35.6%."
+  },
+  {
+   "key": "Adopters commit to watering their tree with 15 gallons twice a week during the season",
+   "label": "mismatch",
+   "tag": "frequency changed",
+   "why": "S1: once a week."
+  },
+  {
+   "key": "The watering season runs from May through September",
+   "label": "ok",
+   "tag": "accurate",
+   "why": "S1: May through September."
+  },
+  {
+   "key": "The city delivers the water used to fill each adopter's watering bag",
+   "label": "mismatch",
+   "tag": "supplier swap",
+   "why": "S1: adopters supply the water; the city supplies the bag."
+  },
+  {
+   "key": "Each adopter gets a free 20-gallon slow-release watering bag from the city",
+   "label": "ok",
+   "tag": "accurate",
+   "why": "S1: city supplies a free 20-gallon slow-release bag."
+  },
+  {
+   "key": "Survival among adopted trees was 11% higher than among non-adopted trees",
+   "label": "mismatch",
+   "tag": "percent vs percentage point",
+   "why": "S1: 92 vs 81 is 11 points, a relative gain of about 13.6%."
+  },
+  {
+   "key": "Roughly 940 of the non-adopted trees were still alive by March 2026",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: (1,800 - 640) x 81% = about 940."
+  },
+  {
+   "key": "Adopted trees were concentrated in neighborhoods with less shade and older tree pits",
+   "label": "mismatch",
+   "tag": "reversed description",
+   "why": "S1: more shade and newer, irrigation-friendly pits."
+  },
+  {
+   "key": "Adopters are also responsible for pruning and mulching during the first three years",
+   "label": "mismatch",
+   "tag": "wrong actor",
+   "why": "S1: the city's contractor, not adopters, prunes and mulches."
+  },
+  {
+   "key": "Fewer than three in five adopters logged 15 or more waterings over the season",
+   "label": "ok",
+   "tag": "approximation",
+   "why": "S1: only 55% logged at least 15 waterings."
+  },
+  {
+   "key": "Neighboring Ellery Park saw survival rise to 95% after launching a similar program",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source mentions Ellery Park."
+  },
+  {
+   "key": "A randomized adoption pilot is scheduled for 2027 following council approval",
+   "label": "mismatch",
+   "tag": "recommendation stated as approved",
+   "why": "S2: recommended; not yet taken up by council."
+  },
+  {
+   "key": "The commission estimates that replacing a tree that dies within two years costs about $420",
+   "label": "ok",
+   "tag": "estimate kept",
+   "why": "S2: about $420 to remove and replace."
+  },
+  {
+   "key": "An unusually dry June in 2025 may have lowered survival for all trees",
+   "label": "mismatch",
+   "tag": "reversed condition",
+   "why": "S2: an unusually wet June may have raised survival."
+  }
+ ]
+}

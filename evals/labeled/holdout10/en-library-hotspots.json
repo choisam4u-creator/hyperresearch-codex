@@ -1,0 +1,98 @@
+{
+ "id": "en-library-hotspots",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Did the Brackenridge Public Library's hotspot lending program close the home internet gap for patrons?",
+ "sources": {
+  "S1": "In February 2025 the Brackenridge Public Library began lending 300 mobile Wi-Fi hotspots from its main branch and four neighborhood branches. Each hotspot can be borrowed for 21 days and renewed once if no one is waiting. The devices and the first year of unlimited data were paid for by a $186,000 grant from the state Broadband Office; the library's operating budget covers replacement devices.\n\nBetween February 2025 and January 2026 the hotspots were checked out 2,460 times by 1,520 distinct cardholders. The library reported that 41 devices were lost or not returned, and 12 were damaged. The average wait for a hotspot was 19 days at the main branch and 6 days at the neighborhood branches.\n\nA borrower survey with 388 responses found that 62 percent had no other home internet connection. Library staff caution that the survey was voluntary and likely over-represents frequent borrowers.",
+  "S2": "The city's Digital Equity Office estimates that about 9,400 households in Brackenridge lacked a home broadband subscription in 2024. The office notes that hotspot lending can reach only a fraction of these households at any one time, since only 300 devices circulate.\n\nThe office has proposed asking the city council for $95,000 in 2027 to add 150 hotspots and extend lending to the two senior centers, but the request has not yet been submitted. The office also says that data plans after the first year will cost an estimated $14 per device per month, which no agency has yet committed to fund."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did the Brackenridge Public Library's hotspot lending program close the home internet gap for patrons?\n\n## Answer\nThe library lent hotspots 2,460 times to 1,520 different cardholders in its first year, or about 1.6 loans per borrower [S1]. With only 300 devices against roughly 9,400 households without broadband, the program cannot cover most of the gap at once [S2]. The borrower survey proves that nearly two-thirds of all borrowers had no other home internet [S1].\n\n## Evidence\n- Hotspots have been lent from the main branch and four neighborhood branches since February 2025 [S1].\n- Each device can be kept for 21 days and renewed any number of times [S1].\n- A $186,000 state Broadband Office grant paid for the devices and the first year of data [S1].\n- Replacement devices are also funded by the state grant [S1].\n- About 53 devices, or roughly 18 percent of the fleet, were lost, unreturned or damaged [S1].\n- Borrowers waited less at the main branch than at the neighborhood branches [S1].\n- Most hotspot borrowers were students who used the devices for homework.\n\n## Counter-evidence and limits\n- Staff warn that the voluntary survey probably over-represents frequent borrowers [S1].\n- The Digital Equity Office has asked the city council for $95,000 to add 150 hotspots in 2027 [S2].\n- Data plans after the first year are expected to cost about $168 per device per year, and no agency has committed to pay for them [S2].\n\n## Next steps\n- Ask the Digital Equity Office whether the 2027 hotspot request will be submitted and how post-grant data will be funded (judgment).\n- Compare main-branch waiting lists with branch lists before reallocating devices (judgment).\n\n## Sources\n- [S1] Brackenridge Public Library, \"Hotspot Lending Program: Year One Report\" (March 2026)\n- [S2] City of Brackenridge Digital Equity Office, \"Home Broadband Gap Update\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The library lent hotspots 2,460 times to 1,520 different cardholders in its first year, or about 1.6 loans per borrower",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,460/1,520 = 1.62."
+  },
+  {
+   "key": "With only 300 devices against roughly 9,400 households without broadband, the program cannot cover most of the gap at once",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: lending reaches only a fraction of these households at any one time."
+  },
+  {
+   "key": "The borrower survey proves that nearly two-thirds of all borrowers had no other home internet",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "62% of 388 voluntary respondents; staff caution it likely over-represents frequent borrowers."
+  },
+  {
+   "key": "Hotspots have been lent from the main branch and four neighborhood branches since February 2025",
+   "label": "ok",
+   "tag": "order",
+   "why": "Clauses reordered, same facts."
+  },
+  {
+   "key": "Each device can be kept for 21 days and renewed any number of times",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "Renewable once, and only if no one is waiting."
+  },
+  {
+   "key": "A $186,000 state Broadband Office grant paid for the devices and the first year of data",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "Matches S1."
+  },
+  {
+   "key": "Replacement devices are also funded by the state grant",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "The library's operating budget covers replacement devices."
+  },
+  {
+   "key": "About 53 devices, or roughly 18 percent of the fleet, were lost, unreturned or damaged",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "41+12 = 53; 53/300 = 17.7%."
+  },
+  {
+   "key": "Borrowers waited less at the main branch than at the neighborhood branches",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "Main branch wait 19 days vs 6 days at branches; reversed."
+  },
+  {
+   "key": "Most hotspot borrowers were students who used the devices for homework",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source describes borrower purpose or student status."
+  },
+  {
+   "key": "Staff warn that the voluntary survey probably over-represents frequent borrowers",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches staff caution."
+  },
+  {
+   "key": "The Digital Equity Office has asked the city council for $95,000 to add 150 hotspots in 2027",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "The request is only proposed and has not been submitted."
+  },
+  {
+   "key": "Data plans after the first year are expected to cost about $168 per device per year, and no agency has committed to pay for them",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "$14/month x 12 = $168/year; no agency committed."
+  }
+ ]
+}

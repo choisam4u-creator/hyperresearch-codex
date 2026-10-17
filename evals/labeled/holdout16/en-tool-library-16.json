@@ -1,0 +1,134 @@
+{
+  "id": "en-tool-library-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "Did the Marrow Falls public tool library reduce household spending on rarely used tools?",
+  "sources": {
+    "S1": "The Marrow Falls Public Library opened its tool lending collection on February 3, 2026, with 1,150 items stocked at two branches. Any resident aged 18 or older with a library card in good standing may borrow up to three tools at a time for a seven-day loan. Power tools require a one-time 45-minute safety orientation, which is offered every Saturday. Between February and July, 2,780 loans were recorded across 940 unique borrowers. Drills were the most borrowed category with 610 loans, followed by ladders with 455 and pressure washers with 390. Late returns occurred on 9% of loans, and no late fees are charged. Start-up costs of $86,000 were covered 60% by a state library innovation grant and 40% by the Friends of the Library foundation. In a survey of 212 borrowers, respondents reported avoiding an average of $140 in tool purchases. The review cautions that these savings are self-reported and that some respondents may have borrowed tools they would never have bought. The library plans to add a third branch location in 2027 if the city council approves operating funds.",
+    "S2": "A Courier review of the library's loss records found that 31 items, about 2.7% of the collection, were lost or damaged beyond repair in the first six months. Replacement is paid from the library's general materials budget rather than charged to borrowers, except in cases of deliberate damage. Volunteers from a local trade school inspect returned power tools twice a week. The East branch handled roughly two-thirds of all loans because it has a ground-floor loading area. Hardware store owners interviewed by the Courier said they had not noticed any change in sales, though none provided data. Waitlists for pressure washers reached up to 19 days in May. The library director said she hopes to extend loans to 14 days for garden equipment next spring, but no decision has been made."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did the Marrow Falls public tool library reduce household spending on rarely used tools?\n\n## Answer\nSurveyed borrowers reported avoiding an average of $140 in tool purchases [S1]. However, the library cautions that these savings are self-reported and may overstate real spending reductions [S1].\n\n## Evidence\n- The collection opened in February 2026 with 1,150 items at two branches [S1].\n- Residents aged 16 and older with a library card may borrow tools [S1].\n- Borrowers may keep up to three tools for a one-week loan [S1].\n- Safety orientation is required for all tools, not just power tools [S1].\n- Each unique borrower took out about three loans on average [S1].\n- Ladders were the most borrowed category with 610 loans [S1].\n- Drills, ladders and pressure washers together accounted for 1,455 loans [S1].\n- Late returns occurred on 9% of loans and are charged a small daily fee [S1].\n- The Friends of the Library foundation covered $51,600 of the start-up costs [S1].\n- Borrowers saved an average of $140 each, confirming the program's financial benefit to households [S1].\n- The library will open a third branch location in 2027 [S1].\n\n## Counterevidence and limits\n- About 2.7% of the collection, or 31 items, was lost or damaged beyond repair in the first six months [S2].\n- Borrowers are charged for replacements of lost or damaged tools [S2].\n- Trade school volunteers inspect returned power tools twice a month [S2].\n- The East branch handled roughly two-thirds of loans, which the Courier linked to its ground-floor loading area [S2].\n- Loans for garden equipment have been extended to 14 days [S2].\n- Similar tool libraries in other states typically report savings of over $300 per household.\n\n## Next actions\n- Ask the library to track actual purchase behavior with a follow-up survey before claiming savings (judgment).\n\n## Sources\n- [S1] Marrow Falls Public Library, \"Tool Lending Collection: First-Half Review\" (2026-08-14)\n- [S2] Marrow Falls Courier, \"Tool library loses 31 items, East branch carries the load\" (2026-09-02)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Surveyed borrowers reported avoiding an average of $140 in tool purchases",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'In a survey of 212 borrowers, respondents reported avoiding an average of $140 in tool purchases.'"
+    },
+    {
+      "key": "However, the library cautions that these savings are self-reported and may overstate real spending reductions",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'these savings are self-reported and that some respondents may have borrowed tools they would never have bought.'"
+    },
+    {
+      "key": "The collection opened in February 2026 with 1,150 items at two branches",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'opened its tool lending collection on February 3, 2026, with 1,150 items stocked at two branches.'"
+    },
+    {
+      "key": "Residents aged 16 and older with a library card may borrow tools",
+      "label": "mismatch",
+      "tag": "eligibility_changed",
+      "why": "S1: 'Any resident aged 18 or older with a library card in good standing'"
+    },
+    {
+      "key": "Borrowers may keep up to three tools for a one-week loan",
+      "label": "ok",
+      "tag": "equivalent_units",
+      "why": "S1: 'up to three tools at a time for a seven-day loan.'"
+    },
+    {
+      "key": "Safety orientation is required for all tools, not just power tools",
+      "label": "mismatch",
+      "tag": "scope_expanded",
+      "why": "S1: 'Power tools require a one-time 45-minute safety orientation'"
+    },
+    {
+      "key": "Each unique borrower took out about three loans on average",
+      "label": "ok",
+      "tag": "derived_average",
+      "why": "S1: '2,780 loans were recorded across 940 unique borrowers' -> 2.96"
+    },
+    {
+      "key": "Ladders were the most borrowed category with 610 loans",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Drills were the most borrowed category with 610 loans, followed by ladders with 455'"
+    },
+    {
+      "key": "Drills, ladders and pressure washers together accounted for 1,455 loans",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S1: 610 + 455 + 390 = 1,455"
+    },
+    {
+      "key": "Late returns occurred on 9% of loans and are charged a small daily fee",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: 'Late returns occurred on 9% of loans, and no late fees are charged.'"
+    },
+    {
+      "key": "The Friends of the Library foundation covered $51,600 of the start-up costs",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: '$86,000 were covered 60% by a state library innovation grant and 40% by the Friends of the Library foundation' -> foundation $34,400; $51,600 is the grant share"
+    },
+    {
+      "key": "confirming the program's financial benefit to households",
+      "label": "mismatch",
+      "tag": "sample_generalized_and_overclaim",
+      "why": "S1: survey of 212 borrowers; 'these savings are self-reported'"
+    },
+    {
+      "key": "The library will open a third branch location in 2027",
+      "label": "mismatch",
+      "tag": "condition_dropped",
+      "why": "S1: 'plans to add a third branch location in 2027 if the city council approves operating funds.'"
+    },
+    {
+      "key": "About 2.7% of the collection, or 31 items, was lost or damaged beyond repair in the first six months",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: '31 items, about 2.7% of the collection, were lost or damaged beyond repair in the first six months.'"
+    },
+    {
+      "key": "Borrowers are charged for replacements of lost or damaged tools",
+      "label": "mismatch",
+      "tag": "actor_changed",
+      "why": "S2: 'Replacement is paid from the library's general materials budget rather than charged to borrowers, except in cases of deliberate damage.'"
+    },
+    {
+      "key": "Trade school volunteers inspect returned power tools twice a month",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S2: 'inspect returned power tools twice a week.'"
+    },
+    {
+      "key": "The East branch handled roughly two-thirds of loans, which the Courier linked to its ground-floor loading area",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'The East branch handled roughly two-thirds of all loans because it has a ground-floor loading area.'"
+    },
+    {
+      "key": "Loans for garden equipment have been extended to 14 days",
+      "label": "mismatch",
+      "tag": "plan_as_completed",
+      "why": "S2: 'she hopes to extend loans to 14 days for garden equipment next spring, but no decision has been made.'"
+    },
+    {
+      "key": "Similar tool libraries in other states typically report savings of over $300 per household",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "No source mentions other states' tool libraries."
+    }
+  ]
+}

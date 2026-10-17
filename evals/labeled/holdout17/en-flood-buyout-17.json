@@ -1,0 +1,134 @@
+{
+  "id": "en-flood-buyout-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "How far has Tessaly Township's voluntary floodplain buyout program progressed, and what are its weaknesses?",
+  "sources": {
+    "S1": "Since 2023, the Tessaly Township Floodplain Management Office has offered voluntary buyouts to owners of 212 homes in the Brindle Creek 100-year floodplain. As of 2026-05-31, 97 owners had accepted offers, 38 had declined, and the rest had not responded or were still negotiating. Offers are based on pre-flood fair market value as determined by an independent appraiser, plus up to $25,000 in relocation assistance for owner-occupants. The median accepted offer was $186,000. Acquisition costs are shared 75% by the federal hazard mitigation grant, 15% by the state, and 10% by the township. Acquired lots must remain permanently as open space and cannot be resold for development. Demolition has been completed on 81 of the 97 acquired properties. Homes that flooded two or more times since 2015 were prioritized in the first offer round. Renters in acquired homes are eligible for up to 3 months of rent assistance, paid by the township. The office estimates the program will avoid $14 million in flood damages over 30 years, using a model that assumes current rainfall patterns. The average time from acceptance to closing was 11 months. A second phase covering 60 additional homes on Fenmoor Road is under consideration but has no funding.",
+    "S2": "Residents of Brindle Creek describe a patchwork neighborhood where vacant lots sit beside occupied homes. Several holdouts told the Tribune that offers did not cover the cost of comparable homes elsewhere in the township, where prices rose about 18% from 2023 to 2026. The township's floodplain manager acknowledged that closings took longer than the 6 months originally projected. One family that accepted in 2024 said they waited 16 months to close. The Tribune could not independently verify the damage-avoidance estimate. A township trustee said she would seek state money for the Fenmoor Road phase in the 2027 session."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How far has Tessaly Township's voluntary floodplain buyout program progressed, and what are its weaknesses?\n\n## Answer\nFewer than half of the 212 eligible Brindle Creek owners had accepted buyouts by May 31, 2026 [S1]. The program has prevented $14 million in flood damages [S1].\n\n## Evidence\n- Seventy-seven owners had neither accepted nor declined, either not responding or still negotiating [S1].\n- Among owners who had reached a decision, roughly 72% said yes [S1].\n- Every owner-occupant receives $25,000 in relocation assistance on top of the appraised value [S1].\n- The average accepted offer was $186,000 [S1].\n- The township pays one-tenth of acquisition costs, with federal and state sources covering the other 90% [S1].\n- The state covers 75% of acquisition costs and the federal grant 15% [S1].\n- Bought-out lots are permanently restricted to open space and may not be resold for development [S1].\n- Demolition has been finished on all 97 acquired properties [S1].\n- Homes that flooded at least once since 2015 got priority in the first round [S1].\n- Renters displaced by an acquisition can receive up to three months of township-funded rent help [S1].\n- Closings averaged 16 months from acceptance [S1].\n- The average closing took nearly twice the 6-month timeline the township first projected [S1][S2].\n\n## Counterevidence and limits\n- Holdouts said offers would not buy comparable homes in a township where prices climbed about 18% between 2023 and 2026 [S2].\n- The damage-avoidance model assumes rainfall will intensify over the next 30 years [S1].\n- The Tribune was unable to independently confirm the damage-avoidance figure [S2].\n- The Fenmoor Road phase has secured state funding for 60 more homes [S2].\n- About a third of acquired lots have already been converted into a public park.\n\n## Next actions\n- Ask the floodplain office to rerun the damage-avoidance model under a higher-rainfall scenario before seeking Fenmoor Road funding (judgment).\n\n## Sources\n- [S1] Tessaly Township Floodplain Management Office, \"Voluntary Floodplain Acquisition Program Status Report\" (2026-06-15)\n- [S2] Tessaly Tribune, \"Buyouts empty a flood-prone neighborhood, slowly\" (2026-07-02)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Fewer than half of the 212 eligible Brindle Creek owners had accepted buyouts by May 31, 2026",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: '97 owners had accepted offers' of 212; 97/212 = 46%."
+    },
+    {
+      "key": "The program has prevented $14 million in flood damages",
+      "label": "mismatch",
+      "tag": "estimate_as_fact",
+      "why": "S1: 'The office estimates the program will avoid $14 million in flood damages over 30 years'; a projection stated as achieved."
+    },
+    {
+      "key": "Seventy-seven owners had neither accepted nor declined, either not responding or still negotiating",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 212-97-38 = 77 'had not responded or were still negotiating.'"
+    },
+    {
+      "key": "Among owners who had reached a decision, roughly 72% said yes",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 97 accepted, 38 declined; 97/135 = 71.9%."
+    },
+    {
+      "key": "Every owner-occupant receives $25,000 in relocation assistance on top of the appraised value",
+      "label": "mismatch",
+      "tag": "cap_as_typical",
+      "why": "S1: 'plus up to $25,000 in relocation assistance for owner-occupants.'"
+    },
+    {
+      "key": "The average accepted offer was $186,000",
+      "label": "mismatch",
+      "tag": "statistic_changed",
+      "why": "S1: 'The median accepted offer was $186,000'; median reported as mean."
+    },
+    {
+      "key": "The township pays one-tenth of acquisition costs, with federal and state sources covering the other 90%",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S1: '75% by the federal hazard mitigation grant, 15% by the state, and 10% by the township.'"
+    },
+    {
+      "key": "The state covers 75% of acquisition costs and the federal grant 15%",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: '75% by the federal hazard mitigation grant, 15% by the state.'"
+    },
+    {
+      "key": "Bought-out lots are permanently restricted to open space and may not be resold for development",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Acquired lots must remain permanently as open space and cannot be resold for development.'"
+    },
+    {
+      "key": "Demolition has been finished on all 97 acquired properties",
+      "label": "mismatch",
+      "tag": "changed_number",
+      "why": "S1: 'Demolition has been completed on 81 of the 97 acquired properties.'"
+    },
+    {
+      "key": "Homes that flooded at least once since 2015 got priority in the first round",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: 'Homes that flooded two or more times since 2015 were prioritized.'"
+    },
+    {
+      "key": "Renters displaced by an acquisition can receive up to three months of township-funded rent help",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'up to 3 months of rent assistance, paid by the township.'"
+    },
+    {
+      "key": "Closings averaged 16 months from acceptance",
+      "label": "mismatch",
+      "tag": "wrong_source",
+      "why": "S1: 'The average time from acceptance to closing was 11 months'; 16 months is one family's anecdote in S2."
+    },
+    {
+      "key": "The average closing took nearly twice the 6-month timeline the township first projected",
+      "label": "ok",
+      "tag": "derived_ratio",
+      "why": "S1: average 11 months; S2: 'the 6 months originally projected'; 11/6 = 1.8."
+    },
+    {
+      "key": "Holdouts said offers would not buy comparable homes in a township where prices climbed about 18% between 2023 and 2026",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'offers did not cover the cost of comparable homes ... prices rose about 18% from 2023 to 2026.'"
+    },
+    {
+      "key": "The damage-avoidance model assumes rainfall will intensify over the next 30 years",
+      "label": "mismatch",
+      "tag": "direction_reversed",
+      "why": "S1: 'using a model that assumes current rainfall patterns.'"
+    },
+    {
+      "key": "The Tribune was unable to independently confirm the damage-avoidance figure",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'The Tribune could not independently verify the damage-avoidance estimate.'"
+    },
+    {
+      "key": "The Fenmoor Road phase has secured state funding for 60 more homes",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: the phase 'has no funding'; S2: a trustee 'would seek state money ... in the 2027 session.'"
+    },
+    {
+      "key": "About a third of acquired lots have already been converted into a public park",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "Sources say lots must stay open space; no park conversion figures are given."
+    }
+  ]
+}

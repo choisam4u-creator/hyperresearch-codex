@@ -28,7 +28,22 @@ HPR_BACKEND=mock python -m evals.labeled --set holdout   # 5회차 holdout(코�
 HPR_BACKEND=mock python -m evals.labeled --set holdout2  # 6회차 holdout2(5회차 코드 뒤, 코드 수정 전 만든 새 12 case·136문장)
 HPR_BACKEND=mock python -m evals.labeled --set holdout3  # 7회차 holdout3(6회차 코드 뒤, 코드 수정 전 만든 새 12 case·128문장)
 HPR_BACKEND=mock python -m evals.labeled --set holdout4  # 8회차 holdout4(검사 코드·이전 라벨을 읽지 않은 별도 에이전트가 작성, 12 case·135문장)
-HPR_BACKEND=mock python -m evals.labeled --set holdout5  # 9회차 holdout5(같은 방식의 별도 에이전트 작성, 12 case·132문장); --set all 은 여섯 다
+HPR_BACKEND=mock python -m evals.labeled --set holdout5  # 9회차 holdout5(같은 방식의 별도 에이전트 작성, 12 case·132문장)
+HPR_BACKEND=mock python -m evals.labeled --set holdout6  # 10회차 holdout6(같은 방식의 별도 에이전트 작성, 12 case·135문장)
+HPR_BACKEND=mock python -m evals.labeled --set holdout7  # 11회차 holdout7(같은 방식의 별도 에이전트 작성, 12 case·134문장)
+HPR_BACKEND=mock python -m evals.labeled --set holdout8  # 12회차 holdout8(같은 방식, 12 case·135문장). 설계용 --set holdout8a, 눈가림 --set holdout8b(case 6개씩); --set all 은 아홉 다
+HPR_BACKEND=mock python -m evals.labeled --set holdout9  # 13회차 holdout9(같은 방식, 12 case·147문장, 코드 수정 전 커밋). 
+HPR_BACKEND=mock python -m evals.labeled --set holdout10 # 14회차 holdout10(같은 방식, 12 case·156문장, 13회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout11 # 15회차 holdout11(같은 방식, 12 case·168문장, 14회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout12 # 16회차 holdout12(같은 방식, 12 case·169문장, 15회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout13 # 17회차 holdout13(같은 방식, 12 case·168문장, 16회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout14 # 18회차 holdout14(같은 방식, 12 case·192문장, 17회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout15 # 19회차 holdout15(같은 방식, 12 case·207문장, 18회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout16 # 20회차 holdout16(같은 방식, 12 case·226문장, 19회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout17 # 21회차 holdout17(같은 방식, 12 case·229문장, 20회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout18 # 22회차 holdout18(같은 방식, 12 case·239문장, 21회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout19 # 23회차 holdout19(같은 방식, 12 case·254문장, 22회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋. 영어 한계 절 제목은 작성 지시문이 정함)
+HPR_BACKEND=mock python -m evals.labeled --set holdout20 # 24회차 holdout20(같은 방식, 12 case·292문장, 23회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋. 한계 절 제목도 에이전트가 고름). --set all 은 스물한 묶음 다
 ```
 
 - 위 점수기는 코드와 같은 발상이라 100에 닿은 뒤 개선을 구분하지 못한다. `labeled/*.json`은 질문·출처·작성 응답에 더해 문장마다 정답 `labels`(`key`: 보고서에서 그 문장을 찾을 고유 문자열, `label`: `ok`·`mismatch`·`unverified`, `tag`: 결함·바꿔 말하기 유형, `why`: 근거)를 둔다.

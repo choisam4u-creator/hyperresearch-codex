@@ -1,0 +1,116 @@
+{
+ "id": "en-cooling-centers-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "Did Pellston Bay's extended cooling-center hours reach more residents during the 2026 heat season?",
+ "sources": {
+  "S1": "In 2026 Pellston Bay kept its four library cooling centers open until 10 pm on heat-advisory days, up from the 6 pm closing used in 2025. Heat advisories were issued on 19 days in 2026, compared with 12 in 2025. Total recorded visits rose to 7,600 from 4,100 in 2025. Visits after 6 pm accounted for 2,280 of the 2026 total. Extra evening staffing cost $58,000 and was paid from a county public-health grant; the city covered building costs. Free transit rides to centers were offered on advisory days, and 640 riders used them. Visit counts come from door counters and may include repeat visits by the same person. The office did not collect data on heat-related illness among visitors.",
+  "S2": "Emergency department visits for heat-related illness in the city fell to 212 in summer 2026 from 238 in 2025. The department said 2026 had fewer days above 100 degrees Fahrenheit than 2025 despite more advisory days. It cautioned that the drop cannot be attributed to cooling centers. The department plans to add questions on cooling-center use to its 2027 resident health survey."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Pellston Bay's extended cooling-center hours reach more residents during the 2026 heat season?\n\n## Answer\nRecorded cooling-center visits rose by 3,500, or about 85%, from 2025 to 2026 [S1]. Visits per advisory day roughly doubled from 2025 to 2026 [S1]. Evening visits after 6 pm made up about 30% of the 2026 total [S1].\n\n## Evidence\n- The centers stayed open until 10 pm every day of the summer [S1].\n- Closing time on advisory days moved four hours later than in 2025 [S1].\n- The city paid for the extra evening staffing, while the county grant covered building costs [S1].\n- The extra evening staffing cost $58,000 [S1].\n- About 7,600 different residents used the cooling centers in 2026 [S1].\n- Heat advisories increased from 12 days in 2025 to 19 days in 2026 [S1].\n- Free transit rides to the centers were available every day of the heat season [S1].\n- Most evening visitors were adults over 65.\n\n## Counter-evidence and limits\n- The health department credited the cooling centers with the drop in heat-related emergency visits [S2].\n- Heat-related emergency department visits fell by 26 from 2025 to 2026 [S2].\n- 2026 had more days above 100 degrees Fahrenheit than 2025 [S2].\n- The emergency office did not track heat-related illness among cooling-center visitors [S1].\n- The health department has already added cooling-center questions to its 2026 resident survey [S2].\n\n## Next actions\n- Ask the emergency office whether door-counter data can be split into unique visitors before next summer (judgment)\n\n## Sources\n- [S1] Pellston Bay Office of Emergency Management, \"2026 Heat Season After-Action Summary\" (2026-09-15)\n- [S2] Pellston Bay Health Department, \"Heat Illness Surveillance Brief\" (2026-09-29)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Recorded cooling-center visits rose by 3,500, or about 85%, from 2025 to 2026",
+   "label": "ok",
+   "tag": "difference and percentage",
+   "why": "S1: 4,100 to 7,600; 3,500/4,100 = 85%."
+  },
+  {
+   "key": "Visits per advisory day roughly doubled from 2025 to 2026",
+   "label": "mismatch",
+   "tag": "wrong arithmetic (normalization)",
+   "why": "S1: 4,100/12 = 342 vs 7,600/19 = 400, about +17%."
+  },
+  {
+   "key": "Evening visits after 6 pm made up about 30% of the 2026 total",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 2,280 / 7,600 = 30%."
+  },
+  {
+   "key": "The centers stayed open until 10 pm every day of the summer",
+   "label": "mismatch",
+   "tag": "schedule condition changed",
+   "why": "S1: until 10 pm only on heat-advisory days."
+  },
+  {
+   "key": "Closing time on advisory days moved four hours later than in 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 6 pm to 10 pm."
+  },
+  {
+   "key": "The city paid for the extra evening staffing, while the county grant covered building costs",
+   "label": "mismatch",
+   "tag": "payer swap",
+   "why": "S1: county grant paid staffing; city covered building costs."
+  },
+  {
+   "key": "The extra evening staffing cost $58,000",
+   "label": "ok",
+   "tag": "accurate",
+   "why": "S1: $58,000."
+  },
+  {
+   "key": "About 7,600 different residents used the cooling centers in 2026",
+   "label": "mismatch",
+   "tag": "visits stated as unique people",
+   "why": "S1: door-counter visits may include repeat visits."
+  },
+  {
+   "key": "Heat advisories increased from 12 days in 2025 to 19 days in 2026",
+   "label": "ok",
+   "tag": "accurate",
+   "why": "S1: 19 days vs 12."
+  },
+  {
+   "key": "Free transit rides to the centers were available every day of the heat season",
+   "label": "mismatch",
+   "tag": "condition changed",
+   "why": "S1: offered on advisory days only."
+  },
+  {
+   "key": "Most evening visitors were adults over 65",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source reports visitor ages."
+  },
+  {
+   "key": "The health department credited the cooling centers with the drop in heat-related emergency visits",
+   "label": "mismatch",
+   "tag": "caveat inverted",
+   "why": "S2: cautioned the drop cannot be attributed to cooling centers."
+  },
+  {
+   "key": "Heat-related emergency department visits fell by 26 from 2025 to 2026",
+   "label": "ok",
+   "tag": "difference",
+   "why": "S2: 238 to 212."
+  },
+  {
+   "key": "2026 had more days above 100 degrees Fahrenheit than 2025",
+   "label": "mismatch",
+   "tag": "reversed comparison",
+   "why": "S2: 2026 had fewer such days."
+  },
+  {
+   "key": "The emergency office did not track heat-related illness among cooling-center visitors",
+   "label": "ok",
+   "tag": "caveat kept",
+   "why": "S1: no data collected on heat illness among visitors."
+  },
+  {
+   "key": "The health department has already added cooling-center questions to its 2026 resident survey",
+   "label": "mismatch",
+   "tag": "plan stated as done, wrong year",
+   "why": "S2: plans to add them to the 2027 survey."
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "id": "en-tool-library",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "Is Hollins Creek's tool-lending library a cost-effective service?",
+ "sources": {
+  "S1": "Hollins Creek Public Library launched a tool-lending pilot at two branches in April 2025, offering 340 tools such as drills, ladders and pressure washers. By March 2026 the collection had recorded 5,120 loans to 1,480 distinct borrowers.\n\nBorrowing required a library card and was limited to residents aged 18 and older. The late-return rate was 6 percent, lower than the 11 percent rate for the library's media collection.",
+  "S2": "The pilot's first-year cost was $52,000, including $31,000 for tools and $21,000 for part-time staffing. A borrower survey with 402 responses found that 58 percent said borrowing had let them avoid buying a tool.\n\nThe library intends to request funding for a third branch in the 2027 budget; no decision has been made."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Hollins Creek's tool-lending library a cost-effective service?\n\n## Answer\nOver its first year, the tool library made more than 5,000 loans to nearly 1,500 borrowers [S1]. Most surveyed borrowers said the program saved them from buying a tool [S2].\n\n## Evidence\n- Each borrower took out about 3.5 tools on average [S1].\n- The cost per loan came to roughly $10 [S1][S2].\n- Tools were late about twice as often as media items [S1].\n- Teenagers aged 16 and older could borrow tools with a library card [S1].\n- Staffing made up the larger part of the first-year cost [S2].\n- The pilot ran at all of the library's branches [S1].\n\n## Counter-evidence and limits\n- The 58 percent figure comes from 402 survey respondents, not from all 1,480 borrowers [S1][S2].\n- The library has secured funding for a third branch in 2027 [S2].\n- Power tools accounted for about half of all loans.\n\n## Next actions\n- Compare the per-loan cost with other branch services before requesting the third-branch expansion (judgment)\n\n## Sources\n- [S1] Hollins Creek Public Library Annual Report 2025-26\n- [S2] Hollins Creek city budget note on the tool library\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Over its first year, the tool library made more than 5,000 loans to nearly 1,500 borrowers",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "5,120 loans; 1,480 borrowers"
+  },
+  {
+   "key": "Most surveyed borrowers said the program saved them from buying a tool",
+   "label": "ok",
+   "tag": "share",
+   "why": "58 percent is a majority"
+  },
+  {
+   "key": "Each borrower took out about 3.5 tools on average",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "5,120 / 1,480 = 3.46"
+  },
+  {
+   "key": "The cost per loan came to roughly $10",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "52,000 / 5,120 = 10.16"
+  },
+  {
+   "key": "Tools were late about twice as often as media items",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "tool late rate 6 percent was lower than media's 11 percent"
+  },
+  {
+   "key": "Teenagers aged 16 and older could borrow tools with a library card",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "limited to residents aged 18 and older"
+  },
+  {
+   "key": "Staffing made up the larger part of the first-year cost",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "tools $31,000 exceeded staffing $21,000"
+  },
+  {
+   "key": "The pilot ran at all of the library's branches",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "only two branches"
+  },
+  {
+   "key": "The 58 percent figure comes from 402 survey respondents, not from all 1,480 borrowers",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "survey had 402 responses; 1,480 distinct borrowers"
+  },
+  {
+   "key": "The library has secured funding for a third branch in 2027",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "only intends to request funding; no decision made"
+  },
+  {
+   "key": "Power tools accounted for about half of all loans",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no loan breakdown by tool type in sources"
+  }
+ ]
+}

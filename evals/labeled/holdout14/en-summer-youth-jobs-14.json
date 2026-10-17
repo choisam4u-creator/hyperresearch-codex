@@ -1,0 +1,116 @@
+{
+ "id": "en-summer-youth-jobs-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "What did Riverton Ridge's 2026 summer youth jobs program deliver, and how strong is the evidence of its effects?",
+ "sources": {
+  "S1": "Riverton Ridge placed 520 youth aged 14 to 21 in six-week summer jobs from June 29 to August 7, 2026. Participants worked up to 25 hours a week at $15.50 an hour. Wages for jobs at nonprofits and city departments were paid by the city, while private employers paid 50% of wages for their placements and the city paid the other 50%. Of the 520 placements, 390 were with nonprofits or city departments and 130 were with private employers. Applicants were selected by lottery from 1,460 eligible applications. Youth from households receiving SNAP were given two lottery entries instead of one. In total, 468 participants completed the full six weeks. The office plans to survey participants and review their school attendance records in spring 2027.",
+  "S2": "The commission noted that 41% of private-employer supervisors in a post-program survey of 85 supervisors said they would hire a participant for the school year. It recommended that the city raise the hourly wage to $17 in 2027, which would add about $190,000 to costs; the council has not acted on it. Commissioners noted that because selection was by lottery, the city could later compare participants with non-selected applicants to measure effects, but that no such comparison has been done yet."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Riverton Ridge's 2026 summer youth jobs program deliver, and how strong is the evidence of its effects?\n\n## Answer\nRiverton Ridge placed 520 young people in six-week summer jobs in 2026, and 90% of them finished the full term [S1]. A lottery-based comparison shows that participants fared better than non-selected applicants [S2]. About 36% of eligible applicants were selected [S1].\n\n## Evidence\n- Each participant worked 25 hours a week at $15.50 an hour [S1].\n- A participant working the maximum schedule could earn about $2,300 over the summer [S1].\n- Private employers paid the full wages for their placements [S1].\n- Three-quarters of placements were with nonprofits or city departments [S1].\n- Only youth from SNAP households were eligible to apply [S1].\n- The program was open to youth aged 16 to 21 [S1].\n- Youth from SNAP-receiving households got a second lottery entry [S1].\n- Participants were chosen first through employer interviews, with a lottery used only for leftover slots [S1].\n- Youth unemployment in Riverton Ridge fell by two points this summer.\n\n## Counter-evidence and limits\n- 41% of all private employers said they would hire a participant for the school year [S2].\n- Raising the wage to $17 an hour would add about $190,000, and the council has not acted on the proposal [S2].\n- The workforce office has already surveyed participants about their school attendance [S1].\n- The lottery design would allow a later comparison with applicants who were not selected [S2].\n\n## Next actions\n- Recommend the office run the lottery comparison alongside the spring 2027 attendance review (judgment)\n\n## Sources\n- [S1] Riverton Ridge Workforce Office, \"Summer Youth Jobs 2026 Report\" (2026-09-10)\n- [S2] Riverton Ridge Youth Commission, \"Commission Review of Summer Jobs\" (2026-09-30)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Riverton Ridge placed 520 young people in six-week summer jobs in 2026, and 90% of them finished the full term",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 468 / 520 = 90%."
+  },
+  {
+   "key": "A lottery-based comparison shows that participants fared better than non-selected applicants",
+   "label": "mismatch",
+   "tag": "possibility stated as done",
+   "why": "S2: such a comparison could be done later but has not been done."
+  },
+  {
+   "key": "About 36% of eligible applicants were selected",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 520 / 1,460 = 35.6%."
+  },
+  {
+   "key": "Each participant worked 25 hours a week at $15.50 an hour",
+   "label": "mismatch",
+   "tag": "dropped 'up to'",
+   "why": "S1: up to 25 hours a week."
+  },
+  {
+   "key": "A participant working the maximum schedule could earn about $2,300 over the summer",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 6 weeks x 25 h x $15.50 = $2,325."
+  },
+  {
+   "key": "Private employers paid the full wages for their placements",
+   "label": "mismatch",
+   "tag": "funding share changed",
+   "why": "S1: private employers paid 50%, city the other 50%."
+  },
+  {
+   "key": "Three-quarters of placements were with nonprofits or city departments",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 390 / 520 = 75%."
+  },
+  {
+   "key": "Only youth from SNAP households were eligible to apply",
+   "label": "mismatch",
+   "tag": "weighting stated as eligibility",
+   "why": "S1: SNAP youth got two lottery entries; others still eligible."
+  },
+  {
+   "key": "The program was open to youth aged 16 to 21",
+   "label": "mismatch",
+   "tag": "eligibility range changed",
+   "why": "S1: aged 14 to 21."
+  },
+  {
+   "key": "Youth from SNAP-receiving households got a second lottery entry",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: two entries instead of one."
+  },
+  {
+   "key": "Participants were chosen first through employer interviews, with a lottery used only for leftover slots",
+   "label": "mismatch",
+   "tag": "method changed",
+   "why": "S1: applicants were selected by lottery."
+  },
+  {
+   "key": "Youth unemployment in Riverton Ridge fell by two points this summer",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source reports youth unemployment."
+  },
+  {
+   "key": "41% of all private employers said they would hire a participant for the school year",
+   "label": "mismatch",
+   "tag": "sample generalized",
+   "why": "S2: 41% of 85 supervisors surveyed."
+  },
+  {
+   "key": "Raising the wage to $17 an hour would add about $190,000, and the council has not acted on the proposal",
+   "label": "ok",
+   "tag": "estimate and status kept",
+   "why": "S2: about $190,000; council has not acted."
+  },
+  {
+   "key": "The workforce office has already surveyed participants about their school attendance",
+   "label": "mismatch",
+   "tag": "plan stated as done",
+   "why": "S1: plans to survey in spring 2027."
+  },
+  {
+   "key": "The lottery design would allow a later comparison with applicants who were not selected",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: city could later compare participants with non-selected applicants."
+  }
+ ]
+}

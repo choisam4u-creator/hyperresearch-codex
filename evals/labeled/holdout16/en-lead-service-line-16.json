@@ -1,0 +1,134 @@
+{
+  "id": "en-lead-service-line-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "How quickly is Ferrous Bend replacing lead water service lines, and who pays?",
+  "sources": {
+    "S1": "Ferrous Bend Water Utility inventoried 9,800 service lines in 2025 and classified 2,140 as lead and 1,310 as unknown material. The utility replaced 640 lead lines between January and August 2026, after replacing 410 in all of 2025. Replacement of both the public and private portions of each line is free to property owners through 2028. Funding comes from a federal revolving loan fund at 55%, a state infrastructure grant at 30%, and utility ratepayers at 15%. The average cost per full replacement was $8,900, down from $10,400 in 2025. Crews prioritize blocks with licensed child care centers first, then schools, then blocks with the highest share of homes built before 1950. Property owners must sign a right-of-entry form before work can begin on the private side; 7% of contacted owners have not responded. At the 2026 pace, the utility projects completing all known lead lines by mid-2029, which would miss the state's 2028 deadline. The report states that faster progress likely depends on hiring a third contractor crew, which has not been funded. Residents receive a free water filter pitcher and six months of replacement cartridges after their line is replaced.",
+    "S2": "The Tribune found that 38% of replacements so far have been in the city's two wealthiest wards, even though those wards contain only 22% of known lead lines. Utility officials said wealthier owners returned right-of-entry forms faster. Lead sampling at 120 homes after replacement found levels below 5 parts per billion in 112 homes. Tenants cannot sign right-of-entry forms; only property owners can. The utility began mailing forms in Spanish and Polish in April 2026. A city council member has proposed requiring landlords to sign forms within 60 days, but the ordinance has not been introduced."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How quickly is Ferrous Bend replacing lead water service lines, and who pays?\n\n## Answer\nThe utility replaced 640 lead lines in the first eight months of 2026, more than in all of 2025 [S1]. Replacement is free to property owners through 2028, with federal loans covering the largest share of funding [S1].\n\n## Evidence\n- The 2025 inventory classified 2,140 of 9,800 lines as lead, roughly 22% [S1].\n- Lead and unknown-material lines together total 3,450 [S1].\n- The 2026 replacement pace has nearly tripled compared with 2025 [S1].\n- Only the public portion of each line is replaced free of charge [S1].\n- Utility ratepayers fund 30% of the program [S1].\n- The average cost per full replacement fell by $1,500, about 14%, from 2025 [S1].\n- Crews prioritize schools first, then child care centers [S1].\n- Work on the private side requires the owner's signed right-of-entry form [S1].\n- The utility will complete all known lead lines by the state's 2028 deadline [S1].\n- A third contractor crew has been funded to speed up progress [S1].\n- After replacement, residents get a free filter pitcher and a year of replacement cartridges [S1].\n\n## Counterevidence and limits\n- 38% of replacements have been in the two wealthiest wards, which hold 22% of known lead lines [S2].\n- Utility officials said wealthier owners returned right-of-entry forms faster [S2].\n- Post-replacement sampling found lead below 5 parts per billion in all 120 homes tested [S2].\n- Tenants may sign right-of-entry forms on behalf of absent landlords [S2].\n- A proposed rule would require landlords to sign forms within 60 days, but it has not been introduced [S2].\n- Lead exposure in children is linked to lasting cognitive harm even at low levels.\n\n## Next actions\n- Ask the utility to publish ward-level replacement targets and a funding plan for a third crew (judgment).\n\n## Sources\n- [S1] Ferrous Bend Water Utility, \"Lead Service Line Replacement Progress Report\" (2026-09-03)\n- [S2] Ferrous Bend Tribune, \"Lead pipe swaps favor wealthier wards\" (2026-09-24)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The utility replaced 640 lead lines in the first eight months of 2026, more than in all of 2025",
+      "label": "ok",
+      "tag": "derived_comparison",
+      "why": "S1: 'replaced 640 lead lines between January and August 2026, after replacing 410 in all of 2025.'"
+    },
+    {
+      "key": "Replacement is free to property owners through 2028, with federal loans covering the largest share of funding",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'free to property owners through 2028', 'federal revolving loan fund at 55%'"
+    },
+    {
+      "key": "The 2025 inventory classified 2,140 of 9,800 lines as lead, roughly 22%",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 'inventoried 9,800 service lines ... classified 2,140 as lead' -> 21.8%"
+    },
+    {
+      "key": "Lead and unknown-material lines together total 3,450",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S1: 2,140 lead + 1,310 unknown = 3,450"
+    },
+    {
+      "key": "The 2026 replacement pace has nearly tripled compared with 2025",
+      "label": "mismatch",
+      "tag": "magnitude_inflated",
+      "why": "S1: 640 in eight months (80/month) vs 410 in twelve months (~34/month) -> about 2.3x"
+    },
+    {
+      "key": "Only the public portion of each line is replaced free of charge",
+      "label": "mismatch",
+      "tag": "scope_narrowed",
+      "why": "S1: 'Replacement of both the public and private portions of each line is free to property owners'"
+    },
+    {
+      "key": "Utility ratepayers fund 30% of the program",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: 'a state infrastructure grant at 30%, and utility ratepayers at 15%.'"
+    },
+    {
+      "key": "The average cost per full replacement fell by $1,500, about 14%, from 2025",
+      "label": "ok",
+      "tag": "derived_percent_change",
+      "why": "S1: '$8,900, down from $10,400 in 2025' -> $1,500, 14.4%"
+    },
+    {
+      "key": "Crews prioritize schools first, then child care centers",
+      "label": "mismatch",
+      "tag": "order_swapped",
+      "why": "S1: 'Crews prioritize blocks with licensed child care centers first, then schools'"
+    },
+    {
+      "key": "Work on the private side requires the owner's signed right-of-entry form",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'Property owners must sign a right-of-entry form before work can begin on the private side'"
+    },
+    {
+      "key": "The utility will complete all known lead lines by the state's 2028 deadline",
+      "label": "mismatch",
+      "tag": "projection_reversed",
+      "why": "S1: 'projects completing all known lead lines by mid-2029, which would miss the state's 2028 deadline.'"
+    },
+    {
+      "key": "A third contractor crew has been funded to speed up progress",
+      "label": "mismatch",
+      "tag": "plan_as_completed",
+      "why": "S1: 'hiring a third contractor crew, which has not been funded.'"
+    },
+    {
+      "key": "After replacement, residents get a free filter pitcher and a year of replacement cartridges",
+      "label": "mismatch",
+      "tag": "period_changed",
+      "why": "S1: 'a free water filter pitcher and six months of replacement cartridges'"
+    },
+    {
+      "key": "38% of replacements have been in the two wealthiest wards, which hold 22% of known lead lines",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: '38% of replacements so far have been in the city's two wealthiest wards, even though those wards contain only 22% of known lead lines.'"
+    },
+    {
+      "key": "Utility officials said wealthier owners returned right-of-entry forms faster",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'Utility officials said wealthier owners returned right-of-entry forms faster.'"
+    },
+    {
+      "key": "Post-replacement sampling found lead below 5 parts per billion in all 120 homes tested",
+      "label": "mismatch",
+      "tag": "number_changed",
+      "why": "S2: 'Lead sampling at 120 homes after replacement found levels below 5 parts per billion in 112 homes.'"
+    },
+    {
+      "key": "Tenants may sign right-of-entry forms on behalf of absent landlords",
+      "label": "mismatch",
+      "tag": "actor_changed",
+      "why": "S2: 'Tenants cannot sign right-of-entry forms; only property owners can.'"
+    },
+    {
+      "key": "A proposed rule would require landlords to sign forms within 60 days, but it has not been introduced",
+      "label": "ok",
+      "tag": "status_correct",
+      "why": "S2: 'has proposed requiring landlords to sign forms within 60 days, but the ordinance has not been introduced.'"
+    },
+    {
+      "key": "Lead exposure in children is linked to lasting cognitive harm even at low levels",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "Neither source discusses health effects of lead exposure."
+    }
+  ]
+}

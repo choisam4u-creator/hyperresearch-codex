@@ -1,0 +1,86 @@
+{
+ "id": "en-street-trees",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "What has Ostrander's street tree planting program accomplished?",
+ "sources": {
+  "S1": "Between fall 2023 and spring 2026, Ostrander planted 4,800 street trees, concentrating 70 percent of plantings in the 12 census tracts with the lowest existing canopy. Homeowners could request a free tree, but in priority tracts crews also planted without a request unless a property owner opted out.\n\nSurvival after two growing seasons was 87 percent for trees planted in fall and 74 percent for those planted in spring. The forestry division attributes the gap mainly to summer drought stress on spring plantings, which have less time to establish roots.",
+  "S2": "The program cost $3.1 million, or about $650 per tree including three years of watering and maintenance. Canopy coverage in the priority tracts is projected to rise from 11 percent to 17 percent by 2040 as the trees mature; current measured canopy change is negligible because the trees are small.\n\nThe forestry division will shift to fall-only planting beginning in 2027. A volunteer 'tree steward' program, launched in 2025, has trained 220 residents to water and mulch young trees."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What has Ostrander's street tree planting program accomplished?\n\n## Answer\nAbout 3,360 of the 4,800 new street trees went into the city's 12 lowest-canopy census tracts [S1]. Canopy in the priority tracts has already risen from 11 percent to 17 percent [S2].\n\n## Evidence\n- In priority tracts, trees were planted only where homeowners requested one [S1].\n- Fall-planted trees survived two growing seasons at a rate 13 points higher than spring plantings [S1].\n- Spring-planted trees survived better because they avoided winter frost damage [S1].\n- Each tree cost roughly $650 including three years of upkeep [S2].\n- The $3.1 million budget covered planting only, with maintenance funded separately [S2].\n- The volunteer tree steward program has trained 220 residents since launching in 2023 [S2].\n\n## Counter-evidence and limits\n- Measurable canopy gains will take years because the newly planted trees are still small [S2].\n- Starting in 2027, the city will plant only in the fall [S2].\n- Street trees in the priority tracts have lowered summer surface temperatures by 2 degrees.\n\n## Next actions\n- Track 2027 fall-only survival rates against the 87 percent benchmark (judgment)\n\n## Sources\n- [S1] Ostrander Forestry Division, Street Tree Planting Progress Report\n- [S2] Ostrander Forestry Division, program cost and canopy projections\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About 3,360 of the 4,800 new street trees went into the city's 12 lowest-canopy census tracts",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "70 percent of 4,800 = 3,360"
+  },
+  {
+   "key": "Canopy in the priority tracts has already risen from 11 percent to 17 percent",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "17 percent is a 2040 projection; current change is negligible"
+  },
+  {
+   "key": "In priority tracts, trees were planted only where homeowners requested one",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "priority tracts used opt-out planting without a request"
+  },
+  {
+   "key": "Fall-planted trees survived two growing seasons at a rate 13 points higher than spring plantings",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "87 - 74 = 13"
+  },
+  {
+   "key": "Spring-planted trees survived better because they avoided winter frost damage",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "spring survival was lower; cited cause was summer drought"
+  },
+  {
+   "key": "Each tree cost roughly $650 including three years of upkeep",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "about $650 per tree incl. three years watering and maintenance"
+  },
+  {
+   "key": "The $3.1 million budget covered planting only, with maintenance funded separately",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "cost includes three years of maintenance"
+  },
+  {
+   "key": "The volunteer tree steward program has trained 220 residents since launching in 2023",
+   "label": "mismatch",
+   "tag": "year",
+   "why": "launched in 2025"
+  },
+  {
+   "key": "Measurable canopy gains will take years because the newly planted trees are still small",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "current change negligible because trees are small; gains projected by 2040"
+  },
+  {
+   "key": "Starting in 2027, the city will plant only in the fall",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "fall-only planting beginning 2027"
+  },
+  {
+   "key": "Street trees in the priority tracts have lowered summer surface temperatures by 2 degrees",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "temperature effects not reported"
+  }
+ ]
+}

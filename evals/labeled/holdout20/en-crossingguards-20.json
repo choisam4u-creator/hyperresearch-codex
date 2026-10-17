@@ -1,0 +1,170 @@
+{
+ "id": "en-crossingguards-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "Has Pinehurst's expanded school crossing guard program made children's walk to school safer?",
+ "sources": {
+  "S1": "Pinehurst expanded its school crossing guard program for the 2025-26 school year from 38 to 52 staffed intersections serving 21 public elementary and middle schools. Guards are employed part-time by the Police Department, which recruits, trains and supervises them; the Pinehurst Unified School District reimburses the city for 40% of guard wages under an interagency agreement. Total program cost for 2025-26 was $1.85 million, of which guard wages were $1.52 million and equipment, training and supervision the remainder. Guards are posted for 45 minutes before the first bell and 30 minutes after dismissal on every school day, and do not staff early-release afternoons unless the school requests it 48 hours in advance. Intersections are selected using a warrant score that considers vehicle volume, speed, number of child pedestrians and crossing width; an intersection qualifies if it scores 60 or higher. Of the 14 added intersections, 9 scored above 75. Guard vacancies averaged 4 positions over the year, and on 112 guard-shifts no substitute was available. Hourly pay rose from $19.50 to $22.00 in January 2026. During the 2025-26 school year, police recorded 3 collisions involving child pedestrians within 500 feet of staffed intersections during guard hours, compared with 7 the previous year. The department notes that the numbers are small and that new speed cameras installed near six schools in the same period could also have contributed. A counting study at 20 staffed intersections found that the share of students walking or biking to school rose from 24% to 29% between fall 2024 and spring 2026. A parent survey distributed through 8 participating schools (n=1,140) found that 69% would let their child walk alone to school if a guard were present, versus 31% without a guard. Guards must pass a background check and complete 8 hours of initial training plus a 2-hour refresher each semester. The department plans to staff 60 intersections in 2026-27, contingent on filling current vacancies. Guards are issued high-visibility vests and stop paddles, and since February 2026 guards at 10 intersections have worn body cameras as a pilot.",
+  "S2": "Parents at Lakeview Elementary said their corner went without a guard for most of October last year. The union representing guards said pay remains below that of neighboring Ashford, which pays $24 an hour. A police spokesperson said recruitment improved after the January raise, but declined to give numbers. One school board member questioned why the district pays a share of the cost at all."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Pinehurst's expanded school crossing guard program made children's walk to school safer?\n\n## Answer\nPinehurst added 14 staffed crossings for 2025-26, raising the total from 38 to 52 intersections [S1]. Child-pedestrian collisions near staffed crossings fell by more than half because of the expanded guard coverage [S1]. Staffing gaps remain, with an average of four vacancies and 112 uncovered guard-shifts over the year [S1].\n\n## Evidence\n- The school district employs the guards, and the city reimburses it for 40% of their wages [S1].\n- The district's 40% share of 2025-26 guard wages comes to about $608,000 [S1].\n- The district covered 40% of the program's $1.85 million total cost [S1].\n- Equipment, training and supervision cost about $330,000 [S1].\n- Guards are posted 30 minutes before the first bell and 45 minutes after dismissal [S1].\n- Guards cover early-release afternoons only when a school asks at least 48 hours ahead [S1].\n- An intersection qualifies for a guard when its warrant score exceeds 75 [S1].\n- Nine of the 14 new intersections scored above 75 on the warrant scale [S1].\n- Hourly pay rose 12.8 percentage points in January 2026 [S1].\n- The January raise lifted hourly pay by $2.50, about 13% [S1].\n- At the 20 counted intersections, the walk-and-bike share rose by 5 percentage points [S1].\n- In the parent survey, 69% said they let their child walk alone to school [S1].\n- The share of surveyed parents willing to let a child walk alone more than doubled when a guard was assumed present, from 31% to 69% [S1].\n- Guards complete 8 hours of initial training and a 2-hour refresher each year [S1].\n- Body-worn cameras have been issued to all guards since February 2026 [S1].\n- The department will staff 60 intersections in 2026-27 [S1].\n- Most of the 112 uncovered shifts occurred at middle schools.\n\n## Counterevidence and limits\n- Parents at Lakeview Elementary said their corner had no guard for most of last October [S2].\n- Neighboring Ashford pays guards $24 an hour, about 20% more than Pinehurst's current rate [S2].\n- Police say recruitment improved after the January raise but did not provide figures [S2].\n- A school board member proposed that the district stop paying its share of the cost [S2].\n- The department cautions that collision counts are small and that new speed cameras near six schools may also have contributed [S1].\n\n## Next actions\n- Request collision data split between intersections with and without new speed cameras (judgment).\n\n## Sources\n- [S1] Pinehurst Police Department Traffic Safety Unit, \"School Crossing Guard Program: 2025-26 School Year Report\" (2026-09-08)\n- [S2] Pinehurst Post, \"Crossing guard gaps leave kids exposed, parents say\" (2026-09-23)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Pinehurst added 14 staffed crossings for 2025-26, raising the total from 38 to 52 intersections",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 'from 38 to 52 staffed intersections'. 52-38 = 14 (S1 also says 'the 14 added intersections'). Correct."
+  },
+  {
+   "key": "Child-pedestrian collisions near staffed crossings fell by more than half because of the expanded guard coverage",
+   "label": "mismatch",
+   "tag": "hedge_to_fact",
+   "why": "S1: 3 vs 7 collisions, a 57% drop (4/7), but 'the numbers are small and ... new speed cameras installed near six schools in the same period could also have contributed'. Causation asserted."
+  },
+  {
+   "key": "Staffing gaps remain, with an average of four vacancies and 112 uncovered guard-shifts over the year",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Guard vacancies averaged 4 positions over the year, and on 112 guard-shifts no substitute was available.' Matches."
+  },
+  {
+   "key": "The school district employs the guards, and the city reimburses it for 40% of their wages",
+   "label": "mismatch",
+   "tag": "operator_payer_swap",
+   "why": "S1: 'Guards are employed part-time by the Police Department ... the Pinehurst Unified School District reimburses the city for 40% of guard wages'. Employer and reimbursing party are swapped."
+  },
+  {
+   "key": "The district's 40% share of 2025-26 guard wages comes to about $608,000",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: wages $1.52 million, district reimburses 40%. 0.40 x 1,520,000 = 608,000. Correct."
+  },
+  {
+   "key": "The district covered 40% of the program's $1.85 million total cost",
+   "label": "mismatch",
+   "tag": "base_changed",
+   "why": "S1: the 40% applies to 'guard wages' ($1.52M -> $608,000), not total cost ($1.85M -> $740,000). $608,000 is about 33% of total cost."
+  },
+  {
+   "key": "Equipment, training and supervision cost about $330,000",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: total $1.85M, wages $1.52M, 'equipment, training and supervision the remainder'. 1.85-1.52 = $0.33M. Correct."
+  },
+  {
+   "key": "Guards are posted 30 minutes before the first bell and 45 minutes after dismissal",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: '45 minutes before the first bell and 30 minutes after dismissal'. Swapped."
+  },
+  {
+   "key": "Guards cover early-release afternoons only when a school asks at least 48 hours ahead",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'do not staff early-release afternoons unless the school requests it 48 hours in advance'. Matches."
+  },
+  {
+   "key": "An intersection qualifies for a guard when its warrant score exceeds 75",
+   "label": "mismatch",
+   "tag": "threshold_changed",
+   "why": "S1: 'an intersection qualifies if it scores 60 or higher'. 75 is only the score 9 of the 14 new sites exceeded."
+  },
+  {
+   "key": "Nine of the 14 new intersections scored above 75 on the warrant scale",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Of the 14 added intersections, 9 scored above 75.' Matches."
+  },
+  {
+   "key": "Hourly pay rose 12.8 percentage points in January 2026",
+   "label": "mismatch",
+   "tag": "pct_vs_pp",
+   "why": "S1: '$19.50 to $22.00'. 2.50/19.50 = 12.8% (a percent change in a dollar wage), not percentage points."
+  },
+  {
+   "key": "The January raise lifted hourly pay by $2.50, about 13%",
+   "label": "ok",
+   "tag": "derived_growth",
+   "why": "S1: 22.00-19.50 = 2.50; 2.50/19.50 = 12.8% ≈ 13%. Correct."
+  },
+  {
+   "key": "At the 20 counted intersections, the walk-and-bike share rose by 5 percentage points",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 'A counting study at 20 staffed intersections found that the share ... rose from 24% to 29%'. 29-24 = 5 pp. Correct."
+  },
+  {
+   "key": "In the parent survey, 69% said they let their child walk alone to school",
+   "label": "mismatch",
+   "tag": "hypothetical_as_actual",
+   "why": "S1: '69% would let their child walk alone to school if a guard were present'. A conditional intention is reported as current behavior."
+  },
+  {
+   "key": "The share of surveyed parents willing to let a child walk alone more than doubled when a guard was assumed present, from 31% to 69%",
+   "label": "ok",
+   "tag": "derived_ratio",
+   "why": "S1: '69% would let their child walk alone ... if a guard were present, versus 31% without a guard'. 69/31 = 2.23 > 2. Correct and properly conditional."
+  },
+  {
+   "key": "Guards complete 8 hours of initial training and a 2-hour refresher each year",
+   "label": "mismatch",
+   "tag": "frequency_changed",
+   "why": "S1: 'a 2-hour refresher each semester'. Per semester, not per year."
+  },
+  {
+   "key": "Body-worn cameras have been issued to all guards since February 2026",
+   "label": "mismatch",
+   "tag": "scope_changed",
+   "why": "S1: 'since February 2026 guards at 10 intersections have worn body cameras as a pilot'. A 10-intersection pilot, not all guards."
+  },
+  {
+   "key": "The department will staff 60 intersections in 2026-27",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'plans to staff 60 intersections in 2026-27, contingent on filling current vacancies'. The contingency is dropped and a plan is stated as certain."
+  },
+  {
+   "key": "Most of the 112 uncovered shifts occurred at middle schools",
+   "label": "unverified",
+   "tag": "unsupported_claim",
+   "why": "No citation; S1 gives no breakdown of uncovered shifts by school level."
+  },
+  {
+   "key": "Parents at Lakeview Elementary said their corner had no guard for most of last October",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'their corner went without a guard for most of October last year'. Matches."
+  },
+  {
+   "key": "Neighboring Ashford pays guards $24 an hour, about 20% more than Pinehurst's current rate",
+   "label": "mismatch",
+   "tag": "percent_arithmetic",
+   "why": "S2: Ashford '$24 an hour'; S1: Pinehurst now pays $22.00. 24/22 = 1.091 -> about 9% more, not 20% (even vs the old $19.50 it would be 23%)."
+  },
+  {
+   "key": "Police say recruitment improved after the January raise but did not provide figures",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'recruitment improved after the January raise, but declined to give numbers'. Matches."
+  },
+  {
+   "key": "A school board member proposed that the district stop paying its share of the cost",
+   "label": "mismatch",
+   "tag": "claim_strengthened",
+   "why": "S2: 'One school board member questioned why the district pays a share of the cost at all.' Questioning is not a proposal."
+  },
+  {
+   "key": "The department cautions that collision counts are small and that new speed cameras near six schools may also have contributed",
+   "label": "ok",
+   "tag": "hedge_preserved",
+   "why": "S1: 'the numbers are small and that new speed cameras installed near six schools in the same period could also have contributed'. Matches."
+  }
+ ]
+}

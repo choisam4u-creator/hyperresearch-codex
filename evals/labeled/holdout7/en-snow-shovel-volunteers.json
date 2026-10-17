@@ -1,0 +1,92 @@
+{
+ "id": "en-snow-shovel-volunteers",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "How did Brennock's Snow Buddy sidewalk-clearing pilot perform?",
+ "sources": {
+  "S1": "Brennock launched its Snow Buddy pilot in the winter of 2025-26 in three northern wards, pairing volunteers with residents aged 70 or older or with a documented mobility disability. The program enrolled 312 households and recruited 145 volunteers, who completed 2,808 sidewalk clearings over 12 snow events.\n\nThe city paid volunteers a $25 stipend per snow event worked rather than an hourly wage. Total program spending was $68,400, of which $41,000 went to stipends and the rest to equipment, insurance and coordination.",
+  "S2": "A follow-up phone survey reached 204 enrolled households; 81 percent said their sidewalk was usually cleared within 24 hours of snowfall ending, compared with 46 percent of a comparison group of eligible non-enrolled households in the same wards. The parks department cautioned that the comparison group was small and not randomly selected.\n\nSnow-clearing complaints in the three wards fell from 230 in winter 2024-25 to 171 in winter 2025-26, while citywide complaints rose slightly. Staff will recommend to council in November 2026 whether to expand the program to all wards; no expansion has been approved."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How did Brennock's Snow Buddy sidewalk-clearing pilot perform?\n\n## Answer\nThe Snow Buddy pilot served 312 households in three northern wards during the 2025-26 winter [S1]. Volunteers cleared an average of 9 sidewalks per enrolled household over the winter [S1].\n\n## Evidence\n- The program was open to all residents aged 65 or older [S1].\n- Volunteers were paid an hourly wage of $25 [S1].\n- Each volunteer was matched with a little over two households on average [S1].\n- Stipends accounted for about 60 percent of total spending [S1].\n- Enrolled households were roughly 35 percentage points more likely than the comparison group to report their sidewalk was usually cleared within a day [S2].\n- Snow-clearing complaints in the pilot wards dropped by about a quarter [S2].\n- Complaints also fell across the rest of the city [S2].\n\n## Counter-evidence and limits\n- The survey comparison is robust because households were randomly assigned to the program [S2].\n- Council approved expanding the program citywide for next winter [S2].\n- Most volunteers were retirees living in the same neighborhoods.\n\n## Next actions\n- Compare clearing times using a better-matched comparison group before the November recommendation (judgment)\n\n## Sources\n- [S1] Brennock Parks Department, Snow Buddy Pilot Summary 2025-26\n- [S2] Brennock Parks Department, Snow Buddy survey and complaint data\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The Snow Buddy pilot served 312 households in three northern wards during the 2025-26 winter",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "enrolled 312 households in three northern wards, winter 2025-26"
+  },
+  {
+   "key": "Volunteers cleared an average of 9 sidewalks per enrolled household over the winter",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,808 / 312 = 9"
+  },
+  {
+   "key": "The program was open to all residents aged 65 or older",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "eligibility was age 70+ or documented mobility disability, in three wards only"
+  },
+  {
+   "key": "Volunteers were paid an hourly wage of $25",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "$25 stipend per snow event, explicitly not an hourly wage"
+  },
+  {
+   "key": "Each volunteer was matched with a little over two households on average",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "312 / 145 = 2.15"
+  },
+  {
+   "key": "Stipends accounted for about 60 percent of total spending",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "41,000 / 68,400 = 59.9 percent"
+  },
+  {
+   "key": "Enrolled households were roughly 35 percentage points more likely than the comparison group to report their sidewalk was usually cleared within a day",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "81 - 46 = 35 points; 24 hours = a day"
+  },
+  {
+   "key": "Snow-clearing complaints in the pilot wards dropped by about a quarter",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "230 to 171 is a 25.7 percent drop"
+  },
+  {
+   "key": "Complaints also fell across the rest of the city",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "citywide complaints rose slightly"
+  },
+  {
+   "key": "The survey comparison is robust because households were randomly assigned to the program",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "department cautioned the comparison group was small and not randomly selected"
+  },
+  {
+   "key": "Council approved expanding the program citywide for next winter",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "staff will only recommend in November 2026; no expansion approved"
+  },
+  {
+   "key": "Most volunteers were retirees living in the same neighborhoods",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "volunteer demographics not in sources"
+  }
+ ]
+}

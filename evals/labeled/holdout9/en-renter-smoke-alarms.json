@@ -1,0 +1,92 @@
+{
+  "id": "en-renter-smoke-alarms",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "Did Quarry Hill's free smoke alarm installation pilot for renters reduce fire risks?",
+  "sources": {
+    "S1": "Between October 2025 and March 2026, Quarry Hill Fire Department crews visited 1,250 rental units in the Eastgate and Millbrook neighborhoods and installed 2,980 ten-year sealed-battery smoke alarms. Before installation, inspectors found that 41 percent of visited units had no working alarm.\n\nThe department reported 9 residential fires in the two neighborhoods during the pilot months, compared with 14 in the same months a year earlier. The department cautioned that the numbers were too small to attribute the decline to the program.\n\nLandlords were not charged for the alarms or labor. The $187,000 cost was covered by a federal fire prevention grant.",
+    "S2": "The committee voted 4 to 1 to request a plan for a citywide expansion, with the fire chief to report back by December 2026. Member Tom Albrecht voted no, citing staffing.\n\nThe chief told the committee that crews were unable to gain access to 310 additional units whose tenants did not respond to three visit attempts."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Quarry Hill's free smoke alarm installation pilot for renters reduce fire risks?\n\n## Answer\nCrews installed nearly 3,000 sealed-battery alarms in 1,250 rental units over six months [S1]. Residential fires in the two neighborhoods fell from 14 to 9, and the department attributed the drop to the alarms [S1].\n\n## Evidence\n- That works out to roughly 2.4 alarms per unit [S1].\n- Inspectors found that 41 percent of visited units had no functioning alarm before the visit [S1].\n- Fires dropped by about 36 percent compared with the same months a year earlier [S1].\n- Landlords paid a reduced fee for the alarms while labor was free [S1].\n- The program cost $187,000, funded by a state fire prevention grant [S1].\n- The pilot covered rental units throughout Quarry Hill [S1].\n- Tenant complaints about false alarms rose after the installations.\n\n## Counter-evidence and limits\n- The public safety committee voted unanimously to request a citywide expansion plan [S2].\n- Crews could not reach 310 more units after tenants failed to answer three visit attempts [S2].\n- The fire chief is due to report back on the expansion plan by December 2026 [S2].\n\n## Next steps\n- Compare fire counts over a longer window before crediting the alarms with any decline (judgment).\n\n## Sources\n- [S1] Quarry Hill Fire Department, Renter Smoke Alarm Pilot Summary (May 2026)\n- [S2] Quarry Hill City Council, Public Safety Committee Minutes (June 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Crews installed nearly 3,000 sealed-battery alarms in 1,250 rental units over six months",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "2,980 is nearly 3,000; October to March is six months."
+    },
+    {
+      "key": "Residential fires in the two neighborhoods fell from 14 to 9, and the department attributed the drop to the alarms",
+      "label": "mismatch",
+      "tag": "causal",
+      "why": "S1 says the numbers were too small to attribute the decline to the program."
+    },
+    {
+      "key": "That works out to roughly 2.4 alarms per unit",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "2,980 / 1,250 = 2.38."
+    },
+    {
+      "key": "Inspectors found that 41 percent of visited units had no functioning alarm before the visit",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Working = functioning; matches S1."
+    },
+    {
+      "key": "Fires dropped by about 36 percent compared with the same months a year earlier",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "(14 - 9) / 14 = 35.7 percent."
+    },
+    {
+      "key": "Landlords paid a reduced fee for the alarms while labor was free",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S1: landlords were not charged for the alarms or labor."
+    },
+    {
+      "key": "The program cost $187,000, funded by a state fire prevention grant",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1 says the grant was federal."
+    },
+    {
+      "key": "The pilot covered rental units throughout Quarry Hill",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "S1 limits the pilot to Eastgate and Millbrook."
+    },
+    {
+      "key": "Tenant complaints about false alarms rose after the installations",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source mentions false-alarm complaints."
+    },
+    {
+      "key": "The public safety committee voted unanimously to request a citywide expansion plan",
+      "label": "mismatch",
+      "tag": "modifier",
+      "why": "S2: the vote was 4 to 1, with Albrecht voting no."
+    },
+    {
+      "key": "Crews could not reach 310 more units after tenants failed to answer three visit attempts",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2."
+    },
+    {
+      "key": "The fire chief is due to report back on the expansion plan by December 2026",
+      "label": "ok",
+      "tag": "verbatim",
+      "why": "Matches S2."
+    }
+  ]
+}

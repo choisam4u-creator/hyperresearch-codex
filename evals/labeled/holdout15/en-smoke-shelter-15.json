@@ -1,0 +1,128 @@
+{
+  "id": "en-smoke-shelter-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "How do Pine County's wildfire smoke clean air shelters work, and what did the 2026 smoke season show?",
+  "sources": {
+    "S1": "Pine County designates clean air shelters when the Air Quality Index for PM2.5 exceeds 150 for at least two consecutive hours. The county has 14 designated shelters, including 9 libraries and 5 community centers. Each shelter is equipped with portable HEPA air purifiers sized at one unit per 500 square feet. Filters are replaced by county facilities staff every 3 months, or sooner if the AQI exceeded 200 for more than 48 hours in total. Shelters stay open from 8 a.m. to 9 p.m. during activations, and pets other than service animals are not permitted. The county also distributes free N95 masks at shelters, up to 5 per person per day. The program's 2026 budget of $420,000 comes 60% from a federal public health preparedness grant and 40% from the county general fund. Transportation to shelters is provided by the county's paratransit service for residents who are registered with it.",
+    "S2": "Pine County Emergency Management reports that shelters were activated on 11 days during the 2026 smoke season, compared with 6 days in 2025. Total recorded visits were 3,850, with the busiest single day drawing 610 visits on August 14. Visitors aged 65 and older accounted for 47% of visits where age was recorded; age was recorded for only about 60% of visits. A post-season survey of 180 visitors found that 73% would return during the next smoke event. Emergency room visits for respiratory complaints during activation days were 8% lower than on comparable smoke days in 2024, which the report describes as an association that could reflect differences in smoke intensity. The report recommends adding 4 shelters in the county's eastern towns; funding has not been identified."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How do Pine County's wildfire smoke clean air shelters work, and what did the 2026 smoke season show?\n\n## Answer\nPine County opens clean air shelters whenever the PM2.5 AQI goes above 150 [S1]. Shelters were activated on 11 days in 2026, nearly twice as many as the 6 days in 2025 [S2].\n\n## Evidence\n- The 14 shelters consist of nine libraries and five community centers [S1].\n- Shelters are equipped with one HEPA purifier per 1,000 square feet [S1].\n- County facilities staff change the purifier filters every month [S1].\n- Filters must be swapped early if the AQI topped 200 for more than 48 hours in total [S1].\n- During activations, shelters are open 13 hours a day [S1].\n- Household pets are welcome at shelters during activations [S1].\n- Each visitor is handed 5 free N95 masks on every visit [S1].\n- The federal preparedness grant provides $252,000 of the $420,000 budget [S1].\n- Paratransit rides to shelters are available to any resident who asks [S1].\n- Recorded visits averaged about 350 per activation day [S2].\n\n## Counter-evidence and limits\n- Nearly half of all shelter visitors were 65 or older [S2].\n- Age was recorded for only about 60% of visits, so the 47% figure for older visitors is incomplete [S2].\n- 73% of county residents said they would use a shelter during the next smoke event [S2].\n- The shelters cut respiratory ER visits by 8% [S2].\n- The report calls for four more shelters in the eastern towns but notes that no funding has been identified [S2].\n- Several shelters reached full capacity on August 14.\n\n## Next actions\n- Ask emergency management to record visitor age at every shelter next season so the age share can be confirmed (judgment)\n\n## Sources\n- [S1] Pine County Health Department, \"Clean Air Shelter Program Guidelines\" (2026-06-15)\n- [S2] Pine County Emergency Management, \"2026 Smoke Season After-Action Report\" (2026-09-29)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Pine County opens clean air shelters whenever the PM2.5 AQI goes above 150",
+      "label": "mismatch",
+      "tag": "condition_dropped",
+      "why": "S1: AQI must exceed 150 'for at least two consecutive hours'"
+    },
+    {
+      "key": "Shelters were activated on 11 days in 2026, nearly twice as many as the 6 days in 2025",
+      "label": "ok",
+      "tag": "approximation",
+      "why": "S2: 11 vs 6 activation days (1.83x)"
+    },
+    {
+      "key": "The 14 shelters consist of nine libraries and five community centers",
+      "label": "ok",
+      "tag": "breakdown_restated",
+      "why": "S1: '14 designated shelters, including 9 libraries and 5 community centers'"
+    },
+    {
+      "key": "Shelters are equipped with one HEPA purifier per 1,000 square feet",
+      "label": "mismatch",
+      "tag": "wrong_number",
+      "why": "S1: 'one unit per 500 square feet'"
+    },
+    {
+      "key": "County facilities staff change the purifier filters every month",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S1: 'replaced by county facilities staff every 3 months'"
+    },
+    {
+      "key": "Filters must be swapped early if the AQI topped 200 for more than 48 hours in total",
+      "label": "ok",
+      "tag": "condition_restated",
+      "why": "S1: 'or sooner if the AQI exceeded 200 for more than 48 hours in total'"
+    },
+    {
+      "key": "During activations, shelters are open 13 hours a day",
+      "label": "ok",
+      "tag": "computed_duration",
+      "why": "S1: '8 a.m. to 9 p.m.' = 13 hours"
+    },
+    {
+      "key": "Household pets are welcome at shelters during activations",
+      "label": "mismatch",
+      "tag": "exclusion_as_inclusion",
+      "why": "S1: 'pets other than service animals are not permitted'"
+    },
+    {
+      "key": "Each visitor is handed 5 free N95 masks on every visit",
+      "label": "mismatch",
+      "tag": "dropped_upper_limit",
+      "why": "S1: masks distributed 'up to 5 per person per day'"
+    },
+    {
+      "key": "The federal preparedness grant provides $252,000 of the $420,000 budget",
+      "label": "ok",
+      "tag": "computed_share",
+      "why": "S1: 60% of $420,000 = $252,000"
+    },
+    {
+      "key": "Paratransit rides to shelters are available to any resident who asks",
+      "label": "mismatch",
+      "tag": "eligibility_broadened",
+      "why": "S1: rides 'for residents who are registered with it'"
+    },
+    {
+      "key": "Recorded visits averaged about 350 per activation day",
+      "label": "ok",
+      "tag": "computed_average",
+      "why": "S2: 3,850 visits / 11 days = 350"
+    },
+    {
+      "key": "Nearly half of all shelter visitors were 65 or older",
+      "label": "mismatch",
+      "tag": "subset_generalized",
+      "why": "S2: 47% only 'of visits where age was recorded', which was about 60% of visits"
+    },
+    {
+      "key": "Age was recorded for only about 60% of visits, so the 47% figure for older visitors is incomplete",
+      "label": "ok",
+      "tag": "limit_restated",
+      "why": "S2: 'age was recorded for only about 60% of visits'"
+    },
+    {
+      "key": "73% of county residents said they would use a shelter during the next smoke event",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S2: survey of 180 visitors, not residents"
+    },
+    {
+      "key": "The shelters cut respiratory ER visits by 8%",
+      "label": "mismatch",
+      "tag": "hedge_as_fact",
+      "why": "S2: described as 'an association that could reflect differences in smoke intensity'"
+    },
+    {
+      "key": "The report calls for four more shelters in the eastern towns but notes that no funding has been identified",
+      "label": "ok",
+      "tag": "recommendation_status",
+      "why": "S2: 'recommends adding 4 shelters … funding has not been identified'"
+    },
+    {
+      "key": "Several shelters reached full capacity on August 14",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "S2 gives 610 visits that day but nothing on capacity"
+    }
+  ]
+}

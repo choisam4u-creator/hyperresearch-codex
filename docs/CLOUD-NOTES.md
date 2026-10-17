@@ -2,6 +2,214 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-17 (품질 회차 24)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout20(12 case·292문장, 한계 절 제목도 에이전트가 고름) 기준선 **F1 56.2 → 56.8**, 오표시율 18.7 → 18.7 — **두 개선 모두 holdout20을 보지 않고 설계해 잰 값**. 설계용 holdout19 56.5 → 61.1, holdout16 69.2 → 69.8. 전체 71.8 → 72.1(오표시 13.1 그대로). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout20 먼저(`6d6a425`) → '-(으)로' 인과 단정·유보 표현(`1a8bc58`) → 일 뒤 운영 주체·위탁(`cb44dad`) → 백로그 `report_lint` 제목 규칙(`b0a6fa8`) → 기록, CI holdout20 `--min-f1 50`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 655개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run --min-total 97` 99.9, 라벨 평가 스물한 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다. 커밋 댓글 도구가 없어 AGENTS.md 커밋 댓글 대신 PR 본문과 이 기록에 남긴다.
+- 남은 한계: 보지 않은 측정의 효과는 +0.6으로 작다 — 회차마다 앞 holdout 형태에 맞춘 좁은 규칙이 다음 holdout에 잘 옮겨지지 않는다. holdout20 큰 약점은 조건 빠짐·계획을 실적처럼·값 맞바꿈·표본/일화 일반화·유보를 사실로, 오표시는 바꿔 말하기. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "통학버스 노선 개편은 지각을 줄였나? 운행은 누가 맡나? 근거와 한계를 밝혀라"
+  grep -h -A6 '"causal_conflict"\|"subject_conflict"' research/runs/*/report_marks.json | head -40   # 표시 문장을 원문과 대조
+  ```
+
+## 2026-10-17 (품질 회차 23)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout19(12 case·254문장) 기준선 **F1 52.2 → 56.5**, 오표시율 14.8 → 14.8. 단 +4.3은 개선 1(절 제목 변형) 몫이고, holdout19 영어 제목은 내 작성 지시문이 정했으므로 독립 측정이 아니다. 보지 않고 잰 개선 2의 holdout19 효과는 0. holdout18 55.3 → 63.3, holdout17 62.5 → 67.0, holdout16 64.7 → 69.2, holdout12 68.0 → 70.7. 전체 71.6 → 73.1(오표시 12.6 그대로). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout19 먼저(`d70ecd3`) → 절 제목 변형을 주장 절로 인식(`1e4a4af`, 하이픈 하나 빠진 한계 절 전체가 검사를 건너뛰던 결함) → 재원 한정·배제 바꿈 표시(`8305688`) → 기록, CI holdout19 `--min-f1 50`. 백로그 새 항목 2건. 기존 백로그 [ ] 항목은 이번 회차에 처리하지 못했다(모두 실제 codex 보고서나 사람 검토가 필요한 항목이 위에 있음).
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 652개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run --min-total 97` 99.9, 라벨 평가 스무 묶음(holdout19 `--min-f1 50` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 측정으로 확인된 개선은 이번 회차에 없다(개선 1은 지시문 영향, 개선 2는 0). holdout19 큰 약점은 유보→인과 단정·부정 뒤집기·운영 주체·계산 퍼센트·값 맞바꿈·시간대. 다음 holdout 작성 지시문은 절 제목을 에이전트가 고르게 하거나 표준 제목을 쓰게 해야 한다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "Who pays for the city's storefront grant program, and does any general fund money go into it? Note limits."
+  grep -h '^## ' research/runs/*/report.md | sort | uniq -c; grep -h -A6 '"subject_conflict"\|"no_source"' research/runs/*/report_marks.json | head -40
+  ```
+
+## 2026-10-16 (품질 회차 22)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout18(12 case·239문장) 기준선 **F1 53.9 → 55.3**, 오표시율 21.1 → 21.1 — **두 개선 모두 holdout18을 보지 않고 설계해 잰 값**. holdout17 59.5 → 62.5(오표시 21.3 → 20.4), holdout15 66.7 → 68.4. 전체 72.6 → 73.0(오표시 12.6 → 12.4). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout18 먼저(`5dd8562`) → 나열 값 비교 뒤집기(`bef64aa`) → 주체별 몫×총액 계산 인정(`8502c85`) → 기록, CI holdout18 `--min-f1 50`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 650개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열아홉 묶음(holdout18 `--min-f1 50` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 +1.4로 작다. 부담·운영 주체 바꿈, 인용 없는 미검증 문장, 인과 단정, 순위 뒤집기가 holdout18의 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "동네 공동배송 사업은 시장별로 거래액이 얼마였고, 비용은 누가 얼마씩 냈나? 근거와 한계를 밝혀라"
+  grep -h -B2 -A8 '"antonym_conflict"\|"mismatch"' research/runs/*/report_marks.json | head -60   # 시장 간 비교·몫 계산 문장 표시를 원문과 대조
+  ```
+
+## 2026-10-16 (품질 회차 21)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout17(12 case·229문장) 기준선 **F1 58.5 → 59.5**, 오표시율 22.2 → 21.3 — **두 개선 모두 holdout17을 보지 않고 설계해 잰 값**. holdout16 62.7 → 64.7(오표시 17.3 → 15.4), holdout15 65.2 → 66.7, holdout12 67.6 → 68.0, holdout5 74.6 → 75.6, holdout9 81.5 → 82.4. 눈가림 holdout8b 66.7 그대로. 전체 73.6 → 74.0(오표시 12.1 → 11.9). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout17 먼저(`d93a946`) → 시각 범위 끝 시각·시간당 값×시간·낱말 개수 평균(`4f4b68d`) → 나열 값-이름 맞바꿈(`4295e12`) → 기록, CI holdout17 `--min-f1 55`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 648개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열여덟 묶음(holdout17 `--min-f1 55` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 +1.0으로 작다. 출처 없는 단정·인과 단정·순위 바꿈·부정 뒤집기·표본 일반화가 여전히 큰 약점이고, 맞는 계산 문장(곱·차·퍼센트) 오표시가 holdout17 오표시의 절반이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "야간 연장 돌봄센터는 몇 시간 운영되고, 운영비는 국비·시비·구비가 각각 얼마씩 냈나? 근거와 한계를 밝혀라"
+  grep -h -B2 -A8 '"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json | head -60   # 재원 몫·시간 계산 문장 표시를 원문과 대조
+  ```
+
+## 2026-10-15 (품질 회차 20)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout16(12 case·226문장) 기준선 **F1 59.3 → 62.7**, 오표시율 17.3 → 17.3. **보지 않고 잰 holdout16은 개선 1 뒤 59.3 그대로**(개선 1은 이미 본 묶음의 오표시만 줄임). holdout15 64.6 → 65.2(오표시 16.8 → 14.7), holdout12 66.7 → 67.6, holdout2 88.9 → 89.6, 보지 않은 holdout7 78.7 → 79.7. 눈가림 holdout8b 66.7 그대로. 전체 74.4 → 74.9(오표시 11.8 → 11.3). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout16 먼저(`02b1df1`) → 원문 값×개수·기간 곱 인정(`442b617`, 백로그 holdout2 '곱으로 낸 값' 진행) → 수치로 순위 바꿈 판정(`e3256d9`) → 기록, CI holdout16 `--min-f1 60`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 646개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열일곱 묶음(holdout16 `--min-f1 60` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음에서의 효과는 holdout7 1건뿐이다. 조건·범위 바꿈, 몫 맞바꿈, 계획을 완료로, 유보 인과·표본 일반화가 여전히 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "공공 공구 대여소는 어떤 품목이 가장 많이 빌려졌고, 시작 비용은 모두 얼마였나? 근거와 한계를 밝혀라"
+  grep -h -B2 -A8 '"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json | head -60   # 순위·합계 문장 표시를 원문과 대조
+  ```
+
+## 2026-10-15 (품질 회차 19)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout15(12 case·207문장) 기준선 **F1 60.1 → 64.6**, 오표시율 16.8 → 16.8. **보지 않고 잰 holdout15 60.1 → 61.3**(개선 1, 결함 +2·오표시 +1). holdout13 72.4 → 73.2, holdout14 66.7 → 68.9(개선 4는 보지 않은 1건). 눈가림 holdout8b 66.7 그대로. 전체 75.2 → 75.7. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout15 먼저(`46a02e2`) → 빈도 바꿈(`b1623d3`, 백로그 '빈도·시간대·기간 바꿈' 진행) → 'p.m. 요일' 문장 끊김(`76e811c`) → N 기간마다 빈도(`b5a756b`) → 한국어 수행 주체(`926c30a`) → 기록, CI holdout15 `--min-f1 60`. 백로그 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 644개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 4개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열여섯 묶음(holdout15 `--min-f1 60` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음 효과는 작다(holdout15 +1.2, holdout14 1건). 순위 바꿈·유보 인과 단정·표본 일반화(holdout15 각 4, 0건 잡음)가 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "농촌 순회 진료 버스는 면마다 얼마나 자주 오고, 운영은 누가 맡나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"period_conflict"\|"subject_conflict"' research/runs/*/report_marks.json   # 빈도·수행 주체 표시를 원문과 대조
+  ```
+
+## 2026-10-14 (품질 회차 18)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout14(12 case·192문장) 기준선 **F1 61.0 → 66.7**, 오표시율 19.8 → 16.3. **보지 않고 잰 holdout14 61.0 → 61.8**(개선 1, +1문장). 눈가림 holdout8b 64.5 → 66.7, holdout13 67.1 → 72.4(개선 1 설계용), holdout3 84.6 → 88.1(개선 4 설계용), holdout7 77.8 → 78.7. 전체 75.3 → 76.5. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout14 먼저(`56de0e2`) → 부담·납부 주체 바꿈(`59169f3`) → 인과 단정 credit·효과로 확인(`e4108d6`) → 상한 어림·기간당 값×기간(`747f9dd`) → 백로그 인과 역전(`963e296`, 백로그 2건 완료) → 기록, CI holdout14 `--min-f1 60`. 개선 4 커밋 메시지의 'holdout3 보지 않음'은 잘못이다(QUALITY-LOG에 바로잡음).
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 640개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 4개는 옛 코드(verification.py만 되돌림)에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열다섯 묶음(holdout13·14 `--min-f1 60` 통과). 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 17회차 끝 PR #18 CI(mock 3.11~3.13·windows·CodeQL)는 성공을 확인했고, 이번 푸시들의 CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 묶음에 대한 효과는 작다(holdout14 +1, 다른 묶음 결함 3건). 수행 주체·빈도·시간대·방법·조건 바꿈과 '최대' 누락이 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "무더위 쉼터 운영 비용은 누가 냈고, 응급실 온열질환 감소는 쉼터 덕분인가? 근거와 한계를 밝혀라"
+  grep -h -A8 '"subject_conflict"\|"causal_conflict"\|"causal_reversal_conflict"' research/runs/*/report_marks.json   # 부담 주체·인과 표시를 원문과 대조
+  ```
+
+## 2026-10-14 (품질 회차 17)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout13(12 case·168문장) 기준선 **F1 63.9 → 67.1**, 오표시율 19.0 → 15.5. **보지 않고 잰 holdout13 63.9 → 63.9**(개선 1, 효과 없음). 눈가림 holdout8b 63.5 → 64.5(오표시 22.6 → 19.4), holdout9 80.9 → 81.5, holdout12 58.7 → 66.7(개선 1 설계용). 전체 75.8 → 76.7. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout13 먼저(`ab94596`) → 계획→실적 수동 완료·결정 동사(`cc107aa`) → 단위당 값×개수 계산 값(`90ff118`) → 재원 몫 뒤바뀜(`c9cc75c`) → 기록, CI holdout13 `--min-f1 60`. 백로그 'holdout12 남은 놓침' 진행, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 636개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열네 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 개선 1은 보지 않은 묶음에 효과가 없었다(낱말 목록 밖 완료 표현). 방법 바꿈·영어 재원 주체·빈도·시간대 바꿈이 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "드론 병해충 방제 사업의 비용은 누가 얼마씩 냈고, 위원회 권고는 실제로 반영됐나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 계획→실적·재원 몫 표시를 원문과 대조
+  ```
+
+## 2026-10-13 (품질 회차 16)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, CHANGELOG 머리. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout12(12 case·169문장) 기준선 **F1 56.7 → 58.7**, 오표시율 20.0 → 20.0. **보지 않고 잰 holdout12 56.7 → 58.3**(개선 2 첫 측정). holdout11 59.0 → 61.0, holdout10 67.2 → 69.2, holdout6 80.3 → 82.0, holdout5 74.0 → 74.6(오표시 13.3 → 11.7). 전체 76.2 → 76.8. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout12 먼저(`6c25974`) → 한국어 낱말 몫 오표시(`3f821e6`) → 일 맡은 주체 바꿈(`946fb13`) → 기록, CI holdout12 `--min-f1 55`. 백로그 '대상 바꿈 — 주어 대응' 진행, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 633개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 2개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열네 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 개선 1은 효과가 작다(1문장). holdout12의 방법(0/7)·역할 바꿈(0/4)·재원(2/8)·계획→실적(4/11)이 가장 큰 약점이다. 눈가림 8b는 움직이지 않았다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "길고양이 중성화 사업에서 포획·수술·사후 관리는 누가 맡고 비용은 누가 내나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"subject_conflict"\|"wording_conflict"' research/runs/*/report_marks.json   # 주체 바꿈 표시를 원문과 대조
+  ```
+
+## 2026-10-13 (품질 회차 15)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout11(12 case·168문장) 기준선 **F1 56.5 → 59.0**, 오표시율 17.9 → 16.7. **보지 않고 잰 holdout11 56.5 → 58.6**(개선 1). holdout10 61.7 → 67.2(오표시 12.3 → 5.5, 본 묶음), 보지 않은 holdout2 오표시 7.1 → 5.7, holdout7 76.8 → 77.8. 전체 77.1 → 78.0. 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout11 먼저(`86afc9a`, 이름 겹침 수정 `b9efc30`) → 제외 항목을 포함으로(`3bc0949`) → 두 단계 계산 값(`6bf5a4d`) → 시각 범위 길이(`5e0d5ad`) → 기록, CI holdout11 `--min-f1 55`. 백로그 '시간 합·합의 몫' 완료, 새 항목 2건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 631개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 열세 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 대상·재원 바꿈(holdout11 5/11·0/2)과 순서·방법 바꿈(0/3·0/2)이 가장 큰 약점이다. 눈가림 8b는 움직이지 않았다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "저소득층 바우처는 어떤 품목에 쓸 수 있고 무엇이 제외되나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"negation_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 제외 항목·계산 값 표시를 원문과 대조
+  ```
+
+## 2026-10-12 (품질 회차 14)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, release.yml이 `scripts/check_release_version.py`로 태그·버전 일치를 검사하고 `tests/test_release_version.py`가 `v0.5.0b1`을 받는다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적었다.
+- 점수 전후: 별도 에이전트가 쓴 holdout10(12 case·156문장) 기준선 **F1 55.2 → 61.7**, 오표시율 19.2 → 12.3. 보지 않고 잰 수치: holdout10 +0.0(개선 1~3), **눈가림 holdout8b 62.5 → 63.5·오표시 25.8 → 22.6**. 전체(all) 77.5 → 79.2, 오표시 11.6 → 9.1. 오표시는 dev·holdout2·5·6·7·9에서도 줄었고, 새로 틀린 문장은 없다. 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout10 먼저(`9a42af0`) → 나열 주어 부정·나열 항목 바꿈(`be5fa3a`) → 오표시 줄이기(`5bafbd8`) → 순위 바꿈·세는 말·몫 표현(`d64e841`) → 기록, CI holdout10 `--min-f1 55`. 백로그 '다음 독립 묶음은 코드 수정 전에' 이어 감, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 628개 통과(Python 3.11 venv, httpx·pypdf 설치). 새 시험 5개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 CI 문턱 모두 통과, compileall 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다.
+- 남은 한계: 보지 않은 holdout10에는 개선 1~3이 효과가 없었다. 대상·주체 바꿈(1/9)과 부정(4/13)·범위(2/9)가 가장 큰 약점이다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "주거 집수리 지원사업에서 가장 많이 한 공사는 무엇이고 비용은 누가 냈나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"subject_conflict"\|"negation_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
+## 2026-10-12 (품질 회차 13)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다: pyproject·`__version__` `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR #18 본문에 적었다.
+- 점수 전후: 별도 에이전트가 쓴 holdout9(12 case·147문장) 기준선 **F1 65.6 → 76.3**, 오표시율 13.7 → 9.6. 보지 않고 잰 수치: holdout9 +0.0(개선 1·2), **눈가림 holdout8b 60.3 → 62.5**. 설계 때 보지 않은 묶음 dev 88.4→89.7, holdout 83.2→84.2, holdout5 72.9→73.8, holdout6 77.7→78.6, holdout7 74.6→75.6. 오표시가 늘어난 묶음 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout9 먼저(`0d26741`) → 작은 합·차 우연 일치(`ec2c50d`) → 비교 오표시(`7db4886`) → 재원 바꿈(`52134bb`) → 완료 단정(`eca9dde`) → 단위·달 범위·'rather than'(`34ce322`) → 기록, CI holdout9 `--min-f1 70`. 백로그 '판정 동사 바꿈("결정하지 않았다"→"확정했다")' 진행.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 623개 통과(Python 3.11 venv, httpx·pypdf 설치; 시스템 python엔 httpx가 없어 26개 import 오류). 새 시험 5개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, 라벨 평가 CI 문턱 모두 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 푸시들의 GitHub CI 결과는 확인하지 못했다.
+- 남은 한계: 눈가림 8b 오표시율 25.8이 그대로다. 낱말 목록 방식이라 보지 않은 묶음 효과가 작다(개선 4만 넓게 일반화). 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "시장 화재 감지기 시범사업의 설치비는 누가 냈고, 소방서가 제안한 개선안은 도입됐나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"subject_conflict"\|"negation_conflict"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
+## 2026-10-11 (품질 회차 12)
+
+- 점수 전후: 별도 에이전트가 쓴 holdout8(12 case·135문장)을 설계용 8a·눈가림 8b로 나눴다. **눈가림 8b F1 60.3 → 60.3(변화 없음)**, 설계용 8a 62.5 → 73.0, holdout8 전체 61.4 → 66.7(오표시율 24.2 → 17.7). 바깥 묶음 holdout5 70.9 → 72.9, 나머지는 그대로이고 오표시가 늘어난 묶음은 없다. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout8 먼저(`5135247`) → 어림 낱말·합계·'없이' 오표시(`aa7877e`) → '이미' 시행 단정(`a6541aa`) → 재원 주체 바꿈(`c47aef1`) → 기록, CI holdout8 `--min-f1 60`.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 618개 통과. 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, CI 라벨 평가 문턱 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스는 하지 않았다.
+- 남은 한계: 눈가림 절반이 움직이지 않았다 — 낱말 목록 방식은 설계에 쓴 표현 밖으로 일반화가 약하다는 11회차 결론을 다시 확인했다. 8b는 다음 회차에도 눈가림으로 쓰도록 오판 목록을 열지 않았다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "지하 주거 곰팡이 개선 공사 지원사업은 습도를 얼마나 낮췄고 비용은 누가 냈나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"subject_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
+## 2026-10-11 (품질 회차 11)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`도 이미 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 이번에는 다시 고치지 않고 확인만 했다: pyproject·`__version__`·CITATION `0.5.0b1`, classifier Beta, README 첫 줄 베타 안내, `scripts/check_release_version.py v0.5.0b1` 통과. PR #17은 병합돼 본문을 고치지 않았다. 태그 뒤 CHANGELOG의 `0.5.0b1` 아래에 들어간 10회차 줄은 실제 태그에 없어서 새 `## [Unreleased]`로 옮겼다.
+- 점수 전후: 별도 에이전트가 쓴 holdout7(12 case·134문장) **F1 66.1 → 74.6**, 오표시율 21.0 → 11.3. 덜 편향된 수치는 holdout7을 보지 않고 만든 개선 1·2 뒤의 **67.2(+1.1)**. 다른 묶음: holdout5 66.1→70.9, holdout6 73.1→77.7, holdout4 81.2→82.0, 나머지는 그대로이고 오표시가 늘어난 묶음은 없다. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout7 먼저(`4d891c9`) → 유보→단정(`db9d22f`) → 조건 뒤집기(`b3671a8`) → holdout7 오판을 본 뒤 조건 확장·계산 값(`be40352`) → 기록, CI holdout7 `--min-f1 70`. 백로그 '유보 탈락' 완료, '조건·자격 바꿈' 진행, 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 615개 통과(Python 3.11 venv). 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run` 99.9, CI 라벨 평가 여덟 문턱 통과. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 태그·릴리스·PyPI 게시는 하지 않았다. 이 푸시들의 GitHub CI 결과는 확인하지 못했다.
+- 남은 한계: 조건 개선은 보지 않은 묶음에서 효과가 0이었다. 낱말 목록 방식은 묶음마다 일반화가 약하다. 어느 묶음도 아직 사람이 검토하지 않았다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "버스정류장 쿨링포그 시범사업은 기온을 얼마나 낮췄고 어떤 조건에서 작동했나? 근거와 한계를 밝혀라"
+  grep -h -A8 '"causal_conflict"\|"scope_conflict"\|"mismatch"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
+## 2026-10-11 (품질 회차 10)
+
+- 점수 전후: 별도 에이전트가 코드 수정 전에 쓴 holdout6 라벨 평가(`python -m evals.labeled --set holdout6`, 12 case·135문장) **F1 63.6 → 73.1**(recall 56.8→66.2, precision 72.4→81.7, 맞는 문장 오표시율 26.2→18.0). 설계 때 보지 않은 묶음: holdout3 83.1→83.7, holdout4 80.3→81.2, dev·holdout·holdout2·holdout5 변화 없음, 오표시 증가 0. 고정 32 case 99.9 그대로. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일(항목마다 커밋·푸시): holdout6 먼저(`e12a22e`) → 계산 값 읽기(`11f3ded`) → 'of' 없는 설문 몫(`497660a`) → 검토 중인 방안(`47a8419`) → 주된 이유 바꿈(`84d37e7`) → 기록·CI holdout6 `--min-f1 65`(`2b7f46c`).
+- 돌린 시험: `HPR_BACKEND=mock python3 -m unittest discover -s tests -p 'test*.py'` → 612개 통과(Python 3.13). 새 시험 4개는 옛 코드에서 실패 확인. `evals.run --min-total 97`, CI의 라벨 평가 일곱 문턱, `compileall`, `scripts/check_release_version.py v0.5.0b1` 통과, walkthrough 변화 없음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 태그·릴리스는 만들지 않았다.
+- 남은 한계: 개선은 holdout6 오판 목록을 본 뒤 만들어 끝 점수는 과대평가. holdout5는 이번 개선으로 변하지 않았다(묶음마다 결함 유형이 달라 일반화가 약함). 조건·자격 바꿈과 수치 비교 뒤집기가 큰 남은 약점.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "수리 카페 시범사업에서 수리가 실패한 주된 이유와 참여자 설문 결과는 무엇인가? 근거와 한계를 밝혀라"
+  grep -h -A8 '"causal_conflict"\|"share_conflict"\|"plan_conflict"' research/runs/*/report_marks.json   # 표시된 문장을 원문과 대조
+  ```
+
 ## 2026-10-11 (품질 회차 9) — v0.5.0b1 베타 준비 + holdout5
 
 - 최우선 B1~B4(샘님 10/11 승인, 베타 PyPI 공개 준비): **B1 `ce60e80`** 버전 `0.5.0b1`(pyproject·`__version__`·CITATION·README 배지·이슈 템플릿, CHANGELOG 머리 `## [0.5.0b1] - 2026-10-11 (베타)`) · **B2 `5fdbbab`** README·README.ko·PYPI.md 맨 위 베타 안내(classifier는 이미 Beta) · **B3 `7c42fee`** `release.yml` 태그 검사를 `scripts/check_release_version.py`로 옮겨 `v0.5.0b1`·`aN`·`rcN` 허용, pyproject·`__version__`·CITATION 셋 대조, `tests/test_release_version.py`. `python -m build` → `hyperresearch_codex-0.5.0b1` sdist·wheel, `twine check` PASSED. 태그·릴리스·PyPI 게시는 하지 않음.

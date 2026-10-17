@@ -1,0 +1,92 @@
+{
+  "id": "en-school-bus-tracker",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "What were the results of Linfield School District's school bus GPS tracking app pilot?",
+  "sources": {
+    "S1": "The district tested a parent-facing app showing real-time school bus locations on 38 of its 112 routes from September 2025 through January 2026. Families on pilot routes could also receive an alert when the bus was 10 minutes from their stop.\n\nAmong 2,600 eligible families, 1,690 installed the app. Calls to the transportation office about late buses on pilot routes averaged 22 per week, down from 61 per week in the same period of the prior school year. On non-pilot routes, calls fell only slightly, from 94 to 89 per week.\n\nThe district paid the vendor $46,000 for the five-month license. The location data was shown with a delay of up to 45 seconds.",
+    "S2": "The Gazette reported that on six rural routes, the app frequently lost the bus signal for stretches of up to 15 minutes because of poor cellular coverage.\n\nThe district's transportation director told the paper that a full rollout to all routes was 'likely but not decided' and would depend on the 2026-27 budget, expected in June."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: What were the results of Linfield School District's school bus GPS tracking app pilot?\n\n## Answer\nThe app ran on about a third of the district's bus routes for five months [S1]. Late-bus calls on pilot routes fell by roughly 64 percent [S1]. The district has confirmed a full rollout to all routes for 2026-27 [S2].\n\n## Evidence\n- Some 65 percent of eligible families installed the app [S1].\n- Parents could get an alert when the bus was 15 minutes from their stop [S1].\n- On non-pilot routes, late-bus calls rose from 89 to 94 per week [S1].\n- The five-month license cost the district $46,000, or about $9,200 per month [S1].\n- Bus positions appeared with a lag of no more than 45 seconds [S1].\n- Average bus arrival times on pilot routes improved by four minutes.\n\n## Counter-evidence and limits\n- On six rural routes the app often lost the bus signal for up to 15 minutes because of weak cellular coverage [S2].\n- Signal gaps affected 16 rural routes [S2].\n- Late-bus calls on pilot routes averaged 22 per week, compared with 61 per week in fall 2024 [S2].\n\n## Next steps\n- Test cellular coverage on rural routes before the 2026-27 budget decision (judgment).\n\n## Sources\n- [S1] Linfield School District Transportation Office, Bus Tracker Pilot Evaluation (April 2026)\n- [S2] Linfield Gazette, \"Parents praise bus app, but rural signal gaps persist\" (May 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "The app ran on about a third of the district's bus routes for five months",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "38 / 112 = 34 percent; September to January is five months."
+    },
+    {
+      "key": "Late-bus calls on pilot routes fell by roughly 64 percent",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "(61 - 22) / 61 = 63.9 percent."
+    },
+    {
+      "key": "The district has confirmed a full rollout to all routes for 2026-27",
+      "label": "mismatch",
+      "tag": "hedge",
+      "why": "S2: rollout was 'likely but not decided' and budget-dependent."
+    },
+    {
+      "key": "Some 65 percent of eligible families installed the app",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "1,690 / 2,600 = 65 percent."
+    },
+    {
+      "key": "Parents could get an alert when the bus was 15 minutes from their stop",
+      "label": "mismatch",
+      "tag": "magnitude",
+      "why": "S1 says 10 minutes."
+    },
+    {
+      "key": "On non-pilot routes, late-bus calls rose from 89 to 94 per week",
+      "label": "mismatch",
+      "tag": "direction",
+      "why": "S1: calls fell from 94 to 89."
+    },
+    {
+      "key": "The five-month license cost the district $46,000, or about $9,200 per month",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "46,000 / 5 = 9,200."
+    },
+    {
+      "key": "Bus positions appeared with a lag of no more than 45 seconds",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Delay of up to 45 seconds."
+    },
+    {
+      "key": "Average bus arrival times on pilot routes improved by four minutes",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source reports arrival-time changes."
+    },
+    {
+      "key": "On six rural routes the app often lost the bus signal for up to 15 minutes because of weak cellular coverage",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2."
+    },
+    {
+      "key": "Signal gaps affected 16 rural routes",
+      "label": "mismatch",
+      "tag": "magnitude",
+      "why": "S2 says six rural routes."
+    },
+    {
+      "key": "Late-bus calls on pilot routes averaged 22 per week, compared with 61 per week in fall 2024",
+      "label": "mismatch",
+      "tag": "wrong_source",
+      "why": "These call figures are in S1, not S2."
+    }
+  ]
+}

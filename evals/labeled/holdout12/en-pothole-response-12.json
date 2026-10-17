@@ -1,0 +1,104 @@
+{
+ "id": "en-pothole-response-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "Did Halvorsen City's pothole repair times improve in fiscal 2026, and what drove the change?",
+ "sources": {
+  "S1": "In fiscal year 2026 (July 2025 through June 2026), residents filed 18,600 pothole reports through the city's FixIt app and phone line, up from 14,200 in FY2025. The department's goal is to repair reported potholes on city-owned streets within 72 hours. The median time to repair was 61 hours in FY2026, compared with 103 hours in FY2025, and 71% of repairs met the 72-hour goal. Potholes on state highways inside the city are referred to the state transportation department and are not counted in these figures. The improvement followed the addition of three night-shift patching crews in September 2025, funded by a one-time $1.8 million state road grant. About 22% of reports were duplicates of an already-logged pothole.",
+  "S2": "The proposed FY2027 budget would make the three night-shift crews permanent using $1.5 million per year from the city's general fund once the state grant expires in December 2026. The council will vote on the budget in late June. The budget office estimates each pothole repair costs the city $96 on average including labor and materials. The office cautions that the rise in reports partly reflects increased app adoption rather than worse road conditions."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Halvorsen City's pothole repair times improve in fiscal 2026, and what drove the change?\n\n## Answer\nHalvorsen City cut its median pothole repair time by 42 hours in fiscal 2026, from 103 to 61 hours [S1]. The three night-shift patching crews have since been made permanent with general fund money [S2].\n\n## Evidence\n- Pothole reports climbed by about 31% year over year, to 18,600 [S1].\n- The repair target for city streets is three days from the report [S1].\n- Fewer than 30% of repairs met the city's 72-hour target [S1].\n- The figures include potholes on state highways within city limits [S1].\n- The night crews were added in September 2025 using a one-time $1.8 million federal grant [S1].\n- Excluding duplicates, roughly 14,500 reports concerned distinct potholes [S1].\n- Just over seven in ten potholes were fixed within the 72-hour window [S1].\n- Making the crews permanent would cost $1.5 million in total [S2].\n\n## Counter-evidence and limits\n- The budget office warns that part of the jump in reports comes from more people using the app, not necessarily worse roads [S2].\n- The budget office puts the average cost of a repair at $69, including labor and materials [S2].\n- The state grant behind the night crews runs out in December 2026, six months into the new fiscal year [S2].\n- Crews switched to a hot-asphalt patching truck whose repairs last twice as long as cold patch.\n\n## Next actions\n- Check the council's late-June budget vote before assuming night crews continue past December 2026 (judgment).\n\n## Sources\n- [S1] Halvorsen City Department of Streets, \"Pothole Response Dashboard: FY2026 Annual Summary\" (July 2026)\n- [S2] Halvorsen City Budget Office, \"FY2027 Proposed Budget Notes\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Halvorsen City cut its median pothole repair time by 42 hours in fiscal 2026, from 103 to 61 hours",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 103 - 61 = 42 hours."
+  },
+  {
+   "key": "The three night-shift patching crews have since been made permanent with general fund money",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: making them permanent is only a proposal in the FY2027 budget awaiting a council vote."
+  },
+  {
+   "key": "Pothole reports climbed by about 31% year over year, to 18,600",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: (18,600 - 14,200)/14,200 = 31.0%."
+  },
+  {
+   "key": "The repair target for city streets is three days from the report",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "S1: 72 hours = 3 days."
+  },
+  {
+   "key": "Fewer than 30% of repairs met the city's 72-hour target",
+   "label": "mismatch",
+   "tag": "reversed",
+   "why": "S1: 71% met the goal; about 29% missed it."
+  },
+  {
+   "key": "The figures include potholes on state highways within city limits",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: state highway potholes are referred to the state and not counted."
+  },
+  {
+   "key": "The night crews were added in September 2025 using a one-time $1.8 million federal grant",
+   "label": "mismatch",
+   "tag": "funder",
+   "why": "S1: it was a one-time state road grant, not federal."
+  },
+  {
+   "key": "Excluding duplicates, roughly 14,500 reports concerned distinct potholes",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 18,600 x 0.78 = 14,508."
+  },
+  {
+   "key": "Just over seven in ten potholes were fixed within the 72-hour window",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S1: 71% met the 72-hour goal."
+  },
+  {
+   "key": "Making the crews permanent would cost $1.5 million in total",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "S2: $1.5 million per year, not a one-time total."
+  },
+  {
+   "key": "The budget office warns that part of the jump in reports comes from more people using the app, not necessarily worse roads",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: rise partly reflects app adoption rather than worse roads."
+  },
+  {
+   "key": "The budget office puts the average cost of a repair at $69, including labor and materials",
+   "label": "mismatch",
+   "tag": "wrong number",
+   "why": "S2: $96 per repair, not $69."
+  },
+  {
+   "key": "The state grant behind the night crews runs out in December 2026, six months into the new fiscal year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S2: grant expires December 2026; FY2027 begins July 2026 (S1 FY definition), so July-December is six months."
+  },
+  {
+   "key": "Crews switched to a hot-asphalt patching truck whose repairs last twice as long as cold patch",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions patching equipment or durability; no citation."
+  }
+ ]
+}

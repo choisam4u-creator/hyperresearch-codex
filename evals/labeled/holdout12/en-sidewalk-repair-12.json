@@ -1,0 +1,110 @@
+{
+ "id": "en-sidewalk-repair-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "How does Marlow Falls' sidewalk repair cost-share program work, and what did it achieve in its first year?",
+ "sources": {
+  "S1": "Marlow Falls launched its sidewalk cost-share program on April 1, 2025, replacing a rule under which adjacent property owners paid 100% of repair costs. Under the program, the city pays 60% of the repair cost and the property owner pays 40%, up to a city contribution cap of $3,000 per parcel. Owners of owner-occupied homes with household income below 80% of area median income may apply for a full waiver of their share, which is then covered by the city's general fund. Commercial parcels and vacant lots are excluded from the program. In 2025 the city received 1,240 applications and completed repairs on 860 parcels, covering 41,300 linear feet of sidewalk. The program's 2025 budget was $2.4 million, of which $2.1 million was spent. Repairs are performed by two contractors selected through competitive bid, not by city crews.",
+  "S2": "The auditor counted 112 trip-and-fall claims against the city in 2025, compared with 148 in 2024. The auditor cautioned that the decline cannot be attributed to the cost-share program, because most 2025 repairs were finished in the second half of the year and claims also fell in neighborhoods with no repairs. Average time from application to completed repair was 94 days. The auditor recommended, but the council has not yet adopted, a proposal to prioritize blocks near schools and transit stops. Waivers were granted to 210 of the 860 completed parcels."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How does Marlow Falls' sidewalk repair cost-share program work, and what did it achieve in its first year?\n\n## Answer\nSince April 2025, Marlow Falls has split sidewalk repair bills, with the city covering 60% and the adjacent owner 40%, up to a $3,000 city cap per parcel [S1]. The program reduced trip-and-fall claims against the city from 148 in 2024 to 112 in 2025 [S2].\n\n## Evidence\n- Before the program, property owners next to the sidewalk bore the entire cost of repairs [S1].\n- About 69% of the 1,240 applications filed in 2025 led to a completed repair [S1].\n- Completed work covered roughly 7.8 miles of sidewalk [S1].\n- Commercial parcels can join the program on the same 60/40 terms as homes [S1].\n- Low-income owner-occupants can have their 40% share waived, with the cost absorbed by the repair contractors [S1].\n- Repairs are carried out by city crews, with two contractors brought in through competitive bidding for overflow work [S1].\n- Average spending per completed parcel came to about $2,440 [S1].\n- Roughly a quarter of completed parcels received a waiver [S2].\n\n## Counter-evidence and limits\n- The auditor noted that claims also dropped in neighborhoods where no repairs took place [S2].\n- The council has adopted the auditor's recommendation to prioritize blocks near schools and transit stops [S2].\n- Applicants waited a little over three months on average between applying and seeing the repair finished [S2].\n- Waivers are open to owner-occupants with household income below 60% of area median income [S1].\n- Contractors must guarantee each repaired sidewalk panel for five years under the bid terms.\n\n## Next actions\n- Ask the auditor for claim counts restricted to repaired blocks before crediting the program with safety gains (judgment).\n- Track whether the school and transit prioritization proposal reaches a council vote (judgment).\n\n## Sources\n- [S1] Marlow Falls Department of Public Works, \"Sidewalk Cost-Share Program: 2025 Year-End Report\" (February 2026)\n- [S2] Marlow Falls Office of the City Auditor, \"Review of Sidewalk Trip-and-Fall Claims\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Since April 2025, Marlow Falls has split sidewalk repair bills, with the city covering 60% and the adjacent owner 40%, up to a $3,000 city cap per parcel",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: city pays 60%, owner 40%, city cap $3,000 per parcel, launched April 1, 2025."
+  },
+  {
+   "key": "The program reduced trip-and-fall claims against the city from 148 in 2024 to 112 in 2025",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S2 gives the 148 -> 112 drop but explicitly says the decline cannot be attributed to the program."
+  },
+  {
+   "key": "Before the program, property owners next to the sidewalk bore the entire cost of repairs",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: the old rule had adjacent owners paying 100% of repair costs."
+  },
+  {
+   "key": "About 69% of the 1,240 applications filed in 2025 led to a completed repair",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 860 completed / 1,240 applications = 69.4%."
+  },
+  {
+   "key": "Completed work covered roughly 7.8 miles of sidewalk",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "S1: 41,300 linear feet / 5,280 = 7.82 miles."
+  },
+  {
+   "key": "Commercial parcels can join the program on the same 60/40 terms as homes",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: commercial parcels and vacant lots are excluded."
+  },
+  {
+   "key": "Low-income owner-occupants can have their 40% share waived, with the cost absorbed by the repair contractors",
+   "label": "mismatch",
+   "tag": "payer",
+   "why": "S1: waived shares are covered by the city's general fund, not contractors."
+  },
+  {
+   "key": "Repairs are carried out by city crews, with two contractors brought in through competitive bidding for overflow work",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: repairs are performed by two bid contractors, not by city crews."
+  },
+  {
+   "key": "Average spending per completed parcel came to about $2,440",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: $2.1 million spent / 860 parcels = $2,442."
+  },
+  {
+   "key": "Roughly a quarter of completed parcels received a waiver",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S2: 210 of 860 = 24.4%."
+  },
+  {
+   "key": "The auditor noted that claims also dropped in neighborhoods where no repairs took place",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: claims also fell in neighborhoods with no repairs."
+  },
+  {
+   "key": "The council has adopted the auditor's recommendation to prioritize blocks near schools and transit stops",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: recommended but not yet adopted by the council."
+  },
+  {
+   "key": "Applicants waited a little over three months on average between applying and seeing the repair finished",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "S2: average 94 days, about 3.1 months."
+  },
+  {
+   "key": "Waivers are open to owner-occupants with household income below 60% of area median income",
+   "label": "mismatch",
+   "tag": "eligibility",
+   "why": "S1: the waiver threshold is below 80% of AMI, not 60%."
+  },
+  {
+   "key": "Contractors must guarantee each repaired sidewalk panel for five years under the bid terms",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions a warranty period; no citation."
+  }
+ ]
+}

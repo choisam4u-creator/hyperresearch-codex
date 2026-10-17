@@ -1,0 +1,170 @@
+{
+ "id": "en-leadlines-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "How far along is Harlow City's lead service line replacement program, and who bears the cost?",
+ "sources": {
+  "S1": "Harlow City Water Utility began its Lead Service Line Replacement Program in March 2025 after an inventory identified 9,600 lead service lines requiring replacement. Through June 30, 2026, crews had replaced 2,880 lines, or 30% of the inventory. The utility's goal is to replace all identified lines by December 2034, consistent with the federal ten-year deadline. Replacement covers both the public portion, from the main to the curb stop, and the private portion, from the curb stop to the home. The utility pays the full cost of the public portion; for the private portion, owner-occupied homes pay nothing, while landlords pay 25% of the private-side cost, capped at $1,500 per property. The average total replacement cost was $11,200 per line in 2025-26, of which the private portion averaged $4,800. Funding for 2026 totals $34 million: $20 million in state revolving fund loans, $8 million in federal grants, and $6 million from water rates. Work is carried out by two contractors selected through competitive bidding, with utility inspectors signing off on each job. Residents receive a pitcher filter and six months of replacement cartridges after replacement, because lead levels can temporarily rise. Follow-up sampling at 400 replaced homes found that 97% had lead below 5 parts per billion three months after replacement. Prioritization follows a scoring model that weights the presence of children under six, licensed childcare facilities and neighborhoods with older housing stock. As a result, 46% of replacements so far have been in the city's two lowest-income council districts. The utility notes that blood-lead levels among young children in those districts have declined, but says the decline began before the program and cannot be attributed to replacements. Property owners must sign a right-of-entry form; 640 owners have not responded after three contact attempts. The utility plans to ask the council for an ordinance allowing replacement without consent in 2027. A customer survey of 350 households with completed replacements found 88% rated the process good or excellent. The average time from first excavation to restored sidewalk was 9 working days.",
+  "S2": "Lead line crews have sped up this year, but residents on the north side say their streets have yet to see a shovel. A landlord group argued that the 25% share discourages rental owners from signing permission forms. Harlow's water rates rose 6% in July, and the utility said about a third of that increase was tied to the lead program. One family said they waited three weeks for their sidewalk to be restored."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How far along is Harlow City's lead service line replacement program, and who bears the cost?\n\n## Answer\nHarlow had replaced 2,880 of its 9,600 identified lead lines by the end of June 2026, roughly three in ten [S1]. Replacements have favored lower-income areas, with nearly half in the two lowest-income council districts [S1]. Lead levels fell below 5 parts per billion in 97% of all replaced homes [S1].\n\n## Evidence\n- The program replaces both the utility-side segment up to the curb stop and the customer-side segment into the home [S1].\n- Owner-occupants pay 25% of the private-side cost, capped at $1,500 [S1].\n- A landlord facing the average private-side cost of $4,800 would owe $1,200, below the $1,500 cap [S1].\n- The private portion accounts for more than half of the average replacement cost [S1].\n- State revolving fund loans make up a little under 60% of 2026 funding [S1].\n- Federal grants and water-rate revenue together supply $16 million [S1].\n- Federal grants are the largest single funding source in 2026 [S1].\n- The work is done by utility crews, with an outside inspector signing off on each job [S1].\n- After replacement, households get a pitcher filter plus half a year of replacement cartridges [S1].\n- Households get the filter because lead levels stay elevated for several years after replacement [S1].\n- The prioritization model gives weight to young children, licensed childcare sites and older housing stock [S1].\n- The utility credits the replacements with lowering children's blood-lead levels in the two lowest-income districts [S1].\n- The north side has the highest concentration of lead lines in the city.\n- About 6,720 lines remained to be replaced as of mid-2026 [S1].\n- 640 owners have refused to sign the right-of-entry form [S1].\n- A city ordinance now allows replacement without owner consent [S1].\n- Restoration from first excavation to finished sidewalk took nine working days on average [S1].\n- About 310 of the 350 surveyed households with completed work rated the process good or excellent [S1].\n\n## Limitations\n- North-side residents say crews have yet to reach their streets [S2].\n- A landlord group argues the 25% share discourages rental owners from signing permission forms [S2].\n- About a third of July's 6% rate increase, roughly 3 percentage points, was tied to the lead program [S2].\n- Families commonly wait three weeks for their sidewalks to be restored [S2].\n\n## Next actions\n- Request the utility's district-level map of remaining lines to check the north-side complaint (judgment).\n\n## Sources\n- [S1] Harlow City Water Utility, \"Lead Service Line Replacement Program: Mid-Year Progress Report\" (2026-09-11)\n- [S2] Harlow Gazette, \"Lead pipe crews pick up speed, but some streets wait\" (2026-09-19)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Harlow had replaced 2,880 of its 9,600 identified lead lines by the end of June 2026, roughly three in ten",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: 'replaced 2,880 lines, or 30% of the inventory' of 9,600. 2,880/9,600 = 0.30. Correct."
+  },
+  {
+   "key": "Replacements have favored lower-income areas, with nearly half in the two lowest-income council districts",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: '46% of replacements so far have been in the city's two lowest-income council districts'. 46% = nearly half. Correct."
+  },
+  {
+   "key": "Lead levels fell below 5 parts per billion in 97% of all replaced homes",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: 'Follow-up sampling at 400 replaced homes found that 97% had lead below 5 parts per billion three months after replacement.' A 400-home sample (of 2,880) is generalized to all replaced homes, and the three-month timing is dropped."
+  },
+  {
+   "key": "The program replaces both the utility-side segment up to the curb stop and the customer-side segment into the home",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'both the public portion, from the main to the curb stop, and the private portion, from the curb stop to the home'. Matches."
+  },
+  {
+   "key": "Owner-occupants pay 25% of the private-side cost, capped at $1,500",
+   "label": "mismatch",
+   "tag": "group_swapped",
+   "why": "S1: 'owner-occupied homes pay nothing, while landlords pay 25% of the private-side cost, capped at $1,500 per property'. Payer group swapped."
+  },
+  {
+   "key": "A landlord facing the average private-side cost of $4,800 would owe $1,200, below the $1,500 cap",
+   "label": "ok",
+   "tag": "derived_arithmetic",
+   "why": "S1: landlords pay 25%, cap $1,500; private portion averaged $4,800. 0.25 x 4,800 = 1,200 < 1,500. Correct."
+  },
+  {
+   "key": "The private portion accounts for more than half of the average replacement cost",
+   "label": "mismatch",
+   "tag": "share_arithmetic",
+   "why": "S1: total $11,200, private $4,800. 4,800/11,200 = 42.9%, less than half."
+  },
+  {
+   "key": "State revolving fund loans make up a little under 60% of 2026 funding",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: '$34 million: $20 million in state revolving fund loans'. 20/34 = 58.8%. Correct."
+  },
+  {
+   "key": "Federal grants and water-rate revenue together supply $16 million",
+   "label": "mismatch",
+   "tag": "sum_arithmetic",
+   "why": "S1: '$8 million in federal grants, and $6 million from water rates'. 8+6 = $14 million (34-20 = 14)."
+  },
+  {
+   "key": "Federal grants are the largest single funding source in 2026",
+   "label": "mismatch",
+   "tag": "comparison_reversed",
+   "why": "S1: SRF loans $20M > federal grants $8M > water rates $6M. Loans are the largest."
+  },
+  {
+   "key": "The work is done by utility crews, with an outside inspector signing off on each job",
+   "label": "mismatch",
+   "tag": "operator_swap",
+   "why": "S1: 'Work is carried out by two contractors ... with utility inspectors signing off on each job.' Roles reversed."
+  },
+  {
+   "key": "After replacement, households get a pitcher filter plus half a year of replacement cartridges",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'a pitcher filter and six months of replacement cartridges'. Matches."
+  },
+  {
+   "key": "Households get the filter because lead levels stay elevated for several years after replacement",
+   "label": "mismatch",
+   "tag": "duration_changed",
+   "why": "S1: 'because lead levels can temporarily rise'. A possible temporary rise becomes a multi-year elevation."
+  },
+  {
+   "key": "The prioritization model gives weight to young children, licensed childcare sites and older housing stock",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'weights the presence of children under six, licensed childcare facilities and neighborhoods with older housing stock'. Matches."
+  },
+  {
+   "key": "The utility credits the replacements with lowering children's blood-lead levels in the two lowest-income districts",
+   "label": "mismatch",
+   "tag": "hedge_to_fact",
+   "why": "S1: the decline 'began before the program and cannot be attributed to replacements'. The utility explicitly does not credit the program."
+  },
+  {
+   "key": "The north side has the highest concentration of lead lines in the city",
+   "label": "unverified",
+   "tag": "unsupported_claim",
+   "why": "No citation; S2 only says north-side residents have not seen crews, and S1 has no geographic breakdown of the inventory."
+  },
+  {
+   "key": "About 6,720 lines remained to be replaced as of mid-2026",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 9,600 identified, 2,880 replaced through June 30, 2026. 9,600-2,880 = 6,720. Correct."
+  },
+  {
+   "key": "640 owners have refused to sign the right-of-entry form",
+   "label": "mismatch",
+   "tag": "nonresponse_as_refusal",
+   "why": "S1: '640 owners have not responded after three contact attempts'. Non-response is not refusal."
+  },
+  {
+   "key": "A city ordinance now allows replacement without owner consent",
+   "label": "mismatch",
+   "tag": "plan_as_achieved",
+   "why": "S1: 'The utility plans to ask the council for an ordinance allowing replacement without consent in 2027.' No ordinance exists yet."
+  },
+  {
+   "key": "Restoration from first excavation to finished sidewalk took nine working days on average",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'The average time from first excavation to restored sidewalk was 9 working days.' Matches."
+  },
+  {
+   "key": "About 310 of the 350 surveyed households with completed work rated the process good or excellent",
+   "label": "ok",
+   "tag": "derived_count",
+   "why": "S1: 'survey of 350 households with completed replacements found 88% rated the process good or excellent'. 0.88 x 350 = 308 -> about 310. Correct."
+  },
+  {
+   "key": "North-side residents say crews have yet to reach their streets",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'residents on the north side say their streets have yet to see a shovel'. Matches."
+  },
+  {
+   "key": "A landlord group argues the 25% share discourages rental owners from signing permission forms",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'A landlord group argued that the 25% share discourages rental owners from signing permission forms.' Matches."
+  },
+  {
+   "key": "About a third of July's 6% rate increase, roughly 3 percentage points, was tied to the lead program",
+   "label": "mismatch",
+   "tag": "fraction_arithmetic",
+   "why": "S2: 'water rates rose 6% in July ... about a third of that increase was tied to the lead program'. 6 x 1/3 = 2 percentage points, not 3."
+  },
+  {
+   "key": "Families commonly wait three weeks for their sidewalks to be restored",
+   "label": "mismatch",
+   "tag": "anecdote_generalized",
+   "why": "S2: 'One family said they waited three weeks.' A single family's experience is generalized (S1 puts the average at 9 working days)."
+  }
+ ]
+}

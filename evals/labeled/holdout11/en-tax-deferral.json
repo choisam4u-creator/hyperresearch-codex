@@ -1,0 +1,104 @@
+{
+ "id": "en-tax-deferral",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "How is Millbrook County's senior property tax deferral program working, and what would expanding it cost?",
+ "sources": {
+  "S1": "Millbrook County's property tax deferral program lets homeowners aged 65 or older with household income below $48,000 postpone paying property taxes on their primary residence. Rental and vacation properties are not eligible. Deferred taxes accrue simple interest of 3 percent a year and become a lien that must be repaid when the home is sold or transferred, or when the owner dies. In 2025, 1,140 households participated, up from 860 in 2024, and the average amount deferred per household was $2,300 for the year. Participants must have at least 25 percent equity in the home and must keep homeowner's insurance in force. The assessor reports that applications rose after the county mailed notices to all senior homeowners in 2025, but has not analyzed whether the mailing caused the increase.",
+  "S2": "The Millbrook County Finance Office estimates the county will carry about $9.4 million in outstanding deferred taxes by the end of 2026. Because the county advances deferred amounts to school districts and other taxing bodies, the county bears the cash-flow cost until liens are repaid. A proposal before the county board would raise the income limit to $60,000 starting in 2027; the board has not voted on it. The office projects the change would add roughly 500 participating households. Repayments in 2025 totaled $1.1 million, mostly from home sales."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How is Millbrook County's senior property tax deferral program working, and what would expanding it cost?\n\n## Answer\nParticipation in Millbrook's senior tax deferral program grew by about a third in 2025, to 1,140 households [S1]. Eligible homeowners must be at least 65 with household income under $48,000 [S1]. The county's 2025 mailing to senior homeowners drove the rise in applications [S1].\n\n## Evidence\n- Deferred taxes are forgiven when the homeowner dies [S1].\n- Interest on deferred amounts is simple, not compound, at 3 percent a year [S1].\n- Together, participants deferred roughly $2.6 million in 2025 [S1].\n- To qualify, owners must hold a quarter or more of their home's value as equity and keep it insured [S1].\n- The program covers seniors' primary residences as well as rental properties they own [S1].\n\n## Counter-evidence and limits\n- School districts carry the cash-flow cost of deferred taxes until the liens are repaid [S2].\n- The county board approved raising the income limit to $60,000 beginning in 2027 [S2].\n- The finance office expects a higher limit would bring in about 500 more households [S2].\n- Outstanding deferred taxes are projected to reach about $9.4 million per year by 2026 [S2].\n- Most of the $1.1 million repaid in 2025 came from homes being sold [S2].\n- Neighboring Ridgeway County runs a similar program at 5 percent interest.\n\n## Next steps\n- Ask the finance office to model cash flow under the $60,000 proposal before the board votes (judgment).\n- Compare application timing with the mailing date to test whether outreach mattered (judgment).\n\n## Sources\n- [S1] Millbrook County Assessor, \"Senior Property Tax Deferral: 2025 Program Summary\" (April 2026)\n- [S2] Millbrook County Finance Office, \"Fiscal Note on Deferral Program Expansion\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Participation in Millbrook's senior tax deferral program grew by about a third in 2025, to 1,140 households",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "860 to 1,140 is a 33% increase."
+  },
+  {
+   "key": "Eligible homeowners must be at least 65 with household income under $48,000",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S1."
+  },
+  {
+   "key": "The county's 2025 mailing to senior homeowners drove the rise in applications",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The assessor has not analyzed whether the mailing caused the increase."
+  },
+  {
+   "key": "Deferred taxes are forgiven when the homeowner dies",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Deferred taxes must be repaid at death, sale or transfer."
+  },
+  {
+   "key": "Interest on deferred amounts is simple, not compound, at 3 percent a year",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Simple interest of 3% a year."
+  },
+  {
+   "key": "Together, participants deferred roughly $2.6 million in 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,140 x $2,300 = $2.62 million."
+  },
+  {
+   "key": "To qualify, owners must hold a quarter or more of their home's value as equity and keep it insured",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "At least 25% equity and homeowner's insurance."
+  },
+  {
+   "key": "The program covers seniors' primary residences as well as rental properties they own",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Only primary residences; rental properties are excluded."
+  },
+  {
+   "key": "School districts carry the cash-flow cost of deferred taxes until the liens are repaid",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "The county advances the amounts and bears the cash-flow cost."
+  },
+  {
+   "key": "The county board approved raising the income limit to $60,000 beginning in 2027",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "It is a proposal; the board has not voted."
+  },
+  {
+   "key": "The finance office expects a higher limit would bring in about 500 more households",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Roughly 500 added households."
+  },
+  {
+   "key": "Outstanding deferred taxes are projected to reach about $9.4 million per year by 2026",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "$9.4 million is a cumulative outstanding balance, not an annual amount."
+  },
+  {
+   "key": "Most of the $1.1 million repaid in 2025 came from homes being sold",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Repayments mostly from home sales."
+  },
+  {
+   "key": "Neighboring Ridgeway County runs a similar program at 5 percent interest",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions another county."
+  }
+ ]
+}

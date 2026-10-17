@@ -1,0 +1,104 @@
+{
+ "id": "en-short-term-rentals",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "Has Pellston's short-term rental registration rule brought hosts into compliance and eased the rental market?",
+ "sources": {
+  "S1": "Pellston began requiring registration of short-term rentals, defined as stays of fewer than 30 nights, on July 1, 2025. Hosts pay an annual fee of $250 and may register only a unit that is their primary residence, except in the downtown commercial district, where non-resident hosts may also register. By June 30, 2026, 1,320 units had registered, while a contractor's scan of booking platforms identified about 1,900 active listings in the city. The Department of Licensing issued 214 warning letters and 37 fines to unregistered hosts during the year. Fines are $500 for a first violation and $1,000 for each later violation. The department cautions that the listing scan may count some units twice when they appear on more than one platform.",
+  "S2": "The Pellston Housing Commission found that the number of long-term rental units advertised in the city rose 4 percent between spring 2025 and spring 2026, while median asking rent rose 2 percent, the smallest increase since 2019. The commission states that it cannot separate the effect of the registration rule from new apartment construction, which added 640 units during the same period. It recommends a two-year follow-up before drawing conclusions."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Pellston's short-term rental registration rule brought hosts into compliance and eased the rental market?\n\n## Answer\nAbout 1,320 short-term rental units registered in the first year, or roughly 70 percent of the 1,900 active listings found online [S1]. The registration rule has pushed short-term units back into the long-term market and slowed rent growth [S2]. Median asking rents climbed just 2 percent, the slowest pace since 2019 [S2].\n\n## Evidence\n- The rule applies to stays shorter than 30 nights [S1].\n- Outside the downtown commercial district, hosts may register only their primary residence [S1].\n- Non-resident hosts are barred from registering anywhere in the city, including downtown [S1].\n- Hosts pay a one-time registration fee of $250 [S1].\n- The department sent nearly six warning letters for every fine it imposed on unregistered hosts [S1].\n- A first violation carries a $1,000 fine [S1].\n\n## Counter-evidence and limits\n- The licensing department warns that its listing count may double-count units advertised on several platforms [S1].\n- The housing commission credits the rent slowdown to the 640 apartments completed during the year [S2].\n- Long-term rental listings fell 4 percent over the same period [S2].\n- The commission advises waiting two years before judging the rule's effects [S2].\n- Hosts earned an estimated $18 million in booking revenue during the first year.\n\n## Next steps\n- De-duplicate the listing scan before estimating the compliance rate (judgment).\n- Repeat the rental market comparison in spring 2027 as the commission suggests (judgment).\n\n## Sources\n- [S1] Pellston Department of Licensing, \"Short-Term Rental Registration: First-Year Review\" (August 2026)\n- [S2] Pellston Housing Commission, \"Rental Market Update, Spring 2026\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About 1,320 short-term rental units registered in the first year, or roughly 70 percent of the 1,900 active listings found online",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,320 / 1,900 = 69.5%."
+  },
+  {
+   "key": "The registration rule has pushed short-term units back into the long-term market and slowed rent growth",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The commission cannot separate the rule's effect from new construction."
+  },
+  {
+   "key": "Median asking rents climbed just 2 percent, the slowest pace since 2019",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Smallest increase since 2019."
+  },
+  {
+   "key": "The rule applies to stays shorter than 30 nights",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Fewer than 30 nights."
+  },
+  {
+   "key": "Outside the downtown commercial district, hosts may register only their primary residence",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Restates the rule and its downtown exception."
+  },
+  {
+   "key": "Non-resident hosts are barred from registering anywhere in the city, including downtown",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Non-resident hosts may register in the downtown commercial district."
+  },
+  {
+   "key": "Hosts pay a one-time registration fee of $250",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "The $250 fee is annual."
+  },
+  {
+   "key": "The department sent nearly six warning letters for every fine it imposed on unregistered hosts",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "214 / 37 = 5.8."
+  },
+  {
+   "key": "A first violation carries a $1,000 fine",
+   "label": "mismatch",
+   "tag": "number",
+   "why": "First violation is $500; $1,000 applies to later violations."
+  },
+  {
+   "key": "The licensing department warns that its listing count may double-count units advertised on several platforms",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches caution in S1."
+  },
+  {
+   "key": "The housing commission credits the rent slowdown to the 640 apartments completed during the year",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The commission says it cannot separate the two effects."
+  },
+  {
+   "key": "Long-term rental listings fell 4 percent over the same period",
+   "label": "mismatch",
+   "tag": "direction",
+   "why": "Long-term listings rose 4%."
+  },
+  {
+   "key": "The commission advises waiting two years before judging the rule's effects",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Two-year follow-up recommended."
+  },
+  {
+   "key": "Hosts earned an estimated $18 million in booking revenue during the first year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives booking revenue."
+  }
+ ]
+}

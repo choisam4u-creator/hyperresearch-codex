@@ -1,0 +1,86 @@
+{
+ "id": "en-guaranteed-income",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "What did Millbrook's Steady Start guaranteed income pilot find?",
+ "sources": {
+  "S1": "Millbrook's Steady Start pilot gave 150 randomly selected households $500 per month for 18 months, from April 2024 to September 2025. Eligibility was limited to households with at least one child under 6 and income below 200 percent of the federal poverty level. A control group of 300 eligible households that applied but were not selected received no payments.\n\nThe pilot was funded with $1.35 million in federal pandemic relief money for the payments and $250,000 from a local foundation, which paid for evaluation.",
+  "S2": "At month 18, 38 percent of recipient households reported having at least $400 in savings for emergencies, compared with 22 percent of control households. Full-time employment among primary caregivers was 41 percent for recipients and 40 percent for controls, a difference the evaluators described as not statistically significant.\n\nRecipients spent the largest share of tracked card transactions on groceries (34 percent), followed by retail goods (21 percent). The evaluators caution that about one-third of payments were withdrawn as cash and could not be tracked. The city council has not identified funding to continue payments."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Millbrook's Steady Start guaranteed income pilot find?\n\n## Answer\nEach recipient household received $9,000 over the pilot's 18 months [S1]. Recipients were 16 percentage points more likely than controls to have $400 in emergency savings at month 18 [S2].\n\n## Evidence\n- The pilot was open to any household earning below 200 percent of the federal poverty level [S1].\n- Twice as many eligible households were placed in the control group as received payments [S1].\n- The local foundation's $250,000 paid for the cash payments [S1].\n- Recipients were significantly more likely to work full time than controls [S2].\n- Groceries accounted for about a third of tracked card spending [S2].\n- Retail goods were the largest spending category [S2].\n\n## Counter-evidence and limits\n- Spending data cover only tracked transactions, since roughly one-third of payments were taken out as cash [S2].\n- The council has set aside funding to continue payments in 2026 [S2].\n- Recipient households reported fewer evictions than control households.\n\n## Next actions\n- Ask evaluators whether savings gains persisted after payments ended in September 2025 (judgment)\n\n## Sources\n- [S1] City of Millbrook, Steady Start Pilot Design and Funding Summary\n- [S2] Steady Start independent evaluation, month-18 findings\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Each recipient household received $9,000 over the pilot's 18 months",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "$500 x 18 = $9,000"
+  },
+  {
+   "key": "Recipients were 16 percentage points more likely than controls to have $400 in emergency savings at month 18",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "38 - 22 = 16 points"
+  },
+  {
+   "key": "The pilot was open to any household earning below 200 percent of the federal poverty level",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "also required at least one child under 6"
+  },
+  {
+   "key": "Twice as many eligible households were placed in the control group as received payments",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "300 controls vs 150 recipients"
+  },
+  {
+   "key": "The local foundation's $250,000 paid for the cash payments",
+   "label": "mismatch",
+   "tag": "target",
+   "why": "foundation money paid for evaluation; payments came from federal relief funds"
+  },
+  {
+   "key": "Recipients were significantly more likely to work full time than controls",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "41 vs 40 percent, not statistically significant"
+  },
+  {
+   "key": "Groceries accounted for about a third of tracked card spending",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "34 percent"
+  },
+  {
+   "key": "Retail goods were the largest spending category",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "groceries were largest; retail was second"
+  },
+  {
+   "key": "Spending data cover only tracked transactions, since roughly one-third of payments were taken out as cash",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "about one-third withdrawn as cash, untracked"
+  },
+  {
+   "key": "The council has set aside funding to continue payments in 2026",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "council has not identified funding to continue"
+  },
+  {
+   "key": "Recipient households reported fewer evictions than control households",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "eviction outcomes not reported"
+  }
+ ]
+}

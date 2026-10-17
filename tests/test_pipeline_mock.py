@@ -194,6 +194,16 @@ class PartTests(unittest.TestCase):
         problems = gates.report_lint("# 질문: q\n## 답\nx [S1]\n## 근거\n## 반대 근거와 한계\n## 출처\n", "q", {"S1"})
         self.assertNotIn("section_missing:## 한계", problems)
 
+    def test_lint_accepts_heading_variants(self):
+        # 24회차: 본문 표시 검사와 같은 제목 규칙 — 하이픈·띄어쓰기·'및'·limitations 변형은 절 빠짐이 아니다.
+        en = gates.report_lint("# Question: q\n## Answer\nx [S1]\n## Evidence\n## Counterevidence and Limitations\n## Sources\n",
+                               "q", {"S1"}, "en")
+        self.assertNotIn("section_missing:## Counter-evidence and limits", en)
+        ko = gates.report_lint("# 질문: q\n## 답\nx [S1]\n## 근거\n## 반대 근거 및 한계\n## 출처\n", "q", {"S1"})
+        self.assertNotIn("section_missing:## 한계", ko)
+        missing = gates.report_lint("# Question: q\n## Answer\nx [S1]\n## Evidence\n## Sources\n", "q", {"S1"}, "en")
+        self.assertIn("section_missing:## Counter-evidence and limits", missing)
+
     def test_published_date_priority(self):
         html = '<html><head><meta property="article:published_time" content="2026-09-01T09:00:00Z"><script type="application/ld+json">{"datePublished":"2020-01-01"}</script></head><body><p>x</p></body></html>'
         _, _, meta = fetch.html_to_text(html)
