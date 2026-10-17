@@ -41,7 +41,8 @@ HPR_BACKEND=mock python -m evals.labeled --set holdout14 # 18회차 holdout14(�
 HPR_BACKEND=mock python -m evals.labeled --set holdout15 # 19회차 holdout15(같은 방식, 12 case·207문장, 18회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
 HPR_BACKEND=mock python -m evals.labeled --set holdout16 # 20회차 holdout16(같은 방식, 12 case·226문장, 19회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
 HPR_BACKEND=mock python -m evals.labeled --set holdout17 # 21회차 holdout17(같은 방식, 12 case·229문장, 20회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
-HPR_BACKEND=mock python -m evals.labeled --set holdout18 # 22회차 holdout18(같은 방식, 12 case·239문장, 21회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋). --set all 은 열아홉 묶음 다
+HPR_BACKEND=mock python -m evals.labeled --set holdout18 # 22회차 holdout18(같은 방식, 12 case·239문장, 21회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋)
+HPR_BACKEND=mock python -m evals.labeled --set holdout19 # 23회차 holdout19(같은 방식, 12 case·254문장, 22회차 끝 코드로 기준선을 잰 뒤 코드 수정 전 커밋. 영어 한계 절 제목은 작성 지시문이 정함). --set all 은 스무 묶음 다
 ```
 
 - 위 점수기는 코드와 같은 발상이라 100에 닿은 뒤 개선을 구분하지 못한다. `labeled/*.json`은 질문·출처·작성 응답에 더해 문장마다 정답 `labels`(`key`: 보고서에서 그 문장을 찾을 고유 문자열, `label`: `ok`·`mismatch`·`unverified`, `tag`: 결함·바꿔 말하기 유형, `why`: 근거)를 둔다.

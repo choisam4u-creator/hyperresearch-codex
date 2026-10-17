@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Check claim sections whose headings differ slightly from the template (`## Counterevidence and limits`, `## Counter evidence and limitations`, `## 반대 근거 및 한계`); before, every sentence under such a heading skipped citation and `(no source)` checks.
+- Mark `(source mismatch)` when the cited source names a sole funder (`전액 시비`, `시가 전액 낸다`, `시비 100%`) or excludes one (`not the general fund`, `no general fund money is used`, `Hospitals do not contribute funding`) and the sentence says another or the excluded funder pays, or that one of two listed funders `covered the full cost`.
 - Mark `(source mismatch)` when a source lists a value per name in one sentence (`해솔동 88건, 서하1동 64건, 미림동 52건`, `Harbor Avenue (1,040), Quill Street (760), North Ring Road (610)`) and a cited sentence compares two of those names the wrong way round (`미림동의 설치 건수가 서하1동보다 많았다`, `Quill Street ranked behind North Ring Road`), recorded as `antonym_conflict`.
 - Fewer false `(source mismatch)` marks on a payer's own share of a source total when the source lists shares per payer (`funded 70% by a state grant and 30% by the city's recreation fund` → `The city's recreation fund contributes $55,500`).
 - Mark `(source mismatch)` when a source lists a value per name in one sentence (`환경부 보조 50%, 시비 30%`, `3000K … in residential areas and 4000K on arterial roads`, `시비가 70%, 도비가 30%`) and a cited sentence attaches a value to another listed name (`도비가 70%를 부담했다`), recorded as `subject_conflict`. Change clauses (`236명에서 214명으로`) and thousands separators are not read as lists.
