@@ -1601,3 +1601,16 @@ class LabeledRoundTests(unittest.TestCase):
             self.assertEqual([], changes["mismatch"], body)
         text, changes = self.mark("The city's recreation fund contributes $129,500 [S1].", en)
         self.assertEqual(1, len(changes["mismatch"]))
+
+    def test_heading_variants_of_claim_sections_are_checked(self):
+        # 23회차(holdout18 영어 case 한계 절 놓침): "## Counterevidence and limits"·"## 반대 근거 및 한계"처럼 제목이 조금 달라도
+        # 주장 절로 보고 인용 없는 사실 문장·원문에 없는 수치를 표시한다.
+        sources = {"S1": "Ridership rose 12% in the pilot zone."}
+        en = ("# Question: q\n\n## Answer\nRidership rose 12% [S1].\n\n## Counterevidence and limits\n"
+              "- Main Street foot traffic counts rose 14% over the period.\n- Ridership rose 21% [S1].\n\n## Sources\n- [S1] x")
+        text, changes = mark_report_claims(en, sources, "en")
+        self.assertIn("over the period (no source).", text)
+        self.assertEqual(1, len(changes["mismatch"]))
+        ko = ("# 질문: q\n\n## 답\n이용객은 12% 늘었다 [S1].\n\n## 반대 근거 및 한계\n- 상권 매출도 9% 늘었다.\n\n## 출처\n- [S1] x")
+        text, changes = mark_report_claims(ko, {"S1": "시범 구역 이용객은 12% 늘었다."}, "ko")
+        self.assertEqual(1, len(changes["no_source"]))

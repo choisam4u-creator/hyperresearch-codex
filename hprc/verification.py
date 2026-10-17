@@ -533,6 +533,20 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
           "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
                  "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
+# 23회차(holdout18 영어 case 2개의 한계 절 문장 결함 놓침으로 설계): 모델은 절 제목을 "## Counterevidence and limits"·
+# "## Counter evidence and limitations"·"## 반대 근거 및 한계"처럼 조금 바꿔 쓴다. 제목이 글자 그대로 같을 때만 주장 절로 보면
+# 그 절 문장 전체가 인용 대조·출처 없음 검사를 건너뛰었다. 대소문자·띄어쓰기·하이픈·'및/와'·limitations를 무시하고 견준다.
+def _heading_key(heading: str) -> str:
+    key = re.sub(r"[\s\-–—:]+", "", heading.lower().lstrip("#"))
+    return key.replace("limitations", "limits").replace("및", "와")
+
+
+def _section_heading(stripped: str, M: dict) -> str:
+    """'## ' 제목을 _MARKS의 주장 절·출처 절 표기로 맞춘다. 해당 없으면 그대로 돌려준다."""
+    key = _heading_key(stripped)
+    return next((h for h in (*M["claims"], M["sources"]) if _heading_key(h) == key), stripped)
+
+
 # 시각·약어("8:30 a.m. start", "e.g. buses")의 마침표에서는 끊지 않는다. a.m./p.m. 뒤에 대문자가 오면 문장 끝으로 본다(2026-10-10 6회차:
 # 끊으면 표시가 "a.m (출처 없음). start"처럼 문장 가운데 들어가 본문이 깨졌다).
 _ABBREV = r"(?<![ap]\.m\.)(?<!\be\.g\.)(?<!\bi\.e\.)(?<!\bvs\.)(?<!\bU\.S\.)"
@@ -2419,6 +2433,7 @@ def _payer_role_swap(plain: str, sents: list[str]) -> bool:
     return _cost_payer_swap(plain, sents) or _not_paid_flip(plain, sents) or _payer_share_swap(plain, sents)
 
 
+
 # 16회차(holdout11 대상 바꿈을 보고 설계): 일을 맡은 주체를 바꾼 문장("Adjacent property owners are responsible for pruning"
 # ← 원문 "The forestry division prunes"; "포획과 수술은 시 직영 동물보호센터가 맡는다" ← "시와 계약한 동물병원 11곳이 맡는다").
 # 주장에서 '누가 무슨 일을 하는지'(주체 구 + 일 동사)를 읽고, 일 낱말(주체 구를 뺀 나머지)이 가장 많이 겹치는 원문 절의 주체 구와
@@ -3394,7 +3409,7 @@ def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> l
         if stripped.startswith(("```", "~~~")):
             fenced = not fenced
         if stripped.startswith("## "):
-            section = stripped
+            section = _section_heading(stripped, M)
         if fenced or section not in M["claims"] or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             continue
         body = re.sub(r"^\s*(?:[-*]|\d+\.)\s+", "", line)
@@ -3463,7 +3478,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             fenced = not fenced
         if fenced or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             if stripped.startswith("## "):
-                section = stripped
+                section = _section_heading(stripped, M)
             out.append(line)
             continue
         if section == M["sources"]:
@@ -3560,7 +3575,7 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     M = _MARKS.get(lang, _MARKS["ko"])
     lines = report.split("\n")
     limits = M["claims"][2:]
-    index = next((i for i, line in enumerate(lines) if line.strip() in limits), None)
+    index = next((i for i, line in enumerate(lines) if _section_heading(line.strip(), M) in limits), None)
     if index is None:
         return report, []
     end = next((j for j in range(index + 1, len(lines)) if lines[j].startswith("#")), len(lines))
