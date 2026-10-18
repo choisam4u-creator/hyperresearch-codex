@@ -2,6 +2,20 @@
 
 최신 회차가 맨 위에 온다.
 
+## 2026-10-18 (품질 회차 25)
+
+- 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.
+- 점수 전후: 별도 에이전트가 쓴 holdout21(12 case·269문장, 한계 절 제목도 에이전트가 고름) 기준선 **F1 66.7 → 68.8**, 오표시율 15.3 → 15.3. 이 중 **holdout21을 보지 않고 설계한 개선 1·2의 효과는 66.7 → 68.3**, 개선 3(+0.5)은 holdout21 제목 목록을 안 뒤 만들었다. 설계용 holdout20 56.8 → 62.3, holdout19 61.1 → 62.4, holdout13 73.2 → 74.8. 전체 71.8 → 72.5(오표시 13.3 그대로). 새로 틀린 문장 없음, 고정 32 case 99.9. 상세는 `docs/QUALITY-LOG.md`.
+- 한 일: holdout21 먼저(`e8b8bd9`) → 진행 중·예정·조건부 계획을 실적·확정으로(`9d5b976`) → 한 사람·한 건 일화를 통상·평균으로(`0939bc4`) → 모르는 한계 절 제목도 검사(`9639d88`) → 기록, CI holdout21 `--min-f1 55`. 백로그 새 항목 3건.
+- 돌린 시험: `HPR_BACKEND=mock python -m unittest discover -s tests -p 'test*.py'` → 657개 통과(Python 3.11 venv, httpx·pypdf 설치). 회차 중 한 번은 시험 도중 내가 `hprc/verification.py`를 바꿔 끼워 오류 1개가 났고, 파일을 고정한 뒤 다시 돌려 통과했다. 새 시험 3개는 옛 코드에서 실패를 확인했다. `evals.run --min-total 97` 99.9, 라벨 평가 스물두 묶음. 실제 `codex exec`는 로그인이 없어 돌리지 않았다. 병합·태그·릴리스·PyPI 게시는 하지 않았다. 이번 푸시들의 GitHub CI 결과는 이 기록 시점에 확인하지 못했다. 커밋 댓글 도구 사용 여부와 결과는 PR 본문에 적는다.
+- 남은 한계: 계획→실적 판정은 완료형 낱말 근사(영어 has/was+과거분사, 한국어 '-했다·됐다')와 가장 가까운 원문 절 하나에 기대므로, 실제 codex 보고서에서 맞는 실적 문장 오표시율을 재야 한다. 사람 라벨 검토는 아직 없다.
+- Mac에서 실제 codex로 확인할 명령 3줄:
+  ```bash
+  git fetch origin claude/cloud-work && git checkout claude/cloud-work && python3 hpr.py doctor
+  python3 hpr.py run "구립 도서관 야간 연장은 시행됐나, 아니면 아직 계획인가? 주민 반응과 한계를 밝혀라"
+  grep -h -A8 '"plan_conflict"\|"scope_conflict"' research/runs/*/report_marks.json | head -40   # 표시 문장을 원문과 대조
+  ```
+
 ## 2026-10-17 (품질 회차 24)
 
 - 최우선 B1~B4(베타 0.5.0b1): 9회차에 끝나 PR #17로 main에 병합됐고 태그 `v0.5.0b1`(main `c3a47b5`)도 있다(B1 `ce60e80`·B2 `5fdbbab`·B3 `7c42fee`). 다시 고치지 않고 확인만 했다. PR #17은 병합돼 본문을 고칠 수 없어 열린 PR 본문에 적는다.

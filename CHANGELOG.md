@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Mark `(source mismatch)` when a sentence states as done or current (`has hired`, `now allows`, `were added`, `도입됐다`, `추가해 운영하고 있다`) what the closest source clause gives only as in progress, planned or conditional (`is hiring`, `plans to`, `예정`), or states as certain (`will staff`, `is scheduled to`) a plan the source makes `contingent on` or `subject to` something. Sentences that themselves report a recommendation or intent (`권고했다`, `이용하겠다고 답했다`) are not marked.
+- Mark `(source mismatch)` when a source gives one person's or one case's experience (`One family said`, `한 교회 관리인은`, `가운데 한 건은`) and the sentence makes it common or average (`commonly`, `routinely`, `입을 모았다`, `평균`), recorded as `scope_conflict`.
+- Check a `##` section with an unrecognised heading (`## Open questions`, `## 해석할 때 주의할 점`) as the limitations section when it directly follows a claim section and comes before Next actions or Sources; before, its uncited sentences got no `(no source)` mark.
 - Mark `(출처 불일치)` when a Korean sentence names a cause with `-(으)로` (`센서 도입으로 … 줄었다`, `도시락 배달로 고독사가 줄었다`) while the source says the effect cannot be confirmed; read `확인할 수 없다`, `효과로만 돌릴 수 없다` and `cautioned against direct comparison` as hedges. `0건으로 줄었다`-style target values are not causes.
 - Mark `(source mismatch)` when a sentence names a different operator than a source that puts the task after the doer (`maintenance stays with the city's own electricians`) or says `위탁받아 맡는다`.
 - `report_lint` no longer asks for review over heading variants such as `## Counterevidence and Limitations` or `## 반대 근거 및 한계`.
