@@ -1,0 +1,152 @@
+{
+ "id": "en-stormwater-credits-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "Are Linden Falls' stormwater fee credits reaching property owners and reducing runoff?",
+ "sources": {
+  "S1": "Linden Falls began charging a stormwater utility fee in 2022, billed at $7.40 per month for each equivalent residential unit (ERU), defined as 2,600 square feet of impervious surface. Single-family homes are billed a flat one ERU regardless of size, while non-residential parcels are billed by measured impervious area. Property owners can reduce their fee through credits for rain gardens, cisterns, permeable paving and green roofs. Residential credits are capped at 40% of the fee, and non-residential credits at 60%. As of June 2026, 1,184 residential parcels and 96 non-residential parcels held active credits, out of about 31,000 billed parcels. Credits must be renewed every three years with a self-inspection form, and the utility inspects a random 10% of credited sites each year. In the 2025 inspection round, 22 of 118 inspected sites failed, mostly because rain gardens had been mowed or filled. Credits reduced fee revenue by $286,000 in 2025, about 3.9% of stormwater fee revenue. The utility also offers a cost-share grant covering 50% of installation costs, up to $2,000, for residential projects; it is funded by a state revolving-loan forgiveness allocation rather than by ratepayers. Modeling by the utility's consultant estimates that existing credited practices capture about 41 million gallons of runoff per year, though the consultant described the estimate as carrying an uncertainty range of plus or minus 35%. Uptake is concentrated: 62% of residential credits are in the two wards with the highest median incomes. The utility is considering raising the residential cap to 50% and adding a low-income installation program, and a proposal will go to the utility board in January 2027. Credits do not apply to the separate $3.15 monthly flood-control surcharge.",
+  "S2": "Neighborhood group Eastside Water Watch argues that the credit program mostly benefits affluent homeowners. The group's leader, Ana Ruiz, said that in her ward only 'a handful' of homes have credits. Utility director Felix Hahn said the inspection failure rate showed the program 'needs more education, not more enforcement.' A landscaper interviewed for this story said a typical residential rain garden costs $3,500 to $6,000 to install."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Are Linden Falls' stormwater fee credits reaching property owners and reducing runoff?\n\n## Answer\nOnly about 4% of Linden Falls' roughly 31,000 billed parcels held stormwater fee credits as of mid-2026 [S1]. Credits trimmed 2025 fee revenue by $286,000, or about 39% of the total [S1]. Most residential credits sit in the two wealthiest wards [S1].\n\n## Evidence\n- The fee is $7.40 a month per equivalent residential unit, which the utility defines as 2,600 square feet of impervious area [S1].\n- Single-family homes are billed according to their measured impervious area [S1].\n- A homeowner at the residential cap would save at most about $35.50 a year [S1].\n- Credits are capped at 60% for residential parcels and 40% for non-residential parcels [S1].\n- Credits must be renewed annually through a self-inspection form [S1].\n- The utility inspects a randomly chosen tenth of credited sites each year [S1].\n- Roughly 19% of sites inspected in 2025 failed, most often because rain gardens had been mowed or filled in [S1].\n- The fee was introduced after flooding damaged more than 200 homes in 2020.\n- The 50% cost-share grant, worth up to $2,000 per residential project, is funded by ratepayers [S1].\n- Under that grant, a resident installing a $3,500 rain garden would pay $1,500 out of pocket [S1].\n- Credited practices capture 41 million gallons of runoff each year [S1].\n- The utility has raised the residential cap to 50% and launched a low-income installation program [S1].\n- A proposal to lift the residential cap to 50% is slated for the utility board in January 2027 [S1].\n- Credits can be applied against both the stormwater fee and the $3.15 flood-control surcharge [S1].\n- Ninety-six non-residential parcels held active credits in June 2026 [S1].\n\n## Counterpoints and gaps\n- Eastside Water Watch contends that the credit mainly helps well-off homeowners [S2].\n- Utility director Felix Hahn said the failure rate shows the program needs stricter enforcement [S2].\n- A landscaper estimated that a typical residential rain garden costs between $3,500 and $6,000 to install [S2].\n- The runoff estimate carries an uncertainty of plus or minus 25% [S1].\n\n## Next steps\n- Ask the utility for credit uptake by ward and income before the January 2027 board proposal (judgment).\n\n## Sources\n- [S1] Linden Falls Water Utility, \"Stormwater Credit Program Review\" (2026-09-09)\n- [S2] Linden Falls Gazette, \"Rain-garden credits skew to wealthier wards, group says\" (2026-09-17)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Only about 4% of Linden Falls' roughly 31,000 billed parcels held stormwater fee credits as of mid-2026",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: (1,184 + 96) / 31,000 = 4.1%"
+  },
+  {
+   "key": "Credits trimmed 2025 fee revenue by $286,000, or about 39% of the total",
+   "label": "mismatch",
+   "tag": "decimal_shifted",
+   "why": "S1: 'about 3.9% of stormwater fee revenue'"
+  },
+  {
+   "key": "Most residential credits sit in the two wealthiest wards",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '62% of residential credits are in the two wards with the highest median incomes'"
+  },
+  {
+   "key": "The fee is $7.40 a month per equivalent residential unit, which the utility defines as 2,600 square feet of impervious area",
+   "label": "ok",
+   "tag": "ok_exact",
+   "why": "S1: '$7.40 per month for each ERU, defined as 2,600 square feet of impervious surface'"
+  },
+  {
+   "key": "Single-family homes are billed according to their measured impervious area",
+   "label": "mismatch",
+   "tag": "category_swapped",
+   "why": "S1: single-family homes billed 'a flat one ERU regardless of size'; measured area applies to non-residential"
+  },
+  {
+   "key": "A homeowner at the residential cap would save at most about $35.50 a year",
+   "label": "ok",
+   "tag": "ok_derived_product",
+   "why": "S1: 40% x $7.40 x 12 = $35.52"
+  },
+  {
+   "key": "Credits are capped at 60% for residential parcels and 40% for non-residential parcels",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: 'Residential credits are capped at 40% ... non-residential credits at 60%'"
+  },
+  {
+   "key": "Credits must be renewed annually through a self-inspection form",
+   "label": "mismatch",
+   "tag": "frequency_changed",
+   "why": "S1: 'renewed every three years'"
+  },
+  {
+   "key": "The utility inspects a randomly chosen tenth of credited sites each year",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'inspects a random 10% of credited sites each year'"
+  },
+  {
+   "key": "Roughly 19% of sites inspected in 2025 failed, most often because rain gardens had been mowed or filled in",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: 22 of 118 = 18.6%"
+  },
+  {
+   "key": "The fee was introduced after flooding damaged more than 200 homes in 2020",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source explains why the fee was introduced"
+  },
+  {
+   "key": "The 50% cost-share grant, worth up to $2,000 per residential project, is funded by ratepayers",
+   "label": "mismatch",
+   "tag": "funder_swapped",
+   "why": "S1: 'funded by a state revolving-loan forgiveness allocation rather than by ratepayers'"
+  },
+  {
+   "key": "Under that grant, a resident installing a $3,500 rain garden would pay $1,500 out of pocket",
+   "label": "mismatch",
+   "tag": "arithmetic_error",
+   "why": "S1: 50% of $3,500 = $1,750 grant (under the $2,000 cap), so the owner pays $1,750"
+  },
+  {
+   "key": "Credited practices capture 41 million gallons of runoff each year",
+   "label": "mismatch",
+   "tag": "uncertainty_dropped",
+   "why": "S1: a consultant model 'estimates ... about 41 million gallons' with 'plus or minus 35%'"
+  },
+  {
+   "key": "The utility has raised the residential cap to 50% and launched a low-income installation program",
+   "label": "mismatch",
+   "tag": "plan_stated_as_done",
+   "why": "S1: 'is considering ... a proposal will go to the utility board in January 2027'"
+  },
+  {
+   "key": "A proposal to lift the residential cap to 50% is slated for the utility board in January 2027",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'a proposal will go to the utility board in January 2027'"
+  },
+  {
+   "key": "Credits can be applied against both the stormwater fee and the $3.15 flood-control surcharge",
+   "label": "mismatch",
+   "tag": "inclusion_flipped",
+   "why": "S1: 'Credits do not apply to the separate $3.15 monthly flood-control surcharge'"
+  },
+  {
+   "key": "Ninety-six non-residential parcels held active credits in June 2026",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '96 non-residential parcels held active credits'"
+  },
+  {
+   "key": "Eastside Water Watch contends that the credit mainly helps well-off homeowners",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: 'argues that the credit program mostly benefits affluent homeowners'"
+  },
+  {
+   "key": "Utility director Felix Hahn said the failure rate shows the program needs stricter enforcement",
+   "label": "mismatch",
+   "tag": "stance_reversed",
+   "why": "S2: program 'needs more education, not more enforcement'"
+  },
+  {
+   "key": "A landscaper estimated that a typical residential rain garden costs between $3,500 and $6,000 to install",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: 'costs $3,500 to $6,000 to install'"
+  },
+  {
+   "key": "The runoff estimate carries an uncertainty of plus or minus 25%",
+   "label": "mismatch",
+   "tag": "number_changed",
+   "why": "S1: 'plus or minus 35%'"
+  }
+ ]
+}

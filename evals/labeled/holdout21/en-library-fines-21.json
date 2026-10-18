@@ -1,0 +1,152 @@
+{
+ "id": "en-library-fines-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "What happened after Corvale County's library stopped charging overdue fines on youth materials?",
+ "sources": {
+  "S1": "In January 2025 the Corvale County Public Library eliminated overdue fines on all children's and teen materials; adult materials remained subject to a 25-cent daily fine capped at $5 per item. The library board voted 5-2 on 12 November 2024 to adopt the policy. Before the change, fine revenue was $184,000 in fiscal 2024, about 1.1% of the library's $16.7 million operating budget. The library estimated that staff time spent collecting and disputing fines cost roughly $61,000 a year, though that figure was based on a two-week time study at three of the system's 14 branches. In the first twelve months, 9,420 previously blocked cardholders regained borrowing privileges after their juvenile fine balances were cleared. Card registrations for patrons under 18 rose from 11,300 in 2024 to 13,560 in 2025. The library cautioned that a back-to-school card drive held in August 2025 at 40 schools may account for part of that increase. Return rates within 30 days of the due date for children's items were 94.2% in 2024 and 93.8% in 2025. Items lost and replaced at library expense rose from 2,150 in 2024 to 2,410 in 2025. The county's general fund covered the lost fine revenue through a one-time transfer of $150,000 for fiscal 2025; the board has not decided whether to seek an extension of the transfer for fiscal 2026. Extending the fine-free policy to adult materials is under study, with a staff recommendation due in March 2027. Automatic renewals, up to three times, apply to items without holds. Accounts are still blocked when an item is more than 45 days overdue, and the block lifts as soon as the item is returned. Replacement charges for lost items were not waived.",
+  "S2": "Critics on the library board, including trustee Mara Ellison, argued that the county should not be subsidizing a library policy indefinitely. Ellison said the county transfer covered only about 82% of the revenue the fines used to bring in. A survey of 412 patrons at two branches, conducted by the Friends of the Library, found that 61% said they visit more often since the change; the group acknowledged the survey was not random. Teo Rask, manager of the Millford branch, said returns at his branch slowed 'noticeably' in the spring, though he said he had not tracked the numbers. Neighboring Ashby County, whose library went fully fine-free for all ages in 2023, reported a 7% rise in active cardholders over two years."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What happened after Corvale County's library stopped charging overdue fines on youth materials?\n\n## Answer\nCorvale's library dropped overdue fines for children's and teen materials in January 2025, while adult items still accrue 25 cents a day up to $5 per item [S1]. Under-18 card registrations climbed by 20% in the first year, an increase the library attributes to the fine-free policy [S1]. Return rates for children's items barely moved, slipping from 94.2% to 93.8% [S1].\n\n## Evidence\n- The library board approved the policy in November 2024 on a 5-2 vote [S1].\n- Fine revenue of $184,000 in fiscal 2024 represented about 11% of the library's operating budget [S1].\n- Collecting and disputing fines cost staff about $61,000 a year, according to a systemwide time study [S1].\n- Clearing juvenile balances restored borrowing to 9,420 cardholders who had been blocked [S1].\n- The number of registered cardholders under 18 grew by 2,260 between 2024 and 2025 [S1].\n- Lost items replaced at the library's expense fell from 2,410 to 2,150 [S1].\n- Fine-free policies have now been adopted by more than half of U.S. public library systems.\n- The library covered the lost fine revenue from its own reserves with a one-time $150,000 transfer [S1].\n- The board then extended the $150,000 transfer into fiscal 2026 [S1].\n- Staff are studying whether to make adult materials fine-free as well, with a recommendation expected in March 2027 [S1].\n- Under the new policy, accounts are no longer blocked for overdue items [S1].\n- Items with no holds renew automatically as many as three times [S1].\n- The August 2025 back-to-school card drive reached 14 schools [S1].\n- Trustee Mara Ellison said the county transfer replaced only about four-fifths of the revenue that fines had brought in [S2].\n- A Friends of the Library survey of 412 patrons showed that most library users across the county now visit more often [S2].\n\n## What the numbers cannot yet show\n- The library itself warned that the school card drive may explain part of the jump in youth registrations [S1].\n- Millford branch data show that returns slowed noticeably in spring 2025 [S2].\n- Neighboring Ashby County, fine-free since 2023, saw active cardholders rise 7% in a single year [S2].\n- Ashby is an imperfect comparison because its library dropped fines for adults too [S2].\n\n## Next steps\n- Ask the library for branch-level return and loss data before judging whether to extend the policy to adults (judgment).\n\n## Sources\n- [S1] Corvale County Public Library, \"Fine-Free Youth Borrowing: First-Year Report\" (2026-09-04)\n- [S2] Corvale Ledger, \"Library fine policy wins readers, splits board\" (2026-09-11)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Corvale's library dropped overdue fines for children's and teen materials in January 2025, while adult items still accrue 25 cents a day up to $5 per item",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'eliminated overdue fines on all children's and teen materials; adult materials remained subject to a 25-cent daily fine capped at $5'"
+  },
+  {
+   "key": "Under-18 card registrations climbed by 20% in the first year, an increase the library attributes to the fine-free policy",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1 says the August card drive 'may account for part of that increase'; library does not attribute it to the policy"
+  },
+  {
+   "key": "Return rates for children's items barely moved, slipping from 94.2% to 93.8%",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'Return rates ... were 94.2% in 2024 and 93.8% in 2025'"
+  },
+  {
+   "key": "The library board approved the policy in November 2024 on a 5-2 vote",
+   "label": "ok",
+   "tag": "ok_exact",
+   "why": "S1: 'voted 5-2 on 12 November 2024'"
+  },
+  {
+   "key": "Fine revenue of $184,000 in fiscal 2024 represented about 11% of the library's operating budget",
+   "label": "mismatch",
+   "tag": "percent_shifted",
+   "why": "S1: 'about 1.1% of the library's $16.7 million operating budget'"
+  },
+  {
+   "key": "Collecting and disputing fines cost staff about $61,000 a year, according to a systemwide time study",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: estimate 'based on a two-week time study at three of the system's 14 branches'"
+  },
+  {
+   "key": "Clearing juvenile balances restored borrowing to 9,420 cardholders who had been blocked",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '9,420 previously blocked cardholders regained borrowing privileges'"
+  },
+  {
+   "key": "The number of registered cardholders under 18 grew by 2,260 between 2024 and 2025",
+   "label": "ok",
+   "tag": "ok_derived_difference",
+   "why": "S1: 11,300 -> 13,560, difference 2,260"
+  },
+  {
+   "key": "Lost items replaced at the library's expense fell from 2,410 to 2,150",
+   "label": "mismatch",
+   "tag": "direction_reversed",
+   "why": "S1: 'rose from 2,150 in 2024 to 2,410 in 2025'"
+  },
+  {
+   "key": "Fine-free policies have now been adopted by more than half of U.S. public library systems",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source mentions national adoption rates"
+  },
+  {
+   "key": "The library covered the lost fine revenue from its own reserves with a one-time $150,000 transfer",
+   "label": "mismatch",
+   "tag": "payer_swapped",
+   "why": "S1: 'The county's general fund covered the lost fine revenue through a one-time transfer of $150,000'"
+  },
+  {
+   "key": "The board then extended the $150,000 transfer into fiscal 2026",
+   "label": "mismatch",
+   "tag": "undecided_as_done",
+   "why": "S1: 'the board has not decided whether to seek an extension of the transfer for fiscal 2026'"
+  },
+  {
+   "key": "Staff are studying whether to make adult materials fine-free as well, with a recommendation expected in March 2027",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'under study, with a staff recommendation due in March 2027'"
+  },
+  {
+   "key": "Under the new policy, accounts are no longer blocked for overdue items",
+   "label": "mismatch",
+   "tag": "negation_flipped",
+   "why": "S1: 'Accounts are still blocked when an item is more than 45 days overdue'"
+  },
+  {
+   "key": "Items with no holds renew automatically as many as three times",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'Automatic renewals, up to three times, apply to items without holds'"
+  },
+  {
+   "key": "The August 2025 back-to-school card drive reached 14 schools",
+   "label": "mismatch",
+   "tag": "number_confused",
+   "why": "S1: drive 'held in August 2025 at 40 schools'; 14 is the branch count"
+  },
+  {
+   "key": "Trustee Mara Ellison said the county transfer replaced only about four-fifths of the revenue that fines had brought in",
+   "label": "ok",
+   "tag": "ok_rounding",
+   "why": "S2: 'covered only about 82% of the revenue'"
+  },
+  {
+   "key": "A Friends of the Library survey of 412 patrons showed that most library users across the county now visit more often",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S2: survey 'at two branches', 'not random'"
+  },
+  {
+   "key": "The library itself warned that the school card drive may explain part of the jump in youth registrations",
+   "label": "ok",
+   "tag": "ok_hedge_kept",
+   "why": "S1: 'may account for part of that increase'"
+  },
+  {
+   "key": "Millford branch data show that returns slowed noticeably in spring 2025",
+   "label": "mismatch",
+   "tag": "anecdote_as_data",
+   "why": "S2: manager 'had not tracked the numbers'"
+  },
+  {
+   "key": "Neighboring Ashby County, fine-free since 2023, saw active cardholders rise 7% in a single year",
+   "label": "mismatch",
+   "tag": "time_window_changed",
+   "why": "S2: '7% rise in active cardholders over two years'"
+  },
+  {
+   "key": "Ashby is an imperfect comparison because its library dropped fines for adults too",
+   "label": "ok",
+   "tag": "ok_inference",
+   "why": "S2: Ashby 'went fully fine-free for all ages in 2023'"
+  }
+ ]
+}
