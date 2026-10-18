@@ -276,6 +276,22 @@ class CausalPeriodInternalTests(unittest.TestCase):
             text, changes = mark(body, src, lang)
             self.assertEqual([], changes["plan_conflict"], body)
 
+    def test_single_anecdote_generalized(self):
+        # 25회차(holdout20 일화 일반화 놓침): 원문이 한 사람·한 건으로 말한 경험을 주장이 여럿의 통상·평균으로 말하면 표시한다.
+        def mark(body, src, lang="ko"):
+            head = "## Answer\n" if lang == "en" else "## 답\n"
+            return mark_report_claims(f"{head}{body}\n\n## Sources\n- [S1] a\n", {"S1": src}, lang)
+        en = "One Maple Street parent said the school bus arrived forty minutes late twice in March."
+        ko = "동쪽 마을의 한 상인은 주차 단속 뒤 손님이 줄었다고 말했다."
+        for body, src, lang in (("Parents routinely report the school bus arriving late in March [S1].", en, "en"),
+                                ("동쪽 마을 상인들은 주차 단속 뒤 손님이 줄었다고 입을 모았다 [S1].", ko, "ko")):
+            text, changes = mark(body, src, lang)
+            self.assertEqual(1, len(changes["scope_conflict"]), body)
+        for body, src, lang in (("One parent said the school bus arrived late twice in March [S1].", en, "en"),
+                                ("동쪽 마을의 한 상인은 주차 단속 뒤 손님이 줄었다고 했다 [S1].", ko, "ko")):
+            text, changes = mark(body, src, lang)
+            self.assertEqual([], changes["scope_conflict"], body)
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)

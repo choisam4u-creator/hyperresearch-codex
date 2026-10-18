@@ -1288,7 +1288,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents) or _pending_upgrade(plain, sents):
         found.append("plan")
     if (_scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents)
-            or _condition_flip(plain, sents)):
+            or _condition_flip(plain, sents) or _anecdote_overclaim(plain, sents)):
         found.append("scope")
     if _year_conflict(plain, sents):
         found.append("year")
@@ -2220,6 +2220,34 @@ def _pending_upgrade(plain: str, sents: list[str]) -> bool:
             return False
     return True
 
+
+# 25회차(holdout20 일화 일반화 놓침 4건으로 설계): 원문이 한 사람·한 건의 경험으로 말한 것("One family said they waited three
+# weeks", "서부권의 한 교회 관리인은 … 했다", "실종 신고 가운데 한 건은 … 9시간")을 주장이 여럿의 공통 경험·통상·평균으로 말한다
+# ("Families commonly wait", "contractors routinely skipped", "관리인들은 … 입을 모았다", "평균 9시간"). 주장과 가장 많이 겹치는
+# 원문 문장(같은 글자, 영어 3·한국어 2-gram 5개 이상)이 모두 하나를 말하고, 주장은 하나를 말하지 않을 때만 본다.
+_ONE_EN = re.compile(r"\b(?:one|a single|an?) (?:[A-Z][a-z]+ (?:Street |Avenue |Road )?)?(?:[a-z]+ ){0,2}"
+                     r"(?:resident|family|parent|owner|driver|rider|user|patron|caller|customer|teacher|worker|tenant|landlord|"
+                     r"manager|shopkeeper|neighbor|neighbour|household|case|report|call|complaint|incident|participant|student|"
+                     r"vendor|merchant|member|homeowner|senior|patient|guard|volunteer|official|employee)s?\b(?: \w+){0,6}? "
+                     r"(?:said|says|told|reported|described|recalled|complained|noted|waited|took|was|had)\b", re.I)
+_ONE_KO = re.compile(r"(?:^|\s)한\s[가-힣]{1,8}(?:\s[가-힣]{1,8})?(?:은|는|이|가)\s|가운데\s한\s?(?:건|명|곳|가구)(?:은|는|이|가)")
+_MANY_EN = re.compile(r"\b(?:commonly|routinely|typically|usually|regularly|frequently|often|generally|many|most|several|"
+                      r"widespread|residents|families|parents|owners|drivers|riders|users|patrons|customers|tenants|"
+                      r"neighbors|neighbours|households|on average|average)\b", re.I)
+_MANY_KO = re.compile(r"[가-힣]들(?:은|는|이|가|도)\s|입을 모았|평균|대부분|대다수|흔히|자주|늘\s|매번|으레|일반적|여럿|많은")
+
+
+def _anecdote_overclaim(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    one, many = (_ONE_KO, _MANY_KO) if korean else (_ONE_EN, _MANY_EN)
+    if one.search(plain) or not many.search(plain):
+        return False
+    scored = [(_clause_overlap(plain, s)[0], s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    most = max((n for n, _ in scored), default=0)
+    if most < (5 if korean else 3):
+        return False
+    best = [s for n, s in scored if n == most]
+    return all(one.search(s) and not many.search(one.sub(" ", s)) for s in best)
 
 
 def _closest_sentence(plain: str, sents: list[str]) -> str | None:
