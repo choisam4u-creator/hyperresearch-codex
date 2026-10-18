@@ -1285,7 +1285,7 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("causal")
     if _period_conflict(plain, sents) or _frequency_swap(plain, sents):
         found.append("period")
-    if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents):
+    if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents) or _pending_upgrade(plain, sents):
         found.append("plan")
     if (_scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents)
             or _condition_flip(plain, sents)):
@@ -2153,6 +2153,73 @@ def _already_overclaim(plain: str, sents: list[str]) -> bool:
             if shared > most:
                 best, most = c, shared
     return best is not None and most >= (4 if korean else 2) and bool(_INTENT.search(best))
+
+
+# 25회차(holdout20 계획→실적 놓침 12건으로 설계, holdout21은 보지 않음): '이미'나 정해진 완료 동사 없이도 주장이 이룬 일·현재
+# 상태로 말하는데("has hired", "were added this fall", "A city ordinance now allows", "도입됐다", "추가해 운영하고 있다"), 주장과
+# 가장 많이 겹치는 원문 절이 진행 중·예정·조건부로만 말하면("is hiring", "plan to add", "plans to ask the council for an
+# ordinance", "도입할 예정이다", "contingent on filling current vacancies", "subject to county funding") 계획을 실적으로 쓴 것이다.
+# 원문이 조건을 단 계획을 주장이 조건 없이 확정한 경우("will staff 60 intersections", "is scheduled to open by FY2028")도 본다.
+# 목표 낱말을 담은 주장은 달성 동사("reached its 95% target")가 있을 때만 본다.
+_REALIZED_EN = re.compile(
+    r"\b(?:ha(?:s|ve)|had) (?:now |already |since |recently )?(?:been )?[a-z]+(?:ed|en|un|ught|t)\b|"
+    r"\b(?:was|were) (?:now |already |recently )?[a-z]+(?:ed|en|un|ught)\b|"
+    r"\bnow (?:allows?|requires?|covers?|offers?|permits?|includes?|provides?|runs?|operates?|pays?|funds?|serves?)\b|"
+    r"\bis (?:now )?(?:being [a-z]+ed|open|available|in place|in effect|underway|operating|running)\b|"
+    r"\bare (?:now )?(?:being [a-z]+ed|open|available|in place|in effect|underway|operating|running)\b", re.I)
+_FIRM_PLAN_EN = re.compile(r"\b(?:will|is scheduled to|are scheduled to|is set to|are set to)\b", re.I)
+_REALIZED_KO = re.compile(r"(?:했|됐|되었|웠|렸|겼|켰|쳤|었|았)다\s*\.?\s*$|(?:하고|되고|운영하고|시행하고) 있다\s*\.?\s*$|"
+                          r"(?:운영|시행|진행|가동|도입) 중이다\s*\.?\s*$")
+_PENDING_SRC = re.compile(
+    r"\b(?:plans? to|planned|intends? to|aims? to|expects? to|proposes? to|proposed|is (?:hiring|recruiting|drafting|developing|"
+    r"preparing|seeking|considering|reviewing|working (?:on|to))|are (?:hiring|recruiting|drafting|developing|preparing|seeking|"
+    r"considering|reviewing)|pending|contingent on|subject to|depending on|has not yet|have not yet|not yet)\b|"
+    r"예정|계획|방침|검토\s*(?:중|하고)|추진\s*중|준비\s*중|하겠다|안을 제출|확정되지|아직", re.I)
+_CONTINGENT_SRC = re.compile(r"\b(?:contingent on|subject to|pending|depending on|if (?:the )?(?:council|board|state|county|city|"
+                             r"funding|voters))\b|조건으로|확보되면|승인되면|통과되면|경우에 한해", re.I)
+_DONE_IN_SRC_EN = re.compile(r"\b(?:ha(?:s|ve)|had) (?:already |since |recently )?(?:been )?[a-z]+(?:ed|en)\b|"
+                             r"\b(?:was|were) [a-z]+(?:ed|en)\b|\balready\b", re.I)
+_DONE_IN_SRC_KO = re.compile(r"(?:했|됐|되었|였|었|았)(?:다|고|으며|는데|지만)?\s*$|(?:했|됐|되었|였|었|았)(?:다|고|으며)\b|이미")
+_GOAL_NOUN = re.compile(r"\b(?:target|goal|aim)s?\b|목표", re.I)
+_GOAL_MET = re.compile(r"\b(?:reached|met|achieved|hit|exceeded|surpassed|attained)\b|달성했|채웠|넘어섰|넘겼", re.I)
+
+
+def _pending_upgrade(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    # 주장 스스로 계획·제안·의향을 말하면('권고했다', 'urged', '이용하겠다고 답했다') 실적 주장이 아니다.
+    hedged = re.search(r"\b(?:may|might|could|would|plans?|planned|intends?|propos\w*|recommend\w*|suggest\w*|urged?|"
+                       r"asked|requested|called for|pending|expected|considering|if)\b|"
+                       r"예정|계획|검토|추진|방침|권고|제안|요청|건의|촉구|할 수|수 있|않|못|아직|겠", plain, re.I)
+    if hedged:
+        return False
+    if _GOAL_NOUN.search(plain) and not _GOAL_MET.search(plain):
+        return False
+    realized = bool(_REALIZED_KO.search(plain)) if korean else bool(_REALIZED_EN.search(plain))
+    firm = not korean and not realized and bool(_FIRM_PLAN_EN.search(plain))
+    if not (realized or firm):
+        return False
+    best, most = [], 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = [(c, s)], shared
+            elif shared == most and shared:
+                best.append((c, s))
+    if most < (5 if korean else 3):
+        return False
+    cue = _CONTINGENT_SRC if firm else _PENDING_SRC
+    for clause, sentence in best:
+        # 'plans to'·'예정'이 겹친 절 밖(앞 절·문장 끝)에 있을 수 있어 문장 전체에서 찾는다. 다만 겹친 절 스스로 완료를 말하면
+        # ("500기를 설치했고 500기를 더 늘릴 예정") 실적 절이므로 표시하지 않는다.
+        if not cue.search(sentence):
+            return False
+        if not cue.search(clause) and (_DONE_IN_SRC_KO if korean else _DONE_IN_SRC_EN).search(clause):
+            return False
+    return True
+
 
 
 def _closest_sentence(plain: str, sents: list[str]) -> str | None:

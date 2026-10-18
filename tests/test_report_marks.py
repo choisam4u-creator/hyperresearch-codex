@@ -251,6 +251,31 @@ class CausalPeriodInternalTests(unittest.TestCase):
         text, changes = mark("통학버스 운행은 청솔교통이 맡는다 [S1].", cases[1][1])
         self.assertEqual([], changes["subject_conflict"])
 
+    def test_pending_plan_stated_as_done_or_unconditional(self):
+        # 25회차(holdout20 계획→실적 놓침): 완료 동사 목록 밖("has hired", "now requires", "도입됐다", "운영하고 있다")이라도 가장
+        # 가까운 원문 절이 진행 중·예정·조건부로만 말하면 계획을 실적으로 쓴 것이다. 원문 조건을 뺀 확정 미래도 본다.
+        def mark(body, src, lang="ko"):
+            head = "## Answer\n" if lang == "en" else "## 답\n"
+            return mark_report_claims(f"{head}{body}\n\n## Sources\n- [S1] a\n", {"S1": src}, lang)
+        cases = [("The parks department has hired three seasonal rangers [S1].",
+                  "The parks department said it is hiring three seasonal rangers for the summer.", "en"),
+                 ("A county rule now requires helmets on rental scooters [S1].",
+                  "The county plans to propose a rule requiring helmets on rental scooters next year.", "en"),
+                 ("The clinic will extend Saturday hours in 2027 [S1].",
+                  "The clinic intends to extend Saturday hours in 2027, contingent on state funding.", "en"),
+                 ("구는 야간 진료 상담 창구를 추가해 운영하고 있다 [S1].", "구는 내년 3월부터 야간 진료 상담 창구를 추가할 예정이다.", "ko"),
+                 ("전기 청소차 3대가 올해 도입됐다 [S1].", "군은 내년에 전기 청소차 3대를 도입할 계획이다.", "ko")]
+        for body, src, lang in cases:
+            text, changes = mark(body, src, lang)
+            self.assertEqual(1, len(changes["plan_conflict"]), body)
+        # 원문이 이미 한 일, 주장이 계획을 그대로 말한 것, 응답자의 의향('하겠다고 답했다')은 표시하지 않는다.
+        for body, src, lang in (("The parks department hired three seasonal rangers [S1].",
+                                 "The parks department has hired three seasonal rangers and plans to add two more.", "en"),
+                                ("The county plans to propose a helmet rule next year [S1].", cases[1][1], "en"),
+                                ("응답자 91%가 계속 이용하겠다고 답했다 [S1].", "응답자 91%가 계속 이용하겠다고 답했다.", "ko")):
+            text, changes = mark(body, src, lang)
+            self.assertEqual([], changes["plan_conflict"], body)
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)
