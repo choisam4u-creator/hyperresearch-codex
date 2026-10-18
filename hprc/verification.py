@@ -541,10 +541,23 @@ def _heading_key(heading: str) -> str:
     return key.replace("limitations", "limits").replace("및", "와")
 
 
-def _section_heading(stripped: str, M: dict) -> str:
-    """'## ' 제목을 _MARKS의 주장 절·출처 절 표기로 맞춘다. 해당 없으면 그대로 돌려준다."""
+# 25회차: 모델이 한계 절 제목을 아예 다르게 쓰면("## Open questions", "## 해석할 때 주의할 점") 위 규칙으로도 못 맞춰 그 절 문장
+# 전체가 검사를 건너뛴다. 답·근거 같은 주장 절 바로 뒤에 오는 모르는 '## ' 절은 다음 행동·출처 절이 나오기 전까지 한계 절로 본다.
+_NEXT_HEADING = re.compile(r"^##\s*(?:다음\s*(?:행동|단계|할\s*일)|next\s+(?:actions?|steps?)|what\s+to\s+do\s+next|"
+                           r"recommended\s+(?:actions?|next\s+steps?))\b", re.I)
+
+
+def _section_heading(stripped: str, M: dict, previous: str = "") -> str:
+    """'## ' 제목을 _MARKS의 주장 절·출처 절 표기로 맞춘다. 해당 없으면 그대로 돌려준다.
+
+    previous(바로 앞 절)가 주장 절이고 이 제목이 다음 행동 절이 아니면 한계 절(주장 절의 셋째)로 본다."""
     key = _heading_key(stripped)
-    return next((h for h in (*M["claims"], M["sources"]) if _heading_key(h) == key), stripped)
+    known = next((h for h in (*M["claims"], M["sources"]) if _heading_key(h) == key), None)
+    if known:
+        return known
+    if previous in M["claims"] and stripped.startswith("## ") and not _NEXT_HEADING.match(stripped):
+        return M["claims"][2]
+    return stripped
 
 
 # 시각·약어("8:30 a.m. start", "e.g. buses")의 마침표에서는 끊지 않는다. a.m./p.m. 뒤에 대문자가 오면 문장 끝으로 본다(2026-10-10 6회차:
@@ -3618,7 +3631,7 @@ def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> l
         if stripped.startswith(("```", "~~~")):
             fenced = not fenced
         if stripped.startswith("## "):
-            section = _section_heading(stripped, M)
+            section = _section_heading(stripped, M, section)
         if fenced or section not in M["claims"] or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             continue
         body = re.sub(r"^\s*(?:[-*]|\d+\.)\s+", "", line)
@@ -3687,7 +3700,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             fenced = not fenced
         if fenced or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             if stripped.startswith("## "):
-                section = _section_heading(stripped, M)
+                section = _section_heading(stripped, M, section)
             out.append(line)
             continue
         if section == M["sources"]:
@@ -3784,7 +3797,13 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     M = _MARKS.get(lang, _MARKS["ko"])
     lines = report.split("\n")
     limits = M["claims"][2:]
-    index = next((i for i, line in enumerate(lines) if _section_heading(line.strip(), M) in limits), None)
+    index, section = None, ""
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            section = _section_heading(line.strip(), M, section)
+            if section in limits:
+                index = i
+                break
     if index is None:
         return report, []
     end = next((j for j in range(index + 1, len(lines)) if lines[j].startswith("#")), len(lines))

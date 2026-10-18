@@ -292,6 +292,20 @@ class CausalPeriodInternalTests(unittest.TestCase):
             text, changes = mark(body, src, lang)
             self.assertEqual([], changes["scope_conflict"], body)
 
+    def test_unknown_limits_heading_after_claim_sections_is_checked(self):
+        # 25회차: 한계 절 제목을 아예 다르게 쓴 절("## Open questions", "## 해석할 때 주의할 점")도 답·근거 뒤에 오면 한계 절로 보고
+        # 인용 없는 사실 문장에 출처 없음을 붙인다(수치 대조는 절과 관계없이 이미 한다). 다음 행동 절은 여전히 검사하지 않는다.
+        src = {"S1": "The pilot served 420 riders in its first month."}
+        report = ("## Answer\nThe pilot served 420 riders in its first month [S1].\n\n## Open questions\n"
+                  "Ridership dropped sharply once the free fares ended.\n\n## Next actions\n"
+                  "Ask the agency for monthly counts.\n\n## Sources\n- [S1] a\n")
+        text, changes = mark_report_claims(report, src, "en")
+        self.assertEqual(["Ridership dropped sharply once the free fares ended."], changes["no_source"])
+        ko = ("## 답\n시범 사업 첫 달 이용자는 420명이었다 [S1].\n\n## 해석할 때 주의할 점\n무료 요금이 끝난 뒤 이용자가 크게 줄었다.\n\n"
+              "## 다음 행동\n월별 이용자 수를 요청한다.\n\n## 출처\n- [S1] a\n")
+        text, changes = mark_report_claims(ko, {"S1": "시범 사업 첫 달 이용자는 420명이었다."}, "ko")
+        self.assertEqual(["무료 요금이 끝난 뒤 이용자가 크게 줄었다."], changes["no_source"])
+
     def test_unrelated_positive_causal_sentence_does_not_cancel_disclaimer(self):
         src = {"S1": "The study cannot establish that the campaign caused traffic growth. Rain caused one closure."}
         text, changes = self.mark("The campaign caused traffic growth [S1].", src)
