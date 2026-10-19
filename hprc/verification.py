@@ -2699,7 +2699,25 @@ def _doers(text: str) -> list[tuple[str, int, int]]:
         (m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_WITH.finditer(text)]
 
 
+def _ko_task_doers(text: str) -> list[tuple[str, set[str]]]:
+    out = []
+    for phrase, start, _ in _doers(text):
+        boundary = max(text.rfind(",", 0, start), text.rfind(";", 0, start)) + 1
+        topic = re.fullmatch(r"\s*([가-힣][가-힣\s·]*?)[은는]\s*", text[boundary:start])
+        if topic and not _NEGATION.search(text):
+            out.append((re.sub(r"\s+", "", topic.group(1)), _doer_words(phrase)))
+    return out
+
+
 def _doer_swap(plain: str, sents: list[str]) -> bool:
+    # 생략 동사가 있는 병렬문은 명시된 같은 일끼리만 주체를 견준다.
+    tasks = _ko_task_doers(plain)
+    sources = [_ko_task_doers(s) for s in sents]
+    if (len(tasks) > 1 or any(len(pairs) > 1 for pairs in sources)) and not _RESTRAINED.search(plain):
+        for task, words in tasks:
+            theirs = [other for pairs in sources for name, other in pairs if name == task]
+            if words and theirs and all(other and not (words & other) for other in theirs):
+                return True
     mine = _doers(plain)
     if len(mine) != 1 or _RESTRAINED.search(plain):
         return False

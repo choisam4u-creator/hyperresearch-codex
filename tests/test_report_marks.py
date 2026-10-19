@@ -1557,6 +1557,30 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_korean_parallel_tasks_keep_their_own_doers(self):
+        src = {"S1": "조리는 X가, 배달은 Y가 맡는다."}
+        for body in ("조리는 Y가, 배달은 X가 맡는다",
+                     "조리는 X가, 배달은 Z가 맡는다",
+                     "조리는 Y가 맡는다"):
+            with self.subTest(body=body):
+                _, changes = self.mark(body + " [S1].", src, "ko")
+                self.assertEqual(1, len(changes["subject_conflict"]))
+        for body in ("조리는 X가, 배달은 Y가 맡는다",
+                     "배달은 Y가, 조리는 X가 맡는다",
+                     "조리는 X가 맡는다",
+                     "청소는 Z가, 점검은 W가 맡는다"):
+            with self.subTest(body=body):
+                _, changes = self.mark(body + " [S1].", src, "ko")
+                self.assertEqual([], changes["subject_conflict"])
+
+    def test_korean_parallel_tasks_include_single_sentence_support(self):
+        for source in ("조리는 X가, 배달은 Y가 맡는다. 조리는 Z가 맡는다.",
+                       "조리는 Z가 맡는다. 조리는 X가, 배달은 Y가 맡는다."):
+            with self.subTest(source=source):
+                text, changes = self.mark("조리는 Z가 맡는다 [S1].", {"S1": source}, "ko")
+                self.assertEqual([], changes["subject_conflict"])
+                self.assertNotIn("(출처 불일치)", text)
+
     def test_frequency_swap_is_marked(self):
         # 19회차(백로그 빈도 바꿈, holdout13·14로 설계): 일의 빈도를 해마다 횟수로 읽어, 일 낱말이 가장 겹치는 원문 절의 빈도와 견준다.
         en = {"S1": "Volunteers water each planter with 10 gallons once a week from June through August. "
