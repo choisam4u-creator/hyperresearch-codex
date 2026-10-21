@@ -1581,6 +1581,28 @@ class LabeledRoundTests(unittest.TestCase):
                 self.assertEqual([], changes["subject_conflict"])
                 self.assertNotIn("(출처 불일치)", text)
 
+    def test_korean_parallel_task_support_stays_bound_to_its_task(self):
+        source = "조리는 X가, 배달은 Y가 맡는다."
+        cases = (
+            ("다른 일의 주체", "조리는 Z가 맡는다",
+             source + " 청소는 Z가 맡는다.", 1),
+            ("배달 주체를 조리에 사용", "조리는 Z가 맡는다",
+             source + " 배달은 Z가 맡는다.", 1),
+            ("조리만 지지", "조리는 Z가, 배달은 W가 맡는다",
+             source + " 조리는 Z가 맡는다.", 1),
+            ("조리와 배달 모두 지지", "조리는 Z가, 배달은 W가 맡는다",
+             source + " 조리는 Z가 맡는다. 배달은 W가 맡는다.", 0),
+        )
+        for name, body, support, conflicts in cases:
+            with self.subTest(case=name):
+                text, changes = self.mark(body + " [S1].", {"S1": support}, "ko")
+                if conflicts:
+                    self.assertEqual(conflicts, len(changes["subject_conflict"]))
+                else:
+                    self.assertEqual([], changes["subject_conflict"])
+                    self.assertEqual([], [item for items in changes.values() for item in items])
+                    self.assertNotIn("(출처 불일치)", text)
+
     def test_frequency_swap_is_marked(self):
         # 19회차(백로그 빈도 바꿈, holdout13·14로 설계): 일의 빈도를 해마다 횟수로 읽어, 일 낱말이 가장 겹치는 원문 절의 빈도와 견준다.
         en = {"S1": "Volunteers water each planter with 10 gallons once a week from June through August. "
