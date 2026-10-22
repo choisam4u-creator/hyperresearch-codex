@@ -1557,6 +1557,51 @@ class LabeledRoundTests(unittest.TestCase):
             text, changes = self.mark(body, src, lang)
             self.assertEqual([], changes["subject_conflict"], body)
 
+    def test_single_task_tied_sources_support_either_order(self):
+        a = "The parks department maintains the public garden."
+        b = "The volunteer group maintains the public garden."
+        for source in (a + " " + b, b + " " + a):
+            with self.subTest(source=source):
+                text, changes = self.mark("The volunteer group maintains the public garden [S1].", {"S1": source})
+                self.assertEqual([], changes["subject_conflict"])
+                self.assertNotIn("(source mismatch)", text)
+                again, repeated = mark_report_claims(text, {"S1": source}, "en")
+                self.assertEqual(text, again)
+                self.assertEqual([], [item for items in repeated.values() for item in items])
+
+    def test_single_task_tied_sources_reject_unsupported_third_doer(self):
+        a = "The parks department maintains the public garden."
+        b = "The volunteer group maintains the public garden."
+        for source in (a + " " + b, b + " " + a):
+            with self.subTest(source=source):
+                text, changes = self.mark("The neighborhood association maintains the public garden [S1].", {"S1": source})
+                self.assertEqual(1, len(changes["subject_conflict"]))
+                self.assertIn("(source mismatch)", text)
+                again, _ = mark_report_claims(text, {"S1": source}, "en")
+                self.assertEqual(text, again)
+
+    def test_single_task_ties_do_not_borrow_doer_from_other_task(self):
+        a = "The parks department maintains the public garden."
+        b = "The volunteer group maintains the community library."
+        for source in (a + " " + b, b + " " + a):
+            with self.subTest(source=source):
+                text, changes = self.mark("The volunteer group maintains the public garden [S1].", {"S1": source})
+                self.assertEqual(1, len(changes["subject_conflict"]))
+                self.assertIn("(source mismatch)", text)
+                again, _ = mark_report_claims(text, {"S1": source}, "en")
+                self.assertEqual(text, again)
+
+    def test_different_task_overlap_ties_keep_conflict_in_both_orders(self):
+        a = "The parks department cleans the public garden."
+        b = "The volunteer group maintains the public library."
+        for source in (a + " " + b, b + " " + a):
+            with self.subTest(source=source):
+                text, changes = self.mark("The volunteer group maintains the public garden [S1].", {"S1": source})
+                self.assertEqual(1, len(changes["subject_conflict"]))
+                self.assertIn("(source mismatch)", text)
+                again, _ = mark_report_claims(text, {"S1": source}, "en")
+                self.assertEqual(text, again)
+
     def test_korean_parallel_tasks_keep_their_own_doers(self):
         src = {"S1": "조리는 X가, 배달은 Y가 맡는다."}
         for body in ("조리는 Y가, 배달은 X가 맡는다",

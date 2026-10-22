@@ -2732,6 +2732,10 @@ def _doer_swap(plain: str, sents: list[str]) -> bool:
     task = plain[:start] + " " + plain[end:]
     korean = bool(re.search(r"[가-힣]", plain))
     best, most = None, 0
+    tied = {}
+    stems = _char_bigrams if korean else _word_stems
+    negation = _NEGATION if korean else _NEGATION_WORDS
+    task_stems = stems(negation.sub(" ", task))
     for s in sents:
         for c in [s] + _clauses(s):
             theirs = _doers(c)
@@ -2741,13 +2745,17 @@ def _doer_swap(plain: str, sents: list[str]) -> bool:
             for p, a, b in sorted(theirs, key=lambda t: -t[1]):
                 rest = rest[:a] + " " + rest[b:]
             shared, _ = _clause_overlap(task, rest)
+            overlap = frozenset(task_stems & stems(negation.sub(" ", rest)))
             # 24회차: 겹침이 같으면 주체가 적은 절(문장보다 그 일을 말하는 절)을 고른다.
             if shared > most or (shared and shared == most and len(theirs) < len(best)):
-                best, most = theirs, shared
+                best, most, tied = theirs, shared, {overlap: [theirs]}
+            elif shared and shared == most and len(theirs) == len(best):
+                tied.setdefault(overlap, []).append(theirs)
     if best is None or most < (4 if korean else 2):
         return False
-    # 원문 절 주체 어느 하나라도 주장 주체와 낱말을 나누면(같은 주체를 다르게 부른 것) 표시하지 않는다.
-    return all(_doer_words(p) and not (_doer_words(p) & words) for p, _, _ in best)
+    # 같은 업무의 지지만 인정하며, 다른 업무 동점에 주체 충돌이 남으면 순서와 무관하게 표시한다.
+    return any(all(_doer_words(p) and not (_doer_words(p) & words)
+                   for theirs in group for p, _, _ in theirs) for group in tied.values())
 
 
 def _causal_stems(text: str) -> set[str]:
