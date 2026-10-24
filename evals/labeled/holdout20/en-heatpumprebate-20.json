@@ -1,0 +1,170 @@
+{
+ "id": "en-heatpumprebate-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "Is Corvale's home heat pump rebate program reaching low-income households and cutting energy use?",
+ "sources": {
+  "S1": "Corvale's Home Heat Pump Rebate Program began accepting applications on January 15, 2025, for owner-occupied single-family homes and duplexes within city limits. The base rebate is $2,000 per home for a ducted or ductless air-source heat pump that meets the program's cold-climate efficiency standard. Households earning up to 80% of area median income receive an enhanced rebate of $6,000, and the enhanced rebate may not exceed 75% of the installed cost. Rebates are paid directly to participating contractors, who must deduct the amount on the customer's invoice. The program is administered by the nonprofit Corvale Energy Alliance under contract with the city. Funding for 2025-2026 totals $5.4 million, of which the city's climate levy provides $3.6 million and the regional electric utility provides $1.8 million. Through July 31, 2026, the program had paid 1,320 rebates: 1,010 base and 310 enhanced. Enhanced-rebate households were 23% of recipients, below the program's goal of 35%. The median installed cost was $14,500 for ducted systems and $9,800 for ductless systems. A metered sub-sample of 120 homes showed average winter heating energy use fell 41% compared with the prior winter, adjusted for weather. The evaluator cautions that the sub-sample consisted of volunteers and may overstate savings for the wider population. Average annual heating bills for participants dropped by an estimated $380 for homes switching from heating oil, but rose by an estimated $60 for homes switching from natural gas, because of local price differences. Of all recipients, 58% had previously heated with natural gas, 34% with oil and 8% with electric resistance. Contractors must hold a city registration and complete a four-hour training on cold-climate sizing; 47 contractors are registered. A post-installation inspection is carried out on one in ten installations, selected at random. Of inspected installations, 6% required corrective work. The city intends to open eligibility to rental properties with three to six units in 2027 if the council renews the levy. Applications for the enhanced rebate take an average of 19 business days to process, compared with 8 for the base rebate.",
+  "S2": "Corvale's heat pump rebates have been snapped up by middle-income homeowners, while lower-income families remain underrepresented. An advocate for low-income tenants said the program does nothing for renters, who make up about 45% of the city's households. Several contractors told the paper that the enhanced-rebate paperwork slows jobs by weeks. The Energy Alliance said it is hiring two more application processors."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Corvale's home heat pump rebate program reaching low-income households and cutting energy use?\n\n## Answer\nCorvale had paid 1,320 heat pump rebates by the end of July 2026, roughly three-quarters of them at the base level [S1]. Participating homes cut their winter heating energy use by 41% on a weather-adjusted basis [S1]. Low-income uptake lags, with enhanced-rebate households at 23% of recipients against a 35% goal [S1].\n\n## Evidence\n- The program is open to owner-occupied homes as well as small rental buildings of up to six units [S1].\n- The base rebate is $2,000 for a qualifying cold-climate air-source heat pump [S1].\n- Households at or below 80% of area median income receive the enhanced $6,000 rebate regardless of installed cost [S1].\n- For a ductless system at the median installed cost of $9,800, the 75% cap works out to $7,350, so the full $6,000 applies [S1].\n- Rebates are mailed to homeowners after installation [S1].\n- The regional utility supplies half of the $5.4 million in funding [S1].\n- The climate levy provides twice as much funding as the utility [S1].\n- The program fell 12 percent short of its 35% low-income goal [S1].\n- Ductless systems had a higher median installed cost than ducted systems [S1].\n- The median ducted installation cost $4,700 more than the median ductless one [S1].\n- Every participant saw lower heating bills after switching [S1].\n- Homes that switched from natural gas saw estimated heating bills rise by about $60 a year because of local price differences [S1].\n- About a third of recipients had previously heated with natural gas [S1].\n- Roughly 450 recipients had previously heated with oil [S1].\n- Every installation receives a post-installation inspection, and 6% needed corrective work [S1].\n- Corvale's rebate is the largest municipal heat pump incentive in the state.\n- Enhanced-rebate applications take more than twice as long to process as base applications, 19 versus 8 business days [S1].\n\n## Risks and open questions\n- Lower-income families remain underrepresented among rebate recipients [S2].\n- Renters make up about 45% of Corvale's households, according to city data [S2].\n- Several contractors say enhanced-rebate paperwork slows jobs by weeks [S2].\n- The Energy Alliance has hired two more application processors [S2].\n- The evaluator warns that the 41% figure comes from 120 volunteer homes and may overstate savings [S1].\n\n## Next actions\n- Ask the Energy Alliance for enhanced-rebate processing times after the new hires start (judgment).\n\n## Sources\n- [S1] Corvale Office of Sustainability, \"Home Heat Pump Rebate Program: 2026 Interim Evaluation\" (2026-09-04)\n- [S2] Corvale Daily, \"Heat pump rebates popular, but low-income uptake lags\" (2026-09-21)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Corvale had paid 1,320 heat pump rebates by the end of July 2026, roughly three-quarters of them at the base level",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: '1,320 rebates: 1,010 base and 310 enhanced'. 1,010/1,320 = 76.5%, roughly three-quarters. Correct."
+  },
+  {
+   "key": "Participating homes cut their winter heating energy use by 41% on a weather-adjusted basis",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: 'A metered sub-sample of 120 homes showed ... fell 41%' and 'the sub-sample consisted of volunteers and may overstate savings for the wider population'. A volunteer sub-sample result is applied to all participants."
+  },
+  {
+   "key": "Low-income uptake lags, with enhanced-rebate households at 23% of recipients against a 35% goal",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Enhanced-rebate households were 23% of recipients, below the program's goal of 35%.' Matches."
+  },
+  {
+   "key": "The program is open to owner-occupied homes as well as small rental buildings of up to six units",
+   "label": "mismatch",
+   "tag": "plan_as_current",
+   "why": "S1: eligibility is 'owner-occupied single-family homes and duplexes'; rentals of three to six units are only intended 'in 2027 if the council renews the levy'."
+  },
+  {
+   "key": "The base rebate is $2,000 for a qualifying cold-climate air-source heat pump",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'The base rebate is $2,000 per home for a ducted or ductless air-source heat pump that meets the program's cold-climate efficiency standard.' Matches."
+  },
+  {
+   "key": "Households at or below 80% of area median income receive the enhanced $6,000 rebate regardless of installed cost",
+   "label": "mismatch",
+   "tag": "cap_ignored",
+   "why": "S1: 'the enhanced rebate may not exceed 75% of the installed cost'. The cap is ignored."
+  },
+  {
+   "key": "For a ductless system at the median installed cost of $9,800, the 75% cap works out to $7,350, so the full $6,000 applies",
+   "label": "ok",
+   "tag": "derived_cap_check",
+   "why": "S1: cap 75% of installed cost; ductless median $9,800. 0.75 x 9,800 = 7,350 > 6,000, so the cap does not bind. Correct."
+  },
+  {
+   "key": "Rebates are mailed to homeowners after installation",
+   "label": "mismatch",
+   "tag": "payee_changed",
+   "why": "S1: 'Rebates are paid directly to participating contractors, who must deduct the amount on the customer's invoice.'"
+  },
+  {
+   "key": "The regional utility supplies half of the $5.4 million in funding",
+   "label": "mismatch",
+   "tag": "share_arithmetic",
+   "why": "S1: utility provides $1.8 million of $5.4 million. 1.8/5.4 = one third, not half."
+  },
+  {
+   "key": "The climate levy provides twice as much funding as the utility",
+   "label": "ok",
+   "tag": "derived_ratio",
+   "why": "S1: levy $3.6 million, utility $1.8 million. 3.6/1.8 = 2. Correct."
+  },
+  {
+   "key": "The program fell 12 percent short of its 35% low-income goal",
+   "label": "mismatch",
+   "tag": "pct_vs_pp",
+   "why": "S1: 23% actual vs 35% goal. The gap is 12 percentage points; in relative terms it is 12/35 = 34% short."
+  },
+  {
+   "key": "Ductless systems had a higher median installed cost than ducted systems",
+   "label": "mismatch",
+   "tag": "comparison_reversed",
+   "why": "S1: '$14,500 for ducted systems and $9,800 for ductless systems'. Ducted is higher."
+  },
+  {
+   "key": "The median ducted installation cost $4,700 more than the median ductless one",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 14,500-9,800 = 4,700. Correct."
+  },
+  {
+   "key": "Every participant saw lower heating bills after switching",
+   "label": "mismatch",
+   "tag": "exception_dropped",
+   "why": "S1: bills 'dropped by an estimated $380 for homes switching from heating oil, but rose by an estimated $60 for homes switching from natural gas'. Gas switchers saw increases."
+  },
+  {
+   "key": "Homes that switched from natural gas saw estimated heating bills rise by about $60 a year because of local price differences",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'rose by an estimated $60 for homes switching from natural gas, because of local price differences'. Matches."
+  },
+  {
+   "key": "About a third of recipients had previously heated with natural gas",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: '58% had previously heated with natural gas, 34% with oil'. About a third (34%) is oil; gas is 58%."
+  },
+  {
+   "key": "Roughly 450 recipients had previously heated with oil",
+   "label": "ok",
+   "tag": "derived_count",
+   "why": "S1: 34% of 1,320 recipients. 0.34 x 1,320 = 448.8 -> roughly 450. Correct."
+  },
+  {
+   "key": "Every installation receives a post-installation inspection, and 6% needed corrective work",
+   "label": "mismatch",
+   "tag": "scope_changed",
+   "why": "S1: 'A post-installation inspection is carried out on one in ten installations, selected at random. Of inspected installations, 6% required corrective work.'"
+  },
+  {
+   "key": "Corvale's rebate is the largest municipal heat pump incentive in the state",
+   "label": "unverified",
+   "tag": "unsupported_comparison",
+   "why": "No citation; neither source compares Corvale with other municipalities."
+  },
+  {
+   "key": "Enhanced-rebate applications take more than twice as long to process as base applications, 19 versus 8 business days",
+   "label": "ok",
+   "tag": "derived_ratio",
+   "why": "S1: '19 business days ... compared with 8 for the base rebate'. 19/8 = 2.4. Correct."
+  },
+  {
+   "key": "Lower-income families remain underrepresented among rebate recipients",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'lower-income families remain underrepresented'. Matches."
+  },
+  {
+   "key": "Renters make up about 45% of Corvale's households, according to city data",
+   "label": "mismatch",
+   "tag": "source_attribution",
+   "why": "S2: 'An advocate for low-income tenants said the program does nothing for renters, who make up about 45% of the city's households.' The figure comes from an advocate's statement, not city data."
+  },
+  {
+   "key": "Several contractors say enhanced-rebate paperwork slows jobs by weeks",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'Several contractors told the paper that the enhanced-rebate paperwork slows jobs by weeks.' Matches."
+  },
+  {
+   "key": "The Energy Alliance has hired two more application processors",
+   "label": "mismatch",
+   "tag": "plan_as_achieved",
+   "why": "S2: 'The Energy Alliance said it is hiring two more application processors.' In progress, not completed."
+  },
+  {
+   "key": "The evaluator warns that the 41% figure comes from 120 volunteer homes and may overstate savings",
+   "label": "ok",
+   "tag": "hedge_preserved",
+   "why": "S1: 'A metered sub-sample of 120 homes' and 'the sub-sample consisted of volunteers and may overstate savings for the wider population'. Matches."
+  }
+ ]
+}

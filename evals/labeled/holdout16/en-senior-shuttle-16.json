@@ -1,0 +1,134 @@
+{
+  "id": "en-senior-shuttle-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "Has the Ashby Hills on-demand senior shuttle improved access to medical appointments?",
+  "sources": {
+    "S1": "Ashby Hills launched an on-demand shuttle for residents aged 65 and older in January 2026, replacing a fixed-route senior bus that ran three days a week. Riders book trips by phone or app at least two hours in advance, and service runs weekdays from 7 a.m. to 6 p.m. Each one-way trip costs $2, and riders enrolled in Medicaid ride free. Six wheelchair-accessible vans serve a 42-square-mile zone. From January through June, the shuttle provided 14,300 one-way trips to 1,060 registered riders. Medical appointments were the most common trip purpose at 41%, followed by grocery shopping at 27% and senior center visits at 18%. Average wait time after the scheduled pickup window was 9 minutes, and 93% of pickups were within the 20-minute window. In a phone survey of 180 riders, 72% said they had missed fewer medical appointments since the shuttle began. The department cautions that the survey reached mostly frequent riders and may not reflect occasional users. Operating costs were $1.15 million for the six months, of which fares covered about 3%.",
+    "S2": "The Herald reported that trip requests were denied 11% of the time in the first quarter because no van was available, falling to 6% in the second quarter. Most denials occurred on Monday and Tuesday mornings. The service is operated under contract by RideWell Mobility, and drivers are RideWell employees rather than city staff. Two local clinics said no-show rates among their patients over 65 dropped, but neither shared figures. The city council's transportation committee recommended adding two vans in 2027, a proposal the full council has not yet taken up. Riders outside the zone, including residents of the Ferncliff annex, cannot book trips."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Has the Ashby Hills on-demand senior shuttle improved access to medical appointments?\n\n## Answer\nMedical appointments were the most common trip purpose, at 41% of trips [S1]. In a phone survey of 180 riders, 72% said they had missed fewer medical appointments, though the survey mostly reached frequent riders [S1].\n\n## Evidence\n- The shuttle replaced a fixed-route senior bus that ran five days a week [S1].\n- Riders must book at least two hours ahead, and service runs on weekdays only [S1].\n- Riders enrolled in Medicaid pay a reduced fare of $1 per trip [S1].\n- The shuttle averaged about 13.5 one-way trips per registered rider over six months [S1].\n- Roughly 5,860 trips were for medical appointments [S1].\n- Senior center visits were the second most common trip purpose [S1].\n- Pickups were within the 20-minute window 93% of the time, with a typical wait of about 20 minutes [S1].\n- Most registered riders say they miss fewer medical appointments since the shuttle began [S1].\n- Fares covered roughly $35,000 of the six-month operating costs [S1].\n- Operating costs ran about $1.15 million per year [S1].\n\n## Counterevidence and limits\n- Trip denials due to van shortages fell from 11% in the first quarter to 6% in the second [S2].\n- Trip denials fell by 5% between the first and second quarters [S2].\n- Drivers are city employees assigned to the Department of Aging [S2].\n- Two local clinics reported lower no-show rates among patients over 65 but did not share figures [S2].\n- The city council approved two additional vans for 2027 [S2].\n- Residents of the Ferncliff annex cannot book trips because it lies outside the service zone [S2].\n- Similar on-demand senior services typically cost about $70 per trip to operate.\n\n## Next actions\n- Request clinic no-show data and a survey of occasional riders before judging medical access gains (judgment).\n\n## Sources\n- [S1] Ashby Hills Department of Aging, \"On-Demand Senior Shuttle: Six-Month Evaluation\" (2026-08-05)\n- [S2] Ashby Hills Herald, \"Senior shuttle denials drop, but vans still short\" (2026-09-16)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Medical appointments were the most common trip purpose, at 41% of trips",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'Medical appointments were the most common trip purpose at 41%'"
+    },
+    {
+      "key": "In a phone survey of 180 riders, 72% said they had missed fewer medical appointments, though the survey mostly reached frequent riders",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'In a phone survey of 180 riders, 72% said ... the survey reached mostly frequent riders'"
+    },
+    {
+      "key": "The shuttle replaced a fixed-route senior bus that ran five days a week",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S1: 'replacing a fixed-route senior bus that ran three days a week.'"
+    },
+    {
+      "key": "Riders must book at least two hours ahead, and service runs on weekdays only",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'at least two hours in advance, and service runs weekdays from 7 a.m. to 6 p.m.'"
+    },
+    {
+      "key": "Riders enrolled in Medicaid pay a reduced fare of $1 per trip",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: 'riders enrolled in Medicaid ride free.'"
+    },
+    {
+      "key": "The shuttle averaged about 13.5 one-way trips per registered rider over six months",
+      "label": "ok",
+      "tag": "derived_average",
+      "why": "S1: '14,300 one-way trips to 1,060 registered riders' -> 13.49"
+    },
+    {
+      "key": "Roughly 5,860 trips were for medical appointments",
+      "label": "ok",
+      "tag": "derived_arithmetic",
+      "why": "S1: 14,300 x 41% = 5,863"
+    },
+    {
+      "key": "Senior center visits were the second most common trip purpose",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'followed by grocery shopping at 27% and senior center visits at 18%'"
+    },
+    {
+      "key": "with a typical wait of about 20 minutes",
+      "label": "mismatch",
+      "tag": "cap_as_typical",
+      "why": "S1: 'Average wait time after the scheduled pickup window was 9 minutes, and 93% of pickups were within the 20-minute window.'"
+    },
+    {
+      "key": "Most registered riders say they miss fewer medical appointments since the shuttle began",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: survey of 180 riders out of 1,060; 'reached mostly frequent riders and may not reflect occasional users.'"
+    },
+    {
+      "key": "Fares covered roughly $35,000 of the six-month operating costs",
+      "label": "ok",
+      "tag": "derived_arithmetic",
+      "why": "S1: '$1.15 million for the six months, of which fares covered about 3%' -> $34,500"
+    },
+    {
+      "key": "Operating costs ran about $1.15 million per year",
+      "label": "mismatch",
+      "tag": "period_changed",
+      "why": "S1: 'Operating costs were $1.15 million for the six months'"
+    },
+    {
+      "key": "Trip denials due to van shortages fell from 11% in the first quarter to 6% in the second",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'denied 11% of the time in the first quarter because no van was available, falling to 6% in the second quarter.'"
+    },
+    {
+      "key": "Trip denials fell by 5% between the first and second quarters",
+      "label": "mismatch",
+      "tag": "percent_vs_points",
+      "why": "S2: 11% -> 6% is a 5 percentage-point drop (about 45% relative), not 5%"
+    },
+    {
+      "key": "Drivers are city employees assigned to the Department of Aging",
+      "label": "mismatch",
+      "tag": "actor_changed",
+      "why": "S2: 'drivers are RideWell employees rather than city staff.'"
+    },
+    {
+      "key": "Two local clinics reported lower no-show rates among patients over 65 but did not share figures",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'Two local clinics said no-show rates among their patients over 65 dropped, but neither shared figures.'"
+    },
+    {
+      "key": "The city council approved two additional vans for 2027",
+      "label": "mismatch",
+      "tag": "recommendation_as_approved",
+      "why": "S2: 'transportation committee recommended adding two vans in 2027, a proposal the full council has not yet taken up.'"
+    },
+    {
+      "key": "Residents of the Ferncliff annex cannot book trips because it lies outside the service zone",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'Riders outside the zone, including residents of the Ferncliff annex, cannot book trips.'"
+    },
+    {
+      "key": "Similar on-demand senior services typically cost about $70 per trip to operate",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "Neither source gives benchmark per-trip costs for other services."
+    }
+  ]
+}

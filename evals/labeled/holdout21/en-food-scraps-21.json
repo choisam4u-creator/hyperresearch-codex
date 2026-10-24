@@ -1,0 +1,152 @@
+{
+ "id": "en-food-scraps-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "Did Westbrook's curbside food-scrap pilot justify a citywide rollout?",
+ "sources": {
+  "S1": "Westbrook's curbside food-scrap pilot ran from 1 March 2025 to 28 February 2026 on four of the city's eleven collection routes, covering 6,800 single-family households. Participation was voluntary; households received a 7-gallon kitchen pail and a 35-gallon green cart at no charge. Food-scrap collection was weekly, on the same day as trash. Trash collection itself moved from weekly to every other week only on Route 9, as a test. The set-out rate, meaning the share of enrolled households putting out a cart in a given week, averaged 41% across the pilot, ranging from 28% on Route 4 to 57% on Route 9. In total the pilot diverted 1,190 tons of food scraps from the landfill. The contractor, GreenLoop Organics, was paid $68 per ton for processing, while the city's own crews handled collection. Collection costs, including labor, fuel and truck lease, came to $412,000. Landfill tipping fees avoided were $54 per ton. Contamination, measured by monthly audits of 50 carts, averaged 6.5%, above the 5% target in the contract. GreenLoop may reject loads above 10% contamination, and it rejected two loads in July 2025. Department staff believe the every-other-week trash schedule on Route 9 likely contributed to its higher set-out rate, but the evaluation notes that Route 9 also had the highest share of owner-occupied homes. A citywide rollout would require an estimated 22 additional staff and $3.1 million in capital for trucks and carts. The City Council has scheduled a vote on the rollout for 9 December 2026. If approved, service would begin in phases starting in July 2027. Apartment buildings with five or more units were excluded from the pilot and would not be covered by the first phase either.",
+  "S2": "Council member Dana Price, who chairs the budget committee, said the pilot's per-ton cost 'is hard to justify' and that she favors a drop-off model. A resident survey of 1,020 pilot households found 72% satisfied, while 18% said odors from the kitchen pail were a problem. Price noted that drop-off sites in nearby Larkin collect food scraps for roughly a quarter of the per-ton cost, though Larkin's diversion is far lower. Supporters of curbside service say convenience is the main reason participation is higher than in drop-off programs."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Westbrook's curbside food-scrap pilot justify a citywide rollout?\n\n## Answer\nWestbrook's one-year pilot collected 1,190 tons of food scraps from 6,800 single-family homes on four of its eleven routes [S1]. Collection alone cost roughly $346 per ton diverted, far above the $54 per ton saved in landfill fees [S1]. The City Council approved a citywide rollout that begins in July 2027 [S1].\n\n## Evidence\n- Enrollment was optional, and participating households got a kitchen pail and a green cart free of charge [S1].\n- During the pilot, trash pickup shifted to every other week on all four routes [S1].\n- On average, about two in five enrolled households set out a cart in a given week [S1].\n- Set-out rates ranged from 28% on Route 9 to 57% on Route 4 [S1].\n- GreenLoop Organics collected the carts, while city crews processed the material [S1].\n- Processing fees paid to GreenLoop totaled about $81,000 over the pilot [S1].\n- Avoided landfill fees amounted to about $6,400 over the year [S1].\n- Average contamination of 6.5% exceeded the 10% level at which GreenLoop may reject loads [S1].\n- GreenLoop turned away two loads in July 2025 [S1].\n- Food scraps make up about 30% of Westbrook's residential trash stream.\n- The every-other-week trash schedule caused Route 9's higher set-out rate [S1].\n- Contamination audits sampled 50 carts each month [S1].\n- Expanding citywide would need about 22 more staff and $1.3 million in capital for trucks and carts [S1].\n- Buildings with five or more apartments would be included from the first phase of a citywide program [S1].\n- In a survey of 1,020 pilot households, nearly three-quarters said they were satisfied [S2].\n\n## Open questions\n- Budget chair Dana Price called the per-ton cost hard to justify and prefers a drop-off model [S2].\n- Price said Larkin's drop-off sites collect food scraps for about a quarter of the per-ton cost while diverting a similar amount [S2].\n- The evaluation cautions that Route 9 also had the most owner-occupied homes, which muddies the schedule comparison [S1].\n- Almost one in five surveyed households reported odor problems from the green cart [S2].\n\n## Next steps\n- Hold off on endorsing a citywide rollout until the council sees a per-ton comparison with a drop-off option (judgment).\n\n## Sources\n- [S1] Westbrook Department of Public Works, \"Curbside Food-Scrap Pilot Evaluation\" (2026-09-15)\n- [S2] Westbrook Herald, \"Compost pilot pleases residents, worries budget chair\" (2026-09-20)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Westbrook's one-year pilot collected 1,190 tons of food scraps from 6,800 single-family homes on four of its eleven routes",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'four of the city's eleven collection routes, covering 6,800 single-family households'; 'diverted 1,190 tons'"
+  },
+  {
+   "key": "Collection alone cost roughly $346 per ton diverted, far above the $54 per ton saved in landfill fees",
+   "label": "ok",
+   "tag": "ok_derived_per_unit",
+   "why": "S1: $412,000 / 1,190 tons = $346; 'tipping fees avoided were $54 per ton'"
+  },
+  {
+   "key": "The City Council approved a citywide rollout that begins in July 2027",
+   "label": "mismatch",
+   "tag": "plan_stated_as_done",
+   "why": "S1: 'has scheduled a vote ... for 9 December 2026. If approved, service would begin ... July 2027'"
+  },
+  {
+   "key": "Enrollment was optional, and participating households got a kitchen pail and a green cart free of charge",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'Participation was voluntary; households received a ... pail and a ... cart at no charge'"
+  },
+  {
+   "key": "During the pilot, trash pickup shifted to every other week on all four routes",
+   "label": "mismatch",
+   "tag": "scope_widened",
+   "why": "S1: 'moved ... to every other week only on Route 9'"
+  },
+  {
+   "key": "On average, about two in five enrolled households set out a cart in a given week",
+   "label": "ok",
+   "tag": "ok_rounding",
+   "why": "S1: set-out rate 'averaged 41%'"
+  },
+  {
+   "key": "Set-out rates ranged from 28% on Route 9 to 57% on Route 4",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: 'from 28% on Route 4 to 57% on Route 9'"
+  },
+  {
+   "key": "GreenLoop Organics collected the carts, while city crews processed the material",
+   "label": "mismatch",
+   "tag": "operator_swapped",
+   "why": "S1: GreenLoop 'paid ... for processing, while the city's own crews handled collection'"
+  },
+  {
+   "key": "Processing fees paid to GreenLoop totaled about $81,000 over the pilot",
+   "label": "ok",
+   "tag": "ok_derived_product",
+   "why": "S1: $68/ton x 1,190 tons = $80,920"
+  },
+  {
+   "key": "Avoided landfill fees amounted to about $6,400 over the year",
+   "label": "mismatch",
+   "tag": "arithmetic_error",
+   "why": "S1: $54 x 1,190 = about $64,300, not $6,400"
+  },
+  {
+   "key": "Average contamination of 6.5% exceeded the 10% level at which GreenLoop may reject loads",
+   "label": "mismatch",
+   "tag": "threshold_confused",
+   "why": "S1: 6.5% was 'above the 5% target'; rejection threshold is 'above 10%'"
+  },
+  {
+   "key": "GreenLoop turned away two loads in July 2025",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'it rejected two loads in July 2025'"
+  },
+  {
+   "key": "Food scraps make up about 30% of Westbrook's residential trash stream",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source gives the share of food scraps in the waste stream"
+  },
+  {
+   "key": "The every-other-week trash schedule caused Route 9's higher set-out rate",
+   "label": "mismatch",
+   "tag": "hedge_dropped",
+   "why": "S1: staff 'believe' it 'likely contributed', and Route 9 had more owner-occupied homes"
+  },
+  {
+   "key": "Contamination audits sampled 50 carts each month",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'monthly audits of 50 carts'"
+  },
+  {
+   "key": "Expanding citywide would need about 22 more staff and $1.3 million in capital for trucks and carts",
+   "label": "mismatch",
+   "tag": "digits_transposed",
+   "why": "S1: '$3.1 million in capital'"
+  },
+  {
+   "key": "Buildings with five or more apartments would be included from the first phase of a citywide program",
+   "label": "mismatch",
+   "tag": "inclusion_flipped",
+   "why": "S1: such buildings 'would not be covered by the first phase either'"
+  },
+  {
+   "key": "In a survey of 1,020 pilot households, nearly three-quarters said they were satisfied",
+   "label": "ok",
+   "tag": "ok_rounding",
+   "why": "S2: '1,020 pilot households found 72% satisfied'"
+  },
+  {
+   "key": "Budget chair Dana Price called the per-ton cost hard to justify and prefers a drop-off model",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: per-ton cost 'is hard to justify' and she 'favors a drop-off model'"
+  },
+  {
+   "key": "Price said Larkin's drop-off sites collect food scraps for about a quarter of the per-ton cost while diverting a similar amount",
+   "label": "mismatch",
+   "tag": "comparison_distorted",
+   "why": "S2: 'though Larkin's diversion is far lower'"
+  },
+  {
+   "key": "The evaluation cautions that Route 9 also had the most owner-occupied homes, which muddies the schedule comparison",
+   "label": "ok",
+   "tag": "ok_hedge_kept",
+   "why": "S1: 'Route 9 also had the highest share of owner-occupied homes'"
+  },
+  {
+   "key": "Almost one in five surveyed households reported odor problems from the green cart",
+   "label": "mismatch",
+   "tag": "object_swapped",
+   "why": "S2: '18% said odors from the kitchen pail were a problem'"
+  }
+ ]
+}

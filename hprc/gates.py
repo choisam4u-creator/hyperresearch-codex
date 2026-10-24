@@ -2,6 +2,8 @@
 import difflib
 import re
 
+from .verification import _heading_key
+
 CITE = re.compile(r"\[(S\d+)\]")
 
 
@@ -90,8 +92,11 @@ def report_lint(text: str, prompt: str, known: set[str], lang: str = "ko") -> li
         problems.append("unknown_cites:" + ",".join(unknown))
     if not CITE.search(text):
         problems.append("no_citations")
+    # 24회차: 본문 표시 검사(_section_heading)와 같은 규칙으로 제목을 견준다 — "## Counterevidence and limits"·"## 반대 근거 및 한계"를
+    # 절 빠짐으로 보고 검토를 요구하지 않게.
+    keys = {_heading_key(line.strip()) for line in text.splitlines() if line.startswith("## ")}
     for section, alts in L["sections"]:
-        if section not in text and not any(a in text for a in alts):
+        if not any(_heading_key(h) in keys for h in (section, *alts)):
             problems.append(f"section_missing:{section}")
     if re.search(r"https?://", text) and L["sources"] not in text:
         problems.append("bare_url_outside_sources")

@@ -1,0 +1,92 @@
+{
+ "id": "en-lifeguard-stipend",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "Did Marlow Bay's lifeguard training stipend pilot help keep city pools staffed?",
+ "sources": {
+  "S1": "In the 2025 season, Marlow Bay offered a $600 stipend to residents aged 16 to 24 who completed lifeguard certification and worked at least 120 hours at a city pool. Of 214 applicants, 158 completed certification and 131 met the 120-hour requirement and received the stipend.\n\nThe city opened all 9 public pools for the full season for the first time since 2019, compared with 6 pools in 2024. The department notes that a regional wage increase took effect in the same year, so it cannot separate the stipend's effect from the wage change.",
+  "S2": "The pilot cost $78,600 in stipends plus $21,400 in administration, funded by a one-time state recreation grant. The council voted 7-2 to extend the pilot to 2026 but has not identified funding beyond 2026; staff proposed drawing on the parks capital reserve, which the council has not yet approved."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Marlow Bay's lifeguard training stipend pilot help keep city pools staffed?\n\n## Answer\nMarlow Bay's lifeguard stipend pilot paid 131 young residents $600 each after they finished certification and logged at least 120 pool hours [S1]. The stipend was the reason all nine city pools could stay open for the full season [S1]. The program cost about $100,000 in total, covered by a one-time state recreation grant [S2].\n\n## Evidence\n- Roughly three in four applicants (158 of 214) completed lifeguard certification [S1].\n- About 83% of those who certified went on to meet the 120-hour work threshold [S1].\n- Pool coverage rose by three facilities, from six in 2024 to nine in 2025 [S1].\n- Eligibility was open to residents aged 16 to 30 [S1].\n- Administration accounted for roughly a fifth of total program spending [S2].\n\n## Counter-evidence and limits\n- The council unanimously approved extending the pilot into 2026 [S2].\n- Funding for 2027 onward will come from the parks capital reserve [S2].\n- The parks department attributes the improved staffing mainly to the regional wage increase rather than the stipend [S1].\n- Similar stipend programs in neighboring counties have raised lifeguard retention by around 20%.\n\n## Next actions\n- Ask the parks department for 2026 staffing data from pools that did and did not host stipend recipients before deciding on a permanent program (judgment).\n\n## Sources\n- [S1] Marlow Bay Parks Department, Lifeguard Training Stipend Pilot: 2025 season report\n- [S2] Marlow Bay Council budget memo, March 2026\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Marlow Bay's lifeguard stipend pilot paid 131 young residents $600 each after they finished certification and logged at least 120 pool hours",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "131 recipients, $600, certification + 120 hours"
+  },
+  {
+   "key": "The stipend was the reason all nine city pools could stay open for the full season",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "S1 says the stipend's effect cannot be separated from the wage increase"
+  },
+  {
+   "key": "The program cost about $100,000 in total, covered by a one-time state recreation grant",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "78,600 + 21,400 = 100,000; state grant"
+  },
+  {
+   "key": "Roughly three in four applicants (158 of 214) completed lifeguard certification",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "158/214 = 73.8%"
+  },
+  {
+   "key": "About 83% of those who certified went on to meet the 120-hour work threshold",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "131/158 = 82.9%"
+  },
+  {
+   "key": "Pool coverage rose by three facilities, from six in 2024 to nine in 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "9 - 6 = 3"
+  },
+  {
+   "key": "Eligibility was open to residents aged 16 to 30",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "S1: aged 16 to 24"
+  },
+  {
+   "key": "Administration accounted for roughly a fifth of total program spending",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "21,400/100,000 = 21%"
+  },
+  {
+   "key": "The council unanimously approved extending the pilot into 2026",
+   "label": "mismatch",
+   "tag": "qualifier",
+   "why": "S2: vote was 7-2, not unanimous"
+  },
+  {
+   "key": "Funding for 2027 onward will come from the parks capital reserve",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "reserve was only proposed by staff; council has not approved"
+  },
+  {
+   "key": "The parks department attributes the improved staffing mainly to the regional wage increase rather than the stipend",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "S1 says it cannot separate the two effects; no attribution to wages"
+  },
+  {
+   "key": "Similar stipend programs in neighboring counties have raised lifeguard retention by around 20%",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source mentions neighboring counties"
+  }
+ ]
+}

@@ -1,0 +1,116 @@
+{
+ "id": "en-tool-library-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "Has Fernhollow's public tool lending library been well used, and what does it cost?",
+ "sources": {
+  "S1": "The Fernhollow Public Library opened its tool lending library at the Eastgate branch on June 1, 2025. Adults with a library card in good standing can borrow up to three tools at a time for seven days, with one renewal allowed if no one is waiting. Power tools require a one-time 20-minute safety orientation, which is run by volunteers from the Fernhollow Makers Guild, not by library staff. In the first year the collection of 410 tools was checked out 5,330 times by 1,120 different cardholders. Startup costs of $86,000 were covered by a state library innovation grant; the city pays ongoing costs of about $31,000 a year, mostly for a half-time technician. Late returns occurred on 11% of loans, and 14 tools were lost or damaged beyond repair. The library does not charge late fines for tools but suspends borrowing until overdue items are returned.",
+  "S2": "Staff proposed opening a second tool library at the Riverside branch in 2027 at an estimated startup cost of $64,000. The committee asked for more data before deciding and took no vote. A library survey of 240 tool borrowers found that 58% said they would otherwise have bought the tool. Council member Ortiz noted that 47% of first-year borrowers live within two miles of Eastgate, suggesting uneven geographic reach."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Fernhollow's public tool lending library been well used, and what does it cost?\n\n## Answer\nIn its first year, Fernhollow's tool library recorded 5,330 checkouts by 1,120 distinct cardholders [S1]. That works out to roughly 13 loans per tool across the 410-item collection [S1]. The city covered the $86,000 startup cost, while a state grant funds ongoing operations [S1].\n\n## Evidence\n- Each adult cardholder borrows three tools at a time for a seven-day loan [S1].\n- One renewal is always allowed, regardless of whether other patrons are waiting [S1].\n- Library staff run the 20-minute safety orientation required for power tools [S1].\n- The power-tool orientation is a single session lasting 20 minutes [S1].\n- Ongoing city costs come to just under $6 per checkout [S1].\n- Borrowers who return tools late are charged a daily fine [S1].\n- About one loan in nine came back late [S1].\n- On average, each borrower checked out about six tools during the year [S1].\n- Tool libraries in neighboring towns report that drills account for a third of all loans.\n\n## Counter-evidence and limits\n- A second tool library at the Riverside branch has been approved for 2027 [S2].\n- A survey of 240 borrowers found that 58% would otherwise have bought the tool, though that is only a subset of all users [S2].\n- Council member Ortiz said 47% of borrowers live more than two miles from Eastgate [S2].\n- Fourteen tools were lost or damaged beyond repair in the first year [S1].\n\n## Next actions\n- Ask library staff for borrower addresses by neighborhood before the committee revisits the Riverside proposal (judgment)\n\n## Sources\n- [S1] Fernhollow Public Library, \"Tool Library: First-Year Report\" (2026-06-12)\n- [S2] Fernhollow City Council, \"Budget Committee Minutes\" (2026-09-08)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "In its first year, Fernhollow's tool library recorded 5,330 checkouts by 1,120 distinct cardholders",
+   "label": "ok",
+   "tag": "accurate figures",
+   "why": "S1: 5,330 checkouts by 1,120 different cardholders in the first year."
+  },
+  {
+   "key": "That works out to roughly 13 loans per tool across the 410-item collection",
+   "label": "ok",
+   "tag": "per-unit arithmetic",
+   "why": "S1: 5,330 / 410 = 13.0."
+  },
+  {
+   "key": "The city covered the $86,000 startup cost, while a state grant funds ongoing operations",
+   "label": "mismatch",
+   "tag": "funding source swap",
+   "why": "S1: startup paid by a state grant; the city pays ongoing costs of about $31,000 a year."
+  },
+  {
+   "key": "Each adult cardholder borrows three tools at a time for a seven-day loan",
+   "label": "mismatch",
+   "tag": "dropped 'up to'",
+   "why": "S1: borrowers can take 'up to three tools' at a time; three is a ceiling."
+  },
+  {
+   "key": "One renewal is always allowed, regardless of whether other patrons are waiting",
+   "label": "mismatch",
+   "tag": "condition changed",
+   "why": "S1: one renewal allowed only 'if no one is waiting'."
+  },
+  {
+   "key": "Library staff run the 20-minute safety orientation required for power tools",
+   "label": "mismatch",
+   "tag": "wrong actor",
+   "why": "S1: orientation is run by Makers Guild volunteers, not library staff."
+  },
+  {
+   "key": "The power-tool orientation is a single session lasting 20 minutes",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: one-time 20-minute safety orientation."
+  },
+  {
+   "key": "Ongoing city costs come to just under $6 per checkout",
+   "label": "ok",
+   "tag": "per-unit arithmetic",
+   "why": "S1: $31,000 / 5,330 = about $5.82."
+  },
+  {
+   "key": "Borrowers who return tools late are charged a daily fine",
+   "label": "mismatch",
+   "tag": "negation flip",
+   "why": "S1: no late fines for tools; borrowing is suspended instead."
+  },
+  {
+   "key": "About one loan in nine came back late",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S1: late returns on 11% of loans (1/9 = 11.1%)."
+  },
+  {
+   "key": "On average, each borrower checked out about six tools during the year",
+   "label": "mismatch",
+   "tag": "wrong arithmetic",
+   "why": "S1: 5,330 / 1,120 = about 4.8 checkouts per borrower."
+  },
+  {
+   "key": "Tool libraries in neighboring towns report that drills account for a third of all loans",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source mentions neighboring towns or drill share."
+  },
+  {
+   "key": "A second tool library at the Riverside branch has been approved for 2027",
+   "label": "mismatch",
+   "tag": "proposal stated as decision",
+   "why": "S2: staff proposed it; the committee took no vote."
+  },
+  {
+   "key": "A survey of 240 borrowers found that 58% would otherwise have bought the tool, though that is only a subset of all users",
+   "label": "ok",
+   "tag": "caveat kept",
+   "why": "S2: 240 surveyed out of 1,120 borrowers (S1); 58% would have bought."
+  },
+  {
+   "key": "Council member Ortiz said 47% of borrowers live more than two miles from Eastgate",
+   "label": "mismatch",
+   "tag": "reversed comparison",
+   "why": "S2: 47% live within two miles of Eastgate."
+  },
+  {
+   "key": "Fourteen tools were lost or damaged beyond repair in the first year",
+   "label": "ok",
+   "tag": "accurate figure",
+   "why": "S1: 14 tools lost or damaged beyond repair."
+  }
+ ]
+}

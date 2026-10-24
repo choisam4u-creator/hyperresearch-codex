@@ -1,0 +1,152 @@
+{
+ "id": "en-eviction-diversion-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "What are the results of Marston County's eviction diversion program in its second year?",
+ "sources": {
+  "S1": "The Marston County Eviction Diversion Program, launched in September 2024, offers tenants facing nonpayment eviction cases a mediation session with their landlord before the first court hearing, plus access to up to $6,000 in rental arrears assistance. The program is run by the court's Office of Dispute Resolution, while arrears payments are made by the county Housing Authority directly to landlords. Between 1 September 2025 and 31 August 2026, 3,960 nonpayment cases were filed. Of these, 2,210 tenants were referred to mediation and 1,470 completed a session. Of completed mediations, 1,030 reached a written agreement, and 870 of those agreements included arrears assistance. Average assistance paid was $3,420. Cases are eligible only if household income is at or below 80% of area median income and the arrears total no more than $12,000. Commercial tenancies are excluded. Among cases that reached agreement, 78% had not returned to court within six months, according to a docket match covering agreements reached through February 2026. The report notes that tenants who complete mediation may differ from those who do not, for example by being more likely to have responded to the summons, so the lower return rate cannot be attributed to the program alone. Default judgments, entered when tenants did not appear, fell from 44% of nonpayment cases in the year before launch to 31% in the second program year. The program employs 9 mediators and 3 intake staff, and staffing costs were $1.26 million. Arrears assistance totaled about $2.98 million and is funded by a federal grant that expires in June 2027. Landlord participation is voluntary, and 14% of referred landlords declined to mediate. The court has requested $3.5 million from the county board to continue the program after the grant ends; no decision has been made.",
+  "S2": "Tenant attorney Rosa Delgado said the $6,000 cap leaves many households short, noting that median arrears in referred cases were about $7,100. Glen Hartley, president of the Marston Landlord Association, said members support mediation but complain that assistance checks take an average of five weeks to arrive. Delgado added that the drop in default judgments coincided with a new court rule, introduced in January 2025, requiring text-message hearing reminders."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What are the results of Marston County's eviction diversion program in its second year?\n\n## Answer\nAbout two-thirds of the 2,210 tenants referred to Marston County's eviction diversion program in its second year completed a mediation session [S1]. Because of the program, 78% of tenants who reached agreements stayed out of court for six months [S1]. Default judgments dropped from 44% of nonpayment cases before launch to 31% in year two [S1].\n\n## Evidence\n- Mediation is offered after a tenant's first court hearing [S1].\n- The county Housing Authority runs the mediation sessions, and the court's Office of Dispute Resolution pays arrears to landlords [S1].\n- Seven in ten completed mediations ended in a written agreement [S1].\n- Arrears assistance was part of 870 agreements, averaging $3,420 each [S1].\n- Those payments add up to roughly $2.98 million, consistent with the assistance total in the report [S1].\n- Households earning up to 80% of area median income qualify regardless of how much they owe [S1].\n- Both residential and commercial tenants facing nonpayment cases can use the program [S1].\n- The six-month return figure is based on a docket match covering all agreements reached during the year [S1].\n- Arrears assistance is capped at $12,000 per household [S1].\n- Marston County's eviction filing rate is the highest per capita in the state.\n- Staffing for nine mediators and three intake workers cost $1.26 million [S1].\n- The federal grant funding arrears assistance expires in June 2026 [S1].\n- Landlord participation is mandatory once a case is referred [S1].\n- About one in seven referred landlords declined to mediate [S1].\n- The county board has approved $3.5 million to keep the program running after the grant ends [S1].\n\n## Reasons for caution\n- The court itself notes that tenants who finish mediation differ from those who do not, for instance by being more likely to have answered the summons [S1].\n- Tenant attorney Rosa Delgado said median arrears in referred cases, about $7,100, exceed the $6,000 assistance cap [S2].\n- Landlords say assistance checks arrive within five weeks at most [S2].\n- Delgado pointed out that text-message hearing reminders introduced in January 2025 could also explain the drop in default judgments [S2].\n\n## Next steps\n- Seek funding continuity only after the court reports outcomes against a comparison group of non-mediated cases (judgment).\n\n## Sources\n- [S1] Marston County Court Administration, \"Eviction Diversion Program: Year Two Report\" (2026-09-22)\n- [S2] Marston Courier, \"Eviction mediation gains ground, but gaps remain\" (2026-09-27)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About two-thirds of the 2,210 tenants referred to Marston County's eviction diversion program in its second year completed a mediation session",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: 1,470 / 2,210 = 66.5%"
+  },
+  {
+   "key": "Because of the program, 78% of tenants who reached agreements stayed out of court for six months",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: 'the lower return rate cannot be attributed to the program alone'"
+  },
+  {
+   "key": "Default judgments dropped from 44% of nonpayment cases before launch to 31% in year two",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'fell from 44% ... in the year before launch to 31% in the second program year'"
+  },
+  {
+   "key": "Mediation is offered after a tenant's first court hearing",
+   "label": "mismatch",
+   "tag": "sequence_reversed",
+   "why": "S1: mediation session 'before the first court hearing'"
+  },
+  {
+   "key": "The county Housing Authority runs the mediation sessions, and the court's Office of Dispute Resolution pays arrears to landlords",
+   "label": "mismatch",
+   "tag": "roles_swapped",
+   "why": "S1: program 'run by the court's Office of Dispute Resolution, while arrears payments are made by the county Housing Authority'"
+  },
+  {
+   "key": "Seven in ten completed mediations ended in a written agreement",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: 1,030 / 1,470 = 70%"
+  },
+  {
+   "key": "Arrears assistance was part of 870 agreements, averaging $3,420 each",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '870 of those agreements included arrears assistance. Average assistance paid was $3,420'"
+  },
+  {
+   "key": "Those payments add up to roughly $2.98 million, consistent with the assistance total in the report",
+   "label": "ok",
+   "tag": "ok_derived_product",
+   "why": "S1: 870 x $3,420 = $2,975,400; 'totaled about $2.98 million'"
+  },
+  {
+   "key": "Households earning up to 80% of area median income qualify regardless of how much they owe",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: eligible only if 'the arrears total no more than $12,000'"
+  },
+  {
+   "key": "Both residential and commercial tenants facing nonpayment cases can use the program",
+   "label": "mismatch",
+   "tag": "inclusion_flipped",
+   "why": "S1: 'Commercial tenancies are excluded'"
+  },
+  {
+   "key": "The six-month return figure is based on a docket match covering all agreements reached during the year",
+   "label": "mismatch",
+   "tag": "time_window_changed",
+   "why": "S1: docket match 'covering agreements reached through February 2026'"
+  },
+  {
+   "key": "Arrears assistance is capped at $12,000 per household",
+   "label": "mismatch",
+   "tag": "number_confused",
+   "why": "S1: assistance 'up to $6,000'; $12,000 is the arrears eligibility ceiling"
+  },
+  {
+   "key": "Marston County's eviction filing rate is the highest per capita in the state",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source compares filing rates across counties"
+  },
+  {
+   "key": "Staffing for nine mediators and three intake workers cost $1.26 million",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '9 mediators and 3 intake staff, and staffing costs were $1.26 million'"
+  },
+  {
+   "key": "The federal grant funding arrears assistance expires in June 2026",
+   "label": "mismatch",
+   "tag": "wrong_year",
+   "why": "S1: grant 'expires in June 2027'"
+  },
+  {
+   "key": "Landlord participation is mandatory once a case is referred",
+   "label": "mismatch",
+   "tag": "negation_flipped",
+   "why": "S1: 'Landlord participation is voluntary'"
+  },
+  {
+   "key": "About one in seven referred landlords declined to mediate",
+   "label": "ok",
+   "tag": "ok_rounding",
+   "why": "S1: '14% of referred landlords declined'"
+  },
+  {
+   "key": "The county board has approved $3.5 million to keep the program running after the grant ends",
+   "label": "mismatch",
+   "tag": "plan_stated_as_done",
+   "why": "S1: court 'has requested $3.5 million ... no decision has been made'"
+  },
+  {
+   "key": "The court itself notes that tenants who finish mediation differ from those who do not, for instance by being more likely to have answered the summons",
+   "label": "ok",
+   "tag": "ok_hedge_kept",
+   "why": "S1: 'more likely to have responded to the summons'"
+  },
+  {
+   "key": "Tenant attorney Rosa Delgado said median arrears in referred cases, about $7,100, exceed the $6,000 assistance cap",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: '$6,000 cap leaves many households short ... median arrears ... about $7,100'"
+  },
+  {
+   "key": "Landlords say assistance checks arrive within five weeks at most",
+   "label": "mismatch",
+   "tag": "average_as_maximum",
+   "why": "S2: checks 'take an average of five weeks'"
+  },
+  {
+   "key": "Delgado pointed out that text-message hearing reminders introduced in January 2025 could also explain the drop in default judgments",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: drop 'coincided with a new court rule ... requiring text-message hearing reminders'"
+  }
+ ]
+}

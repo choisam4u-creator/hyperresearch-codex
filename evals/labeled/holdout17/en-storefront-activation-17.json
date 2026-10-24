@@ -1,0 +1,134 @@
+{
+  "id": "en-storefront-activation-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "Has Lindmere's Storefront Activation Grant reduced downtown vacancies, and what caveats apply?",
+  "sources": {
+    "S1": "Lindmere's Storefront Activation Grant pays property owners up to $20,000 to make vacant ground-floor storefronts ready for a tenant, provided the owner signs a lease of at least 24 months at no more than 85% of the prior asking rent. Storefronts must have been vacant for at least 12 consecutive months to qualify. Round 1 (October 2025) funded 18 storefronts and Round 2 (April 2026) funded 26, for a total grant commitment of $712,000. As of 2026-08-31, 35 of the 44 funded storefronts had opened to the public. The average grant was $16,200. Grants are funded 50% by the city, 30% by the Downtown Lindmere Business Improvement District, and 20% by the regional economic development council. Of opened businesses, 15 were food and beverage, 11 were retail, 6 were services, and 3 were arts uses. Ground-floor vacancy in the downtown district fell from 19.4% in September 2025 to 15.1% in August 2026. The office notes that two large mixed-use buildings opened in the same period and that vacancy also fell 2.1 points in a comparison district with no grants. Two grantee businesses have already closed. The office plans a third round in early 2027 if the city budget renews $300,000.",
+    "S2": "Several downtown landlords told the Gazette the 85% rent cap made the grant unattractive for their highest-value spaces. The business improvement district's director said the district's contribution may shrink in 2027 because of lower assessment revenue. A Gazette tally found 6 of the 35 opened businesses were pop-ups that plan to leave when their leases end. One grantee cafe owner said foot traffic doubled after three neighboring storefronts reopened, though she offered no counts. City officials estimate the grants created about 140 jobs, a figure based on applicants' projections rather than payroll data."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Has Lindmere's Storefront Activation Grant reduced downtown vacancies, and what caveats apply?\n\n## Answer\nAbout four in five of the 44 storefronts funded across two rounds had opened by the end of August 2026 [S1]. The grants drove downtown ground-floor vacancy down by 4.3 points [S1].\n\n## Evidence\n- Owners receive $20,000 per storefront to ready vacant spaces [S1].\n- Recipients must sign leases of at least two years at rents no higher than 85% of the earlier asking price [S1].\n- Storefronts vacant for 6 consecutive months are eligible [S1].\n- Round 2 funded eight more storefronts than Round 1 [S1].\n- The city's half of the $712,000 commitment comes to $356,000 [S1].\n- The regional economic development council pays 30% of grant costs, more than the business improvement district [S1].\n- Food and beverage businesses formed the largest group of openings, at about 43% [S1].\n- Services outnumbered retail among the businesses that opened [S1].\n- Netting out the comparison district's 2.1-point drop leaves a downtown decline of about 2.2 points [S1].\n- Downtown ground-floor vacancy fell from 19.4% in September 2024 to 15.1% in August 2026 [S1].\n- Nine grantee businesses have already closed [S1].\n- A Gazette count found that 6 of the 35 open businesses are pop-ups planning to leave when their leases expire [S2].\n\n## Counterevidence and limits\n- The office acknowledges that two large mixed-use buildings opened downtown during the same period [S1].\n- The grants created 140 jobs, according to payroll records [S2].\n- The business improvement district's director warned that its 2027 contribution could shrink [S2].\n- A cafe owner documented that foot traffic doubled after neighboring storefronts reopened [S2].\n- Landlords with the highest-value spaces account for most of the remaining downtown vacancies.\n\n## Next actions\n- Ask the office to track grantee survival and actual payroll jobs before the city renews $300,000 for a third round (judgment).\n\n## Sources\n- [S1] Lindmere Office of Economic Development, \"Storefront Activation Grant: Round 1 and 2 Results\" (2026-09-02)\n- [S2] Lindmere Gazette, \"Grants fill empty storefronts, but rent caps worry some landlords\" (2026-09-14)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "About four in five of the 44 storefronts funded across two rounds had opened by the end of August 2026",
+      "label": "ok",
+      "tag": "derived_fraction",
+      "why": "S1: '35 of the 44 funded storefronts had opened'; 35/44 = 80%."
+    },
+    {
+      "key": "The grants drove downtown ground-floor vacancy down by 4.3 points",
+      "label": "mismatch",
+      "tag": "causal_overclaim",
+      "why": "S1: vacancy fell 19.4% to 15.1%, but 'two large mixed-use buildings opened in the same period and ... vacancy also fell 2.1 points in a comparison district.'"
+    },
+    {
+      "key": "Owners receive $20,000 per storefront to ready vacant spaces",
+      "label": "mismatch",
+      "tag": "cap_as_typical",
+      "why": "S1: 'up to $20,000'; 'The average grant was $16,200.'"
+    },
+    {
+      "key": "Recipients must sign leases of at least two years at rents no higher than 85% of the earlier asking price",
+      "label": "ok",
+      "tag": "unit_conversion",
+      "why": "S1: 'a lease of at least 24 months at no more than 85% of the prior asking rent.'"
+    },
+    {
+      "key": "Storefronts vacant for 6 consecutive months are eligible",
+      "label": "mismatch",
+      "tag": "changed_number",
+      "why": "S1: 'vacant for at least 12 consecutive months to qualify.'"
+    },
+    {
+      "key": "Round 2 funded eight more storefronts than Round 1",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: Round 1 funded 18, Round 2 funded 26; 26-18 = 8."
+    },
+    {
+      "key": "The city's half of the $712,000 commitment comes to $356,000",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 'funded 50% by the city'; 0.5 x $712,000 = $356,000."
+    },
+    {
+      "key": "The regional economic development council pays 30% of grant costs, more than the business improvement district",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: '30% by the Downtown Lindmere Business Improvement District, and 20% by the regional economic development council.'"
+    },
+    {
+      "key": "Food and beverage businesses formed the largest group of openings, at about 43%",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 15 of 35 opened were food and beverage = 42.9%."
+    },
+    {
+      "key": "Services outnumbered retail among the businesses that opened",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: '11 were retail, 6 were services.'"
+    },
+    {
+      "key": "Netting out the comparison district's 2.1-point drop leaves a downtown decline of about 2.2 points",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 19.4-15.1 = 4.3 points; 4.3-2.1 = 2.2."
+    },
+    {
+      "key": "Downtown ground-floor vacancy fell from 19.4% in September 2024 to 15.1% in August 2026",
+      "label": "mismatch",
+      "tag": "wrong_base_year",
+      "why": "S1: 'fell from 19.4% in September 2025 to 15.1% in August 2026.'"
+    },
+    {
+      "key": "Nine grantee businesses have already closed",
+      "label": "mismatch",
+      "tag": "changed_number",
+      "why": "S1: 'Two grantee businesses have already closed'; 9 is the count of funded storefronts not yet opened (44-35)."
+    },
+    {
+      "key": "A Gazette count found that 6 of the 35 open businesses are pop-ups planning to leave when their leases expire",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: '6 of the 35 opened businesses were pop-ups that plan to leave when their leases end.'"
+    },
+    {
+      "key": "The office acknowledges that two large mixed-use buildings opened downtown during the same period",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'two large mixed-use buildings opened in the same period.'"
+    },
+    {
+      "key": "The grants created 140 jobs, according to payroll records",
+      "label": "mismatch",
+      "tag": "estimate_as_fact",
+      "why": "S2: officials 'estimate ... about 140 jobs, a figure based on applicants' projections rather than payroll data.'"
+    },
+    {
+      "key": "The business improvement district's director warned that its 2027 contribution could shrink",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S2: 'the district's contribution may shrink in 2027.'"
+    },
+    {
+      "key": "A cafe owner documented that foot traffic doubled after neighboring storefronts reopened",
+      "label": "mismatch",
+      "tag": "evidence_overstated",
+      "why": "S2: she 'said foot traffic doubled ... though she offered no counts.'"
+    },
+    {
+      "key": "Landlords with the highest-value spaces account for most of the remaining downtown vacancies",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "S2 says some landlords found the cap unattractive for high-value spaces, but no source breaks down remaining vacancies."
+    }
+  ]
+}

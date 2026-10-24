@@ -1,0 +1,128 @@
+{
+  "id": "en-library-makerspace-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "How does Riverton Public Library run its makerspaces, and how well are they meeting demand?",
+  "sources": {
+    "S1": "Riverton Public Library opened makerspaces at 4 of its 11 branches between January and June 2025. Each makerspace has two 3D printers, one laser cutter, and six sewing machines. Startup equipment cost $68,000 per branch, of which a state library grant paid 75% and the library foundation paid the remaining 25%. Patrons aged 14 and older may use the laser cutter only after completing a 90-minute safety class; patrons under 14 may use 3D printers with a guardian present. 3D printing is free for the first 100 grams per patron per month, and additional filament costs 10 cents per gram. Makerspaces are open Tuesday through Saturday, 10 a.m. to 6 p.m. Equipment maintenance is performed quarterly by a contracted vendor, while staff handle daily cleaning. Patrons may book each machine for up to 2 hours per day. In fiscal year 2026, makerspaces logged 9,600 reservations, up from 6,000 in fiscal year 2025. The library plans to add makerspaces at 2 more branches in 2027, pending city council budget approval.",
+    "S2": "The Riverton Community Survey Office collected 412 responses from makerspace users through an online form in July 2026. Of respondents, 58% said they had used a makerspace to work on a school project, and 22% said they had used it for a small business. Respondents rated the laser cutter waitlist as the top complaint, followed by limited weekend hours. The office cautioned that online respondents may be more frequent users than the average patron. The average wait for a laser cutter slot was 9 days in June 2026, compared with 4 days in June 2025. The survey office recommended extending Saturday hours to 8 p.m.; the library board has not voted on it."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How does Riverton Public Library run its makerspaces, and how well are they meeting demand?\n\n## Answer\nRiverton opened makerspaces at four of its eleven branches during the first half of 2025 [S1]. Makerspace reservations doubled between fiscal 2025 and fiscal 2026 [S1].\n\n## Evidence\n- Across the four branches, startup equipment cost $272,000 in total [S1].\n- The library foundation covered 75% of startup costs, with the state grant paying the rest [S1].\n- The state grant's share came to $51,000 per branch [S1].\n- Any patron can use the laser cutter after completing a 90-minute safety class [S1].\n- Children under 14 can use the 3D printers only if a guardian is present [S1].\n- 3D printing is free for the first 100 grams per patron per week [S1].\n- A patron who prints 250 grams in one month would pay $15 for the extra filament [S1].\n- Makerspaces operate from 10 a.m. to 6 p.m., Monday through Friday [S1].\n- Library staff carry out the quarterly equipment maintenance [S1].\n\n## Counter-evidence and limits\n- The average laser cutter wait rose from 4 days to 9 days, more than doubling year over year [S2].\n- 58% of Riverton library patrons have used a makerspace for a school project [S2].\n- The survey office warned that online respondents may use the makerspaces more often than the average patron [S2].\n- Limited weekend hours were the most common complaint among respondents [S2].\n- The library board has approved a later 8 p.m. Saturday closing time [S2].\n- Expansion to two more branches in 2027 still depends on city council budget approval [S1].\n- Most makerspace projects involve cosplay costumes and home repairs.\n\n## Next actions\n- Ask the library for laser cutter booking data by branch before recommending a second laser cutter (judgment)\n\n## Sources\n- [S1] Riverton Public Library, \"Makerspace Program Annual Report\" (2026-08-05)\n- [S2] Riverton Community Survey Office, \"Makerspace User Feedback\" (2026-09-10)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Riverton opened makerspaces at four of its eleven branches during the first half of 2025",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'opened makerspaces at 4 of its 11 branches between January and June 2025'"
+    },
+    {
+      "key": "Makerspace reservations doubled between fiscal 2025 and fiscal 2026",
+      "label": "mismatch",
+      "tag": "inflated_ratio",
+      "why": "S1: 6,000 -> 9,600 is a 1.6x increase, not a doubling"
+    },
+    {
+      "key": "Across the four branches, startup equipment cost $272,000 in total",
+      "label": "ok",
+      "tag": "computed_total",
+      "why": "S1: '$68,000 per branch' x 4 = $272,000"
+    },
+    {
+      "key": "The library foundation covered 75% of startup costs, with the state grant paying the rest",
+      "label": "mismatch",
+      "tag": "swapped_shares",
+      "why": "S1: 'a state library grant paid 75% and the library foundation paid the remaining 25%'"
+    },
+    {
+      "key": "The state grant's share came to $51,000 per branch",
+      "label": "ok",
+      "tag": "computed_share",
+      "why": "S1: 75% of $68,000 = $51,000"
+    },
+    {
+      "key": "Any patron can use the laser cutter after completing a 90-minute safety class",
+      "label": "mismatch",
+      "tag": "eligibility_dropped",
+      "why": "S1: laser cutter limited to 'Patrons aged 14 and older' who complete the class"
+    },
+    {
+      "key": "Children under 14 can use the 3D printers only if a guardian is present",
+      "label": "ok",
+      "tag": "condition_restated",
+      "why": "S1: 'patrons under 14 may use 3D printers with a guardian present'"
+    },
+    {
+      "key": "3D printing is free for the first 100 grams per patron per week",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S1: 'free for the first 100 grams per patron per month'"
+    },
+    {
+      "key": "A patron who prints 250 grams in one month would pay $15 for the extra filament",
+      "label": "ok",
+      "tag": "computed_cost",
+      "why": "S1: 150 g beyond the free 100 g x 10 cents = $15"
+    },
+    {
+      "key": "Makerspaces operate from 10 a.m. to 6 p.m., Monday through Friday",
+      "label": "mismatch",
+      "tag": "day_window_changed",
+      "why": "S1: 'open Tuesday through Saturday, 10 a.m. to 6 p.m.'"
+    },
+    {
+      "key": "Library staff carry out the quarterly equipment maintenance",
+      "label": "mismatch",
+      "tag": "wrong_actor",
+      "why": "S1: 'maintenance is performed quarterly by a contracted vendor, while staff handle daily cleaning'"
+    },
+    {
+      "key": "The average laser cutter wait rose from 4 days to 9 days, more than doubling year over year",
+      "label": "ok",
+      "tag": "computed_ratio",
+      "why": "S2: 9 days in June 2026 vs 4 days in June 2025 (2.25x)"
+    },
+    {
+      "key": "58% of Riverton library patrons have used a makerspace for a school project",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S2: 58% of 412 online respondents who are makerspace users, not all patrons"
+    },
+    {
+      "key": "The survey office warned that online respondents may use the makerspaces more often than the average patron",
+      "label": "ok",
+      "tag": "limit_restated",
+      "why": "S2: 'online respondents may be more frequent users than the average patron'"
+    },
+    {
+      "key": "Limited weekend hours were the most common complaint among respondents",
+      "label": "mismatch",
+      "tag": "ranking_swapped",
+      "why": "S2: laser cutter waitlist was 'the top complaint, followed by limited weekend hours'"
+    },
+    {
+      "key": "The library board has approved a later 8 p.m. Saturday closing time",
+      "label": "mismatch",
+      "tag": "recommendation_as_approved",
+      "why": "S2: office 'recommended extending Saturday hours to 8 p.m.; the library board has not voted on it'"
+    },
+    {
+      "key": "Expansion to two more branches in 2027 still depends on city council budget approval",
+      "label": "ok",
+      "tag": "plan_status_correct",
+      "why": "S1: 'plans to add makerspaces at 2 more branches in 2027, pending city council budget approval'"
+    },
+    {
+      "key": "Most makerspace projects involve cosplay costumes and home repairs",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source describes project types beyond school/small business shares"
+    }
+  ]
+}

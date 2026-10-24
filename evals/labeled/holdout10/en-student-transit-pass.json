@@ -1,0 +1,98 @@
+{
+ "id": "en-student-transit-pass",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Did Ridgeport's free transit pass for high school students raise ridership and attendance?",
+ "sources": {
+  "S1": "Starting September 2, 2025, the Ridgeport Transit Authority began issuing free unlimited-ride passes to students enrolled at the city's nine public high schools. Previously, students paid a reduced fare of $1.25 per ride. The passes are valid on buses and the light rail from 6 a.m. to 10 p.m., including weekends, and must be renewed each school year.\n\nThe authority distributed 11,800 passes, covering about 84 percent of eligible students. Average weekday boardings by pass holders were 9,600 in October 2025, compared with 6,100 student fare boardings in October 2024.\n\nThe authority estimates lost fare revenue at $2.3 million per year. The state transportation department reimbursed $1.5 million for the first year; the city covers the remainder.",
+  "S2": "The Ridgeport School District compared chronic absenteeism at its nine high schools between fall 2024 and fall 2025. Chronic absence fell from 24 percent to 21 percent. Over the same period, chronic absence at middle schools, whose students did not receive passes, fell from 19 percent to 18 percent.\n\nThe district's analysts write that the larger drop at high schools is \"consistent with\" an effect of the passes but note that the district also hired attendance coaches at four high schools in 2025. They recommend a multi-year study before drawing conclusions."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Ridgeport's free transit pass for high school students raise ridership and attendance?\n\n## Answer\nWeekday student boardings rose by about 57 percent compared with October 2024 [S1]. Chronic absence at high schools fell 3 percentage points, more than the 1-point drop at middle schools [S2]. District analysts concluded that the passes reduced chronic absence [S2].\n\n## Evidence\n- Passes must be renewed every semester [S1].\n- Before the program, students paid $1.25 per trip [S1].\n- Passes work on buses but not on the light rail [S1].\n- Passes can be used only on school days [S1].\n- About 84 percent of eligible students, or 11,800, received a pass [S1].\n- The state reimbursed the full $2.3 million in lost fares for the first year [S1].\n- The city covers the remaining roughly $800,000 [S1].\n\n## Counter-evidence and limits\n- The district also added attendance coaches at all nine high schools in 2025 [S2].\n- Analysts recommend a study spanning several years before drawing conclusions [S2].\n- Many students said they used the pass mainly to reach weekend jobs.\n\n## Next steps\n- Compare the four high schools with attendance coaches against the other five (judgment).\n- Confirm whether the state will reimburse lost fares beyond the first year (judgment).\n\n## Sources\n- [S1] Ridgeport Transit Authority, \"Free Student Pass: Fall 2025 Ridership Report\" (December 2025)\n- [S2] Ridgeport School District, \"Chronic Absenteeism Comparison, Fall 2024 vs Fall 2025\" (February 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Weekday student boardings rose by about 57 percent compared with October 2024",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "(9,600-6,100)/6,100 = 57.4%."
+  },
+  {
+   "key": "Chronic absence at high schools fell 3 percentage points, more than the 1-point drop at middle schools",
+   "label": "ok",
+   "tag": "comparison",
+   "why": "24->21 vs 19->18."
+  },
+  {
+   "key": "District analysts concluded that the passes reduced chronic absence",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "Analysts only said the drop is consistent with an effect and recommend a multi-year study."
+  },
+  {
+   "key": "Passes must be renewed every semester",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "Passes must be renewed each school year."
+  },
+  {
+   "key": "Before the program, students paid $1.25 per trip",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Per ride = per trip."
+  },
+  {
+   "key": "Passes work on buses but not on the light rail",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Valid on buses and the light rail."
+  },
+  {
+   "key": "Passes can be used only on school days",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Valid including weekends."
+  },
+  {
+   "key": "About 84 percent of eligible students, or 11,800, received a pass",
+   "label": "ok",
+   "tag": "order",
+   "why": "Same facts reordered."
+  },
+  {
+   "key": "The state reimbursed the full $2.3 million in lost fares for the first year",
+   "label": "mismatch",
+   "tag": "number",
+   "why": "The state reimbursed $1.5 million; the city covers the rest."
+  },
+  {
+   "key": "The city covers the remaining roughly $800,000",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2.3M - 1.5M = 0.8M."
+  },
+  {
+   "key": "The district also added attendance coaches at all nine high schools in 2025",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Coaches were hired at four high schools."
+  },
+  {
+   "key": "Analysts recommend a study spanning several years before drawing conclusions",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Multi-year study."
+  },
+  {
+   "key": "Many students said they used the pass mainly to reach weekend jobs",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source reports trip purposes."
+  }
+ ]
+}

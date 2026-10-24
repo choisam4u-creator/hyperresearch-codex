@@ -1,0 +1,146 @@
+{
+  "id": "en-water-meter-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "Is Marrowfield's smart water meter replacement program on track and delivering results?",
+  "sources": {
+    "S1": "Marrowfield began replacing analog residential water meters with cellular smart meters on February 2, 2026. By June 30, 2026, crews had installed 9,450 of the 14,000 meters planned for Phase 1. The total Phase 1 budget is $6.3 million, funded 55% by a state revolving-fund loan, 35% by the town water enterprise fund, and 10% by a federal grant. Each installed meter costs $380 in hardware and $70 in labor. Installation is done by contractor Ridgeline Utility Services; the town's own crews handle only commercial accounts. Meters transmit readings every 15 minutes, and customers can view hourly usage through an online portal. Leak alerts are sent when continuous flow is detected for 48 hours. From March through June, the system sent 1,320 leak alerts, and 410 households reported fixing a leak afterward. Billed consumption among upgraded households fell 6% compared with the same months of 2025, but the department said it could not attribute the drop to the meters because spring 2026 was wetter than spring 2025. Customers may opt out for a one-time fee of $75 plus $15 per month for manual reads; 112 households opted out. Installation by neighborhood: Eastbrook 3,100 meters, Hollins 2,650, Riverside 2,200, and Old Mill 1,500. Phase 2, covering the remaining 6,200 meters, is scheduled to start in 2027 subject to council approval.",
+    "S2": "The Marrowfield Courier reported that the utility received 260 billing complaints between April and July, most tied to the first bill after installation. Some residents said they were not notified before contractors entered their yards. A council member questioned whether the opt-out fee penalizes elderly residents. The department said it would mail notices at least 10 days before installation going forward."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Is Marrowfield's smart water meter replacement program on track and delivering results?\n\n## Answer\nMarrowfield had installed 9,450 smart meters by the end of June 2026 [S1]. That is about two-thirds of the Phase 1 target [S1]. Phase 1 still has 3,550 meters left to install [S1].\n\n## Evidence\n- The state revolving-fund loan covers about $3.47 million of the Phase 1 budget [S1].\n- The federal grant covers 35% of the Phase 1 budget [S1].\n- Hardware and labor together come to $450 per installed meter [S1].\n- Hardware and labor for the meters installed so far total about $3.6 million [S1].\n- The town's own crews install residential meters [S1].\n- Meters transmit readings once an hour [S1].\n- Leak alerts are triggered after 48 hours of continuous flow [S1].\n- Roughly 31% of leak alerts were followed by a household reporting a repair [S1].\n- The smart meters cut billed water consumption by 6% [S1].\n- Households can opt out for a one-time $75 fee with no recurring charge [S1].\n- An opted-out household pays $255 in its first year [S1].\n- Eastbrook accounted for roughly a third of installations [S1].\n- Riverside received more meters than Hollins [S1].\n- Phase 2 has been approved by the council and will start in 2027 [S1].\n\n## Counterevidence and limits\n- The utility received 260 billing complaints between April and July [S2].\n- A council member questioned whether the opt-out fee penalizes elderly residents [S2].\n- Spring 2026 was wetter than spring 2025, which complicates the consumption comparison [S2].\n- Ridgeline Utility Services won the contract in a competitive bid against four other firms.\n\n## Next steps\n- Track whether pre-installation notices reduce complaints and wait for weather-adjusted consumption data before crediting the meters with savings (judgment).\n\n## Sources\n- [S1] Marrowfield Public Works Department, \"Water Meter Replacement Program: Phase 1 Report\" (2026-08-25)\n- [S2] Marrowfield Courier, \"Smart meter rollout draws billing complaints\" (2026-09-08)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Marrowfield had installed 9,450 smart meters by the end of June 2026",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'By June 30, 2026, crews had installed 9,450 of the 14,000 meters planned for Phase 1.'"
+    },
+    {
+      "key": "That is about two-thirds of the Phase 1 target",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 9,450/14,000 = 67.5%, roughly two-thirds."
+    },
+    {
+      "key": "Phase 1 still has 3,550 meters left to install",
+      "label": "mismatch",
+      "tag": "wrong_derived_difference",
+      "why": "S1: 14,000 - 9,450 = 4,550 meters remaining, not 3,550."
+    },
+    {
+      "key": "The state revolving-fund loan covers about $3.47 million of the Phase 1 budget",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 55% of $6.3 million = $3.465 million."
+    },
+    {
+      "key": "The federal grant covers 35% of the Phase 1 budget",
+      "label": "mismatch",
+      "tag": "swapped_funder_share",
+      "why": "S1: federal grant 10%; 35% is the town water enterprise fund."
+    },
+    {
+      "key": "Hardware and labor together come to $450 per installed meter",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S1: $380 hardware + $70 labor = $450."
+    },
+    {
+      "key": "Hardware and labor for the meters installed so far total about $3.6 million",
+      "label": "mismatch",
+      "tag": "partial_sum",
+      "why": "S1: 9,450 x $450 = $4,252,500 (about $4.25 million). $3.6 million is roughly hardware only (9,450 x $380 = $3,591,000)."
+    },
+    {
+      "key": "The town's own crews install residential meters",
+      "label": "mismatch",
+      "tag": "wrong_operator",
+      "why": "S1: residential installation is by contractor Ridgeline Utility Services; town crews handle only commercial accounts."
+    },
+    {
+      "key": "Meters transmit readings once an hour",
+      "label": "mismatch",
+      "tag": "changed_frequency",
+      "why": "S1: 'Meters transmit readings every 15 minutes'; hourly is only the portal's usage view."
+    },
+    {
+      "key": "Leak alerts are triggered after 48 hours of continuous flow",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'Leak alerts are sent when continuous flow is detected for 48 hours.'"
+    },
+    {
+      "key": "Roughly 31% of leak alerts were followed by a household reporting a repair",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 410/1,320 = 31.1%."
+    },
+    {
+      "key": "The smart meters cut billed water consumption by 6%",
+      "label": "mismatch",
+      "tag": "hedge_to_causal",
+      "why": "S1: consumption fell 6% but the department 'could not attribute the drop to the meters' because spring 2026 was wetter."
+    },
+    {
+      "key": "Households can opt out for a one-time $75 fee with no recurring charge",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S1: opt-out costs '$75 plus $15 per month for manual reads'."
+    },
+    {
+      "key": "An opted-out household pays $255 in its first year",
+      "label": "ok",
+      "tag": "derived_sum",
+      "why": "S1: $75 + $15 x 12 = $75 + $180 = $255."
+    },
+    {
+      "key": "Eastbrook accounted for roughly a third of installations",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 3,100/9,450 = 32.8%."
+    },
+    {
+      "key": "Riverside received more meters than Hollins",
+      "label": "mismatch",
+      "tag": "reversed_comparison",
+      "why": "S1: Hollins 2,650 > Riverside 2,200."
+    },
+    {
+      "key": "Phase 2 has been approved by the council and will start in 2027",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: Phase 2 'is scheduled to start in 2027 subject to council approval'; approval has not happened."
+    },
+    {
+      "key": "The utility received 260 billing complaints between April and July",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'received 260 billing complaints between April and July'."
+    },
+    {
+      "key": "A council member questioned whether the opt-out fee penalizes elderly residents",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'A council member questioned whether the opt-out fee penalizes elderly residents.'"
+    },
+    {
+      "key": "Spring 2026 was wetter than spring 2025, which complicates the consumption comparison",
+      "label": "mismatch",
+      "tag": "wrong_citation",
+      "why": "The wetter-spring caveat is in S1, not S2."
+    },
+    {
+      "key": "Ridgeline Utility Services won the contract in a competitive bid against four other firms",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source describes how the contract was awarded."
+    }
+  ]
+}

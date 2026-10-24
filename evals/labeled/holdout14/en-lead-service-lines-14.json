@@ -1,0 +1,116 @@
+{
+ "id": "en-lead-service-lines-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "How far along is Ashgrove's lead service line replacement program, and who pays for it?",
+ "sources": {
+  "S1": "As of June 30, 2026, Ashgrove Water Utility had replaced 2,150 of an estimated 6,900 lead service lines in the city. The estimate is based on records for 70% of connections plus predictive modeling for the rest; about 1,400 lines remain of unknown material. The utility replaces both the public and private portions of each line in the same visit. For the private portion, a federal revolving-fund loan covers 80% of the cost and the property owner pays the remaining 20%, capped at $1,000; owners enrolled in the city's low-income utility discount pay nothing. The average full replacement cost was $9,600 in fiscal 2026, down from $11,200 in fiscal 2025. Work is done by two contracted crews; utility staff handle inspection and water testing afterward. Residents receive a pitcher filter and are told to flush taps for five minutes for three months after replacement.",
+  "S2": "Staff asked the council to adopt a target of replacing all known lead lines by 2033. The resolution is scheduled for a vote on October 21, 2026. Staff projected that the program would need about $46 million more at current costs to finish. An independent review of 300 replaced homes found that 96% had first-draw lead levels below 5 parts per billion within three months after replacement."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How far along is Ashgrove's lead service line replacement program, and who pays for it?\n\n## Answer\nAshgrove has replaced about 31% of its estimated 6,900 lead service lines as of mid-2026 [S1]. The 6,900 total is a confirmed count drawn from complete utility records [S1]. Most of the private-side cost is covered by a federal revolving-fund loan rather than by homeowners [S1].\n\n## Evidence\n- Property owners pay 80% of the private-side cost, with the federal loan covering the rest [S1].\n- The homeowner share is 20% of the private-side cost with no upper limit [S1].\n- Households enrolled in the low-income utility discount pay nothing toward the private portion [S1].\n- The utility replaces the public portion first and returns on a later visit for the private portion [S1].\n- The average full replacement cost fell by $1,600, or about 14%, between fiscal 2025 and fiscal 2026 [S1].\n- Contracted crews also perform the water testing after each replacement [S1].\n- Residents are told to flush their taps for five minutes for three weeks after replacement [S1].\n- About 1,400 lines are still of unknown material [S1].\n- Ashgrove's lead lines are concentrated in homes built before 1940.\n\n## Counter-evidence and limits\n- The council has adopted a 2033 deadline for replacing all known lead lines [S2].\n- Staff project that roughly $46 million more will be needed to finish at current costs [S2].\n- Testing shows 96% of all replaced homes in Ashgrove have first-draw lead below 5 parts per billion [S2].\n- The council vote on the 2033 target is set for October 21, 2026 [S2].\n\n## Next actions\n- Check the outcome of the October 21 vote and ask how the 1,400 unknown lines will be identified (judgment)\n\n## Sources\n- [S1] Ashgrove Water Utility, \"Lead Service Line Replacement Progress Report\" (2026-07-31)\n- [S2] Ashgrove City Council, \"Resolution 26-118 Staff Report\" (2026-09-02)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Ashgrove has replaced about 31% of its estimated 6,900 lead service lines as of mid-2026",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 2,150 / 6,900 = 31.2% as of June 30, 2026."
+  },
+  {
+   "key": "The 6,900 total is a confirmed count drawn from complete utility records",
+   "label": "mismatch",
+   "tag": "estimate stated as verified",
+   "why": "S1: estimate from records for 70% plus predictive modeling."
+  },
+  {
+   "key": "Most of the private-side cost is covered by a federal revolving-fund loan rather than by homeowners",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: federal loan covers 80% of private portion."
+  },
+  {
+   "key": "Property owners pay 80% of the private-side cost, with the federal loan covering the rest",
+   "label": "mismatch",
+   "tag": "funding share swap",
+   "why": "S1: loan 80%, owner 20%."
+  },
+  {
+   "key": "The homeowner share is 20% of the private-side cost with no upper limit",
+   "label": "mismatch",
+   "tag": "cap dropped",
+   "why": "S1: owner share capped at $1,000."
+  },
+  {
+   "key": "Households enrolled in the low-income utility discount pay nothing toward the private portion",
+   "label": "ok",
+   "tag": "exception kept",
+   "why": "S1: discount enrollees pay nothing."
+  },
+  {
+   "key": "The utility replaces the public portion first and returns on a later visit for the private portion",
+   "label": "mismatch",
+   "tag": "procedure changed",
+   "why": "S1: both portions replaced in the same visit."
+  },
+  {
+   "key": "The average full replacement cost fell by $1,600, or about 14%, between fiscal 2025 and fiscal 2026",
+   "label": "ok",
+   "tag": "difference and percentage",
+   "why": "S1: $11,200 to $9,600; 1,600/11,200 = 14.3%."
+  },
+  {
+   "key": "Contracted crews also perform the water testing after each replacement",
+   "label": "mismatch",
+   "tag": "wrong actor",
+   "why": "S1: utility staff handle inspection and water testing."
+  },
+  {
+   "key": "Residents are told to flush their taps for five minutes for three weeks after replacement",
+   "label": "mismatch",
+   "tag": "duration changed",
+   "why": "S1: for three months."
+  },
+  {
+   "key": "About 1,400 lines are still of unknown material",
+   "label": "ok",
+   "tag": "accurate",
+   "why": "S1: about 1,400 lines of unknown material."
+  },
+  {
+   "key": "Ashgrove's lead lines are concentrated in homes built before 1940",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source gives housing age."
+  },
+  {
+   "key": "The council has adopted a 2033 deadline for replacing all known lead lines",
+   "label": "mismatch",
+   "tag": "proposal stated as adopted",
+   "why": "S2: staff asked for it; vote scheduled October 21, 2026."
+  },
+  {
+   "key": "Staff project that roughly $46 million more will be needed to finish at current costs",
+   "label": "ok",
+   "tag": "estimate kept",
+   "why": "S2: about $46 million more."
+  },
+  {
+   "key": "Testing shows 96% of all replaced homes in Ashgrove have first-draw lead below 5 parts per billion",
+   "label": "mismatch",
+   "tag": "sample generalized",
+   "why": "S2: independent review of 300 replaced homes."
+  },
+  {
+   "key": "The council vote on the 2033 target is set for October 21, 2026",
+   "label": "ok",
+   "tag": "accurate date",
+   "why": "S2: vote scheduled October 21, 2026."
+  }
+ ]
+}

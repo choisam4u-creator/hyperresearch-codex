@@ -1,0 +1,86 @@
+{
+ "id": "en-community-fridges",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "Did Marlow Bay's community fridge pilot work well enough to keep running?",
+ "sources": {
+  "S1": "Marlow Bay's community fridge pilot placed 14 refrigerators outside libraries and recreation centers between March 2025 and February 2026. Volunteers logged 38,400 kilograms of donated food over the 12 months, and staff estimated that roughly 9 percent of items were discarded because they had spoiled before pickup.\n\nThe evaluation surveyed 610 fridge users; 41 percent said they used a fridge at least once a week, and 23 percent said it was their main source of fresh produce. The report cautions that survey respondents were recruited at the fridge sites and may not represent all users.",
+  "S2": "In September 2026 the city council approved continuing the program for one more year with a budget of $186,000, but expansion to additional sites was deferred until a cleaning contract is tendered. Health inspectors recorded two food-safety violations during the pilot, both involving unlabeled home-cooked meals, which are allowed only if labeled with a preparation date.\n\nThe memo notes that fridges near libraries were restocked more often than those at recreation centers."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Marlow Bay's community fridge pilot work well enough to keep running?\n\n## Answer\nMarlow Bay's pilot ran 14 community fridges for a year and collected about 38 tonnes of donated food [S1]. The council has since expanded the program to new sites with a budget of $186,000 [S2].\n\n## Evidence\n- Over the 12-month pilot, donations averaged roughly 3,200 kilograms per month [S1].\n- Staff estimated that about 9 percent of items spoiled before anyone picked them up [S1].\n- Most surveyed users said the fridges were their main source of fresh produce [S1].\n- Two in five surveyed users reported visiting a fridge at least weekly [S1].\n- Because the fridges reduced household food waste, the city recorded fewer food-safety violations than expected [S2].\n- Home-cooked meals may be left in the fridges at any time without restriction [S2].\n\n## Counter-evidence and limits\n- The user survey drew respondents at the fridge sites themselves, so it may not reflect all users [S1].\n- Fridges at recreation centers were restocked more often than those near libraries [S2].\n- Similar programs in other cities have typically closed within three years because of vandalism.\n\n## Next actions\n- Ask the council for the cleaning-contract timeline before planning any new fridge sites (judgment)\n\n## Sources\n- [S1] Marlow Bay Community Fridge Pilot Evaluation, 2025-26\n- [S2] Marlow Bay City Council memo on community fridges, September 2026\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Marlow Bay's pilot ran 14 community fridges for a year and collected about 38 tonnes of donated food",
+   "label": "ok",
+   "tag": "unit_conversion",
+   "why": "38,400 kg over 12 months is about 38 tonnes"
+  },
+  {
+   "key": "The council has since expanded the program to new sites with a budget of $186,000",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "council continued the program; expansion to new sites was deferred"
+  },
+  {
+   "key": "Over the 12-month pilot, donations averaged roughly 3,200 kilograms per month",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "38,400 / 12 = 3,200"
+  },
+  {
+   "key": "Staff estimated that about 9 percent of items spoiled before anyone picked them up",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "paraphrase of roughly 9 percent discarded as spoiled before pickup"
+  },
+  {
+   "key": "Most surveyed users said the fridges were their main source of fresh produce",
+   "label": "mismatch",
+   "tag": "share",
+   "why": "only 23 percent said so"
+  },
+  {
+   "key": "Two in five surveyed users reported visiting a fridge at least weekly",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "41 percent is about two in five"
+  },
+  {
+   "key": "Because the fridges reduced household food waste, the city recorded fewer food-safety violations than expected",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "source only reports two violations; no expectation or causal link"
+  },
+  {
+   "key": "Home-cooked meals may be left in the fridges at any time without restriction",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "home-cooked meals allowed only if labeled with a preparation date"
+  },
+  {
+   "key": "The user survey drew respondents at the fridge sites themselves, so it may not reflect all users",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "matches the report's caution"
+  },
+  {
+   "key": "Fridges at recreation centers were restocked more often than those near libraries",
+   "label": "mismatch",
+   "tag": "comparison",
+   "why": "library fridges were restocked more often"
+  },
+  {
+   "key": "Similar programs in other cities have typically closed within three years because of vandalism",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source discusses other cities"
+  }
+ ]
+}

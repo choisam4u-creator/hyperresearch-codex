@@ -1,0 +1,104 @@
+{
+ "id": "en-community-gardens-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "How does Port Linden allocate and price community garden plots, and what is known about demand and harvests?",
+ "sources": {
+  "S1": "Port Linden operates 9 community gardens with a total of 640 rental plots, after adding two new gardens with 110 plots in spring 2026. Standard plots measure 10 by 20 feet and rent for $45 per season; raised accessible beds rent for $25. Residents enrolled in SNAP or the city's utility discount program pay no fee. Plots are assigned by lottery each February, and returning gardeners who kept their plot in good standing receive priority before the lottery is held. Non-residents may rent plots only if any remain after all residents have been served. The waitlist stood at 385 households in March 2026, down from 520 in March 2025. Water is supplied by the city, but gardeners must provide their own tools and seeds.",
+  "S2": "A survey of 212 gardeners at four of the gardens estimated average harvest at 180 pounds of produce per plot per season. Respondents reported donating about 12% of their harvest to local food pantries. The council notes the survey was voluntary and not representative of all gardens. The council has proposed converting a vacant lot on Fenwick Street into a tenth garden, but no funding has been identified."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How does Port Linden allocate and price community garden plots, and what is known about demand and harvests?\n\n## Answer\nPort Linden now rents 640 plots across 9 gardens, about a fifth more plots than before its spring 2026 expansion [S1]. Each plot across the city's gardens yields an average of 180 pounds of produce per season [S2].\n\n## Evidence\n- A standard plot covers 200 square feet and costs $45 per season [S1].\n- Raised accessible beds cost $45 per season, compared with $25 for a standard plot [S1].\n- Gardeners enrolled in SNAP or in the city's utility discount program are not charged a fee [S1].\n- Plots are first assigned by a February lottery, after which returning gardeners in good standing may reclaim their plots [S1].\n- Non-residents compete in the lottery on equal footing with residents [S1].\n- The waitlist shrank by 135 households, about 26%, between March 2025 and March 2026 [S1].\n- Gardeners pay for their own water, while the city provides tools [S1].\n- The two new gardens average 55 plots each [S1].\n\n## Counter-evidence and limits\n- Surveyed gardeners said they gave roughly an eighth of their harvest to food pantries [S2].\n- The harvest survey was voluntary, covered only four gardens, and is not representative of the full program [S2].\n- A tenth garden has been funded for the vacant lot on Fenwick Street [S2].\n- The city plans to raise the standard plot fee to $55 in 2027.\n\n## Next actions\n- Commission a harvest survey that samples all nine gardens before using yield figures in budget requests (judgment).\n\n## Sources\n- [S1] Port Linden Parks and Recreation, \"Community Garden Plot Program 2026 Report\" (August 2026)\n- [S2] Port Linden Food Policy Council, \"Garden Harvest Survey 2025\" (December 2025)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Linden now rents 640 plots across 9 gardens, about a fifth more plots than before its spring 2026 expansion",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 640 - 110 = 530 before; 110/530 = 20.8%."
+  },
+  {
+   "key": "Each plot across the city's gardens yields an average of 180 pounds of produce per season",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "S2: 180 lb is an estimate from a voluntary, non-representative survey at four gardens, not all plots."
+  },
+  {
+   "key": "A standard plot covers 200 square feet and costs $45 per season",
+   "label": "ok",
+   "tag": "conversion",
+   "why": "S1: 10 x 20 ft = 200 sq ft, $45 per season."
+  },
+  {
+   "key": "Raised accessible beds cost $45 per season, compared with $25 for a standard plot",
+   "label": "mismatch",
+   "tag": "swap",
+   "why": "S1: standard plots are $45 and raised accessible beds $25; prices swapped."
+  },
+  {
+   "key": "Gardeners enrolled in SNAP or in the city's utility discount program are not charged a fee",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: SNAP or utility discount enrollees pay no fee."
+  },
+  {
+   "key": "Plots are first assigned by a February lottery, after which returning gardeners in good standing may reclaim their plots",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "S1: returning gardeners get priority before the lottery is held."
+  },
+  {
+   "key": "Non-residents compete in the lottery on equal footing with residents",
+   "label": "mismatch",
+   "tag": "eligibility",
+   "why": "S1: non-residents may rent only if plots remain after all residents are served."
+  },
+  {
+   "key": "The waitlist shrank by 135 households, about 26%, between March 2025 and March 2026",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 520 - 385 = 135; 135/520 = 26.0%."
+  },
+  {
+   "key": "Gardeners pay for their own water, while the city provides tools",
+   "label": "mismatch",
+   "tag": "role swap",
+   "why": "S1: the city supplies water; gardeners provide their own tools and seeds."
+  },
+  {
+   "key": "The two new gardens average 55 plots each",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 110 plots / 2 gardens = 55."
+  },
+  {
+   "key": "Surveyed gardeners said they gave roughly an eighth of their harvest to food pantries",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S2: about 12%, close to one eighth (12.5%)."
+  },
+  {
+   "key": "The harvest survey was voluntary, covered only four gardens, and is not representative of the full program",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: voluntary survey at four gardens, not representative."
+  },
+  {
+   "key": "A tenth garden has been funded for the vacant lot on Fenwick Street",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: only proposed; no funding identified."
+  },
+  {
+   "key": "The city plans to raise the standard plot fee to $55 in 2027",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions a fee increase; no citation."
+  }
+ ]
+}

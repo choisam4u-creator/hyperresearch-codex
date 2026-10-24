@@ -1,0 +1,134 @@
+{
+ "id": "en-paramedicine-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "Is Wrenfield County's community paramedicine pilot reducing 911 and emergency department use among frequent callers?",
+ "sources": {
+  "S1": "Wrenfield County Emergency Medical Services began a community paramedicine pilot in April 2025, in which paramedics make scheduled home visits to frequent 911 callers. Patients qualify if they called 911 at least 5 times in the previous 12 months and live in the county's three northern townships: Ashford, Belmont and Crane. The program enrolled 214 patients in its first year (April 2025 to March 2026). Each patient receives a visit every two weeks for the first three months, then monthly visits. Paramedics completed 3,960 home visits in the year. Among enrolled patients, 911 calls fell from 2,140 in the 12 months before enrollment to 1,180 in the 12 months after, and emergency department visits fell from 1,620 to 1,050. The county stresses that frequent callers' use typically declines over time even without intervention (regression to the mean), and there was no comparison group, so the declines cannot be attributed to the program alone. The program employs 6 paramedics and 1 nurse coordinator. Total first-year cost was $1.38 million, funded 60% by the county and 40% by a state innovation grant that expires in June 2027. Ashford had the most enrolled patients (97), followed by Crane (71) and Belmont (46). 23 patients left the program, 9 of them because they moved out of the service area. The county estimates that avoided ambulance transports saved about $1.1 million; this estimate uses the statewide average transport cost of $1,150 and has not been audited. Hospitals do not contribute funding. A proposal to extend eligibility to the southern townships will be considered in the 2027 budget.",
+  "S2": "The Wrenfield Ledger spoke with patients who said the visits helped them manage diabetes and medications. Northgate Regional Hospital's chief medical officer said the hospital had seen fewer repeat admissions but 'it's too early to say why.' Paramedic union representative Luis Ortega said staff were sometimes pulled from home visits to cover 911 shifts, cancelling about 140 visits over the winter. County commissioner Ruth Abernathy said she would oppose continued funding unless hospitals contributed. The program has a waiting list of 38 people."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Wrenfield County's community paramedicine pilot reducing 911 and emergency department use among frequent callers?\n\n## Answer\nAmong the 214 enrolled patients, 911 calls fell by 960, or about 45%, comparing the year after enrollment with the year before [S1]. The home visits are what cut emergency department use from 1,620 to 1,050 visits [S1].\n\n## Evidence\n- To qualify, a patient must have called 911 five or more times in the prior year and live in Ashford, Belmont or Crane [S1].\n- Enrolled patients are visited weekly for their first three months [S1].\n- Paramedics averaged roughly 18.5 visits per enrolled patient over the year [S1].\n- Emergency department visits among enrollees dropped by 570 [S1].\n- Emergency department visits among enrollees fell by about a quarter [S1].\n- The state innovation grant covered 40% of the $1.38 million first-year cost, roughly $552,000 [S1].\n- The state grant runs through June 2028 [S1].\n- Belmont had the fewest enrollees of the three townships [S1].\n- Crane enrolled more patients than Ashford [S1].\n- Fewer than half of the 23 patients who left did so because they moved away [S1].\n- The county's audited figures show avoided ambulance transports saved $1.1 million [S1].\n- Local hospitals share the program's costs with the county [S1].\n\n## Counterevidence and limits\n- The county warns that frequent callers tend to call less over time even without help, and the pilot had no comparison group [S1].\n- Northgate Regional Hospital's chief medical officer credited the program with reducing repeat admissions [S2].\n- A union representative said about 140 scheduled visits were cancelled over the winter when paramedics were moved to cover 911 shifts [S2].\n- Eligibility has been extended to the southern townships [S1].\n- Patient satisfaction with the home visits was 92% in a county survey.\n\n## Next actions\n- Request that EMS compare enrollees with similar frequent callers on the waiting list before the 2027 budget decision (judgment).\n\n## Sources\n- [S1] Wrenfield County EMS, \"Community Paramedicine Pilot: Year One Report\" (2026-06-30)\n- [S2] The Wrenfield Ledger, \"Paramedics who knock first: inside the county's home-visit program\" (2026-08-21)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Among the 214 enrolled patients, 911 calls fell by 960, or about 45%, comparing the year after enrollment with the year before",
+   "label": "ok",
+   "tag": "derived_difference_percentage",
+   "why": "S1: 911 calls 'fell from 2,140 ... to 1,180'; 2,140 - 1,180 = 960; 960/2,140 = 44.9%."
+  },
+  {
+   "key": "The home visits are what cut emergency department use from 1,620 to 1,050 visits",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: 'regression to the mean ... no comparison group, so the declines cannot be attributed to the program alone.'"
+  },
+  {
+   "key": "To qualify, a patient must have called 911 five or more times in the prior year and live in Ashford, Belmont or Crane",
+   "label": "ok",
+   "tag": "eligibility_paraphrase",
+   "why": "S1: 'called 911 at least 5 times in the previous 12 months and live in ... Ashford, Belmont and Crane.'"
+  },
+  {
+   "key": "Enrolled patients are visited weekly for their first three months",
+   "label": "mismatch",
+   "tag": "frequency_changed",
+   "why": "S1: 'a visit every two weeks for the first three months, then monthly visits.'"
+  },
+  {
+   "key": "Paramedics averaged roughly 18.5 visits per enrolled patient over the year",
+   "label": "ok",
+   "tag": "derived_per_unit",
+   "why": "S1: 3,960 visits / 214 patients = 18.50."
+  },
+  {
+   "key": "Emergency department visits among enrollees dropped by 570",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 'fell from 1,620 to 1,050'; 1,620 - 1,050 = 570."
+  },
+  {
+   "key": "Emergency department visits among enrollees fell by about a quarter",
+   "label": "mismatch",
+   "tag": "derived_percentage_wrong",
+   "why": "S1: 1,620 to 1,050 is a 35.2% decline (570/1,620), about a third, not a quarter."
+  },
+  {
+   "key": "The state innovation grant covered 40% of the $1.38 million first-year cost, roughly $552,000",
+   "label": "ok",
+   "tag": "derived_product",
+   "why": "S1: 'Total first-year cost was $1.38 million, funded ... 40% by a state innovation grant'; 0.40 x 1.38M = $552,000."
+  },
+  {
+   "key": "The state grant runs through June 2028",
+   "label": "mismatch",
+   "tag": "date_changed",
+   "why": "S1: 'a state innovation grant that expires in June 2027.'"
+  },
+  {
+   "key": "Belmont had the fewest enrollees of the three townships",
+   "label": "ok",
+   "tag": "ranking",
+   "why": "S1: Ashford 97, Crane 71, Belmont 46."
+  },
+  {
+   "key": "Crane enrolled more patients than Ashford",
+   "label": "mismatch",
+   "tag": "ranking_flipped",
+   "why": "S1: 'Ashford had the most enrolled patients (97), followed by Crane (71).'"
+  },
+  {
+   "key": "Fewer than half of the 23 patients who left did so because they moved away",
+   "label": "ok",
+   "tag": "derived_fraction",
+   "why": "S1: '23 patients left the program, 9 of them because they moved out of the service area'; 9/23 = 39%."
+  },
+  {
+   "key": "The county's audited figures show avoided ambulance transports saved $1.1 million",
+   "label": "mismatch",
+   "tag": "estimate_as_fact",
+   "why": "S1: 'The county estimates ... saved about $1.1 million; this estimate uses the statewide average transport cost ... and has not been audited.'"
+  },
+  {
+   "key": "Local hospitals share the program's costs with the county",
+   "label": "mismatch",
+   "tag": "wrong_payer",
+   "why": "S1: 'funded 60% by the county and 40% by a state innovation grant ... Hospitals do not contribute funding.'"
+  },
+  {
+   "key": "The county warns that frequent callers tend to call less over time even without help, and the pilot had no comparison group",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: 'frequent callers' use typically declines over time even without intervention (regression to the mean), and there was no comparison group.'"
+  },
+  {
+   "key": "Northgate Regional Hospital's chief medical officer credited the program with reducing repeat admissions",
+   "label": "mismatch",
+   "tag": "attribution_overclaim",
+   "why": "S2: the CMO 'had seen fewer repeat admissions but \"it's too early to say why.\"'"
+  },
+  {
+   "key": "A union representative said about 140 scheduled visits were cancelled over the winter when paramedics were moved to cover 911 shifts",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'staff were sometimes pulled from home visits to cover 911 shifts, cancelling about 140 visits over the winter.'"
+  },
+  {
+   "key": "Eligibility has been extended to the southern townships",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S1: 'A proposal to extend eligibility to the southern townships will be considered in the 2027 budget.'"
+  },
+  {
+   "key": "Patient satisfaction with the home visits was 92% in a county survey",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source reports a satisfaction survey."
+  }
+ ]
+}

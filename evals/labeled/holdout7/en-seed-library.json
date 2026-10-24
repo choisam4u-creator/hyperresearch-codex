@@ -1,0 +1,86 @@
+{
+ "id": "en-seed-library",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout7-2026-10-11",
+ "prompt": "How did the Wexford County Library seed library do in its first year?",
+ "sources": {
+  "S1": "The Wexford County Library opened seed libraries at 6 of its 11 branches in March 2025. Through December 2025, patrons checked out 9,340 seed packets, of which 3,120 were tomato, pepper or bean varieties. Patrons could take up to 5 packets per visit, and a library card was not required.\n\nThe library spent $7,800 on seed purchases and packaging in 2025, and local garden clubs donated an estimated 4,000 additional packets that are not included in the checkout total.",
+  "S2": "Patrons were asked to return seeds saved from their harvest. By the end of 2025, 410 packets had been returned, which staff described as lower than hoped; staff attributed the low return rate mainly to patrons being unsure how to dry and store seeds. Workshops on seed saving drew 265 attendees across 14 sessions.\n\nThe library board will consider adding seed libraries to the remaining branches in its 2027 budget, depending on grant funding."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How did the Wexford County Library seed library do in its first year?\n\n## Answer\nSeed libraries opened at just over half of the county's library branches in 2025 [S1]. Patrons checked out about 9,300 seed packets in 2025, including those donated by garden clubs [S1].\n\n## Evidence\n- Tomato, pepper and bean varieties made up about one-third of checkouts [S1].\n- Borrowers needed a library card to take seeds [S1].\n- Patrons were limited to five packets per month [S1].\n- Seed purchases and packaging cost the library under a dollar per checked-out packet [S1].\n- Only about 4 percent of checked-out packets came back as saved seed by year-end [S2].\n- Seed-saving workshops averaged roughly 19 attendees per session [S2].\n\n## Counter-evidence and limits\n- Staff said returns were low because many patrons' gardens failed during a dry summer [S2].\n- The board has budgeted seed libraries for all remaining branches in 2027 [S2].\n- Interest was highest among first-time gardeners.\n\n## Next actions\n- Pair checkouts with a short seed-drying guide and track whether returns rise in 2026 (judgment)\n\n## Sources\n- [S1] Wexford County Library, Seed Library Annual Report 2025\n- [S2] Wexford County Library board briefing\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Seed libraries opened at just over half of the county's library branches in 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "6 of 11 branches = 55 percent"
+  },
+  {
+   "key": "Patrons checked out about 9,300 seed packets in 2025, including those donated by garden clubs",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "donated packets are explicitly not included in the checkout total"
+  },
+  {
+   "key": "Tomato, pepper and bean varieties made up about one-third of checkouts",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "3,120 / 9,340 = 33 percent"
+  },
+  {
+   "key": "Borrowers needed a library card to take seeds",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "a library card was not required"
+  },
+  {
+   "key": "Patrons were limited to five packets per month",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "limit was five packets per visit"
+  },
+  {
+   "key": "Seed purchases and packaging cost the library under a dollar per checked-out packet",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "7,800 / 9,340 = $0.84"
+  },
+  {
+   "key": "Only about 4 percent of checked-out packets came back as saved seed by year-end",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "410 / 9,340 = 4.4 percent"
+  },
+  {
+   "key": "Seed-saving workshops averaged roughly 19 attendees per session",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "265 / 14 = 18.9"
+  },
+  {
+   "key": "Staff said returns were low because many patrons' gardens failed during a dry summer",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "staff blamed uncertainty about drying and storing seeds"
+  },
+  {
+   "key": "The board has budgeted seed libraries for all remaining branches in 2027",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "board will only consider it, depending on grant funding"
+  },
+  {
+   "key": "Interest was highest among first-time gardeners",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "patron gardening experience not in sources"
+  }
+ ]
+}

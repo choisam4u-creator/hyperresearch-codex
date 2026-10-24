@@ -1,0 +1,98 @@
+{
+ "id": "en-youth-sports-waiver",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Has the Millbrook County youth sports fee waiver increased participation among low-income children?",
+ "sources": {
+  "S1": "Millbrook County Parks and Recreation launched a youth sports fee waiver in the spring 2025 season. Children ages 6 to 14 whose families receive SNAP or free school meals can have registration fees of up to $120 per season waived; families must still buy their own uniforms and equipment. The waiver is funded by a $70,000 annual allocation from the county general fund. A local credit union donated $15,000 in the first year to print outreach flyers and translate application forms.\n\nIn the 2025 spring and fall seasons combined, 1,180 waivers were granted, compared with 410 partial-fee discounts under the old sliding-scale system in 2024. Soccer accounted for 46 percent of waivers, followed by basketball at 27 percent and baseball at 15 percent.\n\nTotal youth league enrollment rose from 6,900 in 2024 to 7,350 in 2025. The department notes that enrollment also grew in 2023 and 2024, before the waiver existed, so it cannot say how much of the 2025 increase the waiver caused.",
+  "S2": "The county auditor reviewed a sample of 200 waiver files and found that 14 lacked documentation of SNAP or school meal eligibility. The auditor recommended that the department verify eligibility through the school district's data-sharing agreement rather than relying on families' self-reports.\n\nThe auditor also found that waiver spending reached $64,300 in 2025, leaving $5,700 of the allocation unspent. Coaches interviewed by the auditor said that the cost of cleats and other equipment, not registration fees, was the main barrier they heard about from families."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has the Millbrook County youth sports fee waiver increased participation among low-income children?\n\n## Answer\nThe county granted 1,180 waivers across the 2025 spring and fall seasons, nearly triple the 410 discounts given under the 2024 sliding scale [S1]. Total youth league enrollment grew by 450 children between 2024 and 2025 [S1]. The department attributes most of the 2025 enrollment increase to the waiver [S1].\n\n## Evidence\n- Children aged 6 to 14 in families receiving SNAP or free school meals can have up to $120 per season in registration fees waived [S1].\n- The waiver also covers uniforms and equipment [S1].\n- The waiver is funded by the county general fund together with a $15,000 credit union donation [S1].\n- Basketball was the most common sport among waiver recipients [S1].\n- Soccer, basketball and baseball together made up 88 percent of waivers [S1].\n- Waiver spending in 2025 came to $64,300, about 92 percent of the allocation [S2].\n\n## Counter-evidence and limits\n- In the auditor's sample, 14 of 200 files, or 7 percent, lacked proof of eligibility [S2].\n- The auditor recommended relying on families' self-reports to speed up approvals [S2].\n- Coaches said registration fees were the main barrier families mentioned [S2].\n- Waiver recipients were more likely than other players to return for a second season.\n\n## Next steps\n- Request enrollment counts by income status for 2023-2025 to separate the waiver from the existing trend (judgment).\n- Consider whether an equipment loan or voucher should accompany the waiver (judgment).\n\n## Sources\n- [S1] Millbrook County Parks and Recreation, \"Youth Sports Fee Waiver: 2025 Season Summary\" (January 2026)\n- [S2] Millbrook County Auditor, \"Review of the Youth Sports Fee Waiver Program\" (April 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "The county granted 1,180 waivers across the 2025 spring and fall seasons, nearly triple the 410 discounts given under the 2024 sliding scale",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,180/410 = 2.88."
+  },
+  {
+   "key": "Total youth league enrollment grew by 450 children between 2024 and 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "7,350 - 6,900 = 450."
+  },
+  {
+   "key": "The department attributes most of the 2025 enrollment increase to the waiver",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "The department says it cannot say how much of the increase the waiver caused."
+  },
+  {
+   "key": "Children aged 6 to 14 in families receiving SNAP or free school meals can have up to $120 per season in registration fees waived",
+   "label": "ok",
+   "tag": "order",
+   "why": "Same facts, reordered."
+  },
+  {
+   "key": "The waiver also covers uniforms and equipment",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Families must still buy their own uniforms and equipment."
+  },
+  {
+   "key": "The waiver is funded by the county general fund together with a $15,000 credit union donation",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "The donation paid for outreach flyers and translation, not the waiver itself."
+  },
+  {
+   "key": "Basketball was the most common sport among waiver recipients",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "Soccer led at 46%; basketball was second at 27%."
+  },
+  {
+   "key": "Soccer, basketball and baseball together made up 88 percent of waivers",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "46+27+15 = 88."
+  },
+  {
+   "key": "Waiver spending in 2025 came to $64,300, about 92 percent of the allocation",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "64,300/70,000 = 91.9%."
+  },
+  {
+   "key": "In the auditor's sample, 14 of 200 files, or 7 percent, lacked proof of eligibility",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "14/200 = 7%."
+  },
+  {
+   "key": "The auditor recommended relying on families' self-reports to speed up approvals",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "The auditor recommended data-sharing verification rather than self-reports."
+  },
+  {
+   "key": "Coaches said registration fees were the main barrier families mentioned",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Coaches said equipment costs, not registration fees, were the main barrier."
+  },
+  {
+   "key": "Waiver recipients were more likely than other players to return for a second season",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source reports retention."
+  }
+ ]
+}

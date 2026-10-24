@@ -1,0 +1,140 @@
+{
+ "id": "en-tutoring-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "Did Ashby Vale's 2026 summer math tutoring program improve outcomes for struggling students?",
+ "sources": {
+  "S1": "Ashby Vale Unified School District ran a six-week summer math tutoring program from 2026-06-22 to 2026-07-31 for students entering grades 4 through 8. Students were invited if they scored below the 30th percentile on the spring district math assessment; participation was voluntary. Of 1,850 invited students, 742 enrolled and 560 attended at least 80% of sessions. Tutoring was held four mornings a week (Monday to Thursday) in groups of no more than four students. Tutors were 96 certified teachers paid $52 per hour and 40 college students paid $24 per hour; all tutors received 10 hours of training. The program cost $1.21 million, paid from the district's remaining federal pandemic recovery funds, which must be spent by September 2026. On a fall diagnostic test, students who attended at least 80% of sessions gained an average of 11 scale points over their spring scores, compared with 4 points for invited students who did not enroll. The district cautions that students who enrolled and attended regularly may have been more motivated, so the comparison overstates the program's effect. Grade 6 had the highest enrollment (188 students), and grade 8 the lowest (97). Transportation was provided only for students living more than 2 miles from a site. The district is seeking a local foundation grant to repeat the program in 2027; no funding has been secured.",
+  "S2": "The Ashby Vale Record reported that two of the six tutoring sites lacked air conditioning, and attendance dipped during a heat wave in mid-July. Parent Carla Mendes said her son 'finally understood fractions.' Teachers union president Greg Holt said college tutors should receive more than 10 hours of training. Some families said they did not learn about the program until after the enrollment deadline. The district said it would report results by school in October."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Ashby Vale's 2026 summer math tutoring program improve outcomes for struggling students?\n\n## Answer\nAbout 40% of the 1,850 invited students enrolled [S1]. Tutoring nearly tripled students' math gains, from 4 to 11 scale points [S1].\n\n## Evidence\n- Students entering grades 4 through 8 who scored below the 30th percentile were invited [S1].\n- Enrollment was mandatory for invited students [S1].\n- Sessions ran five mornings a week [S1].\n- Tutoring groups were capped at four students [S1].\n- About three-quarters of enrolled students attended at least 80% of sessions [S1].\n- College tutors earned $24 an hour, $28 less than certified teachers [S1].\n- Tutors included 96 college students and 40 certified teachers [S1].\n- Every tutor, including the certified teachers, got 10 hours of training [S1].\n- The $1.21 million program was paid for by a local foundation grant [S1].\n- The federal recovery funds that paid for the program must be spent by September 2026 [S1].\n- Regular attenders gained 11 points compared with 4 points for enrolled students who attended less often [S1].\n- Grade 8 had the smallest enrollment, 97 students [S1].\n- Busing was offered to all participating students [S1].\n\n## Counterevidence and limits\n- The district acknowledges that more motivated students were likelier to enroll and attend, so the comparison overstates the effect [S1].\n- Two of the six sites had no air conditioning, according to the district [S1].\n- The teachers union president argued that college tutors need more than 10 hours of training [S2].\n- The district has secured foundation funding to run the program again in 2027 [S1].\n- Reading scores of participants also improved by 3 points.\n\n## Next actions\n- Use the October school-level results and a matched comparison of enrollees to non-enrollees with similar spring scores before seeking 2027 funding (judgment).\n\n## Sources\n- [S1] Ashby Vale Unified School District, \"Summer Math Tutoring 2026: Preliminary Results\" (2026-09-18)\n- [S2] The Ashby Vale Record, \"Hot rooms, small groups: a summer of math catch-up\" (2026-08-07)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About 40% of the 1,850 invited students enrolled",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: 'Of 1,850 invited students, 742 enrolled'; 742/1,850 = 40.1%."
+  },
+  {
+   "key": "Tutoring nearly tripled students' math gains, from 4 to 11 scale points",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: the comparison is regular attenders vs non-enrollees and 'overstates the program's effect' because attenders 'may have been more motivated.'"
+  },
+  {
+   "key": "Students entering grades 4 through 8 who scored below the 30th percentile were invited",
+   "label": "ok",
+   "tag": "eligibility_paraphrase",
+   "why": "S1: 'for students entering grades 4 through 8 ... invited if they scored below the 30th percentile.'"
+  },
+  {
+   "key": "Enrollment was mandatory for invited students",
+   "label": "mismatch",
+   "tag": "negation_flipped",
+   "why": "S1: 'participation was voluntary.'"
+  },
+  {
+   "key": "Sessions ran five mornings a week",
+   "label": "mismatch",
+   "tag": "frequency_changed",
+   "why": "S1: 'four mornings a week (Monday to Thursday).'"
+  },
+  {
+   "key": "Tutoring groups were capped at four students",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'in groups of no more than four students.'"
+  },
+  {
+   "key": "About three-quarters of enrolled students attended at least 80% of sessions",
+   "label": "ok",
+   "tag": "derived_fraction",
+   "why": "S1: 560 of 742 enrolled; 560/742 = 75.5%."
+  },
+  {
+   "key": "College tutors earned $24 an hour, $28 less than certified teachers",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: teachers $52/hour, college students $24/hour; 52 - 24 = 28."
+  },
+  {
+   "key": "Tutors included 96 college students and 40 certified teachers",
+   "label": "mismatch",
+   "tag": "entities_swapped",
+   "why": "S1: '96 certified teachers ... and 40 college students.'"
+  },
+  {
+   "key": "Every tutor, including the certified teachers, got 10 hours of training",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'all tutors received 10 hours of training.'"
+  },
+  {
+   "key": "The $1.21 million program was paid for by a local foundation grant",
+   "label": "mismatch",
+   "tag": "wrong_payer",
+   "why": "S1: 'paid from the district's remaining federal pandemic recovery funds'; the foundation grant is only being sought for 2027."
+  },
+  {
+   "key": "The federal recovery funds that paid for the program must be spent by September 2026",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'federal pandemic recovery funds, which must be spent by September 2026.'"
+  },
+  {
+   "key": "Regular attenders gained 11 points compared with 4 points for enrolled students who attended less often",
+   "label": "mismatch",
+   "tag": "comparison_group_wrong",
+   "why": "S1: the 4-point comparison group is 'invited students who did not enroll.'"
+  },
+  {
+   "key": "Grade 8 had the smallest enrollment, 97 students",
+   "label": "ok",
+   "tag": "ranking",
+   "why": "S1: 'grade 8 the lowest (97).'"
+  },
+  {
+   "key": "Busing was offered to all participating students",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'Transportation was provided only for students living more than 2 miles from a site.'"
+  },
+  {
+   "key": "The district acknowledges that more motivated students were likelier to enroll and attend, so the comparison overstates the effect",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: 'students who enrolled and attended regularly may have been more motivated, so the comparison overstates the program's effect.'"
+  },
+  {
+   "key": "Two of the six sites had no air conditioning, according to the district",
+   "label": "mismatch",
+   "tag": "source_misattribution",
+   "why": "This is reported by the Ashby Vale Record in S2; S1 does not mention air conditioning."
+  },
+  {
+   "key": "The teachers union president argued that college tutors need more than 10 hours of training",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'Greg Holt said college tutors should receive more than 10 hours of training.'"
+  },
+  {
+   "key": "The district has secured foundation funding to run the program again in 2027",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S1: 'The district is seeking a local foundation grant ... no funding has been secured.'"
+  },
+  {
+   "key": "Reading scores of participants also improved by 3 points",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source reports reading scores."
+  }
+ ]
+}

@@ -1,0 +1,116 @@
+{
+ "id": "en-snow-buddies-14",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout14-2026-10-14",
+ "prompt": "Did Marlow Falls' Snow Buddies program reliably clear sidewalks for older and disabled residents last winter?",
+ "sources": {
+  "S1": "Snow Buddies matched 312 volunteers with 455 residents aged 70 or older or with a documented mobility disability during the 2025-26 winter. Volunteers were asked to clear a path from the front door to the sidewalk within 24 hours after snowfall stopped, for any storm of two inches or more. The city logged 9 qualifying storms and 3,640 requested clearings. Of these, 3,020 were completed within 24 hours, 410 were completed late, and 210 were never completed. When a volunteer could not come, a contracted landscaping firm served as backup at $45 per visit, paid from the city's general fund. Backup crews made 380 visits, costing $17,100. Volunteers received a $15 hardware-store gift card per storm, funded by a donation from the Marlow Falls Rotary Club.",
+  "S2": "The Gazette interviewed 22 participants, mostly on the north side, where several reported waiting two or three days after the January 14 storm. Department director Lena Pryce said north-side requests were harder to fill because fewer volunteers live there. Pryce said the department is considering paying volunteers a small stipend next winter, but no funding has been identified. The article said complaints rose after the program's eligibility age was lowered from 75 to 70 this season."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Marlow Falls' Snow Buddies program reliably clear sidewalks for older and disabled residents last winter?\n\n## Answer\nAbout 83% of the 3,640 requested clearings were finished within the 24-hour target [S1]. Only about 6% of requests were completed late [S1]. Roughly one request in seventeen was never completed at all [S1].\n\n## Evidence\n- Residents qualified only if they were 70 or older and also had a documented mobility disability [S1].\n- Volunteers were expected to clear paths after any snowfall, regardless of depth [S1].\n- The target was a cleared path from front door to sidewalk within a day after the snow stopped [S1].\n- Backup visits by the contracted firm cost $45 each, adding up to $17,100 across 380 visits [S1].\n- Backup crew visits were paid for out of the Rotary Club donation [S1].\n- Volunteers received a $15 gift card for each clearing they completed [S1].\n- The program paired 312 volunteers with 455 eligible residents [S1].\n- The city's snowplow budget was cut by 10% the same winter.\n\n## Counter-evidence and limits\n- Residents across the city reported waiting two or three days after the January 14 storm [S2].\n- The director attributed north-side delays to fewer volunteers living in that area [S2].\n- The department will pay volunteers a stipend next winter [S2].\n- The eligibility age was raised from 70 to 75 this season [S2].\n- The Gazette reported that complaints rose after the eligibility age was lowered this season [S2].\n\n## Next actions\n- Request north-side completion rates from the department before deciding whether a stipend is worth funding (judgment)\n\n## Sources\n- [S1] Marlow Falls Department of Aging, \"Snow Buddies 2025-26 Season Summary\" (2026-04-20)\n- [S2] Marlow Falls Gazette, \"Snow help gaps on the north side\" (2026-02-03)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About 83% of the 3,640 requested clearings were finished within the 24-hour target",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 3,020 / 3,640 = 83.0%."
+  },
+  {
+   "key": "Only about 6% of requests were completed late",
+   "label": "mismatch",
+   "tag": "value attached to wrong group",
+   "why": "S1: 410 late (11%); about 6% (210) were never completed."
+  },
+  {
+   "key": "Roughly one request in seventeen was never completed at all",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S1: 210 / 3,640 = 5.8%, about 1 in 17."
+  },
+  {
+   "key": "Residents qualified only if they were 70 or older and also had a documented mobility disability",
+   "label": "mismatch",
+   "tag": "eligibility or→and",
+   "why": "S1: 70 or older OR with a documented mobility disability."
+  },
+  {
+   "key": "Volunteers were expected to clear paths after any snowfall, regardless of depth",
+   "label": "mismatch",
+   "tag": "condition dropped",
+   "why": "S1: only storms of two inches or more."
+  },
+  {
+   "key": "The target was a cleared path from front door to sidewalk within a day after the snow stopped",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: within 24 hours after snowfall stopped, door to sidewalk."
+  },
+  {
+   "key": "Backup visits by the contracted firm cost $45 each, adding up to $17,100 across 380 visits",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 380 x $45 = $17,100."
+  },
+  {
+   "key": "Backup crew visits were paid for out of the Rotary Club donation",
+   "label": "mismatch",
+   "tag": "payer swap",
+   "why": "S1: backup paid from the city's general fund; Rotary funded gift cards."
+  },
+  {
+   "key": "Volunteers received a $15 gift card for each clearing they completed",
+   "label": "mismatch",
+   "tag": "per-storm vs per-clearing",
+   "why": "S1: $15 gift card per storm."
+  },
+  {
+   "key": "The program paired 312 volunteers with 455 eligible residents",
+   "label": "ok",
+   "tag": "accurate figures",
+   "why": "S1: 312 volunteers, 455 residents."
+  },
+  {
+   "key": "The city's snowplow budget was cut by 10% the same winter",
+   "label": "unverified",
+   "tag": "no source",
+   "why": "No source mentions the snowplow budget."
+  },
+  {
+   "key": "Residents across the city reported waiting two or three days after the January 14 storm",
+   "label": "mismatch",
+   "tag": "sample generalized",
+   "why": "S2: several of 22 interviewees, mostly north side."
+  },
+  {
+   "key": "The director attributed north-side delays to fewer volunteers living in that area",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: Pryce said fewer volunteers live there."
+  },
+  {
+   "key": "The department will pay volunteers a stipend next winter",
+   "label": "mismatch",
+   "tag": "consideration stated as decision",
+   "why": "S2: only 'considering' a stipend; no funding identified."
+  },
+  {
+   "key": "The eligibility age was raised from 70 to 75 this season",
+   "label": "mismatch",
+   "tag": "reversed direction",
+   "why": "S2: lowered from 75 to 70."
+  },
+  {
+   "key": "The Gazette reported that complaints rose after the eligibility age was lowered this season",
+   "label": "ok",
+   "tag": "caveat kept (temporal, not causal)",
+   "why": "S2: complaints rose after eligibility age was lowered."
+  }
+ ]
+}

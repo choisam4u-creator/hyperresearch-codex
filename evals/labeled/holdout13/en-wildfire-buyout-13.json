@@ -1,0 +1,104 @@
+{
+ "id": "en-wildfire-buyout-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "How has Cedar Hollow County's voluntary wildfire buyout program performed, and what are its limits?",
+ "sources": {
+  "S1": "Cedar Hollow County launched a voluntary wildfire buyout program in July 2024 for homes in the Ridgeback and Pine Notch subdivisions, which the state fire agency rated as very high hazard. Owners were offered the pre-fire appraised market value plus a $15,000 relocation payment. The program was funded 75% by a federal hazard mitigation grant and 25% by the county's general fund. Of 180 eligible homes, owners of 63 accepted offers by June 2026. Purchased lots are being converted to a fuel-break greenbelt and may not be rebuilt on. The county had spent $21.4 million on acquisitions and relocation payments through June 2026. Offers were made in order of hazard ranking, starting with homes closest to the ridge line, rather than first-come-first-served. Renters in purchased homes received a separate $4,000 moving grant.",
+  "S2": "The State Fire Resilience Board's evaluation (August 2026) estimated that the greenbelt, once complete, could reduce modeled ember exposure for the remaining Ridgeback homes by roughly 30%, though it has not been tested by an actual fire. The board noted that most owners who declined cited the offer amount as too low compared with current replacement costs. It recommended that the county consider offering replacement cost rather than market value in a second round, a change the county has not adopted. The board also found that 11 of the 63 sellers relocated within the county."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How has Cedar Hollow County's voluntary wildfire buyout program performed, and what are its limits?\n\n## Answer\nRoughly one in three eligible owners, 63 of 180, had accepted county buyout offers by June 2026 [S1]. The resulting greenbelt has cut ember exposure for the remaining Ridgeback homes by about 30% [S2].\n\n## Evidence\n- Sellers received the pre-fire appraised value of their homes along with a $15,000 relocation payment [S1].\n- The county's general fund paid three-quarters of the program cost, with a federal grant covering the rest [S1].\n- Spending through June 2026 averaged about $340,000 per purchased home [S1].\n- Offers went out on a first-come-first-served basis as owners applied [S1].\n- Lots the county buys cannot be redeveloped and are being turned into a fuel-break greenbelt [S1].\n- The program was open to any home in the county rated as high wildfire hazard [S1].\n- Based on the 75% federal share, the federal grant accounts for about $16 million of the spending to date [S1].\n- Renters living in purchased homes received the same $15,000 relocation payment as owners [S1].\n\n## Counter-evidence and limits\n- Most owners who turned down offers said the amount was too low relative to today's replacement costs [S2].\n- The county has switched to replacement-cost offers for its second round [S2].\n- Only 11 of the 63 sellers, under one-fifth, stayed within the county [S2].\n- Insurance premiums in Pine Notch rose 40% after the state hazard rating was published.\n\n## Next actions\n- Model the cost of a replacement-cost second round before the county decides whether to adopt it (judgment).\n\n## Sources\n- [S1] Cedar Hollow County Office of Emergency Management, \"Voluntary Wildfire Buyout Program Status Report\" (July 2026)\n- [S2] State Fire Resilience Board, \"Evaluation of the Cedar Hollow Buyout Program\" (August 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Roughly one in three eligible owners, 63 of 180, had accepted county buyout offers by June 2026",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S1: 63 of 180 accepted by June 2026; 63/180=35%, roughly one in three."
+  },
+  {
+   "key": "The resulting greenbelt has cut ember exposure for the remaining Ridgeback homes by about 30%",
+   "label": "mismatch",
+   "tag": "estimate-as-fact",
+   "why": "S2: board 'estimated' the greenbelt, 'once complete, could reduce modeled' exposure ~30%; untested and not complete."
+  },
+  {
+   "key": "Sellers received the pre-fire appraised value of their homes along with a $15,000 relocation payment",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: offered pre-fire appraised market value plus $15,000 relocation payment."
+  },
+  {
+   "key": "The county's general fund paid three-quarters of the program cost, with a federal grant covering the rest",
+   "label": "mismatch",
+   "tag": "funder swap",
+   "why": "S1: 75% federal hazard mitigation grant, 25% county general fund."
+  },
+  {
+   "key": "Spending through June 2026 averaged about $340,000 per purchased home",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: $21.4M / 63 homes = $339,683, about $340,000."
+  },
+  {
+   "key": "Offers went out on a first-come-first-served basis as owners applied",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: offers made in order of hazard ranking, 'rather than first-come-first-served'."
+  },
+  {
+   "key": "Lots the county buys cannot be redeveloped and are being turned into a fuel-break greenbelt",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: purchased lots converted to fuel-break greenbelt and may not be rebuilt on."
+  },
+  {
+   "key": "The program was open to any home in the county rated as high wildfire hazard",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "S1: limited to Ridgeback and Pine Notch subdivisions rated very high hazard."
+  },
+  {
+   "key": "Based on the 75% federal share, the federal grant accounts for about $16 million of the spending to date",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 0.75 x $21.4M = $16.05M."
+  },
+  {
+   "key": "Renters living in purchased homes received the same $15,000 relocation payment as owners",
+   "label": "mismatch",
+   "tag": "eligibility/amount",
+   "why": "S1: renters received a separate $4,000 moving grant."
+  },
+  {
+   "key": "Most owners who turned down offers said the amount was too low relative to today's replacement costs",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: most decliners cited offer as too low compared with current replacement costs."
+  },
+  {
+   "key": "The county has switched to replacement-cost offers for its second round",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: board recommended considering it; 'a change the county has not adopted'."
+  },
+  {
+   "key": "Only 11 of the 63 sellers, under one-fifth, stayed within the county",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S2: 11 of 63 relocated within county; 11/63=17.5% < 20%."
+  },
+  {
+   "key": "Insurance premiums in Pine Notch rose 40% after the state hazard rating was published",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions insurance premiums."
+  }
+ ]
+}

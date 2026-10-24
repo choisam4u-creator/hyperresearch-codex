@@ -1,0 +1,86 @@
+{
+ "id": "en-participatory-budget",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "What happened in Greywell's participatory budgeting pilot?",
+ "sources": {
+  "S1": "Greywell set aside $1.5 million of its 2025 capital budget for projects proposed and voted on by residents in two of its five wards, Ward 2 and Ward 4. Residents aged 14 and older could vote, online or in person, over a three-week period in September.\n\nA total of 6,820 residents voted, about 9% of eligible residents in the two wards. Eleven projects won funding, the largest being a $420,000 playground renovation; the smallest was a $35,000 set of bike racks.",
+  "S2": "According to an analysis by Halden University researchers, voters aged 55 and over made up 41% of participants but only 29% of eligible residents in the two wards. The researchers said turnout among renters was lower than among homeowners, but they did not have enough data to estimate the size of the gap."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What happened in Greywell's participatory budgeting pilot?\n\n## Answer\nGreywell's pilot let residents of two wards decide how to spend $1.5 million of the city's 2025 capital budget [S1]. About 6,800 residents cast ballots, close to one in ten eligible residents [S1]. The pilot was run citywide across all five wards [S1].\n\n## Evidence\n- Eleven projects were funded, ranging from $35,000 in bike racks to a $420,000 playground renovation [S1].\n- The playground renovation alone took up 28% of the pilot budget [S1].\n- Voting was open to residents aged 18 and older [S1].\n- The eligible voting population in the two wards was roughly 76,000 people [S1].\n- Voting took place over three months in the autumn [S1].\n\n## Counter-evidence and limits\n- City officials found that older residents were overrepresented, making up 41% of voters versus 29% of the eligible population [S2].\n- Researchers estimated that renters voted at about half the rate of homeowners [S2].\n- Participatory budgeting programs in other mid-sized cities have generally seen turnout below 5%.\n\n## Next actions\n- Before a second round, consider targeted outreach to renters and younger residents and collect tenure data at the ballot (judgment).\n\n## Sources\n- [S1] Greywell Office of Civic Engagement, Participatory Budgeting Pilot Results 2025\n- [S2] Greywell Gazette, 'Voters skewed older in budget pilot', 14 November 2025\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Greywell's pilot let residents of two wards decide how to spend $1.5 million of the city's 2025 capital budget",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "two wards, $1.5M of 2025 capital budget"
+  },
+  {
+   "key": "About 6,800 residents cast ballots, close to one in ten eligible residents",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "6,820 voters, about 9%"
+  },
+  {
+   "key": "The pilot was run citywide across all five wards",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "only Ward 2 and Ward 4"
+  },
+  {
+   "key": "Eleven projects were funded, ranging from $35,000 in bike racks to a $420,000 playground renovation",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "matches S1"
+  },
+  {
+   "key": "The playground renovation alone took up 28% of the pilot budget",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "420,000/1,500,000 = 28%"
+  },
+  {
+   "key": "Voting was open to residents aged 18 and older",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "S1: aged 14 and older"
+  },
+  {
+   "key": "The eligible voting population in the two wards was roughly 76,000 people",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "6,820/0.09 = about 75,800"
+  },
+  {
+   "key": "Voting took place over three months in the autumn",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "S1: three weeks in September"
+  },
+  {
+   "key": "City officials found that older residents were overrepresented, making up 41% of voters versus 29% of the eligible population",
+   "label": "mismatch",
+   "tag": "attribution",
+   "why": "finding is from Halden University researchers, not city officials"
+  },
+  {
+   "key": "Researchers estimated that renters voted at about half the rate of homeowners",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "researchers said they could not estimate the size of the gap"
+  },
+  {
+   "key": "Participatory budgeting programs in other mid-sized cities have generally seen turnout below 5%",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source on other cities"
+  }
+ ]
+}
