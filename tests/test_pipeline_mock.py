@@ -204,6 +204,21 @@ class PartTests(unittest.TestCase):
         missing = gates.report_lint("# Question: q\n## Answer\nx [S1]\n## Evidence\n## Sources\n", "q", {"S1"}, "en")
         self.assertIn("section_missing:## Counter-evidence and limits", missing)
 
+    def test_lint_requires_section_headings_not_body_mentions(self):
+        reports = (
+            ("ko", "# 질문: q", ("## 답", "## 근거", "## 한계"), "## 출처"),
+            ("en", "# Question: q", ("## Answer", "## Evidence", "## Counter-evidence and limits"), "## Sources"),
+        )
+        for lang, title, sections, sources in reports:
+            for missing in sections:
+                for mention in (f"본문에서 `{missing}`를 언급한다.", missing + "less"):
+                    with self.subTest(lang=lang, missing=missing, mention=mention):
+                        lines = [title, "x [S1]", *(h for h in sections if h != missing), mention, sources]
+                        self.assertEqual([f"section_missing:{missing}"],
+                                         gates.report_lint("\n".join(lines), "q", {"S1"}, lang))
+            self.assertEqual([], gates.report_lint("\n".join((title, "x [S1]", *sections, sources)),
+                                                  "q", {"S1"}, lang))
+
     def test_published_date_priority(self):
         html = '<html><head><meta property="article:published_time" content="2026-09-01T09:00:00Z"><script type="application/ld+json">{"datePublished":"2020-01-01"}</script></head><body><p>x</p></body></html>'
         _, _, meta = fetch.html_to_text(html)

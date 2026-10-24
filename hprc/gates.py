@@ -96,7 +96,7 @@ def report_lint(text: str, prompt: str, known: set[str], lang: str = "ko") -> li
     # 절 빠짐으로 보고 검토를 요구하지 않게.
     keys = {_heading_key(line.strip()) for line in text.splitlines() if line.startswith("## ")}
     for section, alts in L["sections"]:
-        if not any(h in text or _heading_key(h) in keys for h in (section, *alts)):
+        if not any(_heading_key(h) in keys for h in (section, *alts)):
             problems.append(f"section_missing:{section}")
     if re.search(r"https?://", text) and L["sources"] not in text:
         problems.append("bare_url_outside_sources")
