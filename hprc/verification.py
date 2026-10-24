@@ -1022,8 +1022,8 @@ _MERIDIEM = r"(a\.m\.|p\.m\.|am\b|pm\b)"
 _EN_CLOCK_RANGE = re.compile(rf"\b(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?\s*(?:-|–|to|until|through)\s*(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?",
                              re.I)
 _KO_TIME_OF_DAY = r"(오전|오후|저녁|밤|새벽|아침|낮)?"
-_KO_CLOCK_RANGE = re.compile(rf"{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*반)?\s*(?:부터|~|–|-)\s*"
-                             rf"(?:이튿날|다음\s?날)?\s*{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*반)?")
+_KO_CLOCK_RANGE = re.compile(rf"{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*(반))?\s*(?:부터|~|–|-)\s*"
+                             rf"(?:이튿날|다음\s?날)?\s*{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*(반))?")
 
 
 def _clock_minutes(hour: str, minute: str | None, part: str | None, half: bool = False) -> int | None:
@@ -1053,12 +1053,11 @@ def _clock_spans(text: str) -> list[Decimal]:
             if a is not None and b is not None:
                 spans.append((b - a) % (24 * 60))
         for m in _KO_CLOCK_RANGE.finditer(sent):
-            whole = m.group(0)
-            a = _clock_minutes(m.group(2), m.group(3), m.group(1), "반" in whole.split("부터")[0] if "부터" in whole else False)
+            a = _clock_minutes(m.group(2), m.group(3), m.group(1), bool(m.group(4)))
             # 21회차: 끝 시각에 때 낱말이 없으면 앞 시각의 것을 잇는다("오후 7시부터 10시까지" = 3시간, 15시간으로 읽던 결함).
             # 오전에 시작해 더 작은 시각에 끝나면("오전 9시부터 6시까지") 오후로 읽는다.
-            b = _clock_minutes(m.group(5), m.group(6), m.group(4) or m.group(1))
-            if a is not None and b is not None and not m.group(4) and m.group(1) in ("오전", "아침") and b < a <= b + 720:
+            b = _clock_minutes(m.group(6), m.group(7), m.group(5) or m.group(1), bool(m.group(8)))
+            if a is not None and b is not None and not m.group(5) and m.group(1) in ("오전", "아침") and b < a <= b + 720:
                 b += 720
             if a is not None and b is not None:
                 spans.append((b - a) % (24 * 60))
