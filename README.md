@@ -6,7 +6,7 @@
 
 A Codex-only research pipeline that turns one prompt into a **sourced, adversarially reviewed brief**. Python controls every step, model calls run read-only, and gates check citations and bounded edits before a report is accepted.
 
-Try the output format without a Codex login, network access, or model usage:
+Install the package, then preview the output format with `hpr demo`. Installation needs network access; the demo runs locally without Codex login or model calls:
 
 ```bash
 pip install "git+https://github.com/choisam4u-creator/hyperresearch-codex"
