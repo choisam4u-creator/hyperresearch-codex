@@ -1,0 +1,134 @@
+{
+  "id": "en-street-tree-adoption-16",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout16-2026-10-15",
+  "prompt": "Has the Pelham Bay Township street-tree adoption program improved young tree survival?",
+  "sources": {
+    "S1": "Pelham Bay Township launched its Adopt-a-Street-Tree program in April 2025, asking residents to water newly planted trees during their first two growing seasons. Adopters commit to providing 15 gallons of water per tree once a week from May through September. By August 2026, 1,320 residents had adopted 2,050 trees, roughly 58% of the 3,540 trees planted since 2024. The Forestry Division's survival count found that 91% of adopted trees were alive after one year, compared with 78% of unadopted trees planted in the same period. The division notes that adopted trees were more often located on residential blocks with lower foot traffic, which may also favor survival. Free 20-gallon watering bags are provided to adopters, but not hoses or watering cans. The program costs about $64,000 per year, of which 75% comes from the township's stormwater fee and 25% from a regional utility partnership. Swamp white oak was the most commonly planted species, followed by London plane and then Kentucky coffeetree. The township replaces dead trees at no cost to the adjacent property owner during the two-year establishment period. A proposal to extend adopter commitments to three seasons is under review by the Shade Tree Commission.",
+    "S2": "Interviews conducted by the Gazette with 48 adopters found that about a third had stopped watering by mid-summer of their first year. Adopters in the township's northern ward logged watering in the program app at nearly twice the rate of those in the southern ward. App logs show 62% of scheduled waterings were recorded in 2026, up from 49% in 2025. The Forestry Division sends text reminders on Tuesdays during heat advisories only. Commercial property owners are not eligible to adopt trees on their frontage under current rules. A neighborhood association in the southern ward said translation of program materials into Spanish was delayed until July 2026. The Shade Tree Commission is scheduled to vote on the three-season proposal in November."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Has the Pelham Bay Township street-tree adoption program improved young tree survival?\n\n## Answer\nAdopted trees had a one-year survival rate of 91%, compared with 78% for unadopted trees [S1]. The Forestry Division notes that adopted trees tended to be on quieter residential blocks, so the gap may not be due to adoption alone [S1].\n\n## Evidence\n- Adopters commit to 15 gallons of water per tree each week from May through September [S1].\n- Adopters are asked to water trees during their first three growing seasons [S1].\n- Adopted trees represent more than two-thirds of the 3,540 trees planted since 2024 [S1].\n- On average, each adopter cares for about 1.6 trees [S1].\n- Survival among adopted trees was 13 percentage points higher than among unadopted trees [S1].\n- Adoption raised tree survival by 13%, the division concluded [S1].\n- Adopters receive free watering bags and hoses [S1].\n- The regional utility partnership pays about $48,000 per year toward the program [S1].\n- London plane was the most commonly planted species [S1].\n- During the two-year establishment period, dead trees are replaced free of charge to the adjacent property owner [S1].\n\n## Counterevidence and limits\n- About a third of 48 interviewed adopters had stopped watering by mid-summer of their first year [S2].\n- Northern ward adopters logged watering at nearly twice the southern ward's rate [S2].\n- Recorded waterings rose from 49% in 2024 to 62% in 2025 [S2].\n- The division sends weekly text reminders throughout the watering season [S2].\n- Commercial property owners may adopt trees on their frontage [S2].\n- The Shade Tree Commission has not yet voted on the three-season proposal [S2].\n- Young street trees in the region typically need about five years to fully establish roots.\n\n## Next actions\n- Compare survival for adopted and unadopted trees on blocks with similar foot traffic (judgment).\n\n## Sources\n- [S1] Pelham Bay Township Forestry Division, \"Adopt-a-Street-Tree Program Report\" (2026-09-08)\n- [S2] Pelham Bay Gazette, \"Tree adopters start strong, fade by July\" (2026-09-21)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Adopted trees had a one-year survival rate of 91%, compared with 78% for unadopted trees",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: '91% of adopted trees were alive after one year, compared with 78% of unadopted trees'"
+    },
+    {
+      "key": "The Forestry Division notes that adopted trees tended to be on quieter residential blocks, so the gap may not be due to adoption alone",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'adopted trees were more often located on residential blocks with lower foot traffic, which may also favor survival.'"
+    },
+    {
+      "key": "Adopters commit to 15 gallons of water per tree each week from May through September",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: '15 gallons of water per tree once a week from May through September.'"
+    },
+    {
+      "key": "Adopters are asked to water trees during their first three growing seasons",
+      "label": "mismatch",
+      "tag": "number_changed",
+      "why": "S1: 'during their first two growing seasons'; three seasons is only a proposal under review"
+    },
+    {
+      "key": "Adopted trees represent more than two-thirds of the 3,540 trees planted since 2024",
+      "label": "mismatch",
+      "tag": "magnitude_inflated",
+      "why": "S1: '2,050 trees, roughly 58% of the 3,540 trees planted since 2024.'"
+    },
+    {
+      "key": "On average, each adopter cares for about 1.6 trees",
+      "label": "ok",
+      "tag": "derived_average",
+      "why": "S1: '1,320 residents had adopted 2,050 trees' -> 1.55"
+    },
+    {
+      "key": "Survival among adopted trees was 13 percentage points higher than among unadopted trees",
+      "label": "ok",
+      "tag": "percentage_points_correct",
+      "why": "S1: 91% vs 78% -> 13 points"
+    },
+    {
+      "key": "Adoption raised tree survival by 13%, the division concluded",
+      "label": "mismatch",
+      "tag": "pp_as_percent_and_causal",
+      "why": "S1: 91% vs 78% is 13 points (about 17% relative), and the division says lower foot traffic 'may also favor survival' rather than concluding adoption caused it"
+    },
+    {
+      "key": "Adopters receive free watering bags and hoses",
+      "label": "mismatch",
+      "tag": "exclusion_to_inclusion",
+      "why": "S1: 'Free 20-gallon watering bags are provided to adopters, but not hoses or watering cans.'"
+    },
+    {
+      "key": "The regional utility partnership pays about $48,000 per year toward the program",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: 'about $64,000 per year, of which 75% comes from the township's stormwater fee and 25% from a regional utility partnership' -> utility $16,000"
+    },
+    {
+      "key": "London plane was the most commonly planted species",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Swamp white oak was the most commonly planted species, followed by London plane'"
+    },
+    {
+      "key": "During the two-year establishment period, dead trees are replaced free of charge to the adjacent property owner",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S1: 'replaces dead trees at no cost to the adjacent property owner during the two-year establishment period.'"
+    },
+    {
+      "key": "About a third of 48 interviewed adopters had stopped watering by mid-summer of their first year",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'Interviews ... with 48 adopters found that about a third had stopped watering by mid-summer of their first year.'"
+    },
+    {
+      "key": "Northern ward adopters logged watering at nearly twice the southern ward's rate",
+      "label": "ok",
+      "tag": "faithful_paraphrase",
+      "why": "S2: 'northern ward logged watering ... at nearly twice the rate of those in the southern ward.'"
+    },
+    {
+      "key": "Recorded waterings rose from 49% in 2024 to 62% in 2025",
+      "label": "mismatch",
+      "tag": "wrong_base_year",
+      "why": "S2: '62% of scheduled waterings were recorded in 2026, up from 49% in 2025.'"
+    },
+    {
+      "key": "The division sends weekly text reminders throughout the watering season",
+      "label": "mismatch",
+      "tag": "condition_dropped",
+      "why": "S2: 'sends text reminders on Tuesdays during heat advisories only.'"
+    },
+    {
+      "key": "Commercial property owners may adopt trees on their frontage",
+      "label": "mismatch",
+      "tag": "exclusion_to_inclusion",
+      "why": "S2: 'Commercial property owners are not eligible to adopt trees on their frontage under current rules.'"
+    },
+    {
+      "key": "The Shade Tree Commission has not yet voted on the three-season proposal",
+      "label": "ok",
+      "tag": "status_correct",
+      "why": "S2: 'scheduled to vote on the three-season proposal in November'; S1: 'under review'"
+    },
+    {
+      "key": "Young street trees in the region typically need about five years to fully establish roots",
+      "label": "unverified",
+      "tag": "uncited_claim",
+      "why": "Neither source states a regional root-establishment period."
+    }
+  ]
+}

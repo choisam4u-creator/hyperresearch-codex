@@ -1,0 +1,170 @@
+{
+ "id": "en-graffitimurals-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "Are Easton Vale's Clean Walls graffiti removal and Community Murals grants reducing graffiti?",
+ "sources": {
+  "S1": "Easton Vale's Clean Walls program offers free graffiti removal on private property visible from a public right-of-way, and its companion Community Murals grant funds murals on frequently tagged walls. Removal is performed by a city crew of six for public property and by a contracted vendor, BrightSurface, for private property; the city pays the vendor $3.10 per square foot removed. Property owners must sign a one-time consent and liability waiver before private-property removal. The service standard is removal within 2 business days for offensive or hate-related graffiti and within 7 business days for all other graffiti. In fiscal year 2025-26 the program logged 4,350 removal requests, up 18% from the prior year, and removed 612,000 square feet of graffiti. Offensive or hate-related cases met the 2-day standard 94% of the time, while other cases met the 7-day standard 81% of the time. The fiscal year budget was $2.4 million: $1.6 million for removal and $0.8 million for mural grants and administration. Mural grants range from $5,000 to $25,000; applicants must be neighborhood associations, nonprofits or business improvement districts, and a property owner must agree to keep the mural for at least five years. Individual artists may not apply directly but may be hired by eligible applicants. Thirty-two murals were funded in 2025-26, with an average grant of $17,500. A department study of 25 mural walls found that re-tagging fell from an average of 5.2 incidents per wall in the year before painting to 1.4 in the year after. The department notes the study did not include comparison walls, so the drop may partly reflect broader citywide trends. Requests are submitted through the 311 app or phone line; 71% came through the app. The city's resident survey of 1,800 adults found 54% rated graffiti a 'minor' or 'no' problem in their neighborhood, up from 47% two years earlier. The department aims to raise on-time removal for non-offensive graffiti to 90% by 2027-28. It also plans to pilot an anti-graffiti coating on 40 transit shelters next spring, pending approval by the regional transit authority. Repeat removal at the same address within 90 days is free for the first two occurrences; after that, owners are referred to a prevention consultation.",
+  "S2": "Murals funded by Easton Vale have become neighborhood landmarks, but taggers have shifted to nearby blank walls and alleys, residents say. A business owner on Ferry Street said his building was hit three times in one month after the mural next door went up. Some artists complained that they cannot apply for grants on their own. The department said it has no data on displacement."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Are Easton Vale's Clean Walls graffiti removal and Community Murals grants reducing graffiti?\n\n## Answer\nEaston Vale handled 4,350 graffiti removal requests in 2025-26, 18% more than the year before [S1]. Murals reduced re-tagging by about 73% on all 32 funded walls [S1]. Non-offensive graffiti met its 7-day removal standard only 81% of the time, short of the 90% target set for 2027-28 [S1].\n\n## Evidence\n- The city's own crew removes graffiti on private property, while BrightSurface handles public property [S1].\n- The city pays BrightSurface $3.10 for each square foot it removes [S1].\n- Offensive or hate-related graffiti must be removed within 7 business days [S1].\n- Hate-related and offensive cases met their two-business-day standard 94% of the time [S1].\n- The prior year's request volume works out to roughly 3,690 [S1].\n- Removal accounted for half of the $2.4 million budget [S1].\n- Removal spending was twice the amount set aside for mural grants and administration [S1].\n- Of the $800,000 for murals and administration, the 32 grants used about $640,000 [S1].\n- Individual artists may apply for mural grants directly [S1].\n- Owners of mural walls must agree to keep the mural for at least five years [S1].\n- Grants range from $5,000 to $17,500 [S1].\n- On the studied walls, re-tagging fell from 5.2 to 1.4 incidents per wall per month [S1].\n- Across the 25 studied walls, re-tagging fell by 3.8 incidents per wall per year [S1].\n- Most requests, 71%, came in by phone [S1].\n- The share of surveyed adults rating graffiti a minor problem or no problem rose 7 percentage points over two years, to 54% [S1].\n- An anti-graffiti coating is being applied to 40 transit shelters [S1].\n- Repeat removals at the same address are always free [S1].\n- Graffiti requests are concentrated in the downtown and riverfront districts.\n\n## Where the evidence is thinner\n- Residents say taggers have moved to nearby blank walls and alleys [S2].\n- Department data show tagging shifting to walls next to murals [S2].\n- One Ferry Street business owner said his building was hit three times in a month after a neighboring mural went up [S2].\n- The department acknowledges the mural study had no comparison walls, so broader citywide trends may explain part of the drop [S1].\n\n## Next actions\n- Ask the department to add comparison walls and nearby-wall counts to the next mural study (judgment).\n\n## Sources\n- [S1] Easton Vale Department of Neighborhood Services, \"Clean Walls and Community Murals Program: Annual Report 2025-26\" (2026-09-10)\n- [S2] Easton Vale Herald, \"Murals spread, but taggers adapt\" (2026-09-24)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Easton Vale handled 4,350 graffiti removal requests in 2025-26, 18% more than the year before",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'logged 4,350 removal requests, up 18% from the prior year'. Matches."
+  },
+  {
+   "key": "Murals reduced re-tagging by about 73% on all 32 funded walls",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: 'A department study of 25 mural walls found that re-tagging fell from ... 5.2 ... to 1.4' ((5.2-1.4)/5.2 = 73%), and the study had no comparison walls so the drop 'may partly reflect broader citywide trends'. Extended to all 32 murals and stated as a causal effect."
+  },
+  {
+   "key": "Non-offensive graffiti met its 7-day removal standard only 81% of the time, short of the 90% target set for 2027-28",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'other cases met the 7-day standard 81% of the time'; 'aims to raise on-time removal for non-offensive graffiti to 90% by 2027-28'. Matches."
+  },
+  {
+   "key": "The city's own crew removes graffiti on private property, while BrightSurface handles public property",
+   "label": "mismatch",
+   "tag": "operator_swap",
+   "why": "S1: 'a city crew of six for public property and by a contracted vendor, BrightSurface, for private property'. Swapped."
+  },
+  {
+   "key": "The city pays BrightSurface $3.10 for each square foot it removes",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'the city pays the vendor $3.10 per square foot removed'. Matches."
+  },
+  {
+   "key": "Offensive or hate-related graffiti must be removed within 7 business days",
+   "label": "mismatch",
+   "tag": "number_changed",
+   "why": "S1: 'within 2 business days for offensive or hate-related graffiti and within 7 business days for all other graffiti'."
+  },
+  {
+   "key": "Hate-related and offensive cases met their two-business-day standard 94% of the time",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Offensive or hate-related cases met the 2-day standard 94% of the time'. Matches."
+  },
+  {
+   "key": "The prior year's request volume works out to roughly 3,690",
+   "label": "ok",
+   "tag": "derived_base",
+   "why": "S1: 4,350 requests, 'up 18% from the prior year'. 4,350/1.18 = 3,686 -> roughly 3,690. Correct."
+  },
+  {
+   "key": "Removal accounted for half of the $2.4 million budget",
+   "label": "mismatch",
+   "tag": "share_arithmetic",
+   "why": "S1: '$1.6 million for removal' of $2.4 million. 1.6/2.4 = two-thirds, not half."
+  },
+  {
+   "key": "Removal spending was twice the amount set aside for mural grants and administration",
+   "label": "ok",
+   "tag": "derived_ratio",
+   "why": "S1: $1.6M removal vs $0.8M murals and administration. 1.6/0.8 = 2. Correct."
+  },
+  {
+   "key": "Of the $800,000 for murals and administration, the 32 grants used about $640,000",
+   "label": "mismatch",
+   "tag": "product_arithmetic",
+   "why": "S1: 'Thirty-two murals ... with an average grant of $17,500'. 32 x 17,500 = $560,000, not $640,000."
+  },
+  {
+   "key": "Individual artists may apply for mural grants directly",
+   "label": "mismatch",
+   "tag": "negation_flip",
+   "why": "S1: 'Individual artists may not apply directly but may be hired by eligible applicants.'"
+  },
+  {
+   "key": "Owners of mural walls must agree to keep the mural for at least five years",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'a property owner must agree to keep the mural for at least five years'. Matches."
+  },
+  {
+   "key": "Grants range from $5,000 to $17,500",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: 'Mural grants range from $5,000 to $25,000'; $17,500 is the average grant, not the maximum."
+  },
+  {
+   "key": "On the studied walls, re-tagging fell from 5.2 to 1.4 incidents per wall per month",
+   "label": "mismatch",
+   "tag": "time_unit_changed",
+   "why": "S1: '5.2 incidents per wall in the year before painting to 1.4 in the year after'. Per year, not per month."
+  },
+  {
+   "key": "Across the 25 studied walls, re-tagging fell by 3.8 incidents per wall per year",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 5.2 in the year before vs 1.4 in the year after, per wall. 5.2-1.4 = 3.8. Correct."
+  },
+  {
+   "key": "Most requests, 71%, came in by phone",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: '71% came through the app'. Phone is the minority channel (29%)."
+  },
+  {
+   "key": "The share of surveyed adults rating graffiti a minor problem or no problem rose 7 percentage points over two years, to 54%",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: '54% ... up from 47% two years earlier'. 54-47 = 7 pp. Correct."
+  },
+  {
+   "key": "An anti-graffiti coating is being applied to 40 transit shelters",
+   "label": "mismatch",
+   "tag": "plan_as_achieved",
+   "why": "S1: 'plans to pilot an anti-graffiti coating on 40 transit shelters next spring, pending approval by the regional transit authority'."
+  },
+  {
+   "key": "Repeat removals at the same address are always free",
+   "label": "mismatch",
+   "tag": "cap_ignored",
+   "why": "S1: 'Repeat removal at the same address within 90 days is free for the first two occurrences; after that, owners are referred to a prevention consultation.'"
+  },
+  {
+   "key": "Graffiti requests are concentrated in the downtown and riverfront districts",
+   "label": "unverified",
+   "tag": "unsupported_claim",
+   "why": "No citation; neither source gives a geographic breakdown of requests."
+  },
+  {
+   "key": "Residents say taggers have moved to nearby blank walls and alleys",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'taggers have shifted to nearby blank walls and alleys, residents say'. Matches."
+  },
+  {
+   "key": "Department data show tagging shifting to walls next to murals",
+   "label": "mismatch",
+   "tag": "source_attribution",
+   "why": "S2: 'The department said it has no data on displacement.' Resident accounts are attributed to department data."
+  },
+  {
+   "key": "One Ferry Street business owner said his building was hit three times in a month after a neighboring mural went up",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'his building was hit three times in one month after the mural next door went up'. Matches."
+  },
+  {
+   "key": "The department acknowledges the mural study had no comparison walls, so broader citywide trends may explain part of the drop",
+   "label": "ok",
+   "tag": "hedge_preserved",
+   "why": "S1: 'the study did not include comparison walls, so the drop may partly reflect broader citywide trends'. Matches."
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "id": "en-scooter-corrals",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout6-2026-10-11",
+ "prompt": "Did Port Kessing's e-scooter parking corrals reduce sidewalk clutter downtown?",
+ "sources": {
+  "S1": "From May to October 2025, Port Kessing painted 60 e-scooter parking corrals in the downtown core and required riders to end trips inside a corral on weekdays between 7 a.m. and 7 p.m. Sidewalk obstruction complaints fell from 412 in the same period of 2024 to 167 during the pilot.\n\nThe department notes that scooter operators also reduced their downtown fleet by about 15 percent in 2025, which may account for part of the decline.",
+  "S2": "Operator GPS data showed that 78 percent of downtown weekday trips ended inside a corral by the final month of the pilot, up from 52 percent in the first month. Average walking distance from a corral to riders' final destinations was 120 meters.\n\nEach corral cost about $1,900 to install, and the city plans to add 40 corrals in two neighborhoods in 2027 if funding is approved."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Port Kessing's e-scooter parking corrals reduce sidewalk clutter downtown?\n\n## Answer\nPort Kessing's corral pilot coincided with a drop of roughly 60 percent in sidewalk obstruction complaints [S1]. The corrals alone caused the decline in complaints [S1].\n\n## Evidence\n- Riders had to finish trips in a corral at all hours, every day of the week [S1].\n- Complaints fell by 245 compared with the same months of 2024 [S1].\n- By the last month, more than three-quarters of downtown weekday trips ended inside a corral [S2].\n- Corral compliance rose by 26 percentage points between the first and final months [S2].\n- Installing all 60 corrals cost about $1.9 million [S1][S2].\n- Riders walked an average of 1.2 kilometers from a corral to their destination [S2].\n\n## Counter-evidence and limits\n- Operators expanded their downtown fleets during 2025, so the complaint figures likely understate the corrals' effect [S1].\n- The 40 additional corrals planned for 2027 still depend on funding approval [S2].\n- Riders who parked outside a corral during enforcement hours were fined $25 per violation.\n\n## Next actions\n- Request complaint data normalized by fleet size before attributing the decline to corrals (judgment)\n\n## Sources\n- [S1] Port Kessing Department of Transportation, Downtown Corral Pilot Summary\n- [S2] Port Kessing scooter operator data brief, 2025\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Kessing's corral pilot coincided with a drop of roughly 60 percent in sidewalk obstruction complaints",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "412 to 167 is a 59.5 percent decline"
+  },
+  {
+   "key": "The corrals alone caused the decline in complaints",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "source says the fleet reduction may account for part of the decline"
+  },
+  {
+   "key": "Riders had to finish trips in a corral at all hours, every day of the week",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "rule applied only weekdays 7 a.m. to 7 p.m."
+  },
+  {
+   "key": "Complaints fell by 245 compared with the same months of 2024",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "412 - 167 = 245"
+  },
+  {
+   "key": "By the last month, more than three-quarters of downtown weekday trips ended inside a corral",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "78 percent in the final month"
+  },
+  {
+   "key": "Corral compliance rose by 26 percentage points between the first and final months",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "78 - 52 = 26"
+  },
+  {
+   "key": "Installing all 60 corrals cost about $1.9 million",
+   "label": "mismatch",
+   "tag": "magnitude",
+   "why": "60 x $1,900 is about $114,000"
+  },
+  {
+   "key": "Riders walked an average of 1.2 kilometers from a corral to their destination",
+   "label": "mismatch",
+   "tag": "unit",
+   "why": "average was 120 meters"
+  },
+  {
+   "key": "Operators expanded their downtown fleets during 2025, so the complaint figures likely understate the corrals' effect",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "operators reduced fleets by about 15 percent, which may overstate the corrals' effect"
+  },
+  {
+   "key": "The 40 additional corrals planned for 2027 still depend on funding approval",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "plan is conditional on funding"
+  },
+  {
+   "key": "Riders who parked outside a corral during enforcement hours were fined $25 per violation",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no penalty amount in any source"
+  }
+ ]
+}

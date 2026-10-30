@@ -1,0 +1,104 @@
+{
+ "id": "en-snow-shoveling-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "How does Ashby Crossing's Snow Buddy volunteer shoveling program for seniors work, and how did the 2025-26 winter go?",
+ "sources": {
+  "S1": "The Snow Buddy program matches volunteers with residents aged 65 and older, or residents of any age with a documented mobility disability, to clear sidewalks and front steps after snowfalls of 2 inches or more. Driveways are not included. During winter 2025-26, 318 residents were enrolled and 205 volunteers were active, up from 240 residents and 190 volunteers the previous winter. Volunteers completed 4,120 clearings across 14 qualifying snow events. Each volunteer receives a $15 gift card per clearing, funded by a grant from the Ashby Community Foundation rather than city tax dollars. The program had a waitlist of 57 residents at the end of the season because volunteer recruitment lagged in the northern wards.",
+  "S2": "Staff reported that the city's sidewalk-clearing ordinance requires property owners to clear sidewalks within 24 hours after snowfall ends, and that Snow Buddy participants are not exempt from the ordinance but are not fined while enrolled. Code enforcement issued 96 snow citations in 2025-26, down from 131 the prior winter; staff said milder weather was a likely factor. A proposal to pay volunteers an hourly stipend of $18 was discussed and referred to the budget committee for the 2027 budget. Staff estimated that roughly 1,100 additional eligible seniors live in the city but have not enrolled."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How does Ashby Crossing's Snow Buddy volunteer shoveling program for seniors work, and how did the 2025-26 winter go?\n\n## Answer\nAshby Crossing's Snow Buddy program pairs volunteers with residents 65 or older, or with a documented mobility disability, to shovel walks and front steps after snowfalls of at least 2 inches [S1]. Volunteers earn a $15 gift card for each clearing, paid for out of the city's general fund [S1].\n\n## Evidence\n- Enrollment rose by 78 residents, or about a third, over the previous winter [S1].\n- The number of active volunteers grew to 318, up from 240 the winter before [S1].\n- Volunteers averaged roughly 20 clearings each over the season [S1].\n- That works out to about 294 clearings per qualifying snow event [S1].\n- Driveway clearing is part of the service along with sidewalks and steps [S1].\n- At season's end, 57 residents were still waiting for a match, largely because too few volunteers signed up in the northern wards [S1].\n- Enrolled residents are exempt from the city's 24-hour sidewalk-clearing ordinance [S2].\n- Most clearings were completed within 12 hours of the snow stopping.\n\n## Counter-evidence and limits\n- Snow citations fell from 131 to 96 because enrolled seniors' sidewalks were being cleared [S2].\n- Code enforcement wrote 35 fewer snow citations than in the prior winter [S2].\n- Volunteers will be paid an $18 hourly stipend starting in 2027 [S2].\n- Staff estimate that roughly 1,100 additional eligible seniors have not signed up [S2].\n\n## Next actions\n- Focus volunteer recruitment on the northern wards before expanding outreach to unenrolled seniors (judgment).\n\n## Sources\n- [S1] Ashby Crossing Department of Aging, \"Snow Buddy Program: Winter 2025-26 Summary\" (April 2026)\n- [S2] Ashby Crossing City Council Committee on Public Works, \"Minutes of May 12, 2026\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Ashby Crossing's Snow Buddy program pairs volunteers with residents 65 or older, or with a documented mobility disability, to shovel walks and front steps after snowfalls of at least 2 inches",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: same eligibility, scope (sidewalks and front steps) and 2-inch trigger."
+  },
+  {
+   "key": "Volunteers earn a $15 gift card for each clearing, paid for out of the city's general fund",
+   "label": "mismatch",
+   "tag": "payer",
+   "why": "S1: gift cards are funded by an Ashby Community Foundation grant, not city tax dollars."
+  },
+  {
+   "key": "Enrollment rose by 78 residents, or about a third, over the previous winter",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 318 - 240 = 78; 78/240 = 32.5%."
+  },
+  {
+   "key": "The number of active volunteers grew to 318, up from 240 the winter before",
+   "label": "mismatch",
+   "tag": "role swap",
+   "why": "S1: 318 and 240 are enrolled residents; volunteers went from 190 to 205."
+  },
+  {
+   "key": "Volunteers averaged roughly 20 clearings each over the season",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 4,120 clearings / 205 volunteers = 20.1."
+  },
+  {
+   "key": "That works out to about 294 clearings per qualifying snow event",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 4,120 / 14 events = 294.3."
+  },
+  {
+   "key": "Driveway clearing is part of the service along with sidewalks and steps",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: driveways are not included."
+  },
+  {
+   "key": "At season's end, 57 residents were still waiting for a match, largely because too few volunteers signed up in the northern wards",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: waitlist of 57 because recruitment lagged in northern wards."
+  },
+  {
+   "key": "Enrolled residents are exempt from the city's 24-hour sidewalk-clearing ordinance",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S2: participants are NOT exempt; they are only not fined while enrolled."
+  },
+  {
+   "key": "Most clearings were completed within 12 hours of the snow stopping",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source reports clearing times; no citation."
+  },
+  {
+   "key": "Snow citations fell from 131 to 96 because enrolled seniors' sidewalks were being cleared",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S2 gives the drop but staff pointed to milder weather; no causal link to the program."
+  },
+  {
+   "key": "Code enforcement wrote 35 fewer snow citations than in the prior winter",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S2: 131 - 96 = 35."
+  },
+  {
+   "key": "Volunteers will be paid an $18 hourly stipend starting in 2027",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: the stipend was only discussed and referred to the budget committee."
+  },
+  {
+   "key": "Staff estimate that roughly 1,100 additional eligible seniors have not signed up",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: staff estimated roughly 1,100 additional eligible seniors not enrolled."
+  }
+ ]
+}

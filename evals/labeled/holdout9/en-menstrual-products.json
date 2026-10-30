@@ -1,0 +1,92 @@
+{
+  "id": "en-menstrual-products",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "How did Westbrook's free menstrual products pilot in public buildings work out?",
+  "sources": {
+    "S1": "From January to June 2026, Westbrook stocked free pads and tampons in restrooms at 45 public buildings, including recreation centers, city hall and community health clinics. The pilot did not include public schools, which run a separate state program.\n\nDispensers were refilled weekly. The department distributed 214,000 products over the six months, and monthly use increased from 29,000 in January to 41,000 in June.\n\nThe pilot cost $96,000, which covered products, 120 dispensers, and installation. The department estimated that a full-year citywide program would cost between $210,000 and $250,000.",
+    "S2": "Committee members heard that product theft or bulk removal was reported at 7 of the 45 sites, mainly in March. The department responded by switching those sites to dispensers that release one item at a time.\n\nThe committee deferred a decision on a citywide program until its November meeting and asked the department to provide usage data by site."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How did Westbrook's free menstrual products pilot in public buildings work out?\n\n## Answer\nWestbrook gave out 214,000 free products in six months, an average of about 35,700 a month [S1]. Monthly use rose by more than 40 percent between January and June [S1]. The council approved a citywide program at its August hearing [S2].\n\n## Evidence\n- Free pads and tampons were stocked in restrooms at 45 public buildings, including public schools [S1].\n- Dispensers were restocked every week [S1].\n- The $96,000 cost covered products and dispensers, while installation was paid by building owners [S1].\n- The department said a full-year citywide program would cost $250,000 [S1].\n- The pilot cost worked out to roughly $2,100 per building [S1].\n- School absences among teenage girls fell during the pilot.\n\n## Counter-evidence and limits\n- Theft or bulk removal was reported at 7 of the 45 sites, mostly in March [S2].\n- After the theft reports, the department removed dispensers from the affected sites [S2].\n- The committee put off its decision until November and requested usage data by site [S2].\n\n## Next steps\n- Provide site-level usage data before the November meeting so the committee can size a citywide program (judgment).\n\n## Sources\n- [S1] Westbrook Department of Health, Menstrual Product Access Pilot Report (July 2026)\n- [S2] Westbrook City Council Budget Committee, Hearing Summary (August 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Westbrook gave out 214,000 free products in six months, an average of about 35,700 a month",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "214,000 / 6 = 35,667."
+    },
+    {
+      "key": "Monthly use rose by more than 40 percent between January and June",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "(41,000 - 29,000) / 29,000 = 41 percent."
+    },
+    {
+      "key": "The council approved a citywide program at its August hearing",
+      "label": "mismatch",
+      "tag": "plan",
+      "why": "S2: the committee deferred the decision until November."
+    },
+    {
+      "key": "Free pads and tampons were stocked in restrooms at 45 public buildings, including public schools",
+      "label": "mismatch",
+      "tag": "scope",
+      "why": "S1 says public schools were not included."
+    },
+    {
+      "key": "Dispensers were restocked every week",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Refilled weekly."
+    },
+    {
+      "key": "The $96,000 cost covered products and dispensers, while installation was paid by building owners",
+      "label": "mismatch",
+      "tag": "subject",
+      "why": "S1 says the $96,000 also covered installation."
+    },
+    {
+      "key": "The department said a full-year citywide program would cost $250,000",
+      "label": "mismatch",
+      "tag": "estimate",
+      "why": "S1 gives an estimated range of $210,000 to $250,000."
+    },
+    {
+      "key": "The pilot cost worked out to roughly $2,100 per building",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "96,000 / 45 = 2,133."
+    },
+    {
+      "key": "School absences among teenage girls fell during the pilot",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source reports school absences (schools were not in the pilot)."
+    },
+    {
+      "key": "Theft or bulk removal was reported at 7 of the 45 sites, mostly in March",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2."
+    },
+    {
+      "key": "After the theft reports, the department removed dispensers from the affected sites",
+      "label": "mismatch",
+      "tag": "action",
+      "why": "S2: the department switched those sites to one-item-at-a-time dispensers, not removal."
+    },
+    {
+      "key": "The committee put off its decision until November and requested usage data by site",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Deferred = put off; matches S2."
+    }
+  ]
+}

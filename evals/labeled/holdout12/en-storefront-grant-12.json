@@ -1,0 +1,104 @@
+{
+ "id": "en-storefront-grant-12",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout12-2026-10-13",
+ "prompt": "How does the Westbrook Mills storefront improvement grant work, and what did Round 1 deliver?",
+ "sources": {
+  "S1": "The Storefront Improvement Grant reimburses up to 50% of eligible exterior renovation costs, with a maximum grant of $20,000 per storefront. Businesses must contribute the remaining share themselves and must complete the work before receiving payment; the city does not pay upfront. Eligible work includes signage, lighting, windows, doors and exterior paint; interior renovations and rooftop equipment are not eligible. Round 1 opened in May 2025 and awarded 38 grants totaling $512,000 to businesses in the Mill Street and Canal Avenue corridors. Tenants may apply only with written consent from the property owner, and all applicants had to be current on city taxes. Grants were funded by the city's share of federal Community Development Block Grant money, not the general fund.",
+  "S2": "Of the 38 grantees, 29 responded to the association's survey. 21 respondents said foot traffic increased after their renovations, but the association noted it had no comparison group and could not separate the grant's effect from a broader downtown recovery. Eight of the 38 grantee projects were still unfinished as of June 2026. The association has asked the city to raise the maximum grant to $30,000 in Round 2, which the city has not decided. Restaurants received 14 of the 38 grants."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How does the Westbrook Mills storefront improvement grant work, and what did Round 1 deliver?\n\n## Answer\nWestbrook Mills' storefront grant covers up to half of eligible exterior renovation costs, capped at $20,000 per storefront [S1]. The city pays its share upfront so that businesses can start renovations without fronting the cost [S1].\n\n## Evidence\n- Round 1 awards averaged about $13,500 per grant [S1].\n- Rooftop equipment upgrades qualify alongside signage, lighting, windows and doors [S1].\n- Property owners need written consent from their tenants before applying [S1].\n- Applicants had to be up to date on city taxes to qualify [S1].\n- The grants are paid from the city's general fund [S1].\n- Restaurants received a little over a third of the Round 1 grants [S2].\n- 21 of the 38 grantees reported higher foot traffic after their renovations [S2].\n\n## Counter-evidence and limits\n- The business association said it lacked a comparison group and could not isolate the grant's effect from the wider downtown recovery [S2].\n- About 79% of grantee projects had been completed by June 2026 [S2].\n- Roughly three-quarters of grantees answered the association's survey [S2].\n- For Round 2, the city has raised the maximum grant to $30,000 [S2].\n- Round 2 applications are scheduled to open in January 2027.\n\n## Next actions\n- Wait for the eight unfinished projects before judging Round 1 outcomes (judgment).\n\n## Sources\n- [S1] Westbrook Mills Office of Economic Development, \"Storefront Improvement Grant: Round 1 Results\" (March 2026)\n- [S2] Westbrook Mills Downtown Business Association, \"Member Survey on the Storefront Grant\" (July 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Westbrook Mills' storefront grant covers up to half of eligible exterior renovation costs, capped at $20,000 per storefront",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: up to 50%, maximum $20,000 per storefront."
+  },
+  {
+   "key": "The city pays its share upfront so that businesses can start renovations without fronting the cost",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: work must be completed before payment; the city does not pay upfront."
+  },
+  {
+   "key": "Round 1 awards averaged about $13,500 per grant",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: $512,000 / 38 = $13,474."
+  },
+  {
+   "key": "Rooftop equipment upgrades qualify alongside signage, lighting, windows and doors",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: rooftop equipment is not eligible."
+  },
+  {
+   "key": "Property owners need written consent from their tenants before applying",
+   "label": "mismatch",
+   "tag": "role swap",
+   "why": "S1: tenants need written consent from the property owner."
+  },
+  {
+   "key": "Applicants had to be up to date on city taxes to qualify",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: applicants had to be current on city taxes."
+  },
+  {
+   "key": "The grants are paid from the city's general fund",
+   "label": "mismatch",
+   "tag": "funder",
+   "why": "S1: funded by the city's federal CDBG share, not the general fund."
+  },
+  {
+   "key": "Restaurants received a little over a third of the Round 1 grants",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S2: 14/38 = 36.8%."
+  },
+  {
+   "key": "21 of the 38 grantees reported higher foot traffic after their renovations",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "S2: 21 of the 29 survey respondents, not of all 38 grantees."
+  },
+  {
+   "key": "The business association said it lacked a comparison group and could not isolate the grant's effect from the wider downtown recovery",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: no comparison group; cannot separate from downtown recovery."
+  },
+  {
+   "key": "About 79% of grantee projects had been completed by June 2026",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S2: 8 of 38 unfinished, so 30/38 = 78.9% done."
+  },
+  {
+   "key": "Roughly three-quarters of grantees answered the association's survey",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "S2: 29/38 = 76.3%."
+  },
+  {
+   "key": "For Round 2, the city has raised the maximum grant to $30,000",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: the association asked; the city has not decided."
+  },
+  {
+   "key": "Round 2 applications are scheduled to open in January 2027",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives a Round 2 date; no citation."
+  }
+ ]
+}

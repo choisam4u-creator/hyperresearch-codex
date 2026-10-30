@@ -1,0 +1,104 @@
+{
+ "id": "en-street-trees-2",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "Is Ashford's Neighborhood Canopy Program getting street trees planted and keeping them alive in low-canopy neighborhoods?",
+ "sources": {
+  "S1": "The Ashford Parks Department launched the Neighborhood Canopy Program in spring 2024 to plant street trees in the city's four census tracts with the lowest canopy cover. Over the 2024 and 2025 planting seasons the department planted 2,400 trees, against a goal of 3,000 by the end of 2026. Trees are planted free of charge in the public strip between the sidewalk and the curb, and the adjacent property owner must sign an agreement to water the tree weekly during its first two summers. Where an owner declines, a tree is planted only if a registered block association agrees to do the watering; city crews do not water program trees. The department, not property owners, is responsible for pruning and for replacing trees that die. Of the trees planted in 2024, 88 percent were alive at the one-year inspection, compared with a target of 75 percent. Survival was lower on blocks watered by block associations, but the department says it has not determined whether the difference reflects watering or soil conditions.",
+  "S2": "Volunteers recorded midafternoon air temperatures on 40 blocks in July and August 2025, half in program tracts and half in comparison tracts with similar housing. Program blocks averaged 0.6 degrees Celsius cooler than comparison blocks. However, the Office of Sustainability notes that most program trees are still under 4 meters tall and too young to provide meaningful shade, and it attributes the difference mainly to the larger number of mature park trees in the program tracts, which predate the program. The office plans to repeat the measurements in 2027 and 2029. The program's $1.8 million budget comes from a state urban forestry grant that expires in June 2027, and no replacement funding has been identified."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Ashford's Neighborhood Canopy Program getting street trees planted and keeping them alive in low-canopy neighborhoods?\n\n## Answer\nAshford has planted 2,400 street trees in its four lowest-canopy census tracts over two planting seasons [S1]. That puts the program at 80 percent of its 3,000-tree goal for the end of 2026 [S1]. The new trees have already lowered summer temperatures on program blocks by 0.6 degrees Celsius [S2].\n\n## Evidence\n- Trees go into the public strip between the curb and sidewalk at no cost to residents [S1].\n- Adjacent property owners are responsible for pruning the trees and replacing any that die [S1].\n- Neighboring owners commit to watering each tree once a week through its first two summers [S1].\n- Roughly nine in ten trees planted in 2024 survived their first year, beating the 75 percent target by 13 points [S1].\n- Where an owner declines the watering agreement, city crews take over the watering instead [S1].\n\n## Counter-evidence and limits\n- The heat readings covered 40 blocks, 20 of them in program tracts [S2].\n- The Office of Sustainability says most program trees are still too small to give much shade [S2].\n- Survival was lower on association-watered blocks because volunteers watered less reliably than owners [S1].\n- The program is paid for by a $1.8 million city bond that expires in June 2027 [S2].\n- The temperature survey will be repeated in 2027 and again in 2028 [S2].\n- Each tree costs the city about $750 to plant and maintain for two years.\n\n## Next steps\n- Compare survival on owner-watered and association-watered blocks with soil tests before changing the watering rule (judgment).\n- Identify replacement funding before the state grant ends in June 2027 (judgment).\n\n## Sources\n- [S1] Ashford Parks Department, \"Neighborhood Canopy Program: Year Two Report\" (May 2026)\n- [S2] Ashford Office of Sustainability, \"Summer Heat Monitoring 2025\" (January 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Ashford has planted 2,400 street trees in its four lowest-canopy census tracts over two planting seasons",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "2024 and 2025 seasons, 2,400 trees, four lowest-canopy tracts."
+  },
+  {
+   "key": "That puts the program at 80 percent of its 3,000-tree goal for the end of 2026",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,400 / 3,000 = 80%."
+  },
+  {
+   "key": "The new trees have already lowered summer temperatures on program blocks by 0.6 degrees Celsius",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S2 says the trees are too young to shade and attributes the gap to older park trees."
+  },
+  {
+   "key": "Trees go into the public strip between the curb and sidewalk at no cost to residents",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Planted free of charge in the public strip."
+  },
+  {
+   "key": "Adjacent property owners are responsible for pruning the trees and replacing any that die",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "The department, not owners, prunes and replaces trees."
+  },
+  {
+   "key": "Neighboring owners commit to watering each tree once a week through its first two summers",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches the watering agreement."
+  },
+  {
+   "key": "Roughly nine in ten trees planted in 2024 survived their first year, beating the 75 percent target by 13 points",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "88% is about nine in ten; 88 - 75 = 13."
+  },
+  {
+   "key": "Where an owner declines the watering agreement, city crews take over the watering instead",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "A block association must agree to water; city crews do not water program trees."
+  },
+  {
+   "key": "The heat readings covered 40 blocks, 20 of them in program tracts",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "Half of 40 = 20."
+  },
+  {
+   "key": "The Office of Sustainability says most program trees are still too small to give much shade",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Under 4 meters and too young for meaningful shade."
+  },
+  {
+   "key": "Survival was lower on association-watered blocks because volunteers watered less reliably than owners",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The department has not determined whether watering or soil explains the difference."
+  },
+  {
+   "key": "The program is paid for by a $1.8 million city bond that expires in June 2027",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "Funding is a state urban forestry grant, not a city bond."
+  },
+  {
+   "key": "The temperature survey will be repeated in 2027 and again in 2028",
+   "label": "mismatch",
+   "tag": "year",
+   "why": "S2 plans repeats in 2027 and 2029."
+  },
+  {
+   "key": "Each tree costs the city about $750 to plant and maintain for two years",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives a per-tree cost."
+  }
+ ]
+}

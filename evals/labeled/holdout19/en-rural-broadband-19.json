@@ -1,0 +1,146 @@
+{
+  "id": "en-rural-broadband-19",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout19-2026-10-17",
+  "prompt": "How well did Calder County's rural broadband voucher program perform in its first year?",
+  "sources": {
+    "S1": "Calder County launched its Rural Broadband Voucher Program on July 1, 2025, using $4.8 million from a state digital-equity grant. Households outside the county's three incorporated towns are eligible if their address lacks wired service of at least 100 Mbps download. Each voucher covers up to $1,500 of installation costs and $40 per month of service for 24 months. In the first year, 2,140 households applied, 1,580 were approved, and 1,210 had service installed by June 30, 2026. Average installation cost was $1,180 per home. Four providers participate: Pinecrest Fiber connected 540 homes, Valley Wireless 380, CalderNet 210, and SkyReach Satellite 80. Satellite connections qualify only where no fixed provider will build within 12 months. The median download speed for connected homes was 212 Mbps, measured through a voluntary speed-test panel of 300 households. Applications are processed in an average of 19 days, down from 34 days in the program's first quarter. Of approved households, 37% have a member over 65 and 22% have school-age children. The county reported that households with new service filed 140 telehealth claims through the county clinic, but said it could not determine how many would have occurred without the program. Vouchers cannot be transferred if a household moves. The office plans to request a second $3 million grant round in early 2027.",
+    "S2": "The Calder Valley Gazette found that 92 approved households on the county's northern ridge were still waiting because providers said construction costs exceeded the $1,500 cap. Several residents complained that SkyReach service slowed sharply during evening hours. Pinecrest Fiber said it would add a second crew in September. A county commissioner proposed raising the installation cap to $2,500."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How well did Calder County's rural broadband voucher program perform in its first year?\n\n## Answer\nCalder County's voucher program connected 1,210 households in its first year [S1]. About 77% of applicants ended up with installed service [S1]. Roughly three-quarters of applications were approved [S1].\n\n## Evidence\n- Each voucher pays a flat $1,500 toward installation [S1].\n- The service subsidy can total up to $960 per household over the voucher term [S1].\n- The monthly service subsidy lasts 12 months [S1].\n- Average installation cost came in $320 below the voucher cap [S1].\n- Pinecrest Fiber connected about 45% of installed homes [S1].\n- CalderNet connected 380 homes, more than Valley Wireless [S1].\n- Connected homes average 212 Mbps download speeds countywide [S1].\n- Average application processing time fell by 15 days from the first quarter [S1].\n- Processing time fell by about 79% [S1].\n- Just over a third of approved households include someone older than 65 [S1].\n- The program generated 140 additional telehealth visits [S1].\n- Vouchers move with a household if it relocates within the county [S1].\n- The office has secured a second $3 million grant round [S1].\n\n## Counterevidence and limits\n- 92 approved households on the northern ridge were still waiting because construction costs exceeded the cap [S2].\n- Several residents complained that SkyReach service slowed during evening hours [S2].\n- Pinecrest Fiber said it would add a second crew in September [S2].\n- A county commissioner proposed raising the installation cap to $3,500 [S2].\n- Calder County ranks last in the state for rural broadband coverage.\n\n## Next steps\n- Check whether the ridge households are connected after the cap debate and request installation-level speed data before expanding (judgment).\n\n## Sources\n- [S1] Calder County Office of Digital Access, \"Rural Broadband Voucher Program: First-Year Review\" (2026-07-15)\n- [S2] Calder Valley Gazette, \"Broadband vouchers leave hill roads behind\" (2026-08-02)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Calder County's voucher program connected 1,210 households in its first year",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: '1,210 had service installed by June 30, 2026'."
+    },
+    {
+      "key": "About 77% of applicants ended up with installed service",
+      "label": "mismatch",
+      "tag": "wrong_base",
+      "why": "S1: 1,210/2,140 applicants = 56.5%. 77% is installed/approved (1,210/1,580 = 76.6%)."
+    },
+    {
+      "key": "Roughly three-quarters of applications were approved",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 1,580/2,140 = 73.8%."
+    },
+    {
+      "key": "Each voucher pays a flat $1,500 toward installation",
+      "label": "mismatch",
+      "tag": "upper_bound_dropped",
+      "why": "S1: 'covers up to $1,500 of installation costs'; it is a cap, not a flat amount."
+    },
+    {
+      "key": "The service subsidy can total up to $960 per household over the voucher term",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: $40/month x 24 months = $960."
+    },
+    {
+      "key": "The monthly service subsidy lasts 12 months",
+      "label": "mismatch",
+      "tag": "changed_time_window",
+      "why": "S1: '$40 per month of service for 24 months'."
+    },
+    {
+      "key": "Average installation cost came in $320 below the voucher cap",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: $1,500 - $1,180 = $320."
+    },
+    {
+      "key": "Pinecrest Fiber connected about 45% of installed homes",
+      "label": "ok",
+      "tag": "derived_percent",
+      "why": "S1: 540/1,210 = 44.6%."
+    },
+    {
+      "key": "CalderNet connected 380 homes, more than Valley Wireless",
+      "label": "mismatch",
+      "tag": "swapped_values",
+      "why": "S1: Valley Wireless 380, CalderNet 210; values and ranking swapped."
+    },
+    {
+      "key": "Connected homes average 212 Mbps download speeds countywide",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S1: 212 Mbps is the median from a voluntary panel of 300 households, not a countywide average."
+    },
+    {
+      "key": "Average application processing time fell by 15 days from the first quarter",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 34 - 19 = 15 days."
+    },
+    {
+      "key": "Processing time fell by about 79%",
+      "label": "mismatch",
+      "tag": "wrong_derived_percent",
+      "why": "S1: 15/34 = 44% reduction. 79% uses the wrong base (15/19)."
+    },
+    {
+      "key": "Just over a third of approved households include someone older than 65",
+      "label": "ok",
+      "tag": "rounded",
+      "why": "S1: '37% have a member over 65'."
+    },
+    {
+      "key": "The program generated 140 additional telehealth visits",
+      "label": "mismatch",
+      "tag": "hedge_to_causal",
+      "why": "S1: 140 telehealth claims, but the county 'could not determine how many would have occurred without the program'."
+    },
+    {
+      "key": "Vouchers move with a household if it relocates within the county",
+      "label": "mismatch",
+      "tag": "negation_flip",
+      "why": "S1: 'Vouchers cannot be transferred if a household moves.'"
+    },
+    {
+      "key": "The office has secured a second $3 million grant round",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S1: 'plans to request a second $3 million grant round in early 2027'."
+    },
+    {
+      "key": "92 approved households on the northern ridge were still waiting because construction costs exceeded the cap",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: '92 approved households on the county's northern ridge were still waiting because ... costs exceeded the $1,500 cap'."
+    },
+    {
+      "key": "Several residents complained that SkyReach service slowed during evening hours",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'SkyReach service slowed sharply during evening hours'."
+    },
+    {
+      "key": "Pinecrest Fiber said it would add a second crew in September",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'Pinecrest Fiber said it would add a second crew in September.'"
+    },
+    {
+      "key": "A county commissioner proposed raising the installation cap to $3,500",
+      "label": "mismatch",
+      "tag": "wrong_number",
+      "why": "S2: proposed raising the cap 'to $2,500'."
+    },
+    {
+      "key": "Calder County ranks last in the state for rural broadband coverage",
+      "label": "unverified",
+      "tag": "unsupported_fact",
+      "why": "Neither source gives a statewide ranking."
+    }
+  ]
+}

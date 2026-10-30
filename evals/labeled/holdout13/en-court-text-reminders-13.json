@@ -1,0 +1,104 @@
+{
+ "id": "en-court-text-reminders-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "Have Millbrook Municipal Court's text-message court reminders reduced missed hearings?",
+ "sources": {
+  "S1": "Millbrook Municipal Court began sending text-message reminders for court dates in January 2025. Defendants receive texts seven days and one day before each hearing, and are enrolled automatically if they provide a mobile number at booking, with the option to opt out. The service is provided by the vendor CourtNotify at a cost of $0.04 per message, paid from the court's technology budget. In 2025 the court sent 96,000 messages. The failure-to-appear rate for misdemeanor hearings fell from 22% in 2024 to 16% in 2025. The court noted that a new evening docket also launched in March 2025, so the drop cannot be attributed to texts alone. About 18% of defendants had no mobile number on file and received no texts.",
+  "S2": "The Millbrook Justice Policy Lab analysis (June 2026) compared hearings for defendants who received texts with those who did not and found a failure-to-appear rate of 14% versus 24%. It cautioned that the two groups differed, since defendants without phones were more likely to be homeless. The lab suggested adding reminders by phone call for people without texting, which the court is reviewing but has not funded. It also suggested a third text on the morning of the hearing."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Have Millbrook Municipal Court's text-message court reminders reduced missed hearings?\n\n## Answer\nMisdemeanor failure-to-appear rates fell six percentage points in the first year of text reminders, from 22% to 16% [S1]. The court credits the text reminders as the reason for this drop [S1].\n\n## Evidence\n- Reminders go out a week ahead and again the day before each hearing [S1].\n- Defendants get three texts: a week before, a day before, and the morning of the hearing [S1].\n- Defendants must sign up for the reminders by opting in at booking [S1].\n- Sending 96,000 messages at four cents each cost the court about $3,840 in 2025 [S1].\n- CourtNotify provides the service free of charge to the court [S1].\n- Roughly one in five defendants, 18%, had no mobile number recorded and got no reminders [S1].\n- The relative decline in the failure-to-appear rate was about 27% [S1].\n- Defendants who received texts missed hearings at a higher rate than those who did not, 24% versus 14% [S2].\n\n## Counter-evidence and limits\n- The lab warned that texted and non-texted defendants were not comparable groups, as those without phones were more often homeless [S2].\n- The court has funded phone-call reminders for people who cannot receive texts [S2].\n- An evening docket introduced in March 2025 may also have contributed to the decline [S1].\n- Similar programs in neighboring counties cut missed hearings by about a third.\n\n## Next actions\n- Compare 2025 failure-to-appear rates for evening and daytime dockets to separate the two effects (judgment).\n\n## Sources\n- [S1] Millbrook Municipal Court, \"Court Date Text Reminder Program: 2025 Annual Summary\" (February 2026)\n- [S2] Millbrook Justice Policy Lab, \"Text Reminders and Court Appearance in Millbrook\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Misdemeanor failure-to-appear rates fell six percentage points in the first year of text reminders, from 22% to 16%",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 22% in 2024 to 16% in 2025; 22-16=6 points; reminders began Jan 2025."
+  },
+  {
+   "key": "The court credits the text reminders as the reason for this drop",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S1: court said an evening docket also launched, 'so the drop cannot be attributed to texts alone'."
+  },
+  {
+   "key": "Reminders go out a week ahead and again the day before each hearing",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: texts seven days and one day before each hearing."
+  },
+  {
+   "key": "Defendants get three texts: a week before, a day before, and the morning of the hearing",
+   "label": "mismatch",
+   "tag": "frequency",
+   "why": "S1: two texts; a morning-of text is only a lab suggestion in S2."
+  },
+  {
+   "key": "Defendants must sign up for the reminders by opting in at booking",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: enrolled automatically if mobile number given, with option to opt out."
+  },
+  {
+   "key": "Sending 96,000 messages at four cents each cost the court about $3,840 in 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 96,000 x $0.04 = $3,840."
+  },
+  {
+   "key": "CourtNotify provides the service free of charge to the court",
+   "label": "mismatch",
+   "tag": "payer",
+   "why": "S1: $0.04 per message paid from the court's technology budget."
+  },
+  {
+   "key": "Roughly one in five defendants, 18%, had no mobile number recorded and got no reminders",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S1: about 18% had no mobile number on file and received no texts."
+  },
+  {
+   "key": "The relative decline in the failure-to-appear rate was about 27%",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: (22-16)/22 = 27.3%."
+  },
+  {
+   "key": "Defendants who received texts missed hearings at a higher rate than those who did not, 24% versus 14%",
+   "label": "mismatch",
+   "tag": "comparison reversed",
+   "why": "S2: texted 14% vs non-texted 24%."
+  },
+  {
+   "key": "The lab warned that texted and non-texted defendants were not comparable groups, as those without phones were more often homeless",
+   "label": "ok",
+   "tag": "hedge kept",
+   "why": "S2: cautioned the groups differed; those without phones more likely homeless."
+  },
+  {
+   "key": "The court has funded phone-call reminders for people who cannot receive texts",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: court is reviewing the suggestion 'but has not funded' it."
+  },
+  {
+   "key": "An evening docket introduced in March 2025 may also have contributed to the decline",
+   "label": "ok",
+   "tag": "hedge kept",
+   "why": "S1: evening docket launched March 2025; drop cannot be attributed to texts alone."
+  },
+  {
+   "key": "Similar programs in neighboring counties cut missed hearings by about a third",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source discusses other counties."
+  }
+ ]
+}

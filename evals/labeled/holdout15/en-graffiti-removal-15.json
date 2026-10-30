@@ -1,0 +1,122 @@
+{
+  "id": "en-graffiti-removal-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "How does Brookfield's graffiti abatement program operate, and how is it performing?",
+  "sources": {
+    "S1": "Brookfield removes graffiti from private property at no cost to owners who sign a one-time consent waiver. Removal is performed by a contracted abatement company, not city staff, and is scheduled within 5 business days of a report. Offensive or gang-related graffiti is prioritized for removal within 24 hours. Owners who decline the waiver must remove graffiti themselves within 10 days of notice or face a $150 fine. The program covers walls, fences, and utility boxes up to 12 feet high; anything higher requires a lift and is referred back to the property owner. The city budgeted $540,000 for the program in fiscal 2026, funded entirely by the general fund. Reports can be filed through the 311 app, by phone, or on the city website.",
+    "S2": "In Q2 2026, Brookfield's graffiti program received 2,310 reports and completed 2,020 removals. Median time from report to removal was 4 business days, down from 7 in Q2 2025. Offensive graffiti met the 24-hour target in 81% of cases. Repeat tagging at the same location within 30 days occurred at 18% of cleaned sites. The 311 app accounted for 64% of reports, phone for 27%, and the website for 9%. The office suggested that faster removal 'may discourage' repeat tagging but said the data do not show a causal effect. A proposal to add anti-graffiti coating at the 50 most-tagged sites is under review by the city manager."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: How does Brookfield's graffiti abatement program operate, and how is it performing?\n\n## Answer\nBrookfield removes graffiti from private property for free if the owner signs a one-time consent waiver [S1]. Most graffiti is now removed within 24 hours of a report [S2].\n\n## Evidence\n- City crews carry out the graffiti removals [S1].\n- Routine removals are scheduled within five business days of a report [S1].\n- Owners who decline the waiver have 30 days to remove graffiti before being fined [S1].\n- Owners who refuse the waiver and miss the 10-day deadline face a $150 fine [S1].\n- The program removes graffiti at any height, bringing in lifts when needed [S1].\n- The program's $540,000 fiscal 2026 budget comes entirely from the general fund [S1].\n- Completed removals equaled about 87% of reports received in Q2 2026 [S2].\n- Median time to removal fell by 3 business days, from 7 to 4, compared with a year earlier [S2].\n- Median removal time fell by about 75% year over year [S2].\n- Phone reports made up 27% of the total, three times the website's 9% share [S2].\n\n## Counter-evidence and limits\n- Offensive graffiti missed the 24-hour target in 81% of cases [S2].\n- Nearly one in five cleaned sites was tagged again within 30 days [S2].\n- The data show that faster removal discourages repeat tagging [S2].\n- Anti-graffiti coating is being applied at the 50 most-tagged sites [S2].\n- Graffiti reports usually spike during summer school vacations.\n\n## Next actions\n- Request the share of offensive-graffiti cases that missed the 24-hour target by neighborhood before proposing staffing changes (judgment)\n\n## Sources\n- [S1] City of Brookfield Code Enforcement, \"Graffiti Abatement Program Fact Sheet\" (2026-05-14)\n- [S2] Brookfield Office of Performance Management, \"Graffiti Program Quarterly Dashboard, Q2 2026\" (2026-08-01)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Brookfield removes graffiti from private property for free if the owner signs a one-time consent waiver",
+      "label": "ok",
+      "tag": "condition_restated",
+      "why": "S1: 'at no cost to owners who sign a one-time consent waiver'"
+    },
+    {
+      "key": "Most graffiti is now removed within 24 hours of a report",
+      "label": "mismatch",
+      "tag": "scope_overgeneralized",
+      "why": "S2: median is 4 business days; 24-hour target applies only to offensive graffiti (S1)"
+    },
+    {
+      "key": "City crews carry out the graffiti removals",
+      "label": "mismatch",
+      "tag": "wrong_actor",
+      "why": "S1: 'performed by a contracted abatement company, not city staff'"
+    },
+    {
+      "key": "Routine removals are scheduled within five business days of a report",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'scheduled within 5 business days of a report'"
+    },
+    {
+      "key": "Owners who decline the waiver have 30 days to remove graffiti before being fined",
+      "label": "mismatch",
+      "tag": "time_window_changed",
+      "why": "S1: 'within 10 days of notice or face a $150 fine'"
+    },
+    {
+      "key": "Owners who refuse the waiver and miss the 10-day deadline face a $150 fine",
+      "label": "ok",
+      "tag": "condition_restated",
+      "why": "S1: 'must remove graffiti themselves within 10 days of notice or face a $150 fine'"
+    },
+    {
+      "key": "The program removes graffiti at any height, bringing in lifts when needed",
+      "label": "mismatch",
+      "tag": "exclusion_as_inclusion",
+      "why": "S1: covers surfaces 'up to 12 feet high; anything higher … is referred back to the property owner'"
+    },
+    {
+      "key": "The program's $540,000 fiscal 2026 budget comes entirely from the general fund",
+      "label": "ok",
+      "tag": "funding_restated",
+      "why": "S1: '$540,000 … funded entirely by the general fund'"
+    },
+    {
+      "key": "Completed removals equaled about 87% of reports received in Q2 2026",
+      "label": "ok",
+      "tag": "computed_percent",
+      "why": "S2: 2,020 / 2,310 = 87.4%"
+    },
+    {
+      "key": "Median time to removal fell by 3 business days, from 7 to 4, compared with a year earlier",
+      "label": "ok",
+      "tag": "computed_difference",
+      "why": "S2: 'Median … 4 business days, down from 7 in Q2 2025'"
+    },
+    {
+      "key": "Median removal time fell by about 75% year over year",
+      "label": "mismatch",
+      "tag": "wrong_baseline",
+      "why": "S2: 7 -> 4 is a 43% drop; 75% uses the new value (3/4) as the base"
+    },
+    {
+      "key": "Phone reports made up 27% of the total, three times the website's 9% share",
+      "label": "ok",
+      "tag": "computed_ratio",
+      "why": "S2: phone 27%, website 9% -> 3x"
+    },
+    {
+      "key": "Offensive graffiti missed the 24-hour target in 81% of cases",
+      "label": "mismatch",
+      "tag": "direction_flipped",
+      "why": "S2: 'met the 24-hour target in 81% of cases'"
+    },
+    {
+      "key": "Nearly one in five cleaned sites was tagged again within 30 days",
+      "label": "ok",
+      "tag": "approximation",
+      "why": "S2: repeat tagging 'at 18% of cleaned sites'"
+    },
+    {
+      "key": "The data show that faster removal discourages repeat tagging",
+      "label": "mismatch",
+      "tag": "hedge_as_fact",
+      "why": "S2: 'may discourage' but 'the data do not show a causal effect'"
+    },
+    {
+      "key": "Anti-graffiti coating is being applied at the 50 most-tagged sites",
+      "label": "mismatch",
+      "tag": "review_as_done",
+      "why": "S2: proposal 'is under review by the city manager'"
+    },
+    {
+      "key": "Graffiti reports usually spike during summer school vacations",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source gives seasonal report patterns"
+    }
+  ]
+}

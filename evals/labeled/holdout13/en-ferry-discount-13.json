@@ -1,0 +1,104 @@
+{
+ "id": "en-ferry-discount-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "Did Port Halvern's resident ferry discount pilot increase island residents' ferry use, and at what cost?",
+ "sources": {
+  "S1": "Port Halvern's council approved a resident ferry discount on 3 March 2025, cutting the round-trip fare to Gull Island from $14 to $9 for registered island residents. The discount ran as a 12-month pilot from 1 April 2025 to 31 March 2026 and applied only to foot passengers, not vehicles. Residents had to register in person at the ferry terminal office with proof of address; online registration was planned for a later phase. The fare gap was covered by the county transport fund, which reimbursed the private operator, Brightwater Ferries, $5 per discounted trip. By the end of the pilot, 2,140 residents had registered, out of roughly 3,600 eligible island residents. Discounted round trips totalled 61,000, compared with 48,000 resident round trips in the year before the pilot. The county paid Brightwater $305,000 in reimbursements over the year. The transport office cautioned that part of the increase may reflect a new mainland supermarket that opened in June 2025.",
+  "S2": "The Island Access Committee's interim review, published in May 2026, found that 58% of surveyed registrants said they made more trips than before, based on a survey of 410 registrants. The committee recommended extending the discount for two more years and adding vehicles, but the council has not yet voted on either proposal. Staff estimated that adding vehicles could raise annual reimbursement costs to about $520,000. The review noted that registrations were lowest among residents over 75, which it attributed partly to the in-person requirement."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Port Halvern's resident ferry discount pilot increase island residents' ferry use, and at what cost?\n\n## Answer\nPort Halvern's 12-month pilot cut the resident round-trip fare to Gull Island by $5, to $9 [S1]. After a positive committee review, the discount was extended for two more years and opened to vehicles [S2].\n\n## Evidence\n- Only foot passengers qualified for the lower fare, while vehicles were excluded [S1].\n- Residents could register online or by mail with proof of address [S1].\n- About 59% of eligible island residents registered during the pilot [S1].\n- Discounted round trips rose by about 21% over the prior year's resident trips [S1].\n- The county transport fund, not the ferry operator, absorbed the $5 difference on each discounted trip [S1].\n- The county paid the reimbursements directly to registered residents as rebates [S1].\n- The county's reimbursements totalled $305,000, consistent with $5 on each of 61,000 trips [S1].\n- In a survey of all 2,140 registrants, 58% said they made more trips than before [S2].\n\n## Counter-evidence and limits\n- The transport office attributed the whole rise in trips to the lower fare [S1].\n- Staff projected that including vehicles could push yearly reimbursements to roughly $520,000 [S2].\n- Residents over 75 registered at the lowest rate, which the committee linked partly to the in-person sign-up rule [S2].\n- Brightwater Ferries raised its standard fares for mainland visitors in January 2026.\n\n## Next actions\n- Ask the council to schedule a vote on the extension before costing the vehicle option in detail (judgment).\n\n## Sources\n- [S1] Port Halvern Transport Office, \"Resident Ferry Discount Pilot: Year-End Summary\" (April 2026)\n- [S2] Island Access Committee, \"Interim Review of the Resident Ferry Discount\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Halvern's 12-month pilot cut the resident round-trip fare to Gull Island by $5, to $9",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: fare cut from $14 to $9; 14-9=5; pilot 1 Apr 2025-31 Mar 2026 = 12 months."
+  },
+  {
+   "key": "After a positive committee review, the discount was extended for two more years and opened to vehicles",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: committee only recommended extension and adding vehicles; 'the council has not yet voted on either proposal'."
+  },
+  {
+   "key": "Only foot passengers qualified for the lower fare, while vehicles were excluded",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S1: 'applied only to foot passengers, not vehicles'."
+  },
+  {
+   "key": "Residents could register online or by mail with proof of address",
+   "label": "mismatch",
+   "tag": "method",
+   "why": "S1: registration had to be in person at the ferry terminal office; online registration only 'planned for a later phase'."
+  },
+  {
+   "key": "About 59% of eligible island residents registered during the pilot",
+   "label": "ok",
+   "tag": "percentage",
+   "why": "S1: 2,140 of roughly 3,600; 2140/3600=59.4%."
+  },
+  {
+   "key": "Discounted round trips rose by about 21% over the prior year's resident trips",
+   "label": "mismatch",
+   "tag": "arithmetic",
+   "why": "S1: 61,000 vs 48,000; (61000-48000)/48000=27.1%, not 21%."
+  },
+  {
+   "key": "The county transport fund, not the ferry operator, absorbed the $5 difference on each discounted trip",
+   "label": "ok",
+   "tag": "funder",
+   "why": "S1: fare gap covered by county transport fund reimbursing Brightwater $5 per discounted trip."
+  },
+  {
+   "key": "The county paid the reimbursements directly to registered residents as rebates",
+   "label": "mismatch",
+   "tag": "payee swap",
+   "why": "S1: county reimbursed the operator Brightwater Ferries, not residents."
+  },
+  {
+   "key": "The county's reimbursements totalled $305,000, consistent with $5 on each of 61,000 trips",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: $305,000 paid; 61,000 x $5 = $305,000."
+  },
+  {
+   "key": "In a survey of all 2,140 registrants, 58% said they made more trips than before",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "S2: survey covered 410 registrants, not all 2,140."
+  },
+  {
+   "key": "The transport office attributed the whole rise in trips to the lower fare",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "S1: office cautioned part of the increase may reflect a new mainland supermarket opened June 2025."
+  },
+  {
+   "key": "Staff projected that including vehicles could push yearly reimbursements to roughly $520,000",
+   "label": "ok",
+   "tag": "hedge kept",
+   "why": "S2: staff estimated adding vehicles 'could raise annual reimbursement costs to about $520,000'."
+  },
+  {
+   "key": "Residents over 75 registered at the lowest rate, which the committee linked partly to the in-person sign-up rule",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: registrations lowest among residents over 75, attributed partly to in-person requirement."
+  },
+  {
+   "key": "Brightwater Ferries raised its standard fares for mainland visitors in January 2026",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions visitor fare changes."
+  }
+ ]
+}

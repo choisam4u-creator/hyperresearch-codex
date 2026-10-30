@@ -1,0 +1,152 @@
+{
+ "id": "en-senior-fares-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "What has Tolliver's free-fare pilot for older bus riders achieved so far?",
+ "sources": {
+  "S1": "On 1 October 2025 the Tolliver Regional Transit Authority (TRTA) began a 12-month pilot offering free fares on local buses to riders aged 65 and older who register for a Gold Pass card. Express routes and paratransit service are not included, and seniors continue to pay the half fare of $1.25 on express routes. As of 31 July 2026, 18,400 people had registered, about 29% of the estimated 63,000 residents aged 65 and older in the service area. Boardings by Gold Pass holders on local buses averaged 11,900 per weekday from January to July 2026, compared with 8,600 weekday senior boardings in the same months of 2025 under the old half-fare card. The authority cautions that 2025 counts relied on driver keypresses that may have undercounted senior trips by as much as 15%, while 2026 counts come from card taps. Lost fare revenue is estimated at $1.9 million for the full pilot year, which the regional council agreed to reimburse from its transportation sales-tax fund. TRTA's own operating budget is about $142 million. A rider survey of 1,350 Gold Pass holders, weighted by age and county, found that 23% reported making trips they previously would not have made, most often to medical appointments and grocery stores. Peak-hour crowding on routes 4 and 12 increased; the authority added two trips per weekday on route 4 in April 2026, and additions on route 12 are under review. Registration requires proof of age in person at one of three customer centers, which the evaluation identifies as a barrier for homebound residents. A mobile registration van visited 22 senior centers in spring 2026. The board will decide in November 2026 whether to make the program permanent, extend it to express routes, or end it.",
+  "S2": "Board member Lila Grant warned that a permanent program would cost more than the $1.9 million estimate as ridership grows. Disability advocates criticized the exclusion of paratransit, where seniors still pay $3.00 per trip. Omar Fields, a representative of the bus drivers' union, said operators on route 12 regularly leave passengers behind at peak times; TRTA said it had received only 14 formal complaints about pass-ups on that route."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What has Tolliver's free-fare pilot for older bus riders achieved so far?\n\n## Answer\nWeekday senior boardings on Tolliver's local buses rose roughly 38% during the free-fare pilot, from 8,600 to 11,900 [S1]. About 29% of the area's 63,000 older residents, roughly 18,400 people, had registered by the end of the pilot [S1]. The lost fare revenue of about $1.9 million is being reimbursed by the regional council from its transportation sales-tax fund [S1].\n\n## Evidence\n- The pilot gives registered riders aged 65 and over free rides on local buses for 12 months starting October 2025 [S1].\n- Gold Pass holders ride express routes for free as well [S1].\n- Seniors continue to pay the $1.25 half fare on express routes [S1].\n- Even if the 2025 counts were understated by 15%, senior ridership would still be up about 38% [S1].\n- The revenue loss equals a little over 1% of TRTA's roughly $142 million operating budget [S1].\n- TRTA is absorbing the lost revenue within its own operating budget [S1].\n- Most Gold Pass holders previously drove themselves to appointments.\n- In an unweighted survey of 1,350 pass holders, 23% said they were making trips they otherwise would not have taken [S1].\n- Medical appointments and grocery shopping were the most common purposes of these new trips [S1].\n- TRTA added two weekday trips on both route 4 and route 12 in April 2026 [S1].\n- Riders can register online or at any of three customer centers [S1].\n- A mobile registration van stopped at 22 senior centers in spring 2026 [S1].\n- Similar free-fare programs elsewhere have cut social isolation among seniors by a fifth.\n- The board voted in September 2026 to make the program permanent [S1].\n- Registrations already cover nearly half of eligible older residents [S1].\n\n## Unresolved issues\n- Board member Lila Grant expects a permanent program to cost more than $1.9 million a year as ridership grows [S2].\n- Seniors using paratransit still pay $3.00 per trip, half the standard paratransit fare [S2].\n- TRTA's tally of 14 formal complaints about route 12 pass-ups confirms the union's account [S2].\n- The evaluation flags the in-person proof-of-age requirement as an obstacle for homebound residents [S1].\n\n## Next steps\n- Before the November vote, request ridership figures adjusted for the 2025 counting method (judgment).\n\n## Sources\n- [S1] Tolliver Regional Transit Authority, \"Older Adult Free Fare Pilot: Interim Evaluation\" (2026-09-25)\n- [S2] Tolliver Tribune, \"Free bus rides for seniors face November test\" (2026-09-29)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Weekday senior boardings on Tolliver's local buses rose roughly 38% during the free-fare pilot, from 8,600 to 11,900",
+   "label": "ok",
+   "tag": "ok_derived_growth",
+   "why": "S1: 8,600 -> 11,900 = +38%"
+  },
+  {
+   "key": "About 29% of the area's 63,000 older residents, roughly 18,400 people, had registered by the end of the pilot",
+   "label": "mismatch",
+   "tag": "time_point_changed",
+   "why": "S1: figure is 'As of 31 July 2026'; the pilot ran 12 months from 1 October 2025"
+  },
+  {
+   "key": "The lost fare revenue of about $1.9 million is being reimbursed by the regional council from its transportation sales-tax fund",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'which the regional council agreed to reimburse from its transportation sales-tax fund'"
+  },
+  {
+   "key": "The pilot gives registered riders aged 65 and over free rides on local buses for 12 months starting October 2025",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '12-month pilot offering free fares on local buses to riders aged 65 and older who register'"
+  },
+  {
+   "key": "Gold Pass holders ride express routes for free as well",
+   "label": "mismatch",
+   "tag": "scope_widened",
+   "why": "S1: 'Express routes ... are not included'"
+  },
+  {
+   "key": "Seniors continue to pay the $1.25 half fare on express routes",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'seniors continue to pay the half fare of $1.25 on express routes'"
+  },
+  {
+   "key": "Even if the 2025 counts were understated by 15%, senior ridership would still be up about 38%",
+   "label": "mismatch",
+   "tag": "arithmetic_error",
+   "why": "S1: adjusting 8,600 for a 15% undercount (~10,100) leaves a rise of roughly 18%, not 38%"
+  },
+  {
+   "key": "The revenue loss equals a little over 1% of TRTA's roughly $142 million operating budget",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: $1.9M / $142M = 1.3%"
+  },
+  {
+   "key": "TRTA is absorbing the lost revenue within its own operating budget",
+   "label": "mismatch",
+   "tag": "payer_swapped",
+   "why": "S1: 'the regional council agreed to reimburse' the lost revenue"
+  },
+  {
+   "key": "Most Gold Pass holders previously drove themselves to appointments",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source describes riders' prior travel mode"
+  },
+  {
+   "key": "In an unweighted survey of 1,350 pass holders, 23% said they were making trips they otherwise would not have taken",
+   "label": "mismatch",
+   "tag": "method_changed",
+   "why": "S1: survey 'weighted by age and county'"
+  },
+  {
+   "key": "Medical appointments and grocery shopping were the most common purposes of these new trips",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'most often to medical appointments and grocery stores'"
+  },
+  {
+   "key": "TRTA added two weekday trips on both route 4 and route 12 in April 2026",
+   "label": "mismatch",
+   "tag": "scope_widened",
+   "why": "S1: trips added on route 4; 'additions on route 12 are under review'"
+  },
+  {
+   "key": "Riders can register online or at any of three customer centers",
+   "label": "mismatch",
+   "tag": "condition_changed",
+   "why": "S1: 'Registration requires proof of age in person at one of three customer centers'"
+  },
+  {
+   "key": "A mobile registration van stopped at 22 senior centers in spring 2026",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'visited 22 senior centers in spring 2026'"
+  },
+  {
+   "key": "Similar free-fare programs elsewhere have cut social isolation among seniors by a fifth",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source discusses other programs or isolation outcomes"
+  },
+  {
+   "key": "The board voted in September 2026 to make the program permanent",
+   "label": "mismatch",
+   "tag": "plan_stated_as_done",
+   "why": "S1: 'The board will decide in November 2026'"
+  },
+  {
+   "key": "Registrations already cover nearly half of eligible older residents",
+   "label": "mismatch",
+   "tag": "share_inflated",
+   "why": "S1: 'about 29% of the estimated 63,000 residents aged 65 and older'"
+  },
+  {
+   "key": "Board member Lila Grant expects a permanent program to cost more than $1.9 million a year as ridership grows",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: 'would cost more than the $1.9 million estimate as ridership grows'"
+  },
+  {
+   "key": "Seniors using paratransit still pay $3.00 per trip, half the standard paratransit fare",
+   "label": "mismatch",
+   "tag": "unsupported_detail",
+   "why": "S2 says only 'seniors still pay $3.00 per trip'; nothing about a standard fare"
+  },
+  {
+   "key": "TRTA's tally of 14 formal complaints about route 12 pass-ups confirms the union's account",
+   "label": "mismatch",
+   "tag": "stance_reversed",
+   "why": "S2: TRTA said it had received 'only 14 formal complaints', countering the union"
+  },
+  {
+   "key": "The evaluation flags the in-person proof-of-age requirement as an obstacle for homebound residents",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'identifies as a barrier for homebound residents'"
+  }
+ ]
+}

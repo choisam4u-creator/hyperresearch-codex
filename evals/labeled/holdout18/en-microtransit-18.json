@@ -1,0 +1,140 @@
+{
+ "id": "en-microtransit-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "How has Calder Falls' FlexRide on-demand microtransit pilot performed compared with the bus route it replaced?",
+ "sources": {
+  "S1": "Calder Falls Transit Authority launched an on-demand microtransit pilot called FlexRide on 2025-11-03 in two zones, Eastgate and Riverside, replacing fixed Route 14 in those zones. The service runs weekdays 6:00 to 21:00 and Saturdays 8:00 to 18:00; it does not operate on Sundays. Riders book through an app or a phone line, and the fare is $2.50, the same as a bus fare; riders aged 65 and older and riders with disabilities pay $1.25. Over the first eight months (November 2025 to June 2026) FlexRide carried 96,400 trips, compared with 71,200 trips on Route 14 in the same months a year earlier. Eastgate accounted for 58,300 trips and Riverside for 38,100. The median wait time was 11 minutes; 85% of trips were picked up within 20 minutes. Average cost per trip was $14.80, versus $9.60 per trip on Route 14. The fleet is 12 vans, operated under contract by Meridian Mobility, while the authority sets fares and the service area. The authority pays Meridian a fixed $1.42 million per year; fare revenue is retained by the authority. Phone bookings made up 18% of trips. A rider survey of 640 respondents, recruited through the app, found 81% satisfied or very satisfied; the authority notes the survey excludes phone-only riders and may overstate satisfaction. The authority plans to add wheelchair-accessible vans, bringing accessible vehicles from 3 to 6 by March 2027, subject to state grant approval. A decision on expanding to a third zone, Hillcrest, is scheduled for the board meeting in January 2027.",
+  "S2": "The Calder Falls Courier reported that the FlexRide app was down for about 6 hours on 2026-03-12, stranding riders who could not get through on the phone line, which was overwhelmed. Riders in Riverside complained that waits exceed 30 minutes at the evening peak. Board member Dana Okafor said, 'Higher ridership is welcome, but we are paying more per trip than we did for the bus.' The drivers, employed by Meridian, voted to unionize in May. A disability advocacy group, Access Calder, said only 3 of the 12 vans can take a wheelchair and asked for guaranteed same-day booking for wheelchair users."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How has Calder Falls' FlexRide on-demand microtransit pilot performed compared with the bus route it replaced?\n\n## Answer\nIn its first eight months FlexRide carried 96,400 trips, about 35% more than Route 14 carried in the same months a year earlier [S1]. FlexRide is also cheaper to run per trip than the fixed route it replaced [S1].\n\n## Evidence\n- The service does not run on Sundays [S1].\n- Saturday service runs from 6:00 to 21:00 [S1].\n- Riders aged 65 and over pay half the standard $2.50 fare [S1].\n- Students also qualify for the $1.25 reduced fare [S1].\n- Eastgate generated roughly 60% of all FlexRide trips [S1].\n- Riverside was the busier of the two zones [S1].\n- Half of riders were picked up within 11 minutes [S1].\n- 85% of riders were picked up within 11 minutes [S1].\n- Each FlexRide trip costs $5.20 more than a Route 14 trip did [S1].\n- Authority staff drive the 12 vans [S1].\n- Meridian Mobility keeps the fare revenue on top of its fixed fee [S1].\n- Fewer than one in five trips was booked by phone [S1].\n- Of 640 surveyed riders, 81% said they were satisfied or very satisfied [S1].\n\n## Counterevidence and limits\n- The authority cautions that its app-recruited survey leaves out phone-only riders and may overstate satisfaction [S1].\n- The app outage on 2026-03-12 lasted about six hours [S1].\n- Board member Dana Okafor welcomed the higher ridership but noted the city is paying more per trip than it did for the bus [S2].\n- The authority has already doubled its wheelchair-accessible fleet to 6 vans [S1].\n- Ridership on neighboring fixed routes fell by 8% after FlexRide launched.\n\n## Next actions\n- Ask the authority to survey phone-only riders and report evening-peak waits in Riverside before the January 2027 Hillcrest decision (judgment).\n\n## Sources\n- [S1] Calder Falls Transit Authority, \"FlexRide Microtransit Pilot: Eight-Month Performance Report\" (2026-08-14)\n- [S2] Calder Falls Courier, \"FlexRide riders up, but so is the bill\" (2026-09-03)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "In its first eight months FlexRide carried 96,400 trips, about 35% more than Route 14 carried in the same months a year earlier",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: 'FlexRide carried 96,400 trips, compared with 71,200 trips on Route 14 in the same months a year earlier'; 96,400/71,200 = 1.354, i.e. +35.4%."
+  },
+  {
+   "key": "FlexRide is also cheaper to run per trip than the fixed route it replaced",
+   "label": "mismatch",
+   "tag": "comparison_flipped",
+   "why": "S1: 'Average cost per trip was $14.80, versus $9.60 per trip on Route 14.' FlexRide is more expensive."
+  },
+  {
+   "key": "The service does not run on Sundays",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'it does not operate on Sundays.'"
+  },
+  {
+   "key": "Saturday service runs from 6:00 to 21:00",
+   "label": "mismatch",
+   "tag": "time_window_changed",
+   "why": "S1: 'Saturdays 8:00 to 18:00'; 6:00-21:00 is the weekday span."
+  },
+  {
+   "key": "Riders aged 65 and over pay half the standard $2.50 fare",
+   "label": "ok",
+   "tag": "fraction_restatement",
+   "why": "S1: fare '$2.50 ... riders aged 65 and older ... pay $1.25'; 1.25 = half of 2.50."
+  },
+  {
+   "key": "Students also qualify for the $1.25 reduced fare",
+   "label": "mismatch",
+   "tag": "eligibility_changed",
+   "why": "S1 limits the $1.25 fare to 'riders aged 65 and older and riders with disabilities'; students are not mentioned."
+  },
+  {
+   "key": "Eastgate generated roughly 60% of all FlexRide trips",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: 'Eastgate accounted for 58,300 trips' of 96,400; 58,300/96,400 = 60.5%."
+  },
+  {
+   "key": "Riverside was the busier of the two zones",
+   "label": "mismatch",
+   "tag": "ranking_flipped",
+   "why": "S1: Eastgate 58,300 trips vs Riverside 38,100."
+  },
+  {
+   "key": "Half of riders were picked up within 11 minutes",
+   "label": "ok",
+   "tag": "median_paraphrase",
+   "why": "S1: 'The median wait time was 11 minutes.'"
+  },
+  {
+   "key": "85% of riders were picked up within 11 minutes",
+   "label": "mismatch",
+   "tag": "value_swapped",
+   "why": "S1: '85% of trips were picked up within 20 minutes'; 11 minutes is the median."
+  },
+  {
+   "key": "Each FlexRide trip costs $5.20 more than a Route 14 trip did",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: $14.80 vs $9.60 per trip; 14.80 - 9.60 = 5.20."
+  },
+  {
+   "key": "Authority staff drive the 12 vans",
+   "label": "mismatch",
+   "tag": "wrong_operator",
+   "why": "S1: 'The fleet is 12 vans, operated under contract by Meridian Mobility'; S2: 'The drivers, employed by Meridian'."
+  },
+  {
+   "key": "Meridian Mobility keeps the fare revenue on top of its fixed fee",
+   "label": "mismatch",
+   "tag": "wrong_payee",
+   "why": "S1: 'The authority pays Meridian a fixed $1.42 million per year; fare revenue is retained by the authority.'"
+  },
+  {
+   "key": "Fewer than one in five trips was booked by phone",
+   "label": "ok",
+   "tag": "fraction_restatement",
+   "why": "S1: 'Phone bookings made up 18% of trips'; 18% < 20%."
+  },
+  {
+   "key": "Of 640 surveyed riders, 81% said they were satisfied or very satisfied",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'A rider survey of 640 respondents ... found 81% satisfied or very satisfied.'"
+  },
+  {
+   "key": "The authority cautions that its app-recruited survey leaves out phone-only riders and may overstate satisfaction",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: 'recruited through the app ... the survey excludes phone-only riders and may overstate satisfaction.'"
+  },
+  {
+   "key": "The app outage on 2026-03-12 lasted about six hours",
+   "label": "mismatch",
+   "tag": "source_misattribution",
+   "why": "The outage is reported only in S2 ('the FlexRide app was down for about 6 hours on 2026-03-12'); S1 does not mention it."
+  },
+  {
+   "key": "Board member Dana Okafor welcomed the higher ridership but noted the city is paying more per trip than it did for the bus",
+   "label": "ok",
+   "tag": "quote_paraphrase",
+   "why": "S2: 'Higher ridership is welcome, but we are paying more per trip than we did for the bus.'"
+  },
+  {
+   "key": "The authority has already doubled its wheelchair-accessible fleet to 6 vans",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S1: 'plans to add wheelchair-accessible vans, bringing accessible vehicles from 3 to 6 by March 2027, subject to state grant approval'; S2: 'only 3 of the 12 vans can take a wheelchair'."
+  },
+  {
+   "key": "Ridership on neighboring fixed routes fell by 8% after FlexRide launched",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source reports ridership on neighboring routes."
+  }
+ ]
+}

@@ -1,0 +1,140 @@
+{
+ "id": "en-adugrants-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "What has Harlow Bay's Backyard Homes ADU grant program produced so far, and is it worth expanding?",
+ "sources": {
+  "S1": "Harlow Bay's Housing Department opened its Backyard Homes grant program in February 2025 to encourage homeowners to build accessory dwelling units (ADUs). Grants cover up to 40% of construction costs, capped at $60,000 per unit. In exchange, owners must rent the unit to households earning no more than 80% of area median income for at least 10 years, at rents no higher than $1,650 per month for a one-bedroom unit. Owners must live on the property. By August 2026 the department had received 412 applications, approved 156, rejected 210, and 46 remained under review. Of the approved projects, 64 units were completed and occupied, another 71 were under construction and 21 had permits pending. The average approved grant was $48,500, so total grant commitments reached about $7.57 million of the program's $10 million budget, which comes from a voter-approved housing bond, not the general fund. The most common reason for rejection was insufficient lot size (38% of rejected applications), followed by owners' inability to finance the remaining costs (27%). The average construction cost of completed units was $172,000, and the median time from approval to occupancy was 14 months. Among completed units, 41 are one-bedroom, 17 are studios and 6 are two-bedroom. Tenant income verification is done annually by a nonprofit partner, Harbor Homes Trust. The department notes that 64 units is too few to measure any effect on citywide rents. A second funding round is planned for spring 2027 if the council approves additional bond funds.",
+  "S2": "The Harlow Bay Gazette reported that several homeowners withdrew after construction bids came in above $200,000. Contractor Mei Lin said permitting delays added months to projects. One tenant, a school bus driver, said her $1,500 studio rent was the first she could afford near work. Council member Victor Haas criticized the program for mostly benefiting homeowners in wealthier neighborhoods, noting that 70% of approved grants went to the city's west side. The department said it would publish a neighborhood breakdown in November."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What has Harlow Bay's Backyard Homes ADU grant program produced so far, and is it worth expanding?\n\n## Answer\nOf the 156 approved grants, 64 had produced completed, occupied units by August 2026, with 71 more under construction [S1]. The program has already helped bring down rents across Harlow Bay [S1].\n\n## Evidence\n- Roughly 38% of the 412 applications were approved [S1].\n- Each grant pays 40% of a unit's construction costs, whatever the total [S1].\n- No single grant can exceed $60,000 [S1].\n- Tenants must earn no more than 60% of area median income [S1].\n- The affordability commitment lasts five years [S1].\n- Owners must live on the same property as the unit [S1].\n- Committed grants total about $7.57 million, leaving roughly $2.4 million of the $10 million budget [S1].\n- The grants are paid from the city's general fund [S1].\n- Insufficient lot size was the leading reason for rejection, cited in 38% of rejected applications [S1].\n- About 80 applications were rejected because owners could not finance the remaining costs [S1].\n- At the average completed-unit cost of $172,000, a maximum $60,000 grant would cover about 35% of construction [S1].\n- Studios are the most common unit type among completed homes [S1].\n- A nonprofit partner, Harbor Homes Trust, checks tenant incomes every year [S1].\n\n## Counterevidence and limits\n- The department itself says 64 units are too few to measure an effect on citywide rents [S1].\n- 70% of approved grants went to the west side [S1].\n- Some homeowners withdrew after construction bids topped $200,000 [S2].\n- A second funding round has been approved for spring 2027 [S1].\n- Most completed units are within a ten-minute walk of a bus stop.\n\n## Next actions\n- Wait for the department's November neighborhood breakdown before recommending a second round (judgment).\n\n## Sources\n- [S1] Harlow Bay Housing Department, \"Backyard Homes Program Status Report\" (2026-08-29)\n- [S2] Harlow Bay Gazette, \"Backyard cottages are rising, but mostly on the west side\" (2026-09-17)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Of the 156 approved grants, 64 had produced completed, occupied units by August 2026, with 71 more under construction",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'approved 156 ... 64 units were completed and occupied, another 71 were under construction.'"
+  },
+  {
+   "key": "The program has already helped bring down rents across Harlow Bay",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: 'The department notes that 64 units is too few to measure any effect on citywide rents.'"
+  },
+  {
+   "key": "Roughly 38% of the 412 applications were approved",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: 412 applications, 156 approved; 156/412 = 37.9%."
+  },
+  {
+   "key": "Each grant pays 40% of a unit's construction costs, whatever the total",
+   "label": "mismatch",
+   "tag": "upper_bound_dropped",
+   "why": "S1: 'Grants cover up to 40% of construction costs, capped at $60,000 per unit.'"
+  },
+  {
+   "key": "No single grant can exceed $60,000",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'capped at $60,000 per unit.'"
+  },
+  {
+   "key": "Tenants must earn no more than 60% of area median income",
+   "label": "mismatch",
+   "tag": "eligibility_changed",
+   "why": "S1: 'households earning no more than 80% of area median income.'"
+  },
+  {
+   "key": "The affordability commitment lasts five years",
+   "label": "mismatch",
+   "tag": "time_window_changed",
+   "why": "S1: 'for at least 10 years.'"
+  },
+  {
+   "key": "Owners must live on the same property as the unit",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Owners must live on the property.'"
+  },
+  {
+   "key": "Committed grants total about $7.57 million, leaving roughly $2.4 million of the $10 million budget",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: 'about $7.57 million of the program's $10 million budget'; 10 - 7.57 = 2.43."
+  },
+  {
+   "key": "The grants are paid from the city's general fund",
+   "label": "mismatch",
+   "tag": "wrong_payer",
+   "why": "S1: budget 'comes from a voter-approved housing bond, not the general fund.'"
+  },
+  {
+   "key": "Insufficient lot size was the leading reason for rejection, cited in 38% of rejected applications",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'The most common reason for rejection was insufficient lot size (38% of rejected applications).'"
+  },
+  {
+   "key": "About 80 applications were rejected because owners could not finance the remaining costs",
+   "label": "mismatch",
+   "tag": "derived_calc_wrong",
+   "why": "S1: 210 rejected, 27% for financing; 0.27 x 210 = 56.7, about 57, not 80."
+  },
+  {
+   "key": "At the average completed-unit cost of $172,000, a maximum $60,000 grant would cover about 35% of construction",
+   "label": "ok",
+   "tag": "derived_percentage",
+   "why": "S1: average cost $172,000, cap $60,000; 60,000/172,000 = 34.9% (40% of 172,000 = 68,800 exceeds the cap)."
+  },
+  {
+   "key": "Studios are the most common unit type among completed homes",
+   "label": "mismatch",
+   "tag": "ranking_flipped",
+   "why": "S1: '41 are one-bedroom, 17 are studios and 6 are two-bedroom.'"
+  },
+  {
+   "key": "A nonprofit partner, Harbor Homes Trust, checks tenant incomes every year",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'Tenant income verification is done annually by a nonprofit partner, Harbor Homes Trust.'"
+  },
+  {
+   "key": "The department itself says 64 units are too few to measure an effect on citywide rents",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: '64 units is too few to measure any effect on citywide rents.'"
+  },
+  {
+   "key": "70% of approved grants went to the west side",
+   "label": "mismatch",
+   "tag": "source_misattribution",
+   "why": "The 70% west-side figure appears only in S2, cited by Council member Haas; S1 has no neighborhood breakdown."
+  },
+  {
+   "key": "Some homeowners withdrew after construction bids topped $200,000",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'several homeowners withdrew after construction bids came in above $200,000.'"
+  },
+  {
+   "key": "A second funding round has been approved for spring 2027",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S1: 'A second funding round is planned for spring 2027 if the council approves additional bond funds.'"
+  },
+  {
+   "key": "Most completed units are within a ten-minute walk of a bus stop",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source discusses transit access."
+  }
+ ]
+}

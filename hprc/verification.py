@@ -31,12 +31,12 @@ _PARALLEL_DATE_CONNECTOR = re.compile(r"\s*(?:와|과|및|,)\s*")
 # 넓이·온도·낱말로 쓴 전력량 단위(2026-10-10 7회차, holdout3): "1만 2,000㎡"↔"1.2헥타르", "2 degrees Fahrenheit"↔"1.1 degrees
 # Celsius" 같은 맞는 환산을 값으로 비교하고, "31 gigawatt-hours"→"31 megawatt-hours"·"화씨 2도"→"섭씨 2도" 같은 단위 바꿔치기를
 # 잡는다. "km"·"m"보다 먼저 맞춰야 "km²"가 길이로 읽히지 않는다.
-_EXTRA_UNITS = ("square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
+_EXTRA_UNITS = ("metric tons", "metric ton", "metric tonnes", "square kilometers", "square kilometres", "square kilometer", "square kilometre", "square meters", "square metres",
                 "square meter", "square metre", "square feet", "square foot", "square miles", "square mile",
                 "제곱킬로미터", "제곱미터", "㎏", "㎞", "마일", "hectares", "hectare", "헥타르", "acres", "acre", "km²", "m²", "ft²", "㎢", "㎡",
                 "gigawatt-hours", "gigawatt hours", "megawatt-hours", "megawatt hours", "kilowatt-hours", "kilowatt hours",
                 "degrees Fahrenheit", "degree Fahrenheit", "degrees Celsius", "degree Celsius", "°F", "°C", "℉", "℃", "degrees",
-                "개월", "months")
+                "개월", "months", "month")   # "a 12-month pilot"(10회차 holdout6)
 _UNITS = _EXTRA_UNITS + ("percentage points", "percentage point", "percent", "milliseconds", "millisecond", "seconds", "second", "minutes", "minute", "hours", "hour",
           "kilometers", "kilometer", "kilometres", "kilometre", "kilograms", "kilogram", "miles", "mile", "tonnes", "tonne",
           "tons", "ton", "킬로미터", "킬로그램", "톤", "GWh",
@@ -166,6 +166,7 @@ _UNIT_SCALE = {
     # 톤은 미터법 톤(1,000kg)으로 본다. 미국 short ton(약 907kg)과의 차이는 반올림 허용 범위 밖이라 환산 주장이 표시될 수 있다.
     "ton": ("mass", Decimal("1000000")), "tons": ("mass", Decimal("1000000")), "tonne": ("mass", Decimal("1000000")),
     "tonnes": ("mass", Decimal("1000000")), "톤": ("mass", Decimal("1000000")),
+    "metric tons": ("mass", Decimal("1000000")), "metric ton": ("mass", Decimal("1000000")), "metric tonnes": ("mass", Decimal("1000000")),
     "gwh": ("energy", Decimal("1000000000")),
     "w": ("power", Decimal("1")), "kw": ("power", Decimal("1000")),
     "wh": ("energy", Decimal("1")), "kwh": ("energy", Decimal("1000")),
@@ -197,7 +198,7 @@ _UNIT_SCALE = {
     # temp_bare로 두고 _absent_values가 인용 원문의 눈금으로 맞춘다.
     "degrees": ("temp_bare", Decimal("1")),
     # "10개월"을 "10개"+"월"로 읽던 결함(백로그, 7회차). 달 수는 원문 달 범위("3월부터 12월까지")의 길이로도 뒷받침된다.
-    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")),
+    "개월": ("months", Decimal("1")), "months": ("months", Decimal("1")), "month": ("months", Decimal("1")),
 }
 
 
@@ -532,11 +533,41 @@ _MARKS = {"ko": {"judgment": "(판단)", "no_source": "(출처 없음)", "mismat
           "en": {"judgment": "(judgment)", "no_source": "(no source)", "mismatch": "(source mismatch)",
                  "estimate": "(source estimate)", "sources": "## Sources",
                  "claims": ("## Answer", "## Evidence", "## Counter-evidence and limits", "## Limits")}}
+# 23회차(holdout18 영어 case 2개의 한계 절 문장 결함 놓침으로 설계): 모델은 절 제목을 "## Counterevidence and limits"·
+# "## Counter evidence and limitations"·"## 반대 근거 및 한계"처럼 조금 바꿔 쓴다. 제목이 글자 그대로 같을 때만 주장 절로 보면
+# 그 절 문장 전체가 인용 대조·출처 없음 검사를 건너뛰었다. 대소문자·띄어쓰기·하이픈·'및/와'·limitations를 무시하고 견준다.
+def _heading_key(heading: str) -> str:
+    key = re.sub(r"[\s\-–—:]+", "", heading.lower().lstrip("#"))
+    return key.replace("limitations", "limits").replace("및", "와")
+
+
+# 25회차: 모델이 한계 절 제목을 아예 다르게 쓰면("## Open questions", "## 해석할 때 주의할 점") 위 규칙으로도 못 맞춰 그 절 문장
+# 전체가 검사를 건너뛴다. 답·근거 같은 주장 절 바로 뒤에 오는 모르는 '## ' 절은 다음 행동·출처 절이 나오기 전까지 한계 절로 본다.
+_NEXT_HEADING = re.compile(r"^##\s*(?:다음\s*(?:행동|단계|할\s*일)|next\s+(?:actions?|steps?)|what\s+to\s+do\s+next|"
+                           r"recommended\s+(?:actions?|next\s+steps?))\b", re.I)
+
+
+def _section_heading(stripped: str, M: dict, previous: str = "") -> str:
+    """'## ' 제목을 _MARKS의 주장 절·출처 절 표기로 맞춘다. 해당 없으면 그대로 돌려준다.
+
+    previous(바로 앞 절)가 주장 절이고 이 제목이 다음 행동 절이 아니면 한계 절(주장 절의 셋째)로 본다."""
+    key = _heading_key(stripped)
+    known = next((h for h in (*M["claims"], M["sources"]) if _heading_key(h) == key), None)
+    if known:
+        return known
+    if previous in M["claims"] and stripped.startswith("## ") and not _NEXT_HEADING.match(stripped):
+        return M["claims"][2]
+    return stripped
+
+
 # 시각·약어("8:30 a.m. start", "e.g. buses")의 마침표에서는 끊지 않는다. a.m./p.m. 뒤에 대문자가 오면 문장 끝으로 본다(2026-10-10 6회차:
 # 끊으면 표시가 "a.m (출처 없음). start"처럼 문장 가운데 들어가 본문이 깨졌다).
 _ABBREV = r"(?<![ap]\.m\.)(?<!\be\.g\.)(?<!\bi\.e\.)(?<!\bvs\.)(?<!\bU\.S\.)"
 _ABBREV_END = re.compile(r"\b(?:[ap]\.m|e\.g|i\.e|vs|U\.S)\.$")
-_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z]))"
+# 19회차: 대문자가 요일·달 이름이면("8 p.m. Saturday closing time", "6 a.m. Monday") 시각을 꾸미는 말이라 끊지 않는다.
+_DAY_MONTH = (r"(?:Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)days?\b|(?:January|February|March|April|May|June|July|August|September|"
+              r"October|November|December)\b")
+_SENTENCE_END = r"(?:(?<=[.!?。])(?<![Aa]pprox\.)" + _ABBREV + r"|(?<=[ap]\.m\.)(?=\s+[A-Z])(?!\s+" + _DAY_MONTH + r"))"
 _MARK_SPLIT = re.compile(_SENTENCE_END + r"(\s+)(?!\[S\d+\]|\((?:판단|출처 없음|출처 불일치|원문 추정치|judgment|no source|source mismatch|"
                          r"source estimate)\))")
 _CITE_ID = re.compile(r"\[(S\d+)\]")
@@ -547,17 +578,25 @@ _CITE_ID = re.compile(r"\[(S\d+)\]")
 # 계산한 값이 있으면 원문에 있는 값으로 본다. 어림 표시가 없는 값은 원문 두 값의 합·차만 인정한다.
 _APPROX_LEAD = re.compile(r"(?:\b(?:about|around|roughly|nearly|almost|approximately|close to|some)(?:\s+an?)?|약|대략)\s*[$€£₩]?\s*$", re.I)
 # "14권 남짓"·"130억 원꼴"처럼 세는 말 뒤에 오는 어림 낱말도 본다.
-_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴)")
+_APPROX_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:가량|정도|안팎|내외|남짓|꼴|수준|규모)")   # 12회차: "1,400만 원 수준", "3,600만 원 규모"
 # 하한 표시("more than 60 percent", "60% 넘게"): 원문(계산) 값이 그 값 이상이고 그 자릿수 한 칸 안에 있을 때만 인정한다.
 _LOWER_LEAD = re.compile(r"\b(?:more than|over|above|at least|upwards of)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
 _LOWER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:넘게|넘는|넘었|이상|초과)")
+# 18회차(holdout14 오표시): 상한 쪽 어림("20분이 채 되지 않았다", "80만 원에 조금 못 미쳤다", "just under 20 minutes"): 원문(계산)
+# 값이 그 값보다 작고 그 자릿수 한 칸 안에 있을 때만 인정한다(하한 표시의 거울).
+_UPPER_LEAD = re.compile(r"\b(?:just under|slightly under|a little under|just below|slightly below|slightly less than|"
+                         r"a little less than|not quite|under|less than|fewer than|below)(?:\s+an?)?\s*[$€£₩]?\s*$", re.I)
+_UPPER_TAIL = re.compile(r"\s*(?:[가-힣]{1,2}\s*)?(?:이|가|에|을|를)?\s*(?:채\s*(?:되지|안\s*되)|(?:조금\s*|약간\s*)?못\s*미치|"
+                         r"(?:조금\s*|약간\s*)?못\s*미쳤|미만|밑돌)")
 _POINTS_TAIL = re.compile(r"\s*(?:percentage[- ])?points?\b|\s*%?\s?포인트|\s*%\s?p\b", re.I)
 _ANNUAL_WORDS = re.compile(r"연간|1년(?:이면|에|간|동안)?|한 해|\b(?:a|per|each) year\b|\bannual(?:ly)?\b|\byearly\b", re.I)
 # 원문의 낱말 몫("two thirds", "절반")도 퍼센트 값으로 본다.
 _WORD_SHARES = {"half": 50, "a third": Decimal(100) / 3, "one third": Decimal(100) / 3, "two thirds": Decimal(200) / 3,
                 "a quarter": 25, "one quarter": 25, "three quarters": 75, "a fifth": 20, "one fifth": 20, "절반": 50}
 _WORD_SHARE = re.compile(r"\b(?:" + "|".join(k for k in _WORD_SHARES if k.isascii()) + r")\b|절반", re.I)
-_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:명\s*중|분의|in|out of)\s*(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*명)?"
+# 14회차: 세는 말이 '곳'·'건'·'가구'인 것도("응답 가구 10곳 중 약 8곳" = 78%, "신청 7건 중 약 1건" = 14%) 같은 몫 표현이다.
+_FRACTION = re.compile(r"(?<![\d.,])(\d+)\s*(?:(?:명|곳|건|가구|개|대|채)\s*(?:중|가운데)|분의|in|out of)\s*"
+                       r"(?:약|대략|about|roughly|nearly|almost)?\s*(\d+)(?:\s*(?:명|곳|건|가구|개|대|채))?"
                        r"(\s*(?:꼴|이상|or more))?", re.I)   # "10명 중 약 8명"(8회차)
 
 
@@ -568,7 +607,7 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
     percents = [abs(v["value"]) for v in values if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
     for a in plain:
         for b in plain:
-            if a is not b and a["dimension"] == b["dimension"] and a["value"] != b["value"]:
+            if a is not b and _comparable_counts(a, b) and a["value"] != b["value"]:
                 out.append(("percent", abs(a["value"]) / abs(b["value"]) * 100))
                 out.append(("percent", abs(abs(a["value"]) - abs(b["value"])) / abs(b["value"]) * 100))
         for factor in (Decimal(365), Decimal(52), Decimal(12)):
@@ -576,6 +615,8 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
         for p in percents:
             out += [(a["dimension"], abs(a["value"]) * p / 100), (a["dimension"], abs(a["value"]) * (100 - p) / 100)]
     out += [("percent", 100 - p) for p in percents]
+    # 세 갈래 응답의 나머지("58 percent supported …, 27 percent opposed, and the rest were unsure" → "about 15 percent", 11회차)
+    out += [("percent", 100 - p - q) for i, p in enumerate(percents) for q in percents[i + 1:] if p + q < 100]
     # 나눗셈(8,700회÷9일, 1,560억 원÷12곳)·배수(128÷52 = 2.5배)·퍼센트끼리의 차(71%−58% = 13%p)
     for a in plain:
         for b in plain:
@@ -584,6 +625,11 @@ def _derived_candidates(values: list[dict]) -> list[tuple[str, Decimal]]:
                 if a["dimension"] == b["dimension"]:
                     out.append(("배", abs(a["value"]) / abs(b["value"])))
     out += [("percent", abs(p - q)) for p in percents for q in percents if p != q]
+    # 15회차: 두 몫의 배수("국비 40%, 시비 60%" → "시비는 국비의 1.5배")와, 어림 표시가 있을 때 같은 차원 두 값의 합
+    # ("41 lost … and 12 damaged" → "about 53 devices").
+    out += [("배", p / q) for p in percents for q in percents if p != q]
+    out += [(a["dimension"], abs(a["value"]) + abs(b["value"])) for i, a in enumerate(plain) for b in plain[i + 1:]
+            if a["dimension"] == b["dimension"]]
     # 2026-10-10 7회차: 같은 차원 두 값의 차("9.2회에서 5.1회로" → "about 4"), 단위당 값×개수("㎡당 15만 원"×"1만 2,000㎡" →
     # "약 18억 원"), 화씨↔섭씨 환산(차이와 절대 온도 둘 다). 어림 표시가 있을 때만 쓰인다.
     for a in plain:
@@ -611,8 +657,10 @@ def _comparable_counts(a: dict, b: dict) -> bool:
     우연히 맞는 몫이 생기므로 넣지 않는다(고정 case ko-cooling-pilot에서 0.7건÷4 ≈ 18%가 맞는 값처럼 보였다)."""
     if a["dimension"] == b["dimension"]:
         return True
-    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS and "unitless" not in (a["dimension"], b["dimension"])
-            and a["value"] == a["value"].to_integral_value() and b["value"] == b["value"].to_integral_value())
+    # 10회차(holdout6): "1,050구획"처럼 세는 말을 못 읽은 정수도 10 이상이면 개수로 본다("84개"와 몫을 셈). 작은 수(4주의 4)는 여전히 뺀다.
+    return (a["dimension"] in _COUNTS and b["dimension"] in _COUNTS
+            and all(v["value"] == v["value"].to_integral_value() and (v["dimension"] != "unitless" or abs(v["value"]) >= 10)
+                    for v in (a, b)))
 # 기간당 평균("하루 평균 약 130회", "한 달에 약 1만 8,000마리"): 원문 총계를 원문 기간 길이나 1년의 날·주·달 수로 나눈 값.
 _PER_PERIOD = (
     (re.compile(r"하루|일평균|일 평균|\b(?:a|per|each) day\b|\bdaily\b", re.I), (365, 30, 7),
@@ -629,6 +677,11 @@ _KO_MONTH_RANGE = re.compile(r"(?<!\d)(1[0-2]|0?[1-9])\s*월\s*(?:부터|~|–|-
 _EN_MONTH_RANGE = re.compile(rf"\b(?:from\s+)?({_MONTH_PATTERN})\s+(?:\d{{4}}\s+)?(?:to|through|until|-|–)\s+({_MONTH_PATTERN})\b", re.I)
 
 
+def _month_span(a: int, b: int) -> int | None:
+    """달 범위의 길이. 13회차: 해를 넘는 범위("2025년 9월부터 2026년 6월까지" = 10개월)도 센다."""
+    return b - a + 1 if b > a else b + 12 - a + 1 if b < a else None
+
+
 def _month_ranges(text: str) -> list[tuple[int, int]]:
     out = [(int(m.group(1)), int(m.group(2))) for m in _KO_MONTH_RANGE.finditer(text)]
     return out + [(_MONTHS[m.group(1).lower()], _MONTHS[m.group(2).lower()]) for m in _EN_MONTH_RANGE.finditer(text)]
@@ -642,7 +695,7 @@ def _per_period_candidates(sentence: str, values: list[dict], source_text: str) 
         spans = [Decimal(_NATIVE_COUNT.get(m.group(1), m.group(1)) if m.group(1) in _NATIVE_COUNT else m.group(1))
                  for m in lengths.finditer(source_text)]
         if 12 in defaults:   # 달 범위("3월부터 12월까지", "from March to December")는 양 끝 달을 넣어 센다(백로그, 7회차)
-            spans += [Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a]
+            spans += [Decimal(_month_span(a, b)) for a, b in _month_ranges(source_text) if a != b]
         for n in [Decimal(d) for d in defaults] + [x for x in spans if x > 1]:
             out += [(v["dimension"], abs(v["value"]) / n) for v in values if v["dimension"] != "percent" and v["value"]]
     return out
@@ -663,25 +716,107 @@ def _rounds_to(claim: dict, target: Decimal) -> bool:
     return gap <= step / 2 and gap <= target / 10
 
 
+# '대'는 차량 수와 연령대("20~30대")에 함께 쓰여 다른 세는 말과 섞지 않는다(10회차: 연령대가 우연한 몫과 맞아 결함을 놓침).
+_PER_UNIT_WORDS = re.compile(r"당|마다|평균|\b(?:per|each|apiece|average|averaged|on average)\b", re.I)
+_NAMED_COUNTS = {"명", "가구", "건", "count_item", "count_place", "count_occurrence"}
+# 몫 곱의 부분을 말하는 표현("운영비 가운데 도비 지원액은 1억 800만 원", "of the budget"): 전체 값을 함께 말하지 않아도 몫 곱을 인정(11회차).
+_PART_OF = re.compile(r"[가-힣]\s(?:가운데|중)\s|\b(?:of|from) (?:the|its|this|that) (?:\w+\s){0,2}?(?:budget|cost|total|funding|spending)\b", re.I)
 _PER_BASIS = re.compile(r"\s*(?:당|per\b|/)", re.I)
 
 
+# 13회차: 어림 표시 없는 두 원문 값의 합·차는 주장이 합계·차이·증감을 말할 때만 계산 값으로 본다. 작은 정수는 아무 두 값의 합·차와
+# 우연히 맞아 조건·기간을 바꾼 값('aged 16 to 30' = 24+6, 'up to 25 employees' = 7+18, '3년간' = 1년+2년)이 통과하던 결함.
+_SUM_DIFF_CUE = re.compile(
+    r"\b(?:total(?:l?ed|ing)?|combined|together|altogether|in all|overall|sum|remaining|rest|more|fewer|less|gap|difference|"
+    r"apart|net|increase[sd]?|decrease[sd]?|rose|grew|fell|dropped|declined|shr[ai]nk|shrunk|added|cut|higher|lower|"
+    r"before|after|not|other|"
+    r"from\s+[$€£₩]?\d[\d,.]*\s*\S*\s+to)\b"
+    r"|합계|합쳐|모두|총|전체|나머지|차이|더\s|많|적|늘|줄|증가|감소|높|낮|내려|떨어|단축|않|배|에서\s*[\d,.]+\s*\S*\s*(?:로|으로)", re.I)
+
+
+# 18회차(holdout14 오표시): 기간당 값(월 600만 원·$500 a week·하루 40건)에 주장과 원문이 함께 말한 기간 길이(6개월·8 weeks)를 곱한 값.
+_PERIOD_RATE_LEAD = ((re.compile(r"(?:월|매달|매월|한 달에?)\s*(?:평균\s*)?$|\b(?:a|per|each) month\b|\bmonthly\b", re.I),
+               re.compile(r"(\d+)\s*(?:개월|months?\b)", re.I)),
+              (re.compile(r"(?:주|매주|한 주에?)\s*(?:평균\s*)?$|\b(?:a|per|each) week\b|\bweekly\b", re.I),
+               re.compile(r"(\d+)\s*(?:주\s*(?:간|동안)|weeks?\b|-week\b)", re.I)),
+              (re.compile(r"(?:하루|일\s*평균|매일)\s*(?:평균\s*)?$|\b(?:a|per|each) day\b|\bdaily\b", re.I),
+               re.compile(r"(\d+)\s*(?:일\s*(?:간|동안)|days?\b|-day\b)", re.I)))
+
+
+def _rate_spans(sentence: str, plain: list[dict], source_text: str) -> list[tuple[dict, Decimal]]:
+    out = []
+    for lead, length in _PERIOD_RATE_LEAD:
+        spans = {Decimal(m.group(1)) for m in length.finditer(sentence)} & {Decimal(m.group(1)) for m in length.finditer(source_text)}
+        spans.discard(Decimal(1))
+        if not spans:
+            continue
+        for a in plain:
+            if a["start"] < 0:
+                continue
+            before = source_text[max(0, a["start"] - 12):a["start"]]
+            after = source_text[a["end"]:a["end"] + 16]
+            if lead.search(before) or re.match(r"\s*\S{0,3}\s*(?:a|per|each)\s+(?:month|week|day)\b|\s*\S{0,3}\s*(?:monthly|weekly|daily)\b",
+                                               after, re.I):
+                out += [(a, n) for n in spans]
+    return out
+
+
+# 22회차(holdout15·17 맞는 몫 계산 오표시로 설계): 원문이 부담 주체마다 몫을 나열할 때("funded 70% by a state … grant and 30% by
+# the city's recreation fund", "60% from the state Clean Homes Fund") 주장이 그 주체의 몫·부담액을 말하면("The city's recreation
+# fund contributes $55,500", "The state's portion of the first-year budget works out to $1.08 million") 그 주체의 몫만 곱하는
+# 수로 쓴다. 주장에 몫·부담 낱말이 있고, 주장 낱말이 그 몫 절의 고유 이름 낱말(다른 몫 절에 없는 낱말)과 겹칠 때만이다.
+_SHARE_CUE = re.compile(r"\b(?:portion|share|half|part|contribut\w*|covers?|covered|pays?|paid|funds?|funded|chips? in)\b|"
+                        r"몫|부담|분담|지원액|냈|낸다|댔|댄다", re.I)
+
+
+# 몫 절은 'from'으로 주체를 말하므로("60% from the state … Fund") 'from 52 to 37'처럼 수치 앞뒤의 from·to만 증감으로 본다.
+_SHARE_CHANGE = re.compile(r"\b(?:from|to)\s+[$€£₩]?\d|\d[\d,.]*\s*%?\s*(?:to|에서)\s|증가|감소|늘|줄|"
+                           r"\b(?:rose|fell|grew|dropped|increased|decreased)\b", re.I)
+
+
+def _named_shares(sentence: str, source_text: str) -> set[Decimal]:
+    if not _SHARE_CUE.search(sentence):
+        return set()
+    mine = _pair_terms(sentence)
+    out = set()
+    for s in re.split(r"(?<=[.!?])\s+", source_text):
+        segs = [(t, v) for t, v in _pair_segments(s, _SHARE_CHANGE) if v["dimension"] == "percent" and 0 < abs(v["value"]) < 100]
+        if len(segs) < 2:
+            continue
+        for i, (terms, v) in enumerate(segs):
+            own = terms - set().union(*(u for j, (u, _) in enumerate(segs) if j != i))
+            if own & mine:
+                out.add(abs(v["value"]))
+    return out
+
+
 def _approx_supported(sentence: str, claim_values: list[dict], source_values: list[dict], source_text: str = "",
-                      all_claimed: list[dict] | None = None) -> set[int]:
+                      all_claimed: list[dict] | None = None, bases: list[dict] | None = None) -> set[int]:
     """어림·계산 값으로 원문이 뒷받침하는 주장 값의 시작 위치."""
     ok: set[int] = set()
     words = [{"dimension": "percent", "value": Decimal(_WORD_SHARES[m.group(0).lower()]), "start": -1}
              for m in _WORD_SHARE.finditer(source_text)]
     derived = _derived_candidates(source_values + words) + _per_period_candidates(sentence, source_values, source_text)
     plain = [v for v in source_values if v["dimension"] != "percent"]
+    derived += [(a["dimension"], abs(a["value"]) * abs(u["value"]) / abs(b["value"])) for u in bases or ()
+                for b in plain if b["dimension"] == u["dimension"] and b["value"] for a in plain if a is not b]
     percents = [abs(v["value"]) for v in source_values if v["dimension"] == "percent"]
+    percents_raw = list(percents)
     for value in claim_values:
         hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
         lower = _LOWER_LEAD.search(sentence, 0, value["start"]) or _LOWER_TAIL.match(sentence, value["end"])
-        same = [t for dim, t in derived if dim == value["dimension"]]
+        same = [t for dim, t in derived if dim == value["dimension"]
+                or (dim in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]   # 31만 2천 건×9% → "약 2만 8천 개"
         if hedged and any(_rounds_to(value, t) for t in same):
             ok.add(value["start"])
         elif lower and any(abs(value["value"]) <= t < abs(value["value"]) + _step(value) for t in same):
+            ok.add(value["start"])
+        elif value["dimension"] != "percent" and any(
+                (abs(value["value"]) == abs(a["value"]) * n or (hedged and _rounds_to(value, abs(a["value"]) * n)))
+                for a, n in _rate_spans(sentence, plain, source_text) if a["dimension"] == value["dimension"]):
+            ok.add(value["start"])   # 기간당 값×원문 기간 길이(월 600만 원×6개월 → "6개월 운영비는 모두 3,600만 원", 18회차)
+        elif ((_UPPER_LEAD.search(sentence, 0, value["start"]) or _UPPER_TAIL.match(sentence, value["end"]))
+              and any(abs(value["value"]) - _step(value) < t < abs(value["value"]) for t in same)):
             ok.add(value["start"])
         elif _POINTS_TAIL.match(sentence, value["end"]) or re.search(r"points?|포인트|%p", value["raw"], re.I):
             # 퍼센트포인트 차: 원문 두 퍼센트의 차를 그 자릿수로 반올림한 값
@@ -700,14 +835,14 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         elif value["dimension"] == "배" and any(abs(abs(value["value"]) - t) <= _step(value) / 2 for t in same):
             ok.add(value["start"])   # 원문 같은 단위 두 값의 배수를 그 자릿수로 말한 값(48만 원÷30만 원 → 1.6배, 9회차 holdout5)
         elif value["dimension"] == "months" and abs(value["value"]) in {
-                Decimal(b - a + 1) for a, b in _month_ranges(source_text) if b > a}:
+                Decimal(_month_span(a, b)) for a, b in _month_ranges(source_text) if a != b}:
             ok.add(value["start"])   # 원문 달 범위의 길이("3월부터 12월까지" → "10개월 동안")
         elif _ANNUAL_WORDS.search(sentence) and any(
                 a["dimension"] == value["dimension"]
                 and abs(abs(value["value"]) - abs(a["value"]) * f) <= min(_step(value) / 2, abs(a["value"]) * f / 100)
                 for a in plain for f in (12, 52, 365)):
             ok.add(value["start"])   # 연간 환산(월 29만 원 → 1년이면 348만 원)
-        elif value["dimension"] != "percent" and any(
+        elif value["dimension"] != "percent" and (abs(value["value"]) >= 100 or _SUM_DIFF_CUE.search(sentence)) and any(
                 a is not b and a["dimension"] == b["dimension"] == value["dimension"]
                 and abs(value["value"]) in (abs(a["value"]) + abs(b["value"]), abs(abs(a["value"]) - abs(b["value"])))
                 for a in plain for b in plain):
@@ -729,10 +864,95 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
                 target = abs(b["value"]) * abs(other["value"]) / abs(a["value"])
                 if abs(value["value"]) == target or (hedged and _rounds_to(value, target)):
                     ok.update((value["start"], other["start"]))
+    # 10회차(holdout6): 어림 표시가 없어도 원문 두 값의 나눗셈이나 원문 몫(퍼센트·'절반')을 곱한 값과 정확히 같으면 계산한 값이다
+    # ("9,720회 ÷ 36곳 = 한 곳당 270회", "3억 8천만 원의 절반 = 1억 9천만 원"). 10 미만 값은 우연히 맞기 쉬워 뺀다.
+    shares = percents + [Decimal(_WORD_SHARES[m.group(0).lower()]) for m in _WORD_SHARE.finditer(source_text)]
+    # 21회차: 원문이 개수를 낱말로 말하면("two new gardens with 110 plots", "센터 두 곳") 단위당 평균의 나누는 수로도 쓴다
+    # ("The two new gardens average 55 plots each"). 정확히 나눠떨어질 때만 인정하는 아래 나눗셈에만 쓴다.
+    source_words = [{"dimension": "unitless", "value": Decimal(_SMALL_COUNT[m.group(0).lower()]), "start": -1}
+                    for m in _SMALL_COUNT_WORD.finditer(source_text)]
+    part_of = bool(_PART_OF.search(sentence))
+    named = _named_shares(sentence, source_text)
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] in ("percent", "count_vehicle"):
+            continue
+        target = abs(value["value"])
+        kin = [a for a in plain if a["dimension"] == value["dimension"]
+               or (a["dimension"] in _NAMED_COUNTS and value["dimension"] in _NAMED_COUNTS)]
+        if target < 10:
+            # 11회차(holdout7): 10 미만 단위당 값("1명당 평균 1.8회" = 538회 ÷ 296명, "가구당 평균 9곳" = 2,808 ÷ 312)은 단위당
+            # 표현이 있고 두 원문 값이 모두 100 이상인 정수일 때만, 주장 자릿수로 반올림해 맞는지 본다(작은 수끼리의 우연한 몫을 피함).
+            if _PER_UNIT_WORDS.search(sentence) and any(
+                    abs(abs(a["value"]) / abs(b["value"]) - target) <= _step(value) / 2
+                    for a in kin for b in plain if b is not a and b["dimension"] in _NAMED_COUNTS | {"unitless"}
+                    and min(abs(a["value"]), abs(b["value"])) >= 100
+                    and all(v["value"] == v["value"].to_integral_value() for v in (a, b))):
+                ok.add(value["start"])
+            continue
+        # 나눗셈은 주장이 단위당 값이라고 말할 때만('한 곳당', 'per volunteer', '평균'), 몫 곱은 주장이 전체 값도 함께 말할 때만
+        # 인정한다(PR #18 Codex 리뷰: '$100 million, 20 volunteers' → 'The project cost 5 million dollars'가 통과하던 것).
+        if (_PER_UNIT_WORDS.search(sentence) and any(
+                abs(a["value"]) / abs(b["value"]) == target for a in kin for b in plain + source_words
+                if b is not a and abs(b["value"]) > 1 and b["dimension"] in _NAMED_COUNTS | {"unitless"})) \
+                or any(abs(a["value"]) * p / 100 == target for a in kin for p in named) \
+                or any(abs(a["value"]) * p / 100 == target for a in kin for p in shares
+                       if part_of or any(c is not value and c["dimension"] == a["dimension"] and abs(c["value"]) == abs(a["value"])
+                                         for c in all_claimed or claim_values)):
+            ok.add(value["start"])
+    # 17회차(holdout13 오표시로 설계): 원문 단위당 값과 그 단위로 센 원문 개수의 곱("1곳당 180만 원" × "120곳" → "설치비 총액
+    # 2억 1,600만 원", "헥타르당 2톤" × "63헥타르" → "약 126톤"), 단위당 값에 원문 몫을 곱한 단위당 값("헥타르당 2만 원"의 30%
+    # → "농가 부담분은 헥타르당 6,000원"), 원문 값을 원문 비율로 되돌린 전체("21,780매, 사용률 75%" → "배부된 바우처는 약
+    # 2만 9,000매"). 곱은 주장이 그 개수나 총계 낱말을 함께 말할 때만, 몫 곱은 주장이 같은 'X당'을 말할 때만, 되돌림은 어림
+    # 표시가 있을 때만 인정한다.
+    products = _rate_products(source_text, plain)
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent":
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        target = abs(value["value"])
+        for dim, product, count, unit in products:
+            if dim != value["dimension"] or not (product == target or (hedged and _rounds_to(value, product))):
+                continue
+            if _TOTAL_WORDS.search(sentence) or any(
+                    abs(c.get("number", c["value"])) == abs(count["number"]) for c in all_claimed or claim_values):
+                ok.add(value["start"])
+        rate_basis = _rate_basis(sentence, value)
+        if rate_basis and any(
+                dim == value["dimension"] and unit == rate_basis and abs(rate["value"]) * p / 100 == target
+                for dim, rate, unit in _rates(source_text, plain) for p in percents_raw):
+            ok.add(value["start"])
+        if hedged and any(a["dimension"] == value["dimension"] and _rounds_to(value, abs(a["value"]) * 100 / p)
+                          for a in plain for p in percents_raw if 0 < p < 100):
+            ok.add(value["start"])
+    # 20회차(holdout12~15 오표시로 설계): 원문 값 × 원문 개수·횟수·기간 길이("$500 bonus" × "47 of the 64 qualified" → "payouts
+    # totaled $23,500", "월 최대 20만 원" × "최장 12개월" → "최대 240만 원", "4 hours" × "13 Sundays" → "52 hours"). 곱셈 후보가
+    # 많아 우연히 맞기 쉬우므로 주장이 합계·상한 낱말을 말하거나 곱한 개수를 함께 말할 때만, 정확히 같거나 어림 표시가 있을 때만 인정한다.
+    total_cue = bool(_TOTAL_WORDS.search(sentence) or _PRODUCT_CUE.search(sentence))
+    word_counts = {Decimal(_SMALL_COUNT[m.group(0).lower()]) for m in _SMALL_COUNT_WORD.finditer(sentence)}
+    multipliers = [n for n in plain if n["dimension"] in _MULTIPLIER_DIMS and n.get("number", n["value"]) == n["value"]
+                   and n["value"] == n["value"].to_integral_value() and 2 <= abs(n["value"]) <= 1000]
+    # 21회차: 원문 시각 범위의 시간 수도 곱하는 수로 쓴다("시간당 2천 원" × "오후 7시부터 10시까지" → "3시간을 모두 이용하면 6천 원").
+    multipliers += [{"dimension": "unitless", "value": h, "start": -1} for h in {x / 3600 for x in _clock_spans(source_text)}
+                    if h == h.to_integral_value() and 2 <= h <= 24]
+    for value in claim_values:
+        if value["start"] in ok or value["dimension"] == "percent" or abs(value["value"]) < 10:
+            continue
+        hedged = _APPROX_LEAD.search(sentence, 0, value["start"]) or _APPROX_TAIL.match(sentence, value["end"])
+        for n in multipliers:
+            if not (total_cue or abs(n["value"]) in word_counts or any(
+                    c["start"] != value["start"] and abs(c.get("number", c["value"])) == abs(n["value"])
+                    for c in all_claimed or claim_values)):
+                continue
+            if any(a is not n and a["dimension"] == value["dimension"] and abs(a["value"]) > 1
+                   and (abs(a["value"]) * abs(n["value"]) == abs(value["value"])
+                        or (hedged and _rounds_to(value, abs(a["value"]) * abs(n["value"]))))
+                   for a in plain):
+                ok.add(value["start"])
+                break
     percents = [t for dim, t in derived if dim == "percent"]
     for m in _FRACTION.finditer(sentence):
         part, whole = Decimal(m.group(1)), Decimal(m.group(2))
-        if re.search(r"명\s*중|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
+        if re.search(r"(?:명|곳|건|가구|개|대|채)\s*(?:중|가운데)|분의", m.group(0)):   # "10명 중 7명"·"5분의 3"은 전체가 앞, "7 in 10"은 부분이 앞
             part, whole = whole, part
         if not whole or part > whole:
             continue
@@ -741,6 +961,111 @@ def _approx_supported(sentence: str, claim_values: list[dict], source_values: li
         if any((share - half <= t <= share + half) or (at_least and share <= t <= share + 2 * half) for t in percents):
             ok.update(v["start"] for v in claim_values if m.start() <= v["start"] < m.end())
     return ok
+
+
+_RATE_LEAD = re.compile(r"(?:1\s*)?([가-힣]{1,4})당\s*$")
+_RATE_TAIL = re.compile(r"\s*(?:per|a|an|each)\s+([A-Za-z]{3,})", re.I)
+_TOTAL_WORDS = re.compile(r"총|모두|전체|합계|합쳐|\b(?:in total|total(?:ed|led|ing)?|altogether|combined|overall)\b", re.I)
+# 20회차: 원문 값×개수 곱을 인정하는 낱말(합계 낱말 밖의 상한·누적 표현).
+_PRODUCT_CUE = re.compile(r"최대|최고|상한|누적|\b(?:maximum|at most|up to|across|over the (?:summer|season|year|period))\b", re.I)
+_MULTIPLIER_DIMS = {"unitless", "명", "가구", "건", "count_item", "count_place", "count_vehicle", "count_occurrence", "months"}
+_SMALL_COUNT = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "twelve": 12,
+                "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+_SMALL_COUNT_WORD = re.compile(r"\b(?:two|three|four|five|six|seven|eight|nine|ten|twelve)\b|(?<![\w가-힣])(?:두|세|네|다섯|여섯|일곱|여덟|아홉|열)(?=\s?(?:곳|개|대|명|번|차례|가구|달|해|주|쌍|학교|개월))",
+                               re.I)
+
+
+def _rates(source_text: str, plain: list[dict]) -> list[tuple[str, dict, str]]:
+    """원문 단위당 값: (차원, 값, 기준 단위 낱말). '헥타르당 2만 원'·'1곳당 180만 원'·'$40 per acre'."""
+    out = []
+    for v in plain:
+        lead = _RATE_LEAD.search(source_text, 0, v["start"])
+        tail = _RATE_TAIL.match(source_text, v["end"])
+        unit = lead.group(1) if lead else tail.group(1).lower()[:4] if tail else None
+        if unit:
+            out.append((v["dimension"], v, unit))
+    return out
+
+
+def _rate_basis(sentence: str, value: dict) -> str | None:
+    lead = _RATE_LEAD.search(sentence, 0, value["start"])
+    tail = _RATE_TAIL.match(sentence, value["end"])
+    return lead.group(1) if lead else tail.group(1).lower()[:4] if tail else None
+
+
+def _rate_products(source_text: str, plain: list[dict]) -> list[tuple[str, Decimal, dict, str]]:
+    """단위당 값 × 같은 단위로 센 원문 개수(개수의 단위 낱말이 기준 단위와 같을 때만)."""
+    out = []
+    for dim, rate, unit in _rates(source_text, plain):
+        for count in plain:
+            if count is rate or count["dimension"] == dim or not count.get("number"):
+                continue
+            tail = count["raw"][len(re.match(r"[\d,.\s]*", count["raw"]).group(0)):].strip().lower()
+            if tail and (tail.startswith(unit) or unit.startswith(tail[:4])):
+                out.append((dim, abs(rate["value"]) * abs(count["number"]), count, unit))
+    return out
+
+
+# 14회차: 장소·물건을 세는 말은 서로 바꿔 쓴다("3개 육아종합지원센터" ↔ "센터 3곳"). 원문 세는 말을 못 읽은 개수("300가구")도
+# 주장이 '곳'·'개'로 세면("수급 가구 300곳") 같은 개수로 본다. 사람·차량·횟수 같은 다른 세는 말과는 여전히 다르다.
+_PLACE_ITEM = {"count_place", "count_item"}
+
+
+def _same_count(source_value: dict, claim_value: dict) -> bool:
+    a, b = source_value["dimension"], claim_value["dimension"]
+    return a == b or (b in _PLACE_ITEM and (a in _PLACE_ITEM or a == "unitless"))
+
+
+# 15회차: 시각 범위의 길이("오후 7시~오전 8시" → "하룻밤에 13시간", "7:15-8:45 a.m. and 2:30-3:45 p.m." → "a combined 2 hours
+# 45 minutes"). 원문(또는 주장)의 시각 범위마다 길이를 세고, 한 문장에 든 범위들의 합도 후보로 둔다(백로그, 10·14·15회차 holdout).
+_MERIDIEM = r"(a\.m\.|p\.m\.|am\b|pm\b)"
+_EN_CLOCK_RANGE = re.compile(rf"\b(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?\s*(?:-|–|to|until|through)\s*(\d{{1,2}})(?::(\d{{2}}))?\s*{_MERIDIEM}?",
+                             re.I)
+_KO_TIME_OF_DAY = r"(오전|오후|저녁|밤|새벽|아침|낮)?"
+_KO_CLOCK_RANGE = re.compile(rf"{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*(반))?\s*(?:부터|~|–|-)\s*"
+                             rf"(?:이튿날|다음\s?날)?\s*{_KO_TIME_OF_DAY}\s*(\d{{1,2}})\s*시(?:\s*(\d{{1,2}})\s*분|\s*(반))?")
+
+
+def _clock_minutes(hour: str, minute: str | None, part: str | None, half: bool = False) -> int | None:
+    h, m = int(hour), int(minute or (30 if half else 0))
+    if h > 24 or m >= 60:
+        return None
+    part = (part or "").lower()
+    if part.startswith("p") or part in ("오후", "저녁") or (part == "밤" and h >= 6) or (part == "낮" and h < 6):
+        h = h % 12 + 12
+    elif part.startswith("a") or part in ("오전", "새벽", "아침"):
+        h = h % 12
+    return h * 60 + m
+
+
+def _clock_spans(text: str) -> list[Decimal]:
+    """문장마다 시각 범위 길이(초)와 그 합."""
+    out = []
+    for sent in _SOURCE_SPLIT.split(text):
+        spans = []
+        for m in _EN_CLOCK_RANGE.finditer(sent):
+            if not (m.group(2) or m.group(5) or m.group(3) or m.group(6)):
+                continue   # "from 22 to 38"처럼 시각 표시가 없는 범위는 뺀다
+            start_part, end_part = m.group(3) or m.group(6), m.group(6) or m.group(3)
+            a, b = _clock_minutes(m.group(1), m.group(2), start_part), _clock_minutes(m.group(4), m.group(5), end_part)
+            if a is not None and b is not None and not m.group(3) and a > b and end_part and end_part.lower().startswith("p"):
+                a = _clock_minutes(m.group(1), m.group(2), "am")   # "11-1 p.m."
+            if a is not None and b is not None:
+                spans.append((b - a) % (24 * 60))
+        for m in _KO_CLOCK_RANGE.finditer(sent):
+            a = _clock_minutes(m.group(2), m.group(3), m.group(1), bool(m.group(4)))
+            # 21회차: 끝 시각에 때 낱말이 없으면 앞 시각의 것을 잇는다("오후 7시부터 10시까지" = 3시간, 15시간으로 읽던 결함).
+            # 오전에 시작해 더 작은 시각에 끝나면("오전 9시부터 6시까지") 오후로 읽는다.
+            b = _clock_minutes(m.group(6), m.group(7), m.group(5) or m.group(1), bool(m.group(8)))
+            if a is not None and b is not None and not m.group(5) and m.group(1) in ("오전", "아침") and b < a <= b + 720:
+                b += 720
+            if a is not None and b is not None:
+                spans.append((b - a) % (24 * 60))
+        spans = [x for x in spans if x]
+        out += [Decimal(x * 60) for x in spans]
+        if len(spans) > 1:
+            out.append(Decimal(sum(spans) * 60))
+    return out
 
 
 def _absent_values(sentence: str, cited_text: str) -> list[str]:
@@ -756,19 +1081,54 @@ def _absent_values(sentence: str, cited_text: str) -> list[str]:
         return absent
     source = [value for value in _quantity_values(cited_text, _date_like_spans(cited_text)) if not value.get("unsupported_unit")]
     claimed = [value for value in _quantity_values(sentence, claim_spans) if not value.get("unsupported_unit")
-               and not (value["raw"] == "1년" and re.match(r"이면|간|동안|새|마다", sentence[value["end"]:]))]
+               and not (value["raw"] == "1년" and re.match(r"\s?(?:이면|간|동안|새|마다)", sentence[value["end"]:]))]
     scales = {v["dimension"] for v in source if v["dimension"] in ("temp_c", "temp_f")}
     for value in claimed:
         if value["dimension"] == "temp_bare" and len(scales) == 1:
             value["dimension"] = next(iter(scales))   # 눈금 없이 말한 온도는 원문 눈금으로 본다
     # 단위를 앞 값에만 붙인 주장("fell by 9 km/h, from 38 to 29")의 맨 숫자는, 주장에 그 단위 값이 따로 있을 때만 원문의 같은
     # 숫자("38 km/h")로 본다(9회차 holdout5). 단위를 못 읽은 "38 mph"·"7주"까지 맞다고 보면 단위 바꿔치기를 놓친다.
+    # 단위당 값의 기준 수량("물 1톤당 약 4,000원", "per 1 kilometer")은 원문에 없어도 된다. 대신 원문 두 값의 나눗셈을 그 기준
+    # 수량에 맞춰 늘린 값을 계산 값 후보로 쓴다(11회차 holdout7: 2,160만 원 ÷ 5,400톤 → 1톤당 4,000원).
+    bases = [value for value in claimed if abs(value.get("number", value["value"])) == 1 and value["dimension"] != "percent"
+             and _PER_BASIS.match(sentence, value["end"])]
+    claimed = [value for value in claimed if value not in bases]
     missing = [value for value in claimed
-               if not any(c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"]) for c in source)
+               if not any(_same_count(c, value) and abs(c["value"]) == abs(value["value"]) for c in source)
+               and not (value["dimension"] in ("년", "months") and any(
+                   abs(c["value"]) == abs(value["value"]) * (12 if value["dimension"] == "년" else Decimal(1) / 12)
+                   and c["dimension"] == ("months" if value["dimension"] == "년" else "년") for c in source))
                and not (value["dimension"] == "unitless" and any(
                    c["dimension"] != "percent" and abs(c.get("number", c["value"])) == abs(value["value"])
                    and any(o["dimension"] == c["dimension"] for o in claimed) for c in source))]
-    approx = _approx_supported(sentence, missing, source, cited_text, claimed) if missing else set()
+    approx = _approx_supported(sentence, missing, source, cited_text, claimed, bases) if missing else set()
+    # 15회차: 주장이 먼저 말한 값(원문 값이거나 계산 값)의 몫("about 53 devices, or roughly 18 percent of the fleet" = 53÷300,
+    # "$64,300, about 92 percent of the allocation" = 64,300÷(64,300+5,700))은 그 값과 원문 값으로 셈한 퍼센트로 본다.
+    anchors = [v for v in claimed if v["dimension"] != "percent" and v["value"]
+               and (v not in missing or v["start"] in approx)]
+    plain_source = [c for c in source if c["dimension"] != "percent" and c["value"]]
+    for value in missing:
+        if value["start"] in approx or value["dimension"] != "percent":
+            continue
+        for a in anchors:
+            if a["start"] > value["start"]:
+                continue
+            for b in plain_source:
+                if not _comparable_counts(a, b):
+                    continue
+                for whole in (abs(b["value"]), abs(b["value"]) + abs(a["value"])):
+                    if whole > abs(a["value"]) and abs(abs(value["value"]) - abs(a["value"]) / whole * 100) <= _step(value) / 2:
+                        approx.add(value["start"])
+    spans = _clock_spans(cited_text) + _clock_spans(sentence)
+    times = sorted((v for v in claimed if v["dimension"] == "time"), key=lambda v: v["start"])
+    for i, value in enumerate(times):
+        if value not in missing or value["start"] in approx:
+            continue
+        nxt = times[i + 1] if i + 1 < len(times) and not sentence[value["end"]:times[i + 1]["start"]].strip(" and") else None
+        if abs(value["value"]) in spans:
+            approx.add(value["start"])
+        elif nxt and abs(value["value"]) + abs(nxt["value"]) in spans:
+            approx.update((value["start"], nxt["start"]))
     absent += [value["raw"] for value in missing if value["start"] not in approx]
     return absent
 
@@ -825,6 +1185,42 @@ _RESTRAINED = re.compile(r"\b(?:might|may|could|possibly|perhaps|not|never|uncle
                          r"가능성|수 있|어렵|이르다|않았|않는다|않다|않은|없었|없다|불확실|미지수", re.I)
 
 
+# 16회차: 한국어 낱말 몫("열 명 중 약 여덟 명", "다섯 명 중 한 명꼴", "열에 넷 이상", "절반을 조금 넘는")은 원문 퍼센트를
+# 말로 바꾼 것이라 글자 2-gram이 원문에 없다. 원문 퍼센트와 맞는 낱말 몫은 내용 대조 전에 빼서, 맞게 반올림한 문장이
+# 낱말이 원문에 없다는 이유로 표시되지 않게 한다(값이 원문과 맞지 않으면 그대로 두고 대조한다).
+_KO_COUNT = {"한": 1, "하나": 1, "두": 2, "둘": 2, "세": 3, "셋": 3, "네": 4, "넷": 4, "다섯": 5, "여섯": 6, "일곱": 7,
+             "여덟": 8, "아홉": 9, "열": 10}
+_KO_COUNT_WORD = "|".join(sorted(_KO_COUNT, key=len, reverse=True))
+_KO_SHARE_PHRASE = re.compile(
+    r"(?<![가-힣])(" + _KO_COUNT_WORD + r")\s*(?:명|곳|가구|건|집)?\s*(?:중|가운데|에)\s*(?:약|대략)?\s*(" + _KO_COUNT_WORD +
+    r")\s*(?:명|곳|가구|건|집)?(?:\s*(꼴|이상|넘게|남짓))?"
+    r"|절반(?:을|이|은)?\s*(?:조금\s*)?(넘는|넘게|넘었|이상|가까이|가량|남짓)(?:\s*수)?")
+
+
+def _supported_share_spans(plain: str, cited_text: str) -> list[tuple[int, int]]:
+    """주장의 한국어 낱말 몫 중 인용 원문 퍼센트(반올림 ±5%p, 하한은 15%p 안)와 맞는 것의 자리."""
+    shares = [abs(v["value"]) for v in _quantity_values(cited_text, _date_like_spans(cited_text))
+              if v["dimension"] == "percent" and not v.get("unsupported_unit")]
+    spans = []
+    for m in _KO_SHARE_PHRASE.finditer(plain):
+        if m.group(1):
+            whole, part = _KO_COUNT[m.group(1)], _KO_COUNT[m.group(2)]
+            if part >= whole:
+                continue
+            value, tail = Decimal(part * 100) / whole, m.group(3) or ""
+        else:
+            value, tail = Decimal(50), m.group(4)
+        if tail in ("이상", "넘게", "넘는", "넘었", "남짓"):
+            ok = any(value <= p <= value + 15 for p in shares)
+        elif tail == "가까이":
+            ok = any(value - 15 <= p <= value for p in shares)
+        else:
+            ok = any(abs(p - value) <= 5 for p in shares)
+        if ok:
+            spans.append(m.span())
+    return spans
+
+
 def _wording_unsupported(plain: str, cited_text: str) -> bool:
     """인용 문장의 내용이 인용 원문에 거의 없으면 True — 수치 없이 원문에 없는 추론·사실을 인용만 달아 말한 문장.
 
@@ -838,6 +1234,8 @@ def _wording_unsupported(plain: str, cited_text: str) -> bool:
     if re.search(r"[가-힣]", plain):
         if hangul <= latin:
             return False
+        for start, end in reversed(_supported_share_spans(plain, cited_text)):
+            plain = plain[:start] + " " + plain[end:]
         grams = _char_bigrams(plain)
         return len(grams) >= 12 and len(grams & _char_bigrams(cited_text)) / len(grams) < 0.4
     if latin <= hangul:
@@ -887,17 +1285,22 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
     if stems and not _UNVERIFIED_SCOPE.search(plain):
         for value in claim_values:
             held = holders(value)
+            # 15회차: 주장이 함께 말한 두 값의 차("grew by 16 intersections, from 22 to 38")는 원문 다른 문장의 같은 수와 견주지 않는다.
+            if any(a is not b and a is not value and b is not value and a["dimension"] == b["dimension"] == value["dimension"]
+                   and abs(abs(a["value"]) - abs(b["value"])) == abs(value["value"]) for a in claim_values for b in claim_values):
+                continue
             if (held and all(_scripts(s) == _scripts(plain) for s in held)
                     and not any(any(t in s.lower() for t in stems) for s in held)):
                 found.append("context")
                 break
-    if _causal_overclaim(plain, sents):
+    if _causal_overclaim(plain, sents) or _reason_swap(plain, sents):
         found.append("causal")
-    if _period_conflict(plain, sents):
+    if _period_conflict(plain, sents) or _frequency_swap(plain, sents):
         found.append("period")
-    if _plan_overclaim(plain, sents):
+    if _plan_overclaim(plain, sents) or _already_overclaim(plain, sents) or _pending_upgrade(plain, sents):
         found.append("plan")
-    if _scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents):
+    if (_scope_overclaim(plain, sents) or _universal_overclaim(plain, sents) or _sample_overclaim(plain, sents)
+            or _condition_flip(plain, sents) or _anecdote_overclaim(plain, sents)):
         found.append("scope")
     if _year_conflict(plain, sents):
         found.append("year")
@@ -905,7 +1308,9 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("unit")
     if _bound_overclaim(plain, sents):
         found.append("bound")
-    if _subject_swap(plain, sents):
+    if (_subject_swap(plain, sents) or _funding_swap(plain, sents) or _list_member_swap(plain, sents)
+            or _rank_swap(plain, sents) or _rank_value_swap(plain, sents) or _doer_swap(plain, sents) or _funder_share_swap(plain, sents)
+            or _payer_role_swap(plain, sents) or _pair_swap(plain, sents)):
         found.append("subject")
     if _basis_conflict(plain, sents):
         found.append("basis")
@@ -913,10 +1318,12 @@ def _value_conflicts(sentence: str, cited_text: str) -> list[str]:
         found.append("negation")
     if _share_overclaim(plain, sents):
         found.append("share")
-    if "negation" not in found and _null_result_flip(plain, sents):
+    if "negation" not in found and (_null_result_flip(plain, sents) or _rather_than_flip(plain, sents)
+                                    or _exclusion_flip(plain, sents)):
         found.append("negation")
     if "negation" not in found and (_antonym_flip(plain, sents) or _transition_flip(plain, sents)
-                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)):
+                                    or _comparison_swap(plain, sents) or _value_comparison_flip(plain, sents)
+                                    or _list_order_flip(plain, sents)):
         found.append("antonym")
     if _causal_reversal(plain, sents):
         found.append("causal_reversal")
@@ -932,6 +1339,8 @@ _NUM = r"(\d+(?:,\d{3})*(?:\.\d+)?|" + "|".join(_SMALL_NUMBERS) + r")"
 _SHARE_OF = re.compile(_NUM + r"\s+(?:of|out of)\s+(?:the\s+|its\s+|their\s+|all\s+)?" + _NUM + r"\b", re.I)
 _SHARE_KO = re.compile(r"(\d+(?:,\d{3})*)\s*[가-힣]{0,2}\s*[가-힣]{0,3}\s*(?:가운데|중)\s*(\d+(?:,\d{3})*)")
 _SHARE_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+of\b|(?:의|가운데|중)\s*(\d+(?:\.\d+)?)\s*%", re.I)
+_SHARE_SAID = re.compile(r"(\d+(?:\.\d+)?)\s*(?:percent|%)\s+(?:said|say|says|reported|answered|agreed|wanted|used|attended|"
+                         r"preferred|supported|opposed|chose|would)\b|응답(?:이|은|자가|자는)?\s*(\d+(?:\.\d+)?)\s*%", re.I)
 _MOST_WORDS = re.compile(r"\b(?:most|majority|bulk)\b|대부분|과반|대다수", re.I)
 _ALL_WORDS = re.compile(r"\b(?:all|every|each)\b|모든|모두|전원|전부", re.I)
 
@@ -951,6 +1360,8 @@ def _shares(text: str) -> list[Decimal]:
         if whole and part <= whole:
             out.append(part / whole * 100)
     out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_PERCENT.finditer(text)]
+    # 10회차(holdout6): 설문 몫은 "of" 없이도 쓴다 — "23 percent said …", "응답이 35%", "점주의 57%가 … 원했고".
+    out += [Decimal(m.group(1) or m.group(2)) for m in _SHARE_SAID.finditer(text)]
     return out
 
 
@@ -981,7 +1392,7 @@ def _share_overclaim(plain: str, sents: list[str]) -> bool:
 # 제외 낱말("left out of", "excluded", "빠졌다", "제외됐다")은 "did not include"·"포함되지 않았다"를 부정 낱말 없이 바꿔 말한 것이라
 # 부정으로 센다(2026-10-10 7회차, 맞는 바꿔 말하기에 붙던 오표시).
 _NEGATION = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet to|lack(?:s|ed|ing)?|fail(?:s|ed)? to|unchanged|"
-                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없|못\s?하|못했|아니|"
+                       r"unfunded|unmeasured|unknown|unclear|left out|excluded|omitted)\b|n't\b|않|없(?!이)|못\s?하|못했|아니|"
                        r"미측정|미확인|미검증|미집계|빠졌|빠져|빠진|제외", re.I)
 _NEGATION_WORDS = re.compile(r"\b(?:not|no|never|none|neither|nor|cannot|yet|lack\w*|fail\w*|unchanged|unfunded|unmeasured|"
                              r"unknown|unclear|left out|excluded|omitted)\b", re.I)
@@ -1002,10 +1413,31 @@ def _clause_overlap(claim: str, source: str) -> tuple[int, float]:
     return shared, (shared / len(a) if a else 0.0)
 
 
+# 14회차: 영어 원문이 부정을 나열한 주어 전체에 건다("lithium batteries over 100 watt-hours and vehicle batteries were not
+# accepted"). 'and'·'or'에서 절을 나누면 앞 주어 조각엔 부정이 없어 "… were accepted"가 그 조각과 가장 많이 겹쳐 통과했다.
+# 'and'·'or'로만 이어진 이웃 두 절을 합친 것도 원문 절 후보로 더한다. 합친 절은 각 조각보다 주장 낱말을 적게 담을 수 없으므로,
+# 주장 낱말이 한 조각에만 있으면 동점이 되고 동점 중 하나라도 부정이 같으면 표시하지 않는다(종전대로).
+_COORD_SPLIT = re.compile(r"\s+(and|or)\s+", re.I)
+
+
+def _coordinated_clauses(sentence: str) -> list[str]:
+    out = []
+    pieces = _COORD_SPLIT.split(sentence)
+    # pieces = [a, 'and', b, 'or', c, …]; 이웃 두 조각을 접속어째 합친 뒤 다시 절로 나눈 첫·끝 조각을 잇는다.
+    for i in range(0, len(pieces) - 2, 2):
+        left = re.split(r"[,;:]|\b(?:but|so|while|whereas|where|which|because|although|though)\b", pieces[i], flags=re.I)[-1]
+        right = re.split(r"[,;:]|\b(?:and|or|but|so|while|whereas|where|which|because|although|though)\b", pieces[i + 2], flags=re.I)[0]
+        if left.strip() and right.strip():
+            out.append(f"{left.strip()} {pieces[i + 1]} {right.strip()}")
+    return out
+
+
 def _negation_flip(plain: str, sents: list[str]) -> bool:
     korean = bool(re.search(r"[가-힣]", plain))
     least, ratio = (6, 0.5) if korean else (3, 0.6)
     source_clauses = [c for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _clauses(s)]
+    if not korean:
+        source_clauses += [c for s in sents if not re.search(r"[가-힣]", s) for c in _coordinated_clauses(s)]
     for clause in _clauses(plain):
         scored = [(_clause_overlap(clause, c), c) for c in source_clauses]
         scored = [(shared, r, c) for (shared, r), c in scored if shared >= least and r >= ratio]
@@ -1034,6 +1466,33 @@ _NO_CHANGE = re.compile(r"\b(?:did not|didn't|does not|do not|has not|have not)\
 _NOT_SIGNIFICANT = re.compile(r"\bnot (?:statistically )?significant|\bno (?:statistically )?significant\b|"
                               r"유의하지\s?않|유의미하지\s?않|유의한 차이가?\s?없", re.I)
 _SIGNIFICANT_CLAIM = re.compile(r"\b(?:significantly|markedly|substantially|clearly|sharply)\b|뚜렷하게|뚜렷이|유의하게|확연히|크게", re.I)
+
+
+# 13회차: 원문이 'A rather than B'·'instead of B'·'B가 아니라 A'로 부정한 B를 주장이 사실로 말한 문장("using average item weights
+# rather than measuring each item" → "a figure measured by weighing each item"). 주장이 B 낱말을 둘 이상 담고, A에만 있는 낱말보다
+# 더 많이 담으며, 주장 자체가 부정·대조 표현이 아닐 때만.
+_RATHER_EN = re.compile(r"(.{0,80}?)\b(?:rather than|instead of)\s+(.+?)(?=[,.;]|$)", re.I)
+_RATHER_KO = re.compile(r"([^,.]{2,40}?)(?:이|가)?\s*아니라\s+([^,.]{2,40})")
+
+
+def _rather_than_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain) or re.search(r"rather than|instead of|아니라|대신", plain, re.I):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = (lambda s: {w[:2] for w in re.findall(r"[가-힣]{2,}", s)}) if korean else _word_stems
+    mine = stems(plain)
+    for s in sents:
+        if korean:
+            pairs = [(m.group(2), m.group(1)) for m in _RATHER_KO.finditer(s)]   # 'B가 아니라 A'
+        else:
+            pairs = [(re.split(r"[,;:]", m.group(1))[-1], m.group(2)) for m in _RATHER_EN.finditer(s)]
+        for kept, denied in pairs:
+            b = stems(denied)
+            a_only = stems(kept) - b
+            hit = len(mine & b)
+            if hit >= 2 and hit > len(mine & a_only):
+                return True
+    return False
 
 
 def _null_result_flip(plain: str, sents: list[str]) -> bool:
@@ -1291,6 +1750,10 @@ def _source_comparison_flip(sentence: str, big: set[str], small: set[str], kind:
     return (same_ref and theirs[2][1] != kind[1]) or (swapped and theirs[2][1] == kind[1])
 
 
+_DIFF_AMOUNT = re.compile(r"\s*(?:(?!(?:was|were|is|are|been|be)\b)[^\s\d]+\s+)?(?:more|less|fewer|higher|lower|greater|larger|smaller|bigger|"
+                          r"longer|shorter|faster|slower|cheaper|costlier)\b", re.I)
+
+
 def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
     """③ 주장 안의 두 값: 기준 값은 '…보다' 바로 앞(한국어)·'than' 바로 뒤(영어) 값, 다른 값은 그 앞의 같은 종류 값 하나."""
     values = [v for v in _quantity_values(clause, _date_like_spans(clause)) if not v.get("unsupported_unit")]
@@ -1303,8 +1766,107 @@ def _inline_comparison_flip(clause: str, sides, sign: int) -> bool:
     if len(refs) != 1:
         return False
     ref = refs[0]
+    if ref["dimension"] == "unitless" and _is_date_number(ref, clause):
+        return False   # 13회차: 'than in 2024'의 연도는 비교 값이 아니다
     others = [v for v in values if v is not ref and v["dimension"] == ref["dimension"] and v["end"] <= ref["start"]]
+    # 13회차: 비교 낱말 바로 앞 값('3 more pools than', '$200 less than')은 비교 대상이 아니라 차이다.
+    others = [v for v in others if not _DIFF_AMOUNT.match(clause, v["end"])]
     return len(others) == 1 and (others[0]["value"] - ref["value"]) * sign < 0
+
+
+# 22회차(holdout12~17 비교 뒤집기 놓침): 원문이 한 문장에 이름마다 값을 나열하고("동별 설치 건수는 해솔동 88건, 서하1동 64건,
+# 미림동 52건", "Harbor Avenue (1,040), Quill Street (760), North Ring Road (610)") 주장은 두 이름을 반대로 비교한다("미림동의
+# 설치 건수가 서하1동보다 많았다", "Quill Street ranked behind North Ring Road"). ①은 수치마다 가장 가까운 대상 낱말을 보므로
+# 이름이 셋 이상 나열되면 값이 두 쪽에 섞여 판정하지 못했다. 나열 값마다 바로 앞 이름(한국어 어절 하나, 영어 낱말 셋까지)을 읽고,
+# 주장 비교의 두 쪽이 각각 다른 나열 항목 하나씩만 가리킬 때 그 두 값의 크기를 비교한다. 같은 두 항목을 맞게 비교하는 나열이
+# 원문 어디에라도 있으면 세지 않는다. 증감 폭 비교와 부정 문장은 보지 않는다.
+_RANK_ORDER_EN = re.compile(r"\b(?:ranked|placed|came|finished|was|were|sat)\s+(?:just\s+|second\s+|third\s+|well\s+)?"
+                            r"(?P<down>behind|below|after)\b|\b(?:ranked|placed|came|finished|was|were|sat)\s+"
+                            r"(?:just\s+|second\s+|third\s+|well\s+)?(?P<up>ahead of|above)\b|\b(?P<up2>outpaced|outranked)\b", re.I)
+_LIST_NAME_EXTRA = {"while", "followed", "remaining", "combined", "other", "others", "rest", "sites", "confirmed"}
+
+
+def _listed_values(sentence: str) -> list[tuple[list[str], dict]]:
+    """(이름 낱말들, 값): 값 바로 앞 이름(한국어 어절 둘, 영어 낱말 셋까지). 이름 없는 값·연도·날짜·증감 절 값은 뺀다."""
+    text = re.sub(r"\s*\((\$?\d[\d,.]*\s*(?:%|[가-힣]{1,2})?)\)", r" \1", sentence)
+    out = []
+    for v in _quantity_values(text, _date_like_spans(text)):
+        if v.get("unsupported_unit") or not v["value"] or _is_date_number(v, text) or re.fullmatch(r"(?:19|20)\d\d", v["raw"].strip()):
+            continue
+        head = re.split(r"[,;:(]|\b(?:and|while|with)\b|(?<=[가-힣])(?:고|며)\s", text[:v["start"]])[-1]
+        if _PAIR_CHANGE.search(head + text[v["end"]:v["end"] + 6]):
+            continue
+        if re.search(r"[가-힣]", head):
+            words = [_PAIR_PARTICLE.sub("", w) for w in re.findall(r"[가-힣A-Za-z0-9]+", head)][-2:]
+            words = [w for w in words if len(w) >= 2 and not re.fullmatch(r"\d+", w)]
+        else:
+            # "Soccer accounted for the largest share of vouchers (34%)": 이름은 동사 앞 주어다.
+            head = re.split(r"\b(?:accounted for|made up|represented)\b", head, flags=re.I)[0]
+            # 동사("Cedarbrook planted 1,800", "residents adopted 640")는 이름이 아니다.
+            words = [w for w in re.findall(r"[A-Za-z][\w'-]*", head)
+                     if w.lower() not in _LIST_STOP | _LIST_NAME_EXTRA and not re.search(r"(?:ed|ing)$", w.lower())][-3:]
+        if words:
+            out.append((words, v))
+    return out
+
+
+def _name_keys(names: list[list[str]]) -> list[list[str]]:
+    """이름마다 나열 안에서 홀로 가리키는 가장 짧은 끝 낱말들("고혈압 관리"·"당뇨 관리"는 '관리'만으로 가를 수 없다)."""
+    keys = []
+    for i, words in enumerate(names):
+        key = []
+        for n in range(1, len(words) + 1):
+            tail = words[-n:]
+            if not any(j != i and other[-n:] == tail for j, other in enumerate(names)):
+                key = tail
+                break
+        keys.append(key)
+    return keys
+
+
+def _names_in(text: str, key: list[str]) -> bool:
+    if not key:
+        return False
+    if any(re.search(r"[가-힣]", w) for w in key):
+        return all(w in text for w in key)
+    words = {w.lower() for w in re.findall(r"[A-Za-z][\w'-]*", text)}
+    return all(w.lower() in words for w in key)
+
+
+def _list_order_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(plain) or _CMP_CHANGE.search(plain):
+        return False
+    pairs = []
+    for clause in re.split(r"[;:()]|(?<!\d),(?!\d)", plain):
+        rank = _RANK_ORDER_EN.search(clause) if not re.search(r"[가-힣]", clause) else None
+        if rank:
+            pairs.append((clause[:rank.start()], clause[rank.end():], -1 if rank.group("down") else 1))
+            continue
+        sides = _comparison_sides(clause)
+        if sides and sides[2][0] == 0:
+            pairs.append((sides[0], sides[1], sides[2][1]))
+    # 주장이 단위 있는 수치를 말하면 그 차원의 나열만 본다("11 percentage points higher"를 인원 나열로 판정하지 않는다;
+    # "서하1동"의 1 같은 이름 속 숫자는 보지 않는다).
+    dims = {v["dimension"] for v in _quantity_values(plain, _date_like_spans(plain))
+            if not v.get("unsupported_unit") and not _is_date_number(v, plain) and v["dimension"] != "unitless"}
+    for big_text, small_text, sign in pairs:
+        verdicts = set()
+        for s in sents:
+            if _scripts(s) != _scripts(plain):
+                continue
+            items = _listed_values(s)
+            for dim in {v["dimension"] for _, v in items} - (set() if not dims else {v["dimension"] for _, v in items} - dims):
+                kin = [(n, v) for n, v in items if v["dimension"] == dim]
+                if len(kin) < 2:
+                    continue
+                kin = list(zip(_name_keys([n for n, _ in kin]), [v for _, v in kin]))
+                big = [v for n, v in kin if _names_in(big_text, n) and not _names_in(small_text, n)]
+                small = [v for n, v in kin if _names_in(small_text, n) and not _names_in(big_text, n)]
+                if len(big) == 1 and len(small) == 1 and big[0]["value"] != small[0]["value"]:
+                    verdicts.add((big[0]["value"] - small[0]["value"]) * sign > 0)
+        if verdicts == {False}:
+            return True
+    return False
 
 
 # 인과 역전(2026-10-10 5회차): 원문이 "B 때문에 A"(A는 결과)라고 한 것을 주장이 "A 때문에 B"로 뒤집는다("adopted the four-day week
@@ -1315,12 +1877,19 @@ _EFFECT_FIRST = re.compile(r"\b(?:because(?: of)?|due to|as a result of|driven b
 _CAUSE_FIRST = re.compile(r"\b(?:caus(?:ed|es)|led to|leads? to|created|creates|made|makes|drove|result(?:ed|s) in)\b"
                           r"|때문에|때문|바람에|덕분에|덕에|(?:으로|로) 인해|탓에|(?:에|데) 따른|(?:에|데) 따라"
                           r"|(?<=[가-힣])(?:이어서|여서|해서|아서|어서)\s"
-                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s", re.I)
+                          r"|(?<=설치|도입|증가|감소|부족|확대|시행|운영|폐지|축소)(?:으로|로)\s"
+                          # 18회차(백로그 '시간 순서·인과 역전', holdout3): "운행 차량을 늘리자 이용자가 늘었다", "이용자가 늘어 운행 차량을 늘렸다"
+                          r"|(?:늘리|줄이|높이|낮추|올리|내리|하|되)자\s|(?:늘어|줄어|올라|내려|떨어져|높아져|낮아져|많아져|적어져)\s", re.I)
 
 
 def _causal_pairs(text: str) -> list[tuple[str, str]]:
     pairs = []
     for m in _EFFECT_FIRST.finditer(text):
+        if not text[:m.start()].strip() and "," in text[m.end():]:
+            # 18회차: 문장 첫머리 "Because X, Y" — 원인은 첫 쉼표까지, 결과는 그 뒤.
+            cause, effect = text[m.end():].split(",", 1)
+            pairs.append((cause, effect))
+            continue
         pairs.append((text[m.end():], text[:m.start()]))
     for m in _CAUSE_FIRST.finditer(text):
         pairs.append((text[:m.start()], text[m.end():]))
@@ -1354,8 +1923,12 @@ def _causal_reversal(plain: str, sents: list[str]) -> bool:
 # 인과 단정: 원문이 인과를 명시적으로 유보·부정할 때만 본문에 표시한다(인과 낱말이 없을 뿐인 원문은 표시하지 않음 —
 # 바꿔 말한 인과 서술을 낱말 목록으로 단정하지 않으려는 보수적 선택).
 _CAUSAL_CLAIM = re.compile(r"\b(?:caus(?:e|es|ed|ing)|because|due to|led to|leads? to|result(?:s|ed)? in|thanks to|drove|"
-                           r"driven by|attribut\w*|as a result|concluded)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
-                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가", re.I)
+                           r"driven by|attribut\w*|as a result|concluded|proved?|proves|showing|pushed)\b|덕분|때문|인해|탓에|탓으로|기여했|이끌었|낳았|결과로|"
+                           r"(?:효과|결과|성과)(?:라고|로)\s*(?:결론|평가|판단|분석)|(?:감소|증가|변화)로\s*평가|"
+                           # 18회차(holdout14 인과 단정 놓침): "credited the cooling centers with the drop", "간식 제공의 효과로 확인되었다",
+                           # "시범사업만의 효과로 볼 수 있다"
+                           r"\bcredit(?:s|ed|ing)?\s+(?:\w+\s+){1,5}?(?:with|for)\b|(?:효과|덕분|성과)(?:로|으로)\s*(?:확인|입증|볼 수 있|나타났|드러났)|"
+                           r"만의\s*(?:효과|결과|성과)", re.I)
 _CAUSAL_ANY = re.compile(_CAUSAL_CLAIM.pattern + r"|\b(?:effects?|impacts?|contribut\w*)\b|인과|영향|효과|기여", re.I)
 _CAUSAL_DISCLAIM = re.compile(
     r"\b(?:cannot|can't|could not|did not|does not|do not|not|unable to)\s+(?:\w+\s+){0,2}?"
@@ -1365,7 +1938,23 @@ _CAUSAL_DISCLAIM = re.compile(
     r"단정하기 어렵|"
     # 8회차(holdout4): "not necessarily due to the app", "감소분 전체를 보상제 효과로 보기는 어렵다", "의미 있는 변화로 보기 어렵다"
     r"\bnot necessarily (?:due to|caused by|because of|the result of|attributable)|"
-    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵", re.I)
+    r"(?:효과|결과|원인|변화|감소|증가|성과)(?:로|으로)\s*(?:보기|판단하기|단정하기|평가하기)(?:는|가)?\s*어렵|"
+    # 18회차(holdout14): 원문이 다른 요인을 들거나 늘었다고 보기 어렵다고 함 — "점포 4곳이 폐업한 점도 민원 변화에 영향을 줬을 수
+    # 있다", "택배 대출이 전체 이용을 늘렸다고 보기 어렵다"
+    r"\b(?:is|was|were|are) not controlled\b|\buncontrolled comparison\b|영향을\s*(?:줬|주었|미쳤)을\s*수\s*있|(?:늘|높|줄|낮|끌어올|떨어뜨)(?:렸|였|췄)다고\s*(?:보기|단정하기|판단하기)(?:는|가)?\s*어렵|"
+    # 11회차(holdout5·6 유보→단정 0/6): 원문이 원인을 가능성으로만 말함 — "may reflect the tank", "could discourage repeat
+    # tagging", "may account for part of the decline", "too small to draw firm conclusions", "not randomly selected",
+    # "줄였을 수 있다고 보면서도", "비교에 한계가 있다". 조동사 뒤 동사를 인과·효과 동사로 한정해 "may apply" 같은 문장은 넣지 않는다.
+    r"\b(?:may|might|could)\s+(?:also\s+|partly\s+|in part\s+)?(?:have\s+)?(?:reflect|account|explain|contribut|discourag|"
+    r"encourag|reduc|lower|cut|rais|boost|improv|increas|decreas|prevent|help|driv|caus|be (?:due|linked|related|attributable|"
+    r"partly|a result|the result))\w*|\btoo (?:small|few|short|limited|early) to (?:draw|reach|support|confirm|establish|"
+    r"say|conclude)\b|\bnot randomly (?:selected|assigned|chosen)\b|"
+    r"(?:였|었|았|했)을\s?수\s?있(?:다|으나|지만|다고|다는)|(?:때문|효과|영향|덕분|결과)일\s?수\s?있|"
+    r"(?:비교|해석|분석|판단)에\s?한계가?\s?있|"
+    # 24회차(holdout19 유보→인과 단정 놓침): "메이커스페이스 때문인지는 확인할 수 없다", "노선 개편 효과로만 돌릴 수 없다",
+    # "cautioned against direct comparison"
+    r"(?:확인|판별|증명)할\s?수\s?없|(?:효과|결과|덕분|때문)(?:으로|로)(?:만|는|만은)?\s?(?:돌릴|볼|보기)\s?(?:수\s?없|어렵)|"
+    r"\bcaution(?:s|ed)?\s+against\s+(?:a\s+|any\s+)?(?:direct\s+)?(?:comparison|comparing|attribut\w*|conclu\w*)", re.I)
 # 기간 단위: 같은 수치를 원문과 다른 기간(하루·주·한 달·연간·총계)으로 말하는지 본다.
 _PERIOD_WORDS = {"day": r"하루|일평균|일일|매일|\bper day\b|\ba day\b|\bdaily\b|\beach day\b",
                  "week": r"주당|매주|일주일|\bper week\b|\bweekly\b|\ba week\b",
@@ -1436,8 +2025,26 @@ def _span_period(text: str) -> set[str]:
 # 인과 낱말 없이 주어가 대상을 바꿨다고 말하는 문장도 인과 단정이다. 동사가 행정 행위("구는 어린이집을 늘렸다")일 수도 있어,
 # 이 경우는 유보 문장이 주장과 내용 낱말을 공유할 때만 본다(인과 낱말 주장은 공유를 요구하지 않는다).
 _EFFECT_VERB = re.compile(r"\b(?:reduced|lowered|cut|raised|boosted|improved|increased|decreased|shortened|delayed|prevented|"
-                          r"curbed|lengthened|lifted)\s+(?!by\b|to\b|from\b|\d)\w"
+                          r"curbed|lengthened|lifted|generated|spurred)\s+(?!by\b|to\b|from\b|\d)\w"
                           r"|(?:을|를)\s(?:\S+\s){0,4}?\S*?(?:줄였|늦췄|높였|낮췄|늘렸|앞당겼|끌어올렸|떨어뜨렸|막았|개선했|단축했)", re.I)
+
+
+# 수단 '-(으)로' 효과(24회차, holdout19 놓침): "센서 도입으로 … 사고가 3건에서 0건으로 줄었다", "도시락 배달로 고독사가 줄었다"처럼
+# 원인을 '-(으)로'로 붙이고 결과 동사(줄었다·늘었다…)를 쓴 문장. "0건으로 줄었다"·"절반으로 줄었다"처럼 바뀐 값·정도를 가리키는
+# '-(으)로'와 "주로"·"별도로" 같은 부사는 원인으로 보지 않는다. 효과 동사와 같은 길(유보 원문이 내용 낱말을 공유할 때만)로 본다.
+_KO_MEANS = re.compile(r"(?:^|\s)([가-힣]{2,})(?:으로|로)\s(?:\S+\s){0,6}?\S*?(?:줄었|늘었|감소했|증가했|낮아졌|높아졌|짧아졌|"
+                       r"빨라졌|개선됐|개선되었|감소하였|증가하였)")
+_KO_MEANS_NOT = re.compile(r"^(?:절반|수준|이하|미만|이상|정도|가량|처음|비율|목표|평균|기준|중심|대상|단위|별도|실제|대체|전체|"
+                           r"결과적|본격적|일시적|지속적|전반적|상대적|대폭|소폭|크게|추가|새|단독|직접|공동|최대|최소)$")
+
+
+def _ko_means_effect(plain: str) -> bool:
+    for m in _KO_MEANS.finditer(plain):
+        word = m.group(1)[:-1] if m.group(1).endswith("으") else m.group(1)  # "건으로"를 "건으"+"로"로 읽지 않게
+        if (len(word) >= 2 and not _KO_MEANS_NOT.match(word)
+                and not re.search(r"(?:건|명|곳|회|개|대|원|배|분|시간|일|주|개월|년|퍼센트|폭)$", word)):
+            return True
+    return False
 
 
 def _causal_overclaim(plain: str, sents: list[str]) -> bool:
@@ -1446,7 +2053,7 @@ def _causal_overclaim(plain: str, sents: list[str]) -> bool:
         return False
     if not _CAUSAL_CLAIM.search(plain):
         stems = _causal_stems(plain)
-        return bool(_EFFECT_VERB.search(plain)) and any(
+        return bool(_EFFECT_VERB.search(plain) or _ko_means_effect(plain)) and any(
             _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents) and not any(
             _CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s) for s in sents)
     # 인과를 긍정하는 원문 문장은 주장과 같은 대상(문맥 낱말 공유)을 말할 때만 근거로 친다(PR #14 Codex 리뷰 반영).
@@ -1454,6 +2061,700 @@ def _causal_overclaim(plain: str, sents: list[str]) -> bool:
     return (any(_CAUSAL_DISCLAIM.search(s) for s in sents)
             and not any(_CAUSAL_ANY.search(s) and not _CAUSAL_DISCLAIM.search(s) and stems & _causal_stems(s)
                         for s in sents))
+
+
+# 이유 바꿈(10회차 holdout6): 원문과 주장이 같은 일의 '주된 이유'를 말하는데 이유가 다르다 — 원문 "a shortage of replacement parts
+# was the main reason repairs failed" → 주장 "Repairs most often failed because volunteers lacked the necessary skills",
+# "주로 반납 처리에 드는 시간을 이유로 들었다" → "주로 컵 분실에 따른 비용을 이유로 꼽았다". 이유 구절끼리 내용 낱말이 하나도 겹치지
+# 않고 나머지(무엇의 이유인지)는 겹칠 때만 본다.
+_REASON_EN = (re.compile(r"\bbecause (?:of )?(.+)$", re.I),
+              re.compile(r"\b(?:most often|most commonly|mainly|primarily|chiefly)\s+(?:cited|named|blamed|gave)\s+(.+)$", re.I),
+              re.compile(r"^(.+?)\s+(?:was|were|is|are)\s+the\s+(?:main|primary|chief|most common|leading|biggest)\s+(?:reason|cause)", re.I),
+              re.compile(r"\b(?:main|primary|chief|most common|leading|biggest)\s+(?:reason|cause)\s+(?:\w+\s+){0,4}?(?:was|were|is|are)\s+(.+)$",
+                         re.I))
+_REASON_KO = (re.compile(r"주로\s+(.+?)\s*이유로"), re.compile(r"이유로(?:는)?\s+(.+?)(?:가|이)\s*가장\s*많"),
+              re.compile(r"(.+?)(?:이|가)\s*(?:주된|가장 큰)\s*(?:이유|원인)"), re.compile(r"(?:주된|가장 큰)\s*(?:이유|원인)(?:은|는)\s*(.+)"))
+_REASON_MAIN = re.compile(r"\b(?:most often|most commonly|main|mainly|primary|primarily|chief|chiefly|leading|biggest)\b|주로|주된|가장", re.I)
+_REASON_FRAME = re.compile(r"^.*?\b(?:reported|said|found|noted|stated|concluded)\s+that\s+", re.I)
+_REASON_STOP = {"reason", "cause", "because", "most", "often", "main", "mainly", "주로", "이유", "가장", "많았", "들었", "꼽았"}
+
+
+def _reason_of(text: str) -> str | None:
+    text = _REASON_FRAME.sub("", text)
+    for pattern in (_REASON_KO if re.search(r"[가-힣]", text) else _REASON_EN):
+        m = pattern.search(text)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _reason_stems(text: str) -> set[str]:
+    return _content_stems(re.sub(r"[\"'‘’“”]", " ", text)) - _REASON_STOP
+
+
+def _reason_swap(plain: str, sents: list[str]) -> bool:
+    if not _REASON_MAIN.search(plain):
+        return False
+    claimed = _reason_of(plain)
+    mine = _reason_stems(claimed) if claimed else set()
+    if not mine:
+        return False
+    rest = _reason_stems(plain.replace(claimed, " "))
+    korean = bool(re.search(r"[가-힣]", plain))
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean or not _REASON_MAIN.search(s):
+            continue
+        given = _reason_of(s)
+        theirs = _reason_stems(given) if given else set()
+        if theirs and not theirs & mine and rest & _reason_stems(s.replace(given, " ")):
+            return True
+    return False
+
+
+# 12회차(holdout8a): ① 원문이 의도·계획·권고로만 말한 것을 '이미·already' 시행했다고 쓴 문장(수치 없이도) — 원문 "겨울철에는 실내 치유
+# 프로그램을 추가하겠다고 밝혔다" → "이미 도입했다". 주장과 가장 많이 겹치는 원문 절이 의도 낱말을 담을 때만.
+# ② 같은 금액의 재원·부담 주체를 바꾼 문장 — "군은 차량 구입비 1억 4천만 원을 부담했다" → "1억 4천만 원은 지역 농협이 부담했다",
+# "paid from the city's housing trust fund" → "came from the general fund". 같은 값이 든 원문 문장의 부담 주체와 겹치지 않을 때만.
+_ALREADY = re.compile(r"\balready\b|이미", re.I)
+_INTENT = re.compile(r"\b(?:plans?|planned|intends?|intended|proposed|propose|recommend\w*|will|would|considering|pending)\b|"
+                     r"하겠다|할 계획|할 예정|예정이|계획이|권고|검토|추진할|방침", re.I)
+
+
+# 13회차(holdout9): '이미' 없이 완료로 말한 문장('has expanded', 'agreed to', '확정했다', '도입했다', '신설했다', '완료됐다')도,
+# 가장 많이 겹치는 원문 절이 제안·요청·권고·미확정으로만 말하면 계획을 시행으로 바꾼 것이다.
+_DONE = re.compile(r"\b(?:ha(?:s|ve) (?:\w+ )?(?:expanded|adopted|introduced|implemented|launched|approved|confirmed|agreed|"
+                   r"established|created|completed|finalized|extended|begun|started|added)|agreed to|confirmed|finalized)\b|"
+                   r"도입했|확정했|신설했|시행했|완료됐|완료했|마련했|확대했|승인했|의결했|결정했|채택했|연장했"
+                   # 17회차(holdout12 계획→실적 7/11 놓침으로 설계): 수동 완료('has been funded', 'have since been made
+                   # permanent')와 결정 동사('통과시켰다', '인상했다', '이전했다', '증액했다', '폐지했다').
+                   r"|\bha(?:s|ve) (?:since |now |already )?been (?:\w+ )?(?:funded|approved|adopted|made permanent|"
+                   r"implemented|introduced|expanded|extended|finalized|launched|established|created|authorized|enacted|"
+                   r"relocated|moved|raised|increased)\b|\bmade permanent\b|"
+                   r"통과시켰|통과됐|통과되었|가결됐|가결되었|인상했|이전했|증액했|폐지했", re.I)
+# 17회차: 주장이 권고·제안을 '따랐다'고 말하는 명사('the auditor's recommendation', '위원회 권고에 따라')는 계획을 말하는
+# 유보가 아니다. 완료 동사가 있을 때 이 명사구를 지운 뒤에만 의도 낱말을 본다.
+_ADOPTED_ADVICE = re.compile(r"\b(?:recommendations?|proposals?|suggestions?)\b|(?:권고|제안|건의)(?:에 따라|를 받아들여|대로|를 반영해)",
+                             re.I)
+# 17회차: 원문이 제안·회부·논의로만 말한 일을 'will be paid'처럼 확정된 앞날로 말한 문장. 원문 가장 가까운 문장에
+# 제안 낱말이 있고 그 문장 스스로는 'will'로 확정하지 않을 때만.
+_FIRM_FUTURE = re.compile(r"\bwill (?:now |also )?(?:be (?:paid|given|funded|expanded|extended|made|offered|provided|added|"
+                          r"raised|required|eligible)|pay|receive|get|cover|fund|expand|extend|offer|provide|add|open|start|begin)\b",
+                          re.I)
+_PROPOSAL_ONLY = re.compile(r"\b(?:proposed|proposal|referred|discussed|recommend\w*|suggest\w*|considering|under review|"
+                            r"not yet|no decision|undecided)\b", re.I)
+_UNFINISHED = re.compile(_INTENT.pattern + r"|\b(?:subject to|deferred|requested|asked|suggested|not yet|no vote|until)\b|"
+                         r"제안|요청|아직|않았|않은|미정|보류", re.I)
+
+
+def _already_overclaim(plain: str, sents: list[str]) -> bool:
+    if _FIRM_FUTURE.search(plain) and not re.search(r"\b(?:may|might|could|proposed|would)\b", plain, re.I):
+        best = _closest_sentence(plain, sents)
+        if best is not None and _PROPOSAL_ONLY.search(best) and not re.search(r"\bwill\b", best, re.I):
+            return True
+    if _INTENT.search(_ADOPTED_ADVICE.sub(" ", plain) if _DONE.search(plain) else plain):
+        return False
+    if not _ALREADY.search(plain):
+        return bool(_DONE.search(plain)) and _closest_clause_unfinished(plain, sents)
+    korean = bool(re.search(r"[가-힣]", plain))
+    bare, best, most = _ALREADY.sub(" ", plain), None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(bare, c)
+            if shared > most:
+                best, most = c, shared
+    return best is not None and most >= (4 if korean else 2) and bool(_INTENT.search(best))
+
+
+# 25회차(holdout20 계획→실적 놓침 12건으로 설계, holdout21은 보지 않음): '이미'나 정해진 완료 동사 없이도 주장이 이룬 일·현재
+# 상태로 말하는데("has hired", "were added this fall", "A city ordinance now allows", "도입됐다", "추가해 운영하고 있다"), 주장과
+# 가장 많이 겹치는 원문 절이 진행 중·예정·조건부로만 말하면("is hiring", "plan to add", "plans to ask the council for an
+# ordinance", "도입할 예정이다", "contingent on filling current vacancies", "subject to county funding") 계획을 실적으로 쓴 것이다.
+# 원문이 조건을 단 계획을 주장이 조건 없이 확정한 경우("will staff 60 intersections", "is scheduled to open by FY2028")도 본다.
+# 목표 낱말을 담은 주장은 달성 동사("reached its 95% target")가 있을 때만 본다.
+_REALIZED_EN = re.compile(
+    r"\b(?:ha(?:s|ve)|had) (?:now |already |since |recently )?(?:been )?[a-z]+(?:ed|en|un|ught|t)\b|"
+    r"\b(?:was|were) (?:now |already |recently )?[a-z]+(?:ed|en|un|ught)\b|"
+    r"\bnow (?:allows?|requires?|covers?|offers?|permits?|includes?|provides?|runs?|operates?|pays?|funds?|serves?)\b|"
+    r"\bis (?:now )?(?:being [a-z]+ed|open|available|in place|in effect|underway|operating|running)\b|"
+    r"\bare (?:now )?(?:being [a-z]+ed|open|available|in place|in effect|underway|operating|running)\b", re.I)
+_FIRM_PLAN_EN = re.compile(r"\b(?:will|is scheduled to|are scheduled to|is set to|are set to)\b", re.I)
+_REALIZED_KO = re.compile(r"(?:했|됐|되었|웠|렸|겼|켰|쳤|었|았)다\s*\.?\s*$|(?:하고|되고|운영하고|시행하고) 있다\s*\.?\s*$|"
+                          r"(?:운영|시행|진행|가동|도입) 중이다\s*\.?\s*$")
+_PENDING_SRC = re.compile(
+    r"\b(?:plans? to|planned|intends? to|aims? to|expects? to|proposes? to|proposed|is (?:hiring|recruiting|drafting|developing|"
+    r"preparing|seeking|considering|reviewing|working (?:on|to))|are (?:hiring|recruiting|drafting|developing|preparing|seeking|"
+    r"considering|reviewing)|pending|contingent on|subject to|depending on|has not yet|have not yet|not yet)\b|"
+    r"예정|계획|방침|검토\s*(?:중|하고)|추진\s*중|준비\s*중|하겠다|안을 제출|확정되지|아직", re.I)
+_CONTINGENT_SRC = re.compile(r"\b(?:contingent on|subject to|pending|depending on|if (?:the )?(?:council|board|state|county|city|"
+                             r"funding|voters))\b|조건으로|확보되면|승인되면|통과되면|경우에 한해", re.I)
+_DONE_IN_SRC_EN = re.compile(r"\b(?:ha(?:s|ve)|had) (?:already |since |recently )?(?:been )?[a-z]+(?:ed|en)\b|"
+                             r"\b(?:was|were) [a-z]+(?:ed|en)\b|\balready\b", re.I)
+_DONE_IN_SRC_KO = re.compile(r"(?:했|됐|되었|였|었|았)(?:다|고|으며|는데|지만)?\s*$|(?:했|됐|되었|였|었|았)(?:다|고|으며)\b|이미")
+_GOAL_NOUN = re.compile(r"\b(?:target|goal|aim)s?\b|목표", re.I)
+_GOAL_MET = re.compile(r"\b(?:reached|met|achieved|hit|exceeded|surpassed|attained)\b|달성했|채웠|넘어섰|넘겼", re.I)
+
+
+def _pending_upgrade(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    # 주장 스스로 계획·제안·의향을 말하면('권고했다', 'urged', '이용하겠다고 답했다') 실적 주장이 아니다.
+    hedged = re.search(r"\b(?:may|might|could|would|plans?|planned|intends?|propos\w*|recommend\w*|suggest\w*|urged?|"
+                       r"asked|requested|called for|pending|expected|considering|if)\b|"
+                       r"예정|계획|검토|추진|방침|권고|제안|요청|건의|촉구|할 수|수 있|않|못|아직|겠", plain, re.I)
+    if hedged:
+        return False
+    if _GOAL_NOUN.search(plain) and not _GOAL_MET.search(plain):
+        return False
+    realized = bool(_REALIZED_KO.search(plain)) if korean else bool(_REALIZED_EN.search(plain))
+    firm = not korean and not realized and bool(_FIRM_PLAN_EN.search(plain))
+    if not (realized or firm):
+        return False
+    best, most = [], 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = [(c, s)], shared
+            elif shared == most and shared:
+                best.append((c, s))
+    if most < (5 if korean else 3):
+        return False
+    cue = _CONTINGENT_SRC if firm else _PENDING_SRC
+    for clause, sentence in best:
+        # 'plans to'·'예정'이 겹친 절 밖(앞 절·문장 끝)에 있을 수 있어 문장 전체에서 찾는다. 다만 겹친 절 스스로 완료를 말하면
+        # ("500기를 설치했고 500기를 더 늘릴 예정") 실적 절이므로 표시하지 않는다.
+        if not cue.search(sentence):
+            return False
+        if not cue.search(clause) and (_DONE_IN_SRC_KO if korean else _DONE_IN_SRC_EN).search(clause):
+            return False
+    return True
+
+
+# 25회차(holdout20 일화 일반화 놓침 4건으로 설계): 원문이 한 사람·한 건의 경험으로 말한 것("One family said they waited three
+# weeks", "서부권의 한 교회 관리인은 … 했다", "실종 신고 가운데 한 건은 … 9시간")을 주장이 여럿의 공통 경험·통상·평균으로 말한다
+# ("Families commonly wait", "contractors routinely skipped", "관리인들은 … 입을 모았다", "평균 9시간"). 주장과 가장 많이 겹치는
+# 원문 문장(같은 글자, 영어 3·한국어 2-gram 5개 이상)이 모두 하나를 말하고, 주장은 하나를 말하지 않을 때만 본다.
+_ONE_EN = re.compile(r"\b(?:one|a single|an?) (?:[A-Z][a-z]+ (?:Street |Avenue |Road )?)?(?:[a-z]+ ){0,2}"
+                     r"(?:resident|family|parent|owner|driver|rider|user|patron|caller|customer|teacher|worker|tenant|landlord|"
+                     r"manager|shopkeeper|neighbor|neighbour|household|case|report|call|complaint|incident|participant|student|"
+                     r"vendor|merchant|member|homeowner|senior|patient|guard|volunteer|official|employee)s?\b(?: \w+){0,6}? "
+                     r"(?:said|says|told|reported|described|recalled|complained|noted|waited|took|was|had)\b", re.I)
+_ONE_KO = re.compile(r"(?:^|\s)한\s[가-힣]{1,8}(?:\s[가-힣]{1,8})?(?:은|는|이|가)\s|가운데\s한\s?(?:건|명|곳|가구)(?:은|는|이|가)")
+_MANY_EN = re.compile(r"\b(?:commonly|routinely|typically|usually|regularly|frequently|often|generally|many|most|several|"
+                      r"widespread|residents|families|parents|owners|drivers|riders|users|patrons|customers|tenants|"
+                      r"neighbors|neighbours|households|on average|average)\b", re.I)
+_MANY_KO = re.compile(r"[가-힣]들(?:은|는|이|가|도)\s|입을 모았|평균|대부분|대다수|흔히|자주|늘\s|매번|으레|일반적|여럿|많은")
+
+
+def _anecdote_overclaim(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    one, many = (_ONE_KO, _MANY_KO) if korean else (_ONE_EN, _MANY_EN)
+    if one.search(plain) or not many.search(plain):
+        return False
+    scored = [(_clause_overlap(plain, s)[0], s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    most = max((n for n, _ in scored), default=0)
+    if most < (5 if korean else 3):
+        return False
+    best = [s for n, s in scored if n == most]
+    return all(one.search(s) and not many.search(one.sub(" ", s)) for s in best)
+
+
+def _closest_sentence(plain: str, sents: list[str]) -> str | None:
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = s, shared
+    return best if most >= (3 if korean else 2) else None
+
+
+def _closest_clause_unfinished(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for c in _clauses(s):
+            shared, _ = _clause_overlap(plain, c)
+            if shared > most:
+                best, most = s, shared
+    return best is not None and most >= (3 if korean else 2) and bool(_UNFINISHED.search(best)) \
+        and not _DONE.search(best)
+
+
+_FUND_EN = re.compile(r"\b(?:came from|paid (?:for )?(?:from|by|out of)|funded (?:by|from|through)|financed (?:by|from))\s+(.+?)(?:[,.;]|$)",
+                      re.I)
+_FUND_KO_VERB = re.compile(r"부담했|부담한|지원했|출연했|댔다|냈다")
+_FUND_GENERIC = {"fund", "funds", "funded", "grant", "grants", "budget", "money", "city", "the", "state", "one-time", "reserve"}
+
+
+def _funder(text: str) -> set[str] | None:
+    if re.search(r"[가-힣]", text):
+        m = _FUND_KO_VERB.search(text)
+        if not m:
+            return None
+        names = [w for w in re.findall(r"([가-힣]{1,6})(?:이|가|은|는)(?=\s)", text[:m.start()]) if w not in ("원", "것")]
+        return {names[-1]} if names else None
+    m = _FUND_EN.search(text)
+    return ({re.sub(r"'s$", "", w.lower()) for w in re.findall(r"[A-Za-z']{3,}", m.group(1))} - _FUND_GENERIC) if m else None
+
+
+# 17회차(holdout13 재원 몫 뒤바뀜으로 설계): 한국어 재원 나눔에서 기관별 몫·금액을 맞바꾼 문장 — "시비 40%, 구비 60%" →
+# "시가 60%, 구가 40%를 댄다", "국비 3억 원과 군비 1억 원" → "군비 3억 원과 국비 1억 원". 값 바로 앞의 기관 낱말(시·구·군·도·국,
+# 뒤에 비·가·이·에서)을 읽어, 주장이 한 기관에 붙인 값을 원문은 주장에도 나오는 다른 기관에 붙였고 원문의 그 기관 값은 다를 때만.
+_FUNDER_LEAD = re.compile(r"(?:^|[\s,(·])(시|구|군|도|국)(?:비|가|이|에서|는|은)?\s*(?:가|이)?\s*$")
+
+
+def _funder_values(text: str) -> list[tuple[str, Decimal]]:
+    out = []
+    for v in _quantity_values(text, _date_like_spans(text)):
+        if v.get("unsupported_unit") or v["dimension"] not in ("percent", "KRW"):
+            continue
+        lead = _FUNDER_LEAD.search(text, max(0, v["start"] - 8), v["start"])
+        if lead:
+            out.append((lead.group(1), abs(v["value"])))
+    return out
+
+
+def _funder_share_swap(plain: str, sents: list[str]) -> bool:
+    mine = _funder_values(plain)
+    if len({f for f, _ in mine}) < 2:
+        return False
+    for s in sents:
+        theirs = _funder_values(s)
+        if len({f for f, _ in theirs}) < 2:
+            continue
+        for f, v in mine:
+            if (f, v) in theirs:
+                continue
+            others = {g for g, w in theirs if w == v and g != f}
+            if others & {g for g, _ in mine} and any(g == f and w != v for g, w in theirs):
+                return True
+    return False
+
+
+def _funding_swap(plain: str, sents: list[str]) -> bool:
+    values = [v for v in _quantity_values(plain, _date_like_spans(plain))
+              if not v.get("unsupported_unit") and v["dimension"] in ("KRW", "USD", "unitless")]
+    mine = _funder(plain) if values else None
+    if mine:
+        for s in sents:
+            if any(abs(c["value"]) == abs(v["value"]) for c in _quantity_values(s, _date_like_spans(s)) for v in values):
+                theirs = _funder(s)
+                if theirs and not theirs & mine:
+                    return True
+    return _payer_swap(plain, sents, values)
+
+
+# 13회차(holdout9): 금액이 없거나 원문과 다른 동사로 재원을 말한 문장. 재원 구(句)를 'funded mainly through …', 'covered by …',
+# '…(으)로 충당·부담·마련'까지 넓혀 읽고, 주장 재원이 원문 어느 재원 구와도 겹치지 않거나(content) 정부 층위(state ↔ federal,
+# 구 ↔ 행정안전부)를 바꿨으면 표시한다. 주장이 '전액'·'entirely'라고 했는데 원문 재원 구가 둘 이상을 나열하면 범위를 넓힌 것이다.
+_PAYER_EN = re.compile(r"\b(?:came from|paid (?:for )?(?:from|by|out of)|(?:funded|financed|covered|paid for|supported|underwritten)"
+                       r"(?:\s+\w+ly)?\s+(?:by|from|through|with|out of))\s+(.+?)(?=[,.;]|\s+(?:while|but|which)\s|$)", re.I)
+_PAYER_KO = re.compile(r"((?:[가-힣A-Za-z0-9,·]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z·]+?)(?:으로|로)\s*(?:전액\s*)?(?:충당|부담|마련|조달|지원|집행)"
+                       r"|(?<![가-힣])([가-힣]{1,8}?)(?:이|가)\s+(?:전액\s+)?(?:부담|충당|지원|출연)")
+_PAYER_GENERIC = _FUND_GENERIC | {"mainly", "mostly", "largely", "entirely", "fully", "solely", "partly", "general", "money",
+                                  "a", "an", "its", "their", "program", "pilot", "예산", "사업비", "비용", "재원", "전액", "자체"}
+_TIERS = {"city": "local", "county": "local", "municipal": "local", "town": "local", "state": "state", "federal": "federal",
+          "national": "federal", "시비": "local", "구비": "local", "군비": "local", "시": "local", "구": "local", "군": "local",
+          "도비": "state", "도": "state", "국비": "federal", "국가": "federal", "정부": "federal"}
+_KO_MINISTRY = re.compile(r"[가-힣]+부$|[가-힣]+청$|특별교부세|교부금|국비")
+_ALL_PAID = re.compile(r"\b(?:entirely|fully|solely|wholly|all of)\b|전액|전부|모두", re.I)
+
+
+def _payer_phrases(text: str) -> list[str]:
+    if re.search(r"[가-힣]", text):
+        return [m.group(1) or m.group(2) for m in _PAYER_KO.finditer(text)]
+    return [m.group(1) for m in _PAYER_EN.finditer(text)]
+
+
+def _payer_terms(phrase: str) -> tuple[set[str], set[str]]:
+    words = [re.sub(r"'s$|(?<=[가-힣])(?:과|와)$", "", w.lower()) for w in re.findall(r"[A-Za-z']{2,}|(?<![\d,])[가-힣]+", phrase)]
+    words = [w for w in words if w not in ("원", "the", "remainder", "rest", "나머지")]
+    tiers = {_TIERS[w] for w in words if w in _TIERS} | {"federal" for w in words if _KO_MINISTRY.search(w)}
+    content = {w for w in words if w not in _PAYER_GENERIC and w not in _TIERS and len(w) >= 2}
+    return content, tiers
+
+
+def _payer_swap(plain: str, sents: list[str], values: list[dict]) -> bool:
+    mine = _payer_phrases(plain)
+    if len(mine) != 1:
+        return False
+    content, tiers = _payer_terms(mine[0])
+    if not content and not tiers:
+        return False
+    theirs = []
+    for s in sents:
+        for clause in re.split(r"(?<!\d),(?!\d)|;|했고|하고|이고|이며|으며", s):
+            amounts = {abs(c["value"]) for c in _quantity_values(clause, _date_like_spans(clause))}
+            theirs += [(phrase, amounts) for phrase in _payer_phrases(clause)]
+    if not theirs:
+        return False
+    claimed = {abs(v["value"]) for v in values}
+    same = [(p, a) for p, a in theirs if claimed & a] or ([] if claimed and any(a for _, a in theirs) else theirs)
+    if not same:
+        return False
+    if _ALL_PAID.search(plain) and len(same) == 1 and re.search(r"\s(?:and)\s|과\s|와\s|및", same[0][0]):
+        return True
+    rows = [_payer_terms(p) for p, _ in same]
+    if content and all(c and not (c & content) for c, _ in rows):
+        return True
+    return bool(tiers) and all(t and not (t & tiers) for _, t in rows)
+
+
+# 18회차(holdout13 '부담·납부 주체' 놓침 6건으로 설계, holdout14는 보지 않고 잰다): 누가 비용을 내는지를 바꾼 문장.
+# (1) 같은 비용 항목(한국어 '전기요금'·'운반비', 영어 같은 금액)을 원문은 다른 주체가 냈다고 말함 — "전기요금은 버스 운수회사가
+#     부담했다" ← "전기요금은 … 시가 납부했다", "Tenants and landlords split a $380 fee" ← "The city pays … $380".
+# (2) 원문이 낸다고 말한 주체가 아무것도 내지 않았다거나 무료라고 말함 — "농가는 … 아무 비용도 내지 않았다" ← "농가는 운반비만
+#     부담했다", "CourtNotify provides the service free of charge" ← "provided by … CourtNotify at a cost of $0.04 per message".
+# (3) 영어 재원 몫을 기관끼리 맞바꿈 — "The county's general fund paid three-quarters …, with a federal grant covering the rest"
+#     ← "funded 75% by a federal … grant and 25% by the county's general fund"; "most" ↔ 원문 나머지(remainder) 몫.
+_PAY_VERB_EN = r"(?:pays?|paid|split|splits|covers?|covered|bears?|bore|shoulders?|shouldered|picks? up|picked up)"
+_PAYER_SUBJ_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bwhile )|(?<=\bwhich ))((?:[\w'-]+\s+){0,4}?[\w'-]+)\s+(?:also |still |now )?"
+                            + _PAY_VERB_EN + r"\b(?!\s+(?:for|by|from|out of)\b)", re.I)
+_PAY_VERB_KO = r"(?:부담|납부|냈|낸다|낸|내고|지불|댔|댄다)"
+_PAYER_SUBJ_KO = re.compile(r"(?<![가-힣])([가-힣]{1,8}?)(?:이|가)\s+(?:[가-힣]+\s+){0,2}?" + _PAY_VERB_KO)
+_COST_ITEM_KO = re.compile(r"(?<![가-힣])([가-힣]{1,6}(?:요금|비용|비|료))(?=은|는|을|를|만|도|\s)")
+_NOT_PAID_KO = re.compile(r"(?<![가-힣])([가-힣]{1,8}?)(?:은|는)\s+(?:\S+\s+){0,4}?(?:아무\s+비용도|한\s+푼도|비용을\s+전혀|돈을\s+전혀|"
+                          r"아무것도)\s+(?:내지\s+않|부담하지\s+않|안\s+냈|안\s+낸)")
+_FREE_EN = re.compile(r"\b(?:free of charge|at no (?:cost|charge)|for free|without charge|free to the|no-cost)\b", re.I)
+_COST_EN = re.compile(r"\b(?:at a cost of|costs?|paid|pays|fee|fees|charges?|billed)\b|[$€£]\s?\d", re.I)
+_PAYER_STOP = {"the", "a", "an", "its", "their", "this", "that", "each", "every", "also", "still", "now", "which", "who", "it",
+               "they", "and", "or", "both", "together", "jointly", "with", "of"}
+
+
+def _payer_words(phrase: str) -> set[str]:
+    words = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w.lower()) for w in re.findall(r"[A-Za-z][\w'-]*|[가-힣]+", phrase)}
+    return words - _PAYER_STOP
+
+
+def _same_payer(a: set[str], b: set[str]) -> bool:
+    return any(x == y or x.startswith(y) or y.startswith(x) for x in a for y in b)
+
+
+def _dollar_amounts(text: str) -> list[Decimal]:
+    return [abs(v["value"]) for v in _quantity_values(text, _date_like_spans(text))
+            if not v.get("unsupported_unit") and v["dimension"] in ("USD", "unitless")
+            and re.search(r"[$€£]\s?$", text[max(0, v["start"] - 2):v["start"]])]
+
+
+def _cost_payers(text: str) -> list[tuple[set[str], set, set[str]]]:
+    """(내는 주체 낱말, 금액들, 한국어 비용 항목들) — 절마다(영어) 또는 문장째(한국어)."""
+    out = []
+    if re.search(r"[가-힣]", text):
+        items = set(_COST_ITEM_KO.findall(text))
+        for m in _PAYER_SUBJ_KO.finditer(text):
+            if m.group(1) not in ("것", "원", "비용", "요금"):
+                out.append(({m.group(1)}, set(), items))
+        return out
+    for clause in re.split(r"[;]|,\s+(?=(?:and|while|but|which)\b)|,\s+(?:with)\b", text):
+        amounts = set(_dollar_amounts(clause))
+        for m in _PAYER_SUBJ_EN.finditer(clause):
+            words = _payer_words(m.group(1))
+            if words and not re.search(r"\d", m.group(1)) and m.group(1).split()[-1].lower() not in ("who", "which", "that"):
+                out.append((words, amounts, set()))
+    return out
+
+
+def _cost_payer_swap(plain: str, sents: list[str]) -> bool:
+    mine = _cost_payers(plain)
+    if len(mine) != 1:
+        return False
+    words, amounts, items = mine[0]
+    korean = bool(re.search(r"[가-힣]", plain))
+    linked = []
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        for w, a, i in _cost_payers(s):
+            if (korean and items and items & i) or (amounts and amounts & a):
+                linked.append(w)
+    return bool(linked) and not any(_same_payer(words, w) for w in linked)
+
+
+def _not_paid_flip(plain: str, sents: list[str]) -> bool:
+    m = _NOT_PAID_KO.search(plain)
+    if m:
+        who = m.group(1)
+        return any(re.search(rf"(?<![가-힣]){re.escape(who)}(?:은|는|이|가)\s+(?:\S+\s+){{0,3}}?{_PAY_VERB_KO}", s)
+                   and not _NEGATION.search(s) for s in sents)
+    if re.search(r"[가-힣]", plain) or not _FREE_EN.search(plain):
+        return False
+    names = set(re.findall(r"\b[A-Z][a-z]+[A-Z]\w*\b|\b[A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,})+\b", plain))
+    best = _closest_sentence(plain, sents)
+    if not best or _FREE_EN.search(best) or re.search(r"\bfree\b", best, re.I) or not _COST_EN.search(best):
+        return False
+    return not names or any(n in best for n in names)
+
+
+_PAYER_SHARE_WORDS = {"three-quarters": Decimal("0.75"), "three quarters": Decimal("0.75"), "two-thirds": Decimal("0.667"),
+                "one-third": Decimal("0.333"), "a third": Decimal("0.333"), "a quarter": Decimal("0.25"),
+                "one-quarter": Decimal("0.25"), "half": Decimal("0.5"), "most": "most", "the majority": "most",
+                "the bulk": "most", "the rest": "rest", "the remainder": "rest", "the balance": "rest", "the remaining": "rest"}
+_PAYER_SHARE_ALT = "|".join(sorted((re.escape(k) for k in _PAYER_SHARE_WORDS), key=len, reverse=True))
+_SHARE_BY_EN = re.compile(r"(\d+(?:\.\d+)?)\s?(?:%|percent)\s+by\s+((?:[\w'-]+\s+){0,5}?[\w'-]+?)(?=\s+and\b|\s+with\b|[,.;]|$)", re.I)
+_SHARE_SUBJ_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bwith )|(?<=\band )|(?<=\bwhich ))((?:[\w'-]+\s+){0,5}?[\w'-]+)(?<!\bwas)(?<!\bwere)(?<!\bis)(?<!\bare)\s+(?:paid|paying|pays|covered|covering|"
+                            r"covers|funded|funding|provided|providing|contributed|contributing)\s+(?:for\s+)?"
+                            r"(" + _PAYER_SHARE_ALT + r"|\d+(?:\.\d+)?\s?(?:%|percent)|[$]\s?[\d,.]+(?:\s?(?:million|thousand))?)", re.I)
+
+
+def _payer_shares(text: str) -> list[tuple[set[str], object]]:
+    if re.search(r"[가-힣]", text):
+        return []
+    pairs = [(_payer_words(m.group(2)), Decimal(m.group(1)) / 100) for m in _SHARE_BY_EN.finditer(text)]
+    usd = _dollar_amounts(text)
+    for m in _SHARE_SUBJ_EN.finditer(text):
+        raw = m.group(2).lower()
+        if raw in _PAYER_SHARE_WORDS:
+            share = _PAYER_SHARE_WORDS[raw]
+        elif "%" in raw or "percent" in raw:
+            share = Decimal(re.match(r"[\d.]+", raw).group()) / 100
+        else:
+            vals = [abs(v["value"]) for v in _quantity_values(m.group(2), [])]
+            if not vals or not usd or max(usd) <= vals[0]:
+                continue
+            share = vals[0] / max(usd)
+        pairs.append((_payer_words(m.group(1)) - {"grant", "fund"} or _payer_words(m.group(1)), share))
+    known = [s for _, s in pairs if isinstance(s, Decimal)]
+    out = []
+    for w, s in pairs:
+        if s == "rest":
+            s = (Decimal(1) - sum(known)) if len(known) == 1 and len(pairs) == 2 else ("minor" if any(x == "most" for _, x in pairs) else None)
+        if s is not None and w:
+            out.append((w, s))
+    return out
+
+
+def _share_value_clash(a, b) -> bool:
+    def low(x):
+        return x == "minor" or (isinstance(x, Decimal) and x < Decimal("0.5"))
+
+    def high(x):
+        return x == "most" or (isinstance(x, Decimal) and x > Decimal("0.5"))
+    if isinstance(a, Decimal) and isinstance(b, Decimal):
+        return abs(a - b) > Decimal("0.05")
+    return (high(a) and low(b)) or (low(a) and high(b))
+
+
+def _payer_share_swap(plain: str, sents: list[str]) -> bool:
+    mine = _payer_shares(plain)
+    if not mine:
+        return False
+    for s in sents:
+        theirs = _payer_shares(s)
+        if len(theirs) < 2:
+            continue
+        for w, share in mine:
+            match = [t for tw, t in theirs if _same_payer(w, tw)]
+            if len(match) == 1 and _share_value_clash(share, match[0]):
+                return True
+    return False
+
+
+def _payer_role_swap(plain: str, sents: list[str]) -> bool:
+    return (_cost_payer_swap(plain, sents) or _not_paid_flip(plain, sents) or _payer_share_swap(plain, sents)
+            or _excluded_payer_flip(plain, sents))
+
+
+# 23회차(holdout18 재원 바꿈 놓침 9건 중 원문이 재원을 한정·배제한 6건으로 설계): 원문이 재원을 하나로 못박거나("사업비는 전액
+# 시비다", "위탁비는 시가 전액 낸다", "시비 100%") 어떤 재원을 빼는데("comes from a voter-approved housing bond, not the general
+# fund", "no general fund money is used", "Hospitals do not contribute funding") 주장이 그 밖의 재원이나 뺀 재원이 낸다고 말한 문장.
+# 한국어는 정부 층위(국비·환경부 ↔ 도비 ↔ 시비·구비·군비)로 견주고, 두 문장 모두 비용 항목('위탁비'·'사업비')을 말하면 같을 때만.
+# 주장이 항목을 말하지 않으면 그 층위가 원문 다른 재원 문장에 나오지 않을 때만 본다. 영어는 뺀 재원의 낱말이 모두 주장에 있고
+# 주장이 부정 없이 비용·재원을 말할 때만. "The state climate grant covered the full cost"처럼 한 재원이 비용 전부를 냈다는 주장은
+# 그 재원이 든 원문 재원 문장이 나머지(remainder·rest)나 두 몫 이상을 말하면 표시한다.
+_SOLE_KO = re.compile(r"전액\s*(국비|도비|시비|군비|구비|[가-힣]{1,6}부)(?![가-힣])|전액\s*(국비|도비|시비|군비|구비)(?=다|이다|이며|이고|로|으로|에서)"
+                      r"|(?<![가-힣])(시|구|군|도|국가|[가-힣]{1,6}부)(?:가|이)\s+전액|(국비|도비|시비|군비|구비)\s*100\s*%")
+_FUNDER_KO = re.compile(r"(국비|도비|시비|군비|구비)|(?<![가-힣])([가-힣]{1,5}부)(?=와|과|가|이|는|은|로|으로|에서|의|\s|$)"
+                        r"|(?<![가-힣])(시|구|군|도)(?=와|과|가|이|에서)")
+_NOT_MINISTRY = {"일부", "전부", "내부", "외부", "본부", "대부", "세부", "부부", "학부", "간부", "흉부", "복부", "여부", "정부"}
+_COST_NOUN_KO = re.compile(r"(?<![가-힣])([가-힣]{1,6}(?:비|예산|요금|비용))(?=의|은|는|을|를|만|도|\s)")
+_FUND_CUE_KO = re.compile(r"부담|충당|마련|조달|지원|낸다|냈|내고|나눠|분담|댄다|댔|출연|재원|국비|도비|시비|군비|구비")
+_EXCLUDE_EN = (re.compile(r"\bnot (?:from |by |through |out of )?(?:the |any )?((?:[\w']+\s+){0,3}?(?:fund|funds|grant|grants|bond|bonds|budget|levy))\b", re.I),
+               re.compile(r"\bno ((?:[\w']+\s+){1,3}?)(?:money|funds|funding|dollars)\s+(?:is|are|was|were|will be)\s+used\b", re.I),
+               re.compile(r"(?:^|[,;]\s+|\.\s+)((?:[A-Za-z][\w'-]*\s+){0,2}?[A-Za-z][\w'-]*)\s+(?:do|does|did|will)\s+not\s+"
+                          r"(?:contribute|pay|provide|put up)\b(?:\s+any)?(?:\s+(?:funding|money|funds))?", re.I))
+_FUND_CUE_EN = re.compile(r"\b(?:paid|pays?|fund(?:ed|s|ing)?|draws?|drew|financed|costs?|covers?|covered|contribut\w+|share[sd]?|"
+                          r"budget|money|bankroll\w*)\b", re.I)
+_FULL_COST_EN = re.compile(r"^(.+?)\s+(?:covered|covers|paid for|pays for|funded|funds|financed)\s+(?:the\s+)?(?:full|entire|whole|total)\s+"
+                           r"(?:cost|costs|price|amount)\b|^(.+?)\s+(?:covered|covers|paid|pays|funded|funds|financed)\s+(?:\w+\s+){0,4}?(?:entirely|in full)\b", re.I)
+_EXCLUDE_GENERIC = {"the", "a", "an", "any", "city's", "county's", "state's", "its", "their", "program's", "local"}
+
+
+def _tier_of(word: str) -> str | None:
+    if word in _TIERS:
+        return _TIERS[word]
+    if word.endswith("부") and word not in _NOT_MINISTRY:
+        return "federal"
+    return None
+
+
+def _excluded_payer_flip(plain: str, sents: list[str]) -> bool:
+    if re.search(r"[가-힣]", plain):
+        if not _FUND_CUE_KO.search(plain) or _NEGATION.search(plain):
+            return False
+        mine = {t for m in _FUNDER_KO.finditer(plain) for w in m.groups() if w and (t := _tier_of(w))}
+        items = {i for i in _COST_NOUN_KO.findall(plain) if not _FUNDER_KO.fullmatch(i)}
+        clauses = [(c, s) for s in sents for c in re.split(r"(?<!\d),(?!\d)|;|했고|하고|이고|이며|으며", s)]
+        for index, (clause, sentence) in enumerate(clauses):
+            m = _SOLE_KO.search(clause)
+            tier = _tier_of(next(w for w in m.groups() if w)) if m else None
+            extra = mine - {tier}
+            if not tier or not extra:
+                continue
+            # '사업비는 총 3억 6,000만 원이며 전액 시비다'처럼 항목이 앞 절에 있으면 그 문장의 항목을 쓴다.
+            theirs = ({i for i in _COST_NOUN_KO.findall(clause) if not _FUNDER_KO.fullmatch(i)}
+                      or {i for i in _COST_NOUN_KO.findall(sentence) if not _FUNDER_KO.fullmatch(i)})
+            if items and theirs:
+                if items & theirs:
+                    return True
+                continue
+            elsewhere = {_tier_of(w) for j, (other, _) in enumerate(clauses) if j != index
+                         for m2 in _FUNDER_KO.finditer(other) for w in m2.groups() if w}
+            if not extra & elsewhere:
+                return True
+        return False
+    if not _FUND_CUE_EN.search(plain) or _RESTRAINED.search(plain):
+        return False
+    low = plain.lower()
+    words = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", low)}
+    for s in sents:
+        for pattern in _EXCLUDE_EN:
+            for m in pattern.finditer(s):
+                if pattern is not _EXCLUDE_EN[2] and not _FUND_CUE_EN.search(s):
+                    continue
+                key = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", m.group(1).lower())} - _EXCLUDE_GENERIC
+                if key and key <= words:
+                    return True
+    m = _FULL_COST_EN.match(plain)
+    if m:
+        key = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", (m.group(1) or m.group(2)).lower())} - _EXCLUDE_GENERIC
+        for s in sents:
+            sw = {re.sub(r"'s$|(?<=[a-z]{3})s$", "", w) for w in re.findall(r"[a-z][\w'-]*", s.lower())}
+            if (key and key <= sw and _FUND_CUE_EN.search(s)
+                    and (re.search(r"\b(?:remainder|the rest|the balance)\b", s, re.I)
+                         or len(re.findall(r"\d+(?:\.\d+)?\s?(?:%|percent)", s)) >= 2)):
+                return True
+    return False
+
+
+# 16회차(holdout11 대상 바꿈을 보고 설계): 일을 맡은 주체를 바꾼 문장("Adjacent property owners are responsible for pruning"
+# ← 원문 "The forestry division prunes"; "포획과 수술은 시 직영 동물보호센터가 맡는다" ← "시와 계약한 동물병원 11곳이 맡는다").
+# 주장에서 '누가 무슨 일을 하는지'(주체 구 + 일 동사)를 읽고, 일 낱말(주체 구를 뺀 나머지)이 가장 많이 겹치는 원문 절의 주체 구와
+# 견준다. 원문 절에 주체 구가 있고 그 낱말이 주장 주체 구와 하나도 겹치지 않을 때만 표시한다(주체가 안 보이면 판정하지 않음).
+_DOER_EN = re.compile(r"(?:^|(?<=[,;] )|(?<=\bthat )|(?<=\bwhile ))((?:[A-Z]?[\w'-]+\s+){0,4}?[\w'-]+)\s+"
+                      r"(?:also |still |directly |now )?"
+                      r"(?:(?:is|are|was|were|remains?|remained) (?:also |still |now )?(?:responsible for|in charge of)|hires?|hired|supervises?|supervised|handles?|handled|prunes?|pruned|"
+                      r"conducts?|conducted|performs?|performed|carr(?:y|ies|ied) (?:the|out)|runs?|ran|operates?|operated|manages?|"
+                      r"managed|maintains?|maintained|inspects?|inspected|installs?|installed|delivers?|delivered|staffs?|staffed|"
+                      r"cleans?|cleaned|visits?|visited|collects?|collected|administers?|administered|reviews?|reviewed|"
+                      r"advances?|advanced|bears?|bore|absorbs?|absorbed|does|did)\b")
+_DOER_EN_BY = re.compile(r"\b(?:is|are|was|were|be|been|being|get|gets)\s+(?:\w+ly\s+)?(?:\w+ed|done|run|paid|borne|made|kept|seen|"
+                         r"taken|given)\s+(?:\w+\s+){0,4}?by\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)(?=[,.;]|\s+(?:and|but|"
+                         r"while|which|at|in|on|for|with|under|through|from)\b|$)", re.I)
+# 24회차(holdout19 운영 주체 놓침): 이름을 따옴표로 묶거나("'솔내지역자활센터'가"), '위탁받아 맡는다'처럼 일 동사 앞에 위탁 말이
+# 오거나, "조리는 X가, 배달은 Y가 맡는다"처럼 앞 주체의 일 동사를 줄인 문장도 주체로 읽는다.
+# 24회차: "ongoing maintenance stays with the city's own electricians"처럼 일 뒤에 맡는 주체가 오는 문장.
+_DOER_EN_WITH = re.compile(r"\b(?:stays?|stayed|remains?|remained|rests?|rested|lies|lay)\s+with\s+((?:the\s+)?(?:[\w'-]+\s+){0,3}?[\w'-]+)"
+                           r"(?=[,.;]|\s+(?:and|but|while|which|at|in|on|for|under|through)\b|$)", re.I)
+_DOER_KO = re.compile(r"((?:[가-힣A-Za-z0-9·'‘’\"“”]+(?<![은는을를])\s+){0,3}?[가-힣A-Za-z0-9·'‘’\"“”]+?)(?:이|가|에서)\s+"
+                      r"(?:모두\s+|직접\s+|전담해\s+|나눠\s+|위탁받아\s+|위탁을\s+받아\s+|계약해\s+)*"
+                      # 19회차: 주체와 일 동사 사이의 때·곳 말('오전 8시 30분까지 학교에 직접 배송한다')을 두 어절까지 건넌다.
+                      r"(?:(?:[가-힣0-9:]+\s+){0,2}[가-힣0-9:]+(?:까지|에|로|으로|에게)\s+(?:직접\s+)?){0,2}"
+                      r"(?:맡|담당|진행|운영|관리|점검|단속|세척|소독|방문|출동|수행|처리|수거|설치|채용|배치|선발|심사|조사|보관|책임|배송|배달|실시|교체)"
+                      r"|((?:[가-힣A-Za-z0-9·]+(?<![은는을를])\s+){0,2}?(?<![가-힣])[가-힣A-Za-z0-9·]+?)\s*(?:의\s*)?(?:책임|몫|담당)(?:이다|이며|이고|으로|이었다|이라)"
+                      r"|(?<=[은는]\s)((?:[가-힣A-Za-z0-9·'‘’\"“”]+(?<![은는을를])\s+){0,2}?[가-힣A-Za-z0-9·'‘’\"“”]+?)(?:이|가),\s+"
+                      r"(?=[^.]*?[은는]\s[^.]*?(?:이|가)\s+(?:모두\s+|직접\s+)?(?:맡|담당|진행|운영|관리|수행|처리|배송|배달))")
+_DOER_GENERIC = {"the", "a", "an", "its", "their", "his", "her", "this", "that", "these", "those", "each", "every", "all",
+                 "also", "still", "now", "directly", "who", "which", "program", "pilot", "staff", "it", "they", "them",
+                 "직접", "모두", "각", "소속", "직원", "직원들", "들", "등", "현재", "새", "이", "그", "모든", "실제"}
+
+
+def _doer_words(phrase: str) -> set[str]:
+    words = [re.sub(r"'s$|(?<=[a-z]{3})s$|(?<=[가-힣])(?:과|와|은|는|이|가|도|만|에서|의)$", "", w.lower())
+             for w in re.findall(r"[A-Za-z][\w'-]*|[가-힣]+", phrase)]
+    words = [w for w in words if w and w not in _DOER_GENERIC]
+    # 한 글자 낱말('시'·'구')은 다른 주체 구에도 흔히 붙으므로("시와 계약한 동물병원") 긴 낱말이 있으면 뺀다.
+    longer = {w for w in words if len(w) > 1}
+    return longer or set(words)
+
+
+def _doers(text: str) -> list[tuple[str, int, int]]:
+    """(주체 구, 시작, 끝) — 한국어는 'X가 맡는다'·'X 책임이다', 영어는 'X hires'·'is pruned by X'."""
+    if re.search(r"[가-힣]", text):
+        return [(m.group(1) or m.group(2) or m.group(3), m.start(), m.end()) for m in _DOER_KO.finditer(text)]
+    # 19회차: 'not city staff'는 주체가 아니다('staff'를 동사로 읽었다).
+    out = [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN.finditer(text)
+           if m.group(1).split()[-1].lower() not in ("is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "not")
+           and m.group(1).split()[0].lower() not in ("not", "no")]
+    return out + [(m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_BY.finditer(text)] + [
+        (m.group(1), m.start(1), m.end(1)) for m in _DOER_EN_WITH.finditer(text)]
+
+
+def _ko_task_doers(text: str) -> list[tuple[str, set[str]]]:
+    out = []
+    for phrase, start, _ in _doers(text):
+        boundary = max(text.rfind(",", 0, start), text.rfind(";", 0, start)) + 1
+        topic = re.fullmatch(r"\s*([가-힣][가-힣\s·]*?)[은는]\s*", text[boundary:start])
+        if topic and not _NEGATION.search(text):
+            out.append((re.sub(r"\s+", "", topic.group(1)), _doer_words(phrase)))
+    return out
+
+
+def _doer_swap(plain: str, sents: list[str]) -> bool:
+    # 생략 동사가 있는 병렬문은 명시된 같은 일끼리만 주체를 견준다.
+    tasks = _ko_task_doers(plain)
+    sources = [_ko_task_doers(s) for s in sents]
+    if (len(tasks) > 1 or any(len(pairs) > 1 for pairs in sources)) and not _RESTRAINED.search(plain):
+        for task, words in tasks:
+            theirs = [other for pairs in sources for name, other in pairs if name == task]
+            if words and theirs and all(other and not (words & other) for other in theirs):
+                return True
+    mine = _doers(plain)
+    if len(mine) != 1 or _RESTRAINED.search(plain):
+        return False
+    phrase, start, end = mine[0]
+    words = _doer_words(phrase)
+    # 수량 문장("Paramedics averaged nearly 14 visits", "hired 23 more lifeguards", "More than half of inspected buildings")은
+    # 누가 일을 맡는지가 아니라 몇인지를 말하므로 보지 않는다(수치 검사가 맡는다).
+    if (not words or re.search(r"\d", phrase)
+            or re.match(r"(?:more|less|fewer|half|most|about|nearly|over|under|some|many|few|almost|roughly)\b", phrase, re.I)
+            or re.match(r"\s*\S+\s+(?:\w+\s+)?(?:about |nearly |roughly |over |more than |almost )?[$€£₩]?\d", plain[end:])):
+        return False
+    task = plain[:start] + " " + plain[end:]
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = None, 0
+    tied = {}
+    stems = _char_bigrams if korean else _word_stems
+    negation = _NEGATION if korean else _NEGATION_WORDS
+    task_stems = stems(negation.sub(" ", task))
+    for s in sents:
+        for c in [s] + _clauses(s):
+            theirs = _doers(c)
+            if not theirs:
+                continue
+            rest = c
+            for p, a, b in sorted(theirs, key=lambda t: -t[1]):
+                rest = rest[:a] + " " + rest[b:]
+            shared, _ = _clause_overlap(task, rest)
+            overlap = frozenset(task_stems & stems(negation.sub(" ", rest)))
+            # 24회차: 겹침이 같으면 주체가 적은 절(문장보다 그 일을 말하는 절)을 고른다.
+            if shared > most or (shared and shared == most and len(theirs) < len(best)):
+                best, most, tied = theirs, shared, {overlap: [theirs]}
+            elif shared and shared == most and len(theirs) == len(best):
+                tied.setdefault(overlap, []).append(theirs)
+    if best is None or most < (4 if korean else 2):
+        return False
+    # 같은 업무의 지지만 인정하며, 다른 업무 동점에 주체 충돌이 남으면 순서와 무관하게 표시한다.
+    return any(all(_doer_words(p) and not (_doer_words(p) & words)
+                   for theirs in group for p, _, _ in theirs) for group in tied.values())
 
 
 def _causal_stems(text: str) -> set[str]:
@@ -1472,6 +2773,107 @@ def _period_conflict(plain: str, sents: list[str]) -> bool:
         if held and all(p and not (p & claim_periods) for p in held):
             return True
     return False
+
+
+# 19회차: 일의 빈도(once a week·주 2회·매달·분기마다)를 해마다 횟수로 읽는다. 기간 낱말만 있는 '월 600만 원'·'하루 4시간'은
+# 빈도가 아니므로 횟수 낱말(번·회·차례·once·twice·times)이나 '매-·마다·every·-ly'가 붙을 때만 센다.
+_FREQ_COUNT_KO = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6}
+_FREQ_COUNT_EN = {"once": 1, "twice": 2, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
+_FREQ_PER_YEAR = {"day": 365, "week": 52, "2week": 26, "month": 12, "quarter": 4, "half": 2, "year": 1}
+_FREQ_KO_PERIOD = {"매일": "day", "날마다": "day", "매주": "week", "주마다": "week", "격주": "2week", "매달": "month", "매월": "month",
+                   "달마다": "month", "월별": "month", "주별": "week", "일별": "day", "연별": "year",
+                   "분기마다": "quarter", "분기별": "quarter", "반기마다": "half", "매년": "year", "해마다": "year"}
+_FREQ_KO = re.compile(r"(매일|날마다|매주|주마다|격주|매달|매월|달마다|월별|주별|일별|연별|분기마다|분기별로?|반기마다|매년|해마다)"
+                      r"(?:\s*(\d+|한|두|세|네|다섯|여섯)\s*(?:번|회|차례))?"
+                      r"|(?:(하루|일주일|주|한\s?달|월|분기|1년|연)\s*(?:에|당)?\s*(\d+|한|두|세|네|다섯|여섯)\s*(?:번|회|차례))")
+_FREQ_KO_UNIT = {"하루": "day", "일주일": "week", "주": "week", "한 달": "month", "한달": "month", "월": "month", "분기": "quarter",
+                 "1년": "year", "연": "year"}
+_FREQ_EN = re.compile(r"\b(?:(once|twice|(?:one|two|three|four|five|six|\d+) times)\s+(?:a|per|each|every)\s+(day|week|month|quarter|year)"
+                      r"|every (other week|two weeks|three months|six months|day|week|month|quarter|year)"
+                      r"|(?:(once|twice|(?:one|two|three|four|five|six|\d+) times)\s+)?(daily|weekly|biweekly|fortnightly|monthly|quarterly|annually|yearly))\b",
+                      re.I)
+_FREQ_EN_WORD = {"daily": "day", "weekly": "week", "biweekly": "2week", "fortnightly": "2week", "monthly": "month",
+                 "quarterly": "quarter", "annually": "year", "yearly": "year", "other week": "2week", "two weeks": "2week",
+                 "three months": "quarter", "six months": "half"}
+
+
+# 'every 3 months'·'2주에 한 번'·'3개월마다'처럼 N 기간마다 한 번(또는 M번).
+_FREQ_EVERY_EN = re.compile(r"\bevery\s+(\d+|two|three|four|five|six)\s+(day|week|month|year)s\b", re.I)
+_FREQ_EVERY_KO = re.compile(r"(\d+|두|세|네|여섯)\s*(일|주|개월|달|년)\s*(?:에|마다)(?:\s*(\d+|한|두|세|네)\s*(?:번|회|차례))?")
+_FREQ_KO_SPAN = {"일": "day", "주": "week", "개월": "month", "달": "month", "년": "year"}
+
+
+def _frequencies(text: str) -> list[tuple[float, int, int]]:
+    """(해마다 횟수, 시작, 끝) 목록."""
+    out = []
+    for m in _FREQ_EVERY_EN.finditer(text):
+        raw = m.group(1).lower()
+        n = int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)
+        if n:
+            out.append((_FREQ_PER_YEAR[m.group(2).lower()] / n, m.start(), m.end()))
+    for m in _FREQ_EVERY_KO.finditer(text):
+        n = int(m.group(1)) if m.group(1).isdigit() else _FREQ_COUNT_KO.get(m.group(1), 0)
+        raw = m.group(3)
+        count = 1 if raw is None else (int(raw) if raw.isdigit() else _FREQ_COUNT_KO.get(raw, 0))
+        # 'N달에'·'N년에'는 횟수 낱말이 있을 때만 빈도다('3년에 걸쳐'와 구별).
+        if n and count and (m.group(0).endswith("마다") or raw is not None):
+            out.append((count * _FREQ_PER_YEAR[_FREQ_KO_SPAN[m.group(2)]] / n, m.start(), m.end()))
+    taken = [(a, b) for _, a, b in out]
+    for m in _FREQ_KO.finditer(text):
+        if m.group(1):
+            period = _FREQ_KO_PERIOD.get(m.group(1), "quarter" if m.group(1).startswith("분기") else None)
+            raw = m.group(2)
+        else:
+            period, raw = _FREQ_KO_UNIT.get(m.group(3)), m.group(4)
+        count = 1 if raw is None else (int(raw) if raw.isdigit() else _FREQ_COUNT_KO.get(raw, 0))
+        if period and count and not any(a <= m.start() < b for a, b in taken):
+            out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
+    for m in _FREQ_EN.finditer(text):
+        if m.group(1):
+            raw = m.group(1).lower().split()[0]
+            count, period = (int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)), m.group(2).lower()
+        else:
+            # 'twice weekly'는 'twice a week'와 같다.
+            word, raw = (m.group(3) or m.group(5)).lower(), (m.group(4) or "once").lower().split()[0]
+            count, period = (int(raw) if raw.isdigit() else _FREQ_COUNT_EN.get(raw, 0)), _FREQ_EN_WORD.get(word, word)
+        if count and period in _FREQ_PER_YEAR and not any(a <= m.start() < b for a, b in taken):
+            out.append((count * _FREQ_PER_YEAR[period], m.start(), m.end()))
+    return out
+
+
+def _frequency_swap(plain: str, sents: list[str]) -> bool:
+    """주장이 한 가지 빈도로 말한 일을, 그 일 낱말이 가장 겹치는 원문 절(빈도를 말한 절)이 다른 빈도로 말하면 True.
+
+    빈도 낱말을 뺀 나머지로 겹침을 재고, 가장 많이 겹치는 절이 여럿이면 그 빈도를 모두 인정한다."""
+    mine = _frequencies(plain)
+    if not mine or len({r for r, _, _ in mine}) != 1:
+        return False
+    rate = mine[0][0]
+    task = plain
+    for _, a, b in sorted(mine, key=lambda t: -t[1]):
+        task = task[:a] + " " + task[b:]
+    korean = bool(re.search(r"[가-힣]", plain))
+    best, most = set(), 0
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        # 문장 전체는 빈도가 하나뿐일 때만 후보로 둔다(여러 빈도가 든 문장은 절마다 본다).
+        whole = [s] if len({r for r, _, _ in _frequencies(s)}) == 1 else []
+        for c in whole + _clauses(s):
+            theirs = _frequencies(c)
+            if not theirs:
+                continue
+            rest = c
+            for _, a, b in sorted(theirs, key=lambda t: -t[1]):
+                rest = rest[:a] + " " + rest[b:]
+            shared, _ = _clause_overlap(task, rest)
+            if shared > most:
+                best, most = {r for r, _, _ in theirs}, shared
+            elif shared == most:
+                best |= {r for r, _, _ in theirs}
+    if not best or most < (4 if korean else 2):
+        return False
+    return all(abs(r - rate) > 0.1 * max(r, rate) for r in best)
 
 
 # 값의 기준: 같은 수치를 원문과 다른 기준(1인당·가구당·곳당·대당·학교당·평균·총계)으로 말하는지 본다. 기간 단위와 같은 방식(절 안 가장 가까운 것).
@@ -1518,7 +2920,8 @@ def _basis_conflict(plain: str, sents: list[str]) -> bool:
 # 계획·목표의 실적화: 원문이 앞으로의 계획·목표·전망으로만 말한 수치를 유보 없이 이룬 것처럼 쓰는지 본다.
 # 추정(estimate·추정)을 떼는 경우는 오표시 위험이 커서 아직 표시하지 않는다(백로그).
 _PLAN_WORDS = re.compile(r"\b(?:plan(?:s|ned|ning)?|target(?:s|ed)?|aim(?:s|ed)?|goal|expect(?:s|ed)?|project(?:ed|ion|ions)|"
-                         r"forecast\w*|propos\w*|intend\w*|will)\b|계획|목표|예정|전망|예상|방침", re.I)
+                         r"forecast\w*|propos\w*|intend\w*|will|considering|under consideration)\b|계획|목표|예정|전망|예상|방침|"
+                         r"방안을\s*(?:검토|추진|마련)|검토\s*(?:중|하고\s*있)", re.I)   # 10회차: "늘리는 방안을 검토하고 있다"
 # 범위 일반화: 시범·표본 범위 결과를 전역·전체 결과로 쓰는지 본다.
 _WIDE_SCOPE = re.compile(
     r"\b(?:nationwide|citywide|statewide|countrywide|across (?:the )?(?:entire )?(?:city|country|nation|state|region)|"
@@ -1627,11 +3030,18 @@ def _value_year(text: str, value: dict, years: list[tuple[int, int, int]]) -> in
     return next(iter(mine)) if len(mine) == 1 else None
 
 
+# 비교 기준 연도("2024년보다 50% 늘어 14,400명", "up 20 percent than 2024", "compared with 2024")는 수치의 연도가 아니다(11회차 holdout7).
+_BASE_YEAR_TAIL = re.compile(r"\s?년?\s?(?:보다|대비|에\s?비해|에\s?견줘)")
+_BASE_YEAR_LEAD = re.compile(r"\b(?:than|compared (?:with|to)|versus|vs\.?|relative to)\s+(?:(?:the\s+)?(?:same\s+)?(?:period|months?|level)\s+(?:of|in)\s+)?$", re.I)
+
+
 def _year_values(text: str) -> list[tuple[dict, int | None]]:
-    years = _year_spans(text)
+    spans = _year_spans(text)
+    years = [(y, a, b) for y, a, b in spans
+             if not (_BASE_YEAR_TAIL.match(text, b) or _BASE_YEAR_LEAD.search(text[:a]))]
     return [(v, _value_year(text, v, years)) for v in _quantity_values(text, _date_like_spans(text))
             if not v.get("unsupported_unit") and v["dimension"] not in ("년", "월", "일")
-            and not any(a <= v["start"] < b for _, a, b in years)]
+            and not any(a <= v["start"] < b for _, a, b in spans)]
 
 
 def _year_conflict(plain: str, sents: list[str]) -> bool:
@@ -1690,6 +3100,9 @@ _CHANGE_FROM = re.compile(r"\bfrom\s*$", re.I)
 def _bounded_value(text: str, value: dict) -> bool:
     """수치가 상한·하한 낱말 뒤에 있거나 범위의 끝값이면 True("from X to Y"의 변화 전후 값은 뺀다)."""
     before = text[max(0, value["start"] - 40):value["start"]]
+    if (re.search(r"\b(?:over|under)\s*$", before, re.I)
+            and (value["dimension"] in ("months", "time") or re.match(r"\s*(?:years?|weeks?|days?)\b", text[value["end"]:], re.I))):
+        return False   # "over 12 months"는 기간('동안')이지 하한이 아니다(10회차)
     if _BOUND_LEAD.search(before) or _BOUND_TAIL.match(text, value["end"]):
         return True
     prev = _RANGE_BEFORE.search(before)
@@ -1761,12 +3174,84 @@ def _same_kind(a: tuple, b: tuple) -> bool:
     return a[:2] == b[:2] and (not a[2] or not b[2] or a[2] == b[2])
 
 
+# 21회차(holdout15·16 값-이름 맞바꿈 놓침으로 설계): 원문이 한 문장에서 이름마다 값을 나열할 때("환경부 보조 50%, 시비 30%, 관리주체
+# 20%", "3000K … in residential areas and 4000K on arterial roads", "시가 40만 원, 가구가 20만 원") 주장이 한 값을 다른 이름에
+# 붙인 문장. 절마다 값이 하나뿐인 원문 절을 (이름 낱말, 값)으로 읽고, 주장 절의 이름 낱말이 원문의 다른 값 절과는 겹치고 같은 값
+# 절과는 하나도 겹치지 않으며, 원문 어디에도 그 값과 주장 이름 낱말을 함께 담은 절이 없을 때만 표시한다.
+_PAIR_SPLIT = re.compile(r"[;:()]|,(?!\d)|\s(?:and|but|while|whereas|compared with|versus|vs\.?)\s|(?<=[가-힣])(?:고|며|지만)\s", re.I)
+_PAIR_PARTICLE = re.compile(r"(?:으로|에서|에게|까지|부터|이며|이고|은|는|이|가|을|를|의|로|와|과|도|에)$")
+_PAIR_STOP = _EN_CONTEXT_STOP | {"the", "and", "for", "its", "per", "each", "share", "cost", "costs", "total", "while", "get", "gets",
+                                 "received", "receive", "receives", "paid", "pays", "pay", "covers", "covered", "contributes",
+                                 "contributed", "came", "comes", "went", "rest", "remaining", "accounted", "made", "makes"}
+
+
+def _pair_terms(segment: str) -> set[str]:
+    text = re.sub(r"[$€£₩]?\d[\d,.]*\s*(?:%|퍼센트|percent)?", " ", segment)
+    out = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", text)} - _PAIR_STOP
+    for w in re.findall(r"[가-힣]+", text):
+        w = _PAIR_PARTICLE.sub("", w) if len(w) > 1 else w
+        if w and not re.fullmatch(r"[천만억조원명곳건개대중약총모두했다였다이다있다되었다됐다부담했다냈다]+", w):
+            out.add(w[:3])
+    return out
+
+
+_PAIR_CHANGE = re.compile(r"\bfrom\b|\bto\b|에서|으로|로\s|증가|감소|늘|줄|\b(?:rose|fell|grew|dropped|increased|decreased|up|down)\b", re.I)
+
+
+def _pair_segments(text: str, change: re.Pattern = _PAIR_CHANGE) -> list[tuple[set[str], dict]]:
+    """절마다 같은 차원 값이 하나뿐인 (이름 낱말, 값). 증감·범위 절("from 52 to 37", "236명에서 214명으로")은 뺀다."""
+    out = []
+    for seg in _PAIR_SPLIT.split(text):
+        if not seg or not seg.strip() or change.search(seg):
+            continue
+        vals = [v for v in _quantity_values(seg, _date_like_spans(seg)) if not v.get("unsupported_unit") and v["value"]
+                and not _is_date_number(v, seg)
+                and not (v["dimension"] == "unitless" and re.fullmatch(r"(?:19|20)\d\d", v["raw"].strip()))]
+        # 한 절에 값이 여럿이면("사업비 3억 원은 시비가 70%") 값마다 앞 값 뒤부터 다음 값 앞까지를 그 값의 이름으로 본다.
+        vals.sort(key=lambda v: v["start"])
+        for i, v in enumerate(vals):
+            if sum(1 for w in vals if w["dimension"] == v["dimension"]) > 1:
+                continue
+            lo = vals[i - 1]["end"] if i else 0
+            hi = vals[i + 1]["start"] if i + 1 < len(vals) else len(seg)
+            out.append((_pair_terms(seg[lo:v["start"]] + " " + seg[v["end"]:hi]), v))
+    return out
+
+
+def _pair_swap(plain: str, sents: list[str]) -> bool:
+    same = lambda a, b: a["dimension"] == b["dimension"] and abs(a["value"]) == abs(b["value"])
+    pairs = [_pair_segments(s) for s in sents]
+    for terms, value in _pair_segments(plain):
+        if not terms or any(same(v, value) and t & terms for segs in pairs for t, v in segs):
+            continue
+        for segs in pairs:
+            kin = [(t, v) for t, v in segs if v["dimension"] == value["dimension"]]
+            if len(kin) < 2:
+                continue
+            # 나열 절 둘 이상에 나오는 낱말("설치비", "부담")은 이름을 가르지 못한다.
+            own = [t - set().union(*(u for j, (u, _) in enumerate(kin) if j != i)) for i, (t, _) in enumerate(kin)]
+            if (any(same(v, value) and not t & terms for t, (_, v) in zip(own, kin))
+                    and any(not same(v, value) and t & terms for t, (_, v) in zip(own, kin))):
+                return True
+    return False
+
+
 def _subject_swap(plain: str, sents: list[str]) -> bool:
     """주장 수치가 원문에서 나오는 자리마다, 그 자리의 대상 낱말은 주장에 없고 같은 종류 다른 수치 자리의 대상 낱말이 주장에 더
     많이 있으면 True(주장이 수치를 원문의 다른 대상으로 옮겨 붙임)."""
     claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain)) if not v.get("unsupported_unit")]
     spots = [(s, v, vals) for s in sents
              for vals in [[v for v in _quantity_values(s, _date_like_spans(s)) if not v.get("unsupported_unit")]] for v in vals]
+    # 14회차: 원문 세 문장 이상에 나오는 주제 낱말('bus', 'route')은 대상을 가르지 못한다. 'lag of no more than 45 seconds'가
+    # 'bus' 하나 때문에 'when the bus was 10 minutes from their stop'의 대상으로 옮긴 것으로 읽히던 오표시.
+    counts: dict[str, int] = {}
+    for s in sents:
+        words = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", s)}
+        words = {w[:-2] if re.search(r"(?:[sx]|ch|sh)es$", w) and len(w) > 4 else
+                 w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words}
+        for w in words | {w[:2] for w in re.findall(r"[가-힣]{2,}", s)}:
+            counts[w] = counts.get(w, 0) + 1
+    topic = {w for w, n in counts.items() if n >= 3}
     for value in claim_values:
         if _is_date_number(value, plain):
             continue
@@ -1779,9 +3264,11 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
         def moved(s: str, v: dict, vals: list[dict]) -> bool:
             own = _subject_terms(s, v, vals)
             for s2, w, vals2 in spots:
-                if abs(w["value"]) == abs(value["value"]) or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2):
+                # 14회차: 주장이 그 값도 말하면("빈집 30채 중 26채") 그 자리의 대상 낱말이 주장에 있는 것이 당연하다.
+                if (any(abs(w["value"]) == abs(c["value"]) and w["dimension"] == c["dimension"] for c in claim_values)
+                        or not _same_kind(_value_kind(w, s2), kind) or _is_date_number(w, s2)):
                     continue
-                other = _subject_terms(s2, w, vals2)
+                other = _subject_terms(s2, w, vals2) - topic
                 toward, away = mine & (other - own), mine & (own - other)
                 # 주장이 원래 자리의 고유 대상 낱말을 모두 담으면 옮긴 것이 아니다. "에너지 바우처는 가구당 15만 원이었고, 사업비는
                 # 총 36억 원"처럼 앞 절의 주제어가 뒤 절에서 생략되면 주제어가 앞 수치의 대상으로만 잡히기 때문이다(2026-10-09).
@@ -1789,6 +3276,166 @@ def _subject_swap(plain: str, sents: list[str]) -> bool:
                     return True
             return False
         if all(moved(s, v, vals) for s, v, vals in held):
+            return True
+    return False
+
+
+# 14회차: 나열 항목 바꿔치기. 원문이 대상 여러 개를 나열하고("grocery stores and fire stations", "주민센터·보건소·학교") 다른
+# 문장에서 그중 하나에만 수치를 준다("Lockers at grocery stores collected 71 percent", "통화의 46%는 학교 관련 문의"). 주장이
+# 같은 수치를 나열의 다른 항목에 붙이면("Fire stations accounted for 71 percent", "46%는 보건소 관련 문의") 낱말·수치 대조를 모두
+# 통과한다. 수치가 든 원문 문장마다 나열의 한 항목만 담고 주장 항목은 담지 않으며, 주장은 원문 항목을 담지 않을 때만 본다.
+_LIST_EN = re.compile(r"((?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)((?:\s*,\s*(?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)*)"
+                      r",?\s+(?:and|or)\s+((?:[A-Za-z][\w-]*\s+){0,1}[A-Za-z][\w-]*)")
+_LIST_KO = re.compile(r"[가-힣]{2,}(?:\s*·\s*[가-힣]{2,})+|[가-힣]{2,}(?:과|와)\s+[가-힣]{2,}")
+_LIST_STOP = {"the", "a", "an", "and", "or", "of", "in", "at", "to", "for", "with", "from", "by", "on", "its", "their", "his",
+              "her", "was", "were", "is", "are", "be", "been", "has", "had", "have", "two", "three", "four", "both", "all",
+              "more", "less", "than", "including", "such", "as", "other", "then", "also", "each", "per"}
+
+
+def _member_terms(member: str) -> frozenset[str]:
+    if re.search(r"[가-힣]", member):
+        return frozenset({re.sub(r"(?:과|와|은|는|이|가|을|를|의|에|에서|로|으로)$", "", member.strip())})
+    words = [w.lower() for w in re.findall(r"[A-Za-z][\w-]*", member)]
+    words = [w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words if w not in _LIST_STOP]
+    return frozenset(words)
+
+
+def _list_groups(sents: list[str]) -> list[list[frozenset[str]]]:
+    groups = []
+    for s in sents:
+        for m in _LIST_EN.finditer(s):
+            members = [m.group(1)] + [x for x in m.group(2).split(",") if x.strip()] + [m.group(3)]
+            terms = [_member_terms(x) for x in members]
+            if all(terms) and len(set(terms)) == len(terms) and not any(a & b for i, a in enumerate(terms) for b in terms[i + 1:]):
+                groups.append(terms)
+        for m in _LIST_KO.finditer(s):
+            members = re.split(r"\s*·\s*|(?<=[가-힣])(?:과|와)\s+", m.group(0))
+            terms = [_member_terms(x) for x in members if len(x.strip()) >= 2]
+            if len(terms) >= 2 and len(set(terms)) == len(terms):
+                groups.append(terms)
+    return groups
+
+
+def _mentions(text: str, terms: frozenset[str]) -> bool:
+    if any(re.search(r"[가-힣]", t) for t in terms):
+        return all(t in text for t in terms)
+    words = {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w
+             for w in (x.lower() for x in re.findall(r"[A-Za-z][\w-]*", text))}
+    return terms <= words
+
+
+def _list_member_swap(plain: str, sents: list[str]) -> bool:
+    claim_values = [v for v in _quantity_values(plain, _date_like_spans(plain))
+                    if not v.get("unsupported_unit") and not _is_date_number(v, plain)]
+    if not claim_values:
+        return False
+    groups = _list_groups(sents)
+    for value in claim_values:
+        held = [s for s in sents if _scripts(s) == _scripts(plain) and any(
+            c["dimension"] == value["dimension"] and abs(c["value"]) == abs(value["value"])
+            for c in _quantity_values(s, _date_like_spans(s)) if not c.get("unsupported_unit"))]
+        if not held:
+            continue
+        for group in groups:
+            mine = [t for t in group if _mentions(plain, t)]
+            if len(mine) != 1:
+                continue
+            if all(not _mentions(s, mine[0]) and any(_mentions(s, t) and not _mentions(plain, t) for t in group if t != mine[0])
+                   for s in held):
+                return True
+    return False
+
+
+# 14회차: 순위 바꿈. 원문이 1위를 밝혔는데("The most common violations were missing smoke detectors, followed by mold",
+# "Soccer accounted for 46 percent, followed by basketball", "단열 보강이 가장 많았고 보일러 교체, 창호 교체 순이었다") 주장은
+# 다른 항목을 1위로 말한다("Mold and water leaks were the most common violation", "가장 많이 한 공사는 보일러 교체였다").
+# 주장에 순위 낱말이 있고, 같은 대상(내용 낱말 2개 이상 겹침)을 말하는 원문 문장에서 1위 항목을 읽을 수 있으며, 주장이
+# 1위 항목 낱말을 하나도 담지 않을 때만 본다.
+_RANK_CLAIM = re.compile(r"\bmost (?:common\w*|frequent\w*|often|popular|cited|used|requested)\b|"
+                         r"\b(?:largest|biggest|leading|top) (?:share|category|source|reason|type|group)\b|"
+                         r"가장\s?(?:많|흔|자주|큰 비중)|최다", re.I)
+_RANK_TOP_EN = (
+    re.compile(r"\bmost (?:[\w-]+ ){0,2}?[\w-]+ (?:was|were|is|are) (?:the |an? )?([^,;.]+)", re.I),
+    re.compile(r"(?:^|[,;] |\bbut |\band )([^,;]+?) (?:was|were|is|are) (?:the )?most (?:common|frequent|often|popular)\w*", re.I),
+    re.compile(r"(?:^|[,;] )([^,;]+?) (?:accounted for|made up|represented|led)[^,;]*, followed by", re.I),
+)
+_RANK_TOP_KO = re.compile(r"([가-힣A-Za-z]+(?:\s[가-힣A-Za-z]+)?)(?:이|가)\s*(?:[\d,.]+\s*[가-힣%]*\s*(?:으로|로)\s*)?"
+                          r"가장\s?(?:많|흔|높|컸|큰)")
+
+
+def _rank_top(sentence: str) -> str | None:
+    if re.search(r"[가-힣]", sentence):
+        m = _RANK_TOP_KO.search(sentence)
+        return re.split(r"(?<=[가-힣])(?:은|는)\s", m.group(1))[-1] if m else None
+    for pattern in _RANK_TOP_EN:
+        m = pattern.search(sentence)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _rank_swap(plain: str, sents: list[str]) -> bool:
+    if not _RANK_CLAIM.search(plain) or _NEGATION.search(plain):
+        return False
+    korean = bool(re.search(r"[가-힣]", plain))
+    stems = (lambda t: {w[:2] for w in re.findall(r"[가-힣]{2,}", t)} - {"가장"}) if korean else _word_stems
+    mine = stems(plain)
+    for s in sents:
+        if bool(re.search(r"[가-힣]", s)) != korean:
+            continue
+        top = _rank_top(s)
+        if not top or len(mine & stems(s)) < 2:
+            continue
+        top_stems = stems(top)
+        if top_stems and not (mine & top_stems):
+            return True
+    return False
+
+
+# 20회차(holdout16 순위 바꿈 놓침): 원문이 순위 낱말 없이 수치만 나란히 말하거나("Children's cardholders accounted for 38%,
+# adults … for 49%, and seniors for 13%"), 1위를 다음 문장의 '2위'와 함께 말할 때("Millbrook … the largest jump, with 1,140.
+# Westgate was second with 890"). 주장의 주어("Westgate saw the largest …", "누리시가 … 가장 많았다")가 원문에서 바로 뒤따르는
+# 같은 차원 수치를 그 대상의 값으로 보고, 같은 문장(과 '2위'·'뒤를 이어' 다음 문장)의 같은 차원 수치 가운데 가장 크지(작지) 않으면
+# 순위를 바꾼 것이다. 주어 낱말이 원문 한 곳에만 있고 그 뒤 같은 차원 수치가 둘 이상일 때만 본다.
+_RANK_MAX = re.compile(r"\bthe (?:highest|largest|biggest|greatest|most)\b|\b(?:highest|largest|biggest)\b|가장\s?(?:많|높|컸|큰|크)|최다|최고", re.I)
+_RANK_MIN = re.compile(r"\bthe (?:lowest|smallest|fewest|least)\b|\b(?:lowest|smallest|fewest)\b|가장\s?(?:적|낮|작)|최저|최소", re.I)
+_EN_SUBJECT = re.compile(r"^\s*(?:the\s+)?((?:[\w'-]+\s+){0,3}?[\w'-]+)\s+(?:had|has|was|were|is|are|made up|accounted for|saw|recorded|"
+                         r"received|drew|led|got|showed|posted|reported)\b", re.I)
+_KO_SUBJECT = re.compile(r"^\s*(?:[가-힣]+(?:별로는|에서는)\s+)?([가-힣A-Za-z]{2,})(?:이|가|은|는)\s")
+_EN_STOP_SUBJECTS = {"this", "that", "these", "those", "there", "most", "each", "every", "some", "many", "about", "nearly", "only"}
+_RANK_FOLLOW = re.compile(r"\bsecond\b|뒤를 이|두 번째|그다음|다음으로", re.I)
+
+
+def _rank_value_swap(plain: str, sents: list[str]) -> bool:
+    top = _RANK_MAX.search(plain)
+    bottom = _RANK_MIN.search(plain)
+    if bool(top) == bool(bottom) or _NEGATION.search(plain) or re.search(r"[,;]", plain[:(top or bottom).start()]):
+        return False   # 순위 낱말이 주어와 같은 절에 있을 때만("…, with federal loans covering the largest share"는 다른 주어)
+    korean = bool(re.search(r"[가-힣]", plain))
+    m = (_KO_SUBJECT if korean else _EN_SUBJECT).match(plain)
+    if not m:
+        return False
+    subject = re.sub(r"'s$", "", m.group(1).split()[0])
+    if not korean and (len(subject) < 4 or subject.lower() in _EN_STOP_SUBJECTS):
+        return False
+    stem = subject.lower()[:max(4, len(subject) - 2)] if not korean else subject[:max(2, len(subject) - 1)]
+    for i, sent in enumerate(sents):
+        text = sent + (" " + sents[i + 1] if i + 1 < len(sents) and _RANK_FOLLOW.search(sents[i + 1]) else "")
+        spots = [x.start() for x in re.finditer(re.escape(stem), text, re.I)]
+        if len(spots) != 1:
+            continue
+        values = [v for v in _quantity_values(text, _date_like_spans(text)) if not v.get("unsupported_unit") and v["value"]]
+        after = [v for v in values if v["start"] > spots[0]]
+        if not after:
+            continue
+        mine = after[0]
+        if text[spots[0]:mine["start"]].count(",") > 1 or re.search(r"[.;]", text[spots[0]:mine["start"]]):
+            continue
+        peers = [v for v in values if v["dimension"] == mine["dimension"] and not _is_date_number(v, text)]
+        if len(peers) < 2:
+            continue
+        best = max(abs(v["value"]) for v in peers) if top else min(abs(v["value"]) for v in peers)
+        if abs(mine["value"]) != best:
             return True
     return False
 
@@ -1854,7 +3501,12 @@ _UNIVERSAL = re.compile(
     r"(?:city|country|nation|state|region|district|county))\b|전국|전역|모든|거의 모두|전체|전원|전부", re.I)
 _UNIVERSAL_SKIP = re.compile(
     r"\b(?:all|every)\s+(?:\d|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|other|few|day|week|month|year)\w*|"
-    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average", re.I)
+    r"\bof all\b|\bnot (?:all|every)\b|\b(?:all|every)(?:one|thing|body|where)\b|전국\s?평균|전체\s?(?:평균|의\s?\d)|national average|"
+    # 14회차: '전체 이용의 약 40%'·'전체 신청 가운데 12%'는 몫의 분모다. 사람 집단('전체 학부모의 74%')은 표본 몫을 모집단으로
+    # 넓힌 것일 수 있어 그대로 본다.
+    r"전체\s?(?![가-힣]*(?:부모|학생|주민|시민|구민|군민|도민|국민|가구|교사|주|자|민)\s?(?:의|가운데|중))[가-힣]{1,6}\s?(?:의|가운데|중)\s?(?:약\s?)?\d|"
+    # 12회차: '전체 지원액'·'entire budget'은 범위가 아니라 합계다
+    r"전체\s?(?:지원액|지원금|사업비|예산|비용|금액|매출|합계|규모|공사비)|\b(?:entire|whole)\s+(?:budget|cost|amount|sum)\b", re.I)
 
 
 def _universal_overclaim(plain: str, sents: list[str]) -> bool:
@@ -1867,6 +3519,97 @@ def _universal_overclaim(plain: str, sents: list[str]) -> bool:
     related = [s for s in sents if bool(re.search(r"[가-힣]", s)) == korean
                and len(stems & _content_stems(_UNIVERSAL.sub(" ", s))) >= 2]
     return bool(related) and not any(_UNIVERSAL.search(_UNIVERSAL_SKIP.sub(" ", s)) for s in related)
+
+
+
+# 조건 뒤집기(11회차, holdout6 조건 3/7을 보고 설계): 원문이 이용·자격을 조건으로 묶었는데("allowed only if labeled", "동물등록을
+# 마친 반려견만 가능", "수업은 평일 오전에만") 주장은 조건이 없다고 말하거나("at any time without restriction", "동물등록 여부와
+# 관계없이", "평일 저녁과 주말에도"), 원문이 조건이 없다고 했는데("free … regardless of insurance status") 주장이 조건을 붙인다
+# ("free only for women with public insurance"). 'only 12 percent' 같은 강조는 조건으로 보지 않는다. 주장과 내용 낱말이 가장 많이
+# (2개 이상) 겹치는 같은 글자 원문 문장만 본다.
+_ONLY_COND = re.compile(r"\bonly (?:if|for|to|when|where|with|after|during|on|by|between|within|from)\b|\b(?:limited|restricted) to\b|"
+                        r"\bsolely for\b|\bexclusively for\b|에만|(?:때|경우)만|만\s?(?:가능|이용|참여|입장|신청|받|허용|대상)|"
+                        r"에\s?한(?:해|하여|정)|(?:이용|지원|신청|참여|입장)\s?대상은", re.I)
+_OPEN_COND = re.compile(r"\bregardless of\b|\bwithout (?:a |an |any )?(?:restrictions?|request|application|referral)\b|"
+                        r"\bno restrictions?\b|\b(?:at )?any time\b|\bopen to (?:all|any|everyone)\b|\banyone\b|"
+                        r"관계없이|상관없이|무관하게|누구나|제한\s?없이|언제든", re.I)
+# 원문 "except overnight" → 주장 "including overnight"(11회차 holdout7).
+_EXCEPT_WORD = re.compile(r"\bexcept(?:ing)?\s+(?:for\s+|during\s+|on\s+)?(\w+)", re.I)
+_ALSO_KO = re.compile(r"[가-힣]+에도\s")
+
+
+def _condition_flip(plain: str, sents: list[str]) -> bool:
+    if _NEGATION.search(_OPEN_COND.sub(" ", plain)):
+        return False
+    claim_open = bool(_OPEN_COND.search(plain))
+    claim_only = not claim_open and bool(_ONLY_COND.search(plain))
+    claim_also = not (claim_open or claim_only) and bool(_ALSO_KO.search(plain))
+    claim_incl = {w.lower() for w in re.findall(r"\bincluding\s+(?:during\s+|on\s+)?(\w+)", plain, re.I)}
+    if not (claim_open or claim_only or claim_also or claim_incl):
+        return False
+    stems = _content_stems(plain)
+    korean = bool(re.search(r"[가-힣]", plain))
+    scored = [(len(stems & _content_stems(s)), s) for s in sents if bool(re.search(r"[가-힣]", s)) == korean]
+    scored = [(n, s) for n, s in scored if n >= 2]
+    if not scored:
+        return False
+    best = max(n for n, _ in scored)
+    for n, s in scored:
+        if n != best:
+            continue
+        if claim_incl & {w.lower() for w in _EXCEPT_WORD.findall(s)}:
+            return True
+        only, opened = bool(_ONLY_COND.search(s)), bool(_OPEN_COND.search(s))
+        if (claim_open or claim_also) and only and not opened:
+            return True
+        if claim_only and opened and not only:
+            return True
+    return False
+
+# 15회차: 원문이 대상·용도에서 뺀 항목("도배·장판 같은 단순 내장 공사는 제외된다", "가공식품과 주류는 살 수 없다",
+# "families must still buy their own uniforms")을 주장이 포함·허용으로 말한 문장("도배·장판 공사도 지원 대상에 포함된다",
+# "주류는 살 수 있다", "The waiver also covers uniforms"). 부정 뒤집기는 절 겹침 문턱 아래라 놓쳤다. 원문 제외 절에만 나오는 낱말
+# (다른 원문 절에 없는 것)을 부정 없는 주장 절이 포함 표현과 함께 말할 때만 본다.
+_EXCLUDE_CUE = re.compile(r"\b(?:excluded|exclude[sd]?|not (?:covered|included|eligible|allowed|accepted)|"
+                          r"(?:does|do|did) not (?:cover|include|pay for|apply to)|cannot be (?:used|spent|bought|redeemed)|"
+                          r"must (?:still )?(?:buy|pay for|purchase|provide|cover)|ineligible)\b|"
+                          r"제외|(?:살|쓸|사용할|이용할|구입할|받을)\s?수\s?없|대상이\s?아니|지원하지\s?않|포함되지\s?않|해당하지\s?않|"
+                          r"직접\s?(?:사야|구입해야|부담해야|마련해야)", re.I)
+_INCLUDE_CUE = re.compile(r"\b(?:also|covers?|covered|includes?|included|including|eligible|allowed|pays? for|paid for|"
+                          r"can (?:also )?(?:be )?(?:used|bought|buy|spend|spent|purchase|redeemed?))\b|"
+                          r"포함|(?:살|쓸|사용할|이용할|구입할|받을)\s?수\s?있|대상(?:이다|이 된|에 들)|[가-힣]도\s", re.I)
+_EXCLUDE_SPLIT = re.compile(r"[;:]|,\s|\b(?:but|while|whereas|although|though)\b|(?<=[가-힣])(?:지만|으나|며|고)[\s,]", re.I)
+_KO_PARTICLE = re.compile(r"(?:과|와|은|는|이|가|을|를|도|만|의|로|으로|에서|에)$")
+
+
+def _exclusion_terms(clause: str) -> set[str]:
+    if re.search(r"[가-힣]", clause):
+        return {_KO_PARTICLE.sub("", w) for w in re.findall(r"[가-힣]{2,}", clause)} - {""}
+    return _word_stems(clause)
+
+
+def _exclusion_flip(plain: str, sents: list[str]) -> bool:
+    korean = bool(re.search(r"[가-힣]", plain))
+    clauses = [c.strip() for s in sents if bool(re.search(r"[가-힣]", s)) == korean for c in _EXCLUDE_SPLIT.split(s) if c.strip()]
+    excluded = [c for c in clauses if _EXCLUDE_CUE.search(c)]
+    if not excluded:
+        return False
+    rest = " ".join(c for c in clauses if not _EXCLUDE_CUE.search(c))
+    others = _exclusion_terms(rest) if not korean else set()
+    for part in _EXCLUDE_SPLIT.split(plain):
+        if not part.strip() or _NEGATION.search(part) or _EXCLUDE_CUE.search(part) or not _INCLUDE_CUE.search(part):
+            continue
+        mine = _exclusion_terms(part)
+        for c in excluded:
+            cue = _EXCLUDE_CUE.search(c).group(0)
+            # 한국어는 조사를 떼는 근사가 거칠어('횡단보도는' → '횡단보'), 다른 원문 절 글자에 들어 있는 낱말도 뺀다.
+            only = {t for t in _exclusion_terms(c) - others if len(t) >= 2 and t not in _exclusion_terms(cue)
+                    and not (korean and (t in rest or _KO_PARTICLE.sub("", t[:-1]) and t[:-1] in rest and len(t) > 2))}
+            if korean and any(t in part for t in only if len(t) >= 2 and not re.search(r"(?:된다|했다|한다|없다|있다)$", t)):
+                return True
+            if not korean and mine & only:
+                return True
+    return False
 
 
 # 본문 유사 묶음 경고(gates._SIMILAR_NOTE)가 붙은 겹침 인용에서 '독립 출처'라고 단정하는 표현.
@@ -1913,7 +3656,7 @@ def _trusted_cited_rows(report: str, source_texts: dict[str, str], M: dict) -> l
         if stripped.startswith(("```", "~~~")):
             fenced = not fenced
         if stripped.startswith("## "):
-            section = stripped
+            section = _section_heading(stripped, M, section)
         if fenced or section not in M["claims"] or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             continue
         body = re.sub(r"^\s*(?:[-*]|\d+\.)\s+", "", line)
@@ -1982,7 +3725,7 @@ def mark_report_claims(report: str, source_texts: dict[str, str], lang: str = "k
             fenced = not fenced
         if fenced or stripped.startswith(("```", "~~~", "|", "#")) or not stripped:
             if stripped.startswith("## "):
-                section = stripped
+                section = _section_heading(stripped, M, section)
             out.append(line)
             continue
         if section == M["sources"]:
@@ -2079,7 +3822,13 @@ def note_source_conflicts(report: str, source_texts: dict[str, str], lang: str =
     M = _MARKS.get(lang, _MARKS["ko"])
     lines = report.split("\n")
     limits = M["claims"][2:]
-    index = next((i for i, line in enumerate(lines) if line.strip() in limits), None)
+    index, section = None, ""
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            section = _section_heading(line.strip(), M, section)
+            if section in limits:
+                index = i
+                break
     if index is None:
         return report, []
     end = next((j for j in range(index + 1, len(lines)) if lines[j].startswith("#")), len(lines))

@@ -1,0 +1,128 @@
+{
+  "id": "en-youth-sports-voucher-15",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout15-2026-10-15",
+  "prompt": "Who qualifies for Maple Heights' youth sports vouchers, how are they paid, and is the program working?",
+  "sources": {
+    "S1": "Maple Heights offers youth sports vouchers worth up to $250 per child per season to families whose household income is at or below 200% of the federal poverty level. Children aged 5 to 17 who live in the city are eligible; residency must be verified with a utility bill. Vouchers can be applied to registration fees and required equipment, but not to travel tournaments or private lessons. Families may receive vouchers for up to 3 seasons per year. Vouchers are paid directly to participating leagues within 45 days after the season starts, not to families. The 2026 program budget is $310,000, with $200,000 from the city's parks levy and $110,000 from a regional health foundation. Applications open 6 weeks before each season and close 2 weeks before it begins. The city partners with 23 leagues across 12 sports.",
+    "S2": "The Maple Heights City Auditor found that in the spring and summer 2026 seasons, the program issued 1,140 vouchers to 760 children. The average voucher value was $212. Children from eligible households made up 15% of partner league rosters in 2026, up from 9% in 2024, though the auditor noted that two leagues changed how they record household income during that period. Payments to leagues took an average of 61 days, longer than the program's own standard. Soccer accounted for the largest share of vouchers (34%), followed by basketball (21%) and swimming (14%). The auditor recommended an online application portal; parks staff said they are evaluating vendors."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Who qualifies for Maple Heights' youth sports vouchers, how are they paid, and is the program working?\n\n## Answer\nMaple Heights gives income-eligible families vouchers of up to $250 per child each season [S1]. The program has clearly increased low-income children's participation in youth leagues [S2].\n\n## Evidence\n- Families earning up to 250% of the federal poverty level qualify [S1].\n- Eligible children are city residents between 5 and 17 years old, with residency shown through a utility bill [S1].\n- Vouchers can cover registration, required equipment, and travel tournament costs [S1].\n- Vouchers are paid to families within 45 days after the season starts [S1].\n- Leagues, not families, receive the voucher payments [S1].\n- The parks levy supplies about 65% of the $310,000 budget [S1].\n- The regional health foundation contributes $200,000 to the program [S1].\n- Applications open 6 weeks before each season and close 1 week before it starts [S1].\n- The application window therefore runs about four weeks per season [S1].\n- Total voucher spending in spring and summer 2026 was roughly $242,000 [S2].\n- Each participating child received an average of 2 vouchers [S2].\n\n## Counter-evidence and limits\n- Payments took 61 days on average, more than two weeks past the 45-day standard [S2][S1].\n- Basketball vouchers outnumbered soccer vouchers [S2].\n- The auditor cautioned that two leagues changed how they record household income during the period [S2].\n- Parks staff have selected a vendor for an online application portal [S2].\n- Demand for vouchers is expected to exceed the budget by fall 2026.\n\n## Next actions\n- Ask the auditor to recompute the roster share excluding the two leagues that changed income recording (judgment)\n\n## Sources\n- [S1] Maple Heights Parks & Recreation, \"Youth Sports Voucher Program 2026\" (2026-03-02)\n- [S2] Maple Heights City Auditor, \"Review of the Youth Sports Voucher Program\" (2026-08-18)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Maple Heights gives income-eligible families vouchers of up to $250 per child each season",
+      "label": "ok",
+      "tag": "paraphrase_limit",
+      "why": "S1: 'worth up to $250 per child per season'"
+    },
+    {
+      "key": "The program has clearly increased low-income children's participation in youth leagues",
+      "label": "mismatch",
+      "tag": "hedge_as_fact",
+      "why": "S2: 9% -> 15% but auditor noted two leagues changed income recording; no clear causal finding"
+    },
+    {
+      "key": "Families earning up to 250% of the federal poverty level qualify",
+      "label": "mismatch",
+      "tag": "eligibility_changed",
+      "why": "S1: 'at or below 200% of the federal poverty level'"
+    },
+    {
+      "key": "Eligible children are city residents between 5 and 17 years old, with residency shown through a utility bill",
+      "label": "ok",
+      "tag": "eligibility_restated",
+      "why": "S1: 'Children aged 5 to 17 who live in the city … verified with a utility bill'"
+    },
+    {
+      "key": "Vouchers can cover registration, required equipment, and travel tournament costs",
+      "label": "mismatch",
+      "tag": "exclusion_as_inclusion",
+      "why": "S1: 'but not to travel tournaments or private lessons'"
+    },
+    {
+      "key": "Vouchers are paid to families within 45 days after the season starts",
+      "label": "mismatch",
+      "tag": "wrong_payee",
+      "why": "S1: 'paid directly to participating leagues … not to families'"
+    },
+    {
+      "key": "Leagues, not families, receive the voucher payments",
+      "label": "ok",
+      "tag": "payee_correct",
+      "why": "S1: 'paid directly to participating leagues … not to families'"
+    },
+    {
+      "key": "The parks levy supplies about 65% of the $310,000 budget",
+      "label": "ok",
+      "tag": "computed_percent",
+      "why": "S1: $200,000 / $310,000 = 64.5%"
+    },
+    {
+      "key": "The regional health foundation contributes $200,000 to the program",
+      "label": "mismatch",
+      "tag": "swapped_amounts",
+      "why": "S1: foundation gives $110,000; $200,000 is from the parks levy"
+    },
+    {
+      "key": "Applications open 6 weeks before each season and close 1 week before it starts",
+      "label": "mismatch",
+      "tag": "time_window_changed",
+      "why": "S1: 'close 2 weeks before it begins'"
+    },
+    {
+      "key": "The application window therefore runs about four weeks per season",
+      "label": "ok",
+      "tag": "computed_duration",
+      "why": "S1: opens 6 weeks before, closes 2 weeks before = 4 weeks"
+    },
+    {
+      "key": "Total voucher spending in spring and summer 2026 was roughly $242,000",
+      "label": "ok",
+      "tag": "computed_total",
+      "why": "S2: 1,140 vouchers x $212 = $241,680"
+    },
+    {
+      "key": "Each participating child received an average of 2 vouchers",
+      "label": "mismatch",
+      "tag": "wrong_calc",
+      "why": "S2: 1,140 vouchers / 760 children = 1.5"
+    },
+    {
+      "key": "Payments took 61 days on average, more than two weeks past the 45-day standard",
+      "label": "ok",
+      "tag": "computed_difference",
+      "why": "S2: 'average of 61 days'; S1: 'within 45 days' -> 16 days late"
+    },
+    {
+      "key": "Basketball vouchers outnumbered soccer vouchers",
+      "label": "mismatch",
+      "tag": "ranking_swapped",
+      "why": "S2: soccer 34% > basketball 21%"
+    },
+    {
+      "key": "The auditor cautioned that two leagues changed how they record household income during the period",
+      "label": "ok",
+      "tag": "limit_restated",
+      "why": "S2: 'two leagues changed how they record household income during that period'"
+    },
+    {
+      "key": "Parks staff have selected a vendor for an online application portal",
+      "label": "mismatch",
+      "tag": "plan_as_done",
+      "why": "S2: 'parks staff said they are evaluating vendors'"
+    },
+    {
+      "key": "Demand for vouchers is expected to exceed the budget by fall 2026",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "No source forecasts demand versus budget"
+    }
+  ]
+}

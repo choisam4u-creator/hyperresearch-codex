@@ -1,0 +1,86 @@
+{
+ "id": "en-storefront-activation",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "Did Tarrow's vacant storefront activation pilot fill empty shops on Mill Street?",
+ "sources": {
+  "S1": "Between February 2025 and January 2026, Tarrow paid landlords up to $1,200 per month for up to six months to let small businesses occupy vacant ground-floor storefronts rent-free on Mill Street. Landlords had to commit to a lease offer at market rent at the end of the six months.\n\nOf the 23 storefronts enrolled, 15 tenants accepted a lease offer at the end of the subsidy period, and 4 of those had closed by the report date. The agency reported that street-level vacancy on Mill Street fell from 31% to 19% over the pilot period.",
+  "S2": "The Mill Street Merchants Association welcomed the pilot but said foot traffic counts on Mill Street rose only after the new transit stop opened in August 2025. It asked the city to require landlords to keep rents for pilot tenants fixed for at least two years."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did Tarrow's vacant storefront activation pilot fill empty shops on Mill Street?\n\n## Answer\nTarrow's pilot subsidized landlords so small businesses could use empty Mill Street storefronts without paying rent for up to half a year [S1]. Roughly two-thirds of the 23 enrolled storefronts converted to market-rate leases [S1]. Street-level vacancy on Mill Street dropped 12 percentage points over the pilot period [S1].\n\n## Evidence\n- The subsidy was paid directly to the small-business tenants, at up to $1,200 per month [S1].\n- The maximum subsidy per storefront was $7,200 [S1].\n- All 15 tenants who signed leases were still operating when the report was written [S1].\n- Eleven of the 23 original storefronts still had an operating pilot tenant at the report date [S1].\n\n## Counter-evidence and limits\n- The merchants association credits the pilot with the rise in foot traffic on Mill Street [S2].\n- The new transit stop opened in August 2024, before the pilot began [S2].\n- The city has already adopted the association's request for a two-year rent freeze for pilot tenants [S2].\n- Commercial rents on Mill Street rose about 8% during the pilot year.\n\n## Next actions\n- Track the 11 remaining tenants for another year and compare against streets near the new transit stop before scaling (judgment).\n\n## Sources\n- [S1] Tarrow Economic Development Agency, Storefront Activation Pilot Final Report (2026)\n- [S2] Mill Street Merchants Association statement, March 2026\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Tarrow's pilot subsidized landlords so small businesses could use empty Mill Street storefronts without paying rent for up to half a year",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "up to six months rent-free, landlord subsidy"
+  },
+  {
+   "key": "Roughly two-thirds of the 23 enrolled storefronts converted to market-rate leases",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "15/23 = 65%"
+  },
+  {
+   "key": "Street-level vacancy on Mill Street dropped 12 percentage points over the pilot period",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "31% - 19% = 12 points"
+  },
+  {
+   "key": "The subsidy was paid directly to the small-business tenants, at up to $1,200 per month",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "S1: paid to landlords"
+  },
+  {
+   "key": "The maximum subsidy per storefront was $7,200",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "$1,200 x 6 months"
+  },
+  {
+   "key": "All 15 tenants who signed leases were still operating when the report was written",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "4 of the 15 had closed"
+  },
+  {
+   "key": "Eleven of the 23 original storefronts still had an operating pilot tenant at the report date",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "15 - 4 = 11"
+  },
+  {
+   "key": "The merchants association credits the pilot with the rise in foot traffic on Mill Street",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "association ties the rise to the new transit stop, not the pilot"
+  },
+  {
+   "key": "The new transit stop opened in August 2024, before the pilot began",
+   "label": "mismatch",
+   "tag": "period",
+   "why": "S2: August 2025, during the pilot"
+  },
+  {
+   "key": "The city has already adopted the association's request for a two-year rent freeze for pilot tenants",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "it is only a request to the city"
+  },
+  {
+   "key": "Commercial rents on Mill Street rose about 8% during the pilot year",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source gives rent change"
+  }
+ ]
+}

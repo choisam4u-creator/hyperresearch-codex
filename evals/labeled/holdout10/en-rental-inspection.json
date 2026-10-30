@@ -1,0 +1,98 @@
+{
+ "id": "en-rental-inspection",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Is Carver City's proactive rental inspection program improving housing conditions?",
+ "sources": {
+  "S1": "Carver City began proactive inspections of rental buildings with three or more units in January 2025, replacing a system that inspected only in response to tenant complaints. Each covered building is to be inspected once every four years; in 2025 inspectors visited 1,240 of the roughly 5,000 covered buildings. The program is funded by a $45 per-unit annual registration fee paid by landlords.\n\nInspectors found at least one code violation in 58 percent of buildings inspected. The most common violations were missing or inoperable smoke detectors, followed by mold and water leaks, then broken heating. Of the 3,900 violations cited, 2,860 had been corrected by the March 2026 follow-up deadline.\n\nLandlords who miss the deadline face fines of $150 per violation per month. The department issued fines in 96 cases in 2025 but says collection data are not yet available.",
+  "S2": "The Carver Tenants Union surveyed 310 tenants in inspected buildings. 44 percent said their landlord made repairs they had previously requested without success, while 19 percent said their rent went up after the inspection. The union notes that it cannot tell whether those rent increases were related to the inspections.\n\nThe union says some landlords pass the registration fee on to tenants, which the city ordinance allows. It is lobbying for a rule that would bar landlords from raising rent within six months of an inspection."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Carver City's proactive rental inspection program improving housing conditions?\n\n## Answer\nAbout a quarter of covered buildings were inspected in the program's first year [S1]. Roughly 73 percent of cited violations were fixed by the follow-up deadline [S1]. Inspections led to rent increases for about one in five tenants [S2].\n\n## Evidence\n- Before 2025, rentals were inspected only when tenants complained [S1].\n- The program covers every rental building in the city [S1].\n- Landlords fund the program through an annual registration fee of $45 per unit [S1].\n- Mold and water leaks were the most common violation [S1].\n- More than half of inspected buildings had at least one violation [S1].\n- Landlords who miss the deadline are fined $150 per building each month [S1].\n- The city collected fines in 96 cases in 2025 [S1].\n\n## Counter-evidence and limits\n- Forty-four percent of surveyed tenants said landlords finally made repairs they had asked for earlier [S2].\n- The city ordinance prohibits landlords from passing the registration fee on to tenants [S2].\n- Inspectors chose which buildings to visit first based on past complaint history.\n\n## Next steps\n- Request fine collection data once available (judgment).\n- Track rent changes in inspected versus not-yet-inspected buildings (judgment).\n\n## Sources\n- [S1] Carver City Housing Code Enforcement, \"Proactive Rental Inspection Program: 2025 Annual Report\" (April 2026)\n- [S2] Carver Tenants Union, \"Tenant Experiences with Proactive Inspections\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "About a quarter of covered buildings were inspected in the program's first year",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1,240/5,000 = 24.8%."
+  },
+  {
+   "key": "Roughly 73 percent of cited violations were fixed by the follow-up deadline",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "2,860/3,900 = 73.3%."
+  },
+  {
+   "key": "Inspections led to rent increases for about one in five tenants",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "The union says it cannot tell whether the 19% rent increases were related to inspections."
+  },
+  {
+   "key": "Before 2025, rentals were inspected only when tenants complained",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Replaced a complaint-only system."
+  },
+  {
+   "key": "The program covers every rental building in the city",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "Only buildings with three or more units."
+  },
+  {
+   "key": "Landlords fund the program through an annual registration fee of $45 per unit",
+   "label": "ok",
+   "tag": "order",
+   "why": "Matches S1."
+  },
+  {
+   "key": "Mold and water leaks were the most common violation",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "Smoke detector problems were most common; mold and leaks were second."
+  },
+  {
+   "key": "More than half of inspected buildings had at least one violation",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "58% > half."
+  },
+  {
+   "key": "Landlords who miss the deadline are fined $150 per building each month",
+   "label": "mismatch",
+   "tag": "modifier",
+   "why": "The fine is $150 per violation per month."
+  },
+  {
+   "key": "The city collected fines in 96 cases in 2025",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "Fines were issued in 96 cases; collection data are not yet available."
+  },
+  {
+   "key": "Forty-four percent of surveyed tenants said landlords finally made repairs they had asked for earlier",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S2."
+  },
+  {
+   "key": "The city ordinance prohibits landlords from passing the registration fee on to tenants",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "The ordinance allows passing the fee on."
+  },
+  {
+   "key": "Inspectors chose which buildings to visit first based on past complaint history",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source describes how buildings were prioritized."
+  }
+ ]
+}

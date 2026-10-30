@@ -1,0 +1,134 @@
+{
+  "id": "en-street-tree-watering-17",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout17-2026-10-16",
+  "prompt": "Is Corrandale's Adopt-a-Tree volunteer watering program improving young street tree survival?",
+  "sources": {
+    "S1": "Corrandale's Urban Forestry Division planted 2,400 street trees in spring 2026, and residents adopted 1,560 of them through the Adopt-a-Tree program. Adopters agree to deliver 15 gallons of water per tree once a week from May 15 through September 30. The division supplies each adopter with a free 20-gallon slow-release watering bag; bags for unadopted trees are filled by city crews every 10 days. First-season survival was 94% for adopted trees and 81% for unadopted trees. The division notes that adopted trees were disproportionately on residential blocks with lower foot traffic and less paving, so the gap cannot be attributed to watering alone. By ward, adoption rates were highest in Ward 3 at 82%, then Ward 1 at 71%, Ward 4 at 58%, and Ward 2 at 44%. Crew watering of unadopted trees cost $96,000 for the season. The program is funded 70% by the city's stormwater utility and 30% by a grant from the Pell River Foundation. Adopters must be at least 16 years old, or younger with a guardian co-signing. Adopters log waterings in an app; 63% of adopters logged at least 15 of the season's 20 weeks. Replacement of dead trees is covered by the nursery warranty only within the first year after planting. The division plans to expand the program to 3,000 trees in 2027, pending council budget approval.",
+    "S2": "A July heat wave led the forestry division to ask adopters to double their weekly watering to 30 gallons for three weeks. About 400 adopters received text reminders during the heat wave, according to the division. A Ward 2 council member said many households in her ward rent and move often, which she believes depresses adoption. The Courier's informal survey of 120 adopters found 71% planned to sign up again in 2027. The survey was not randomized and drew on respondents from the program's newsletter. Crews told the paper they spent more time watering unadopted trees in Ward 2 than in any other ward."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Is Corrandale's Adopt-a-Tree volunteer watering program improving young street tree survival?\n\n## Answer\nAbout 65% of Corrandale's 2,400 spring-planted street trees were adopted, and adopted trees survived their first season at a rate 13 percentage points higher than unadopted ones [S1]. Volunteer watering is the reason adopted trees outlived unadopted ones [S1].\n\n## Evidence\n- City crews were left with 840 unadopted trees, whose bags they refilled every 10 days [S1].\n- Adopters commit to 15 gallons per tree every two weeks from May 15 through September 30 [S1].\n- Over the roughly 20-week season, that pledge adds up to about 300 gallons per adopted tree [S1].\n- Each adopter gets a 15-gallon slow-release watering bag at no cost [S1].\n- Ward 3 had the highest adoption rate and Ward 2 the lowest, a spread of 38 percentage points [S1].\n- Ward 4 ranked second in adoption, ahead of Ward 1 [S1].\n- Crew watering cost came to roughly $114 per unadopted tree for the season [S1].\n- The Pell River Foundation covers 70% of program costs, with the stormwater utility paying the remaining 30% [S1].\n- Residents younger than 16 may still adopt a tree if a guardian co-signs [S1].\n- Nearly two-thirds of adopters logged a watering in every week of the season [S1].\n- During the July heat wave, adopters were asked to double their watering to 30 gallons for the rest of the season [S2].\n- Roughly 400 adopters received text reminders while the heat wave lasted [S2].\n\n## Counterevidence and limits\n- The division warns that adopted trees sat on quieter, less paved residential blocks, so watering alone does not explain the survival gap [S1].\n- Ward 2's low adoption rate is caused by its high share of renters [S2].\n- The Courier survey shows that 71% of all Corrandale adopters will return in 2027 [S2].\n- The nursery warranty has already replaced every tree that died in the first season.\n- Growing the program to 3,000 trees in 2027 still hinges on council budget approval [S1].\n\n## Next actions\n- Compare survival for adopted and unadopted trees on matched blocks before crediting watering in the 2027 budget request (judgment).\n\n## Sources\n- [S1] Corrandale Urban Forestry Division, \"Adopt-a-Tree Watering Program 2026 Season Summary\" (2026-09-18)\n- [S2] Corrandale Courier, \"Volunteer waterers keep young trees alive, but summer heat tested the program\" (2026-09-25)"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "About 65% of Corrandale's 2,400 spring-planted street trees were adopted, and adopted trees survived their first season at a rate 13 percentage points higher than unadopted ones",
+      "label": "ok",
+      "tag": "derived_percentage",
+      "why": "S1: 1,560/2,400 = 65%; 'First-season survival was 94% for adopted trees and 81% for unadopted trees'; 94-81 = 13 points."
+    },
+    {
+      "key": "Volunteer watering is the reason adopted trees outlived unadopted ones",
+      "label": "mismatch",
+      "tag": "causal_overclaim",
+      "why": "S1: 'the gap cannot be attributed to watering alone.'"
+    },
+    {
+      "key": "City crews were left with 840 unadopted trees, whose bags they refilled every 10 days",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: 2,400-1,560 = 840; 'bags for unadopted trees are filled by city crews every 10 days.'"
+    },
+    {
+      "key": "Adopters commit to 15 gallons per tree every two weeks from May 15 through September 30",
+      "label": "mismatch",
+      "tag": "frequency_changed",
+      "why": "S1: '15 gallons of water per tree once a week.'"
+    },
+    {
+      "key": "Over the roughly 20-week season, that pledge adds up to about 300 gallons per adopted tree",
+      "label": "ok",
+      "tag": "derived_product",
+      "why": "S1: 15 gallons weekly over 'the season's 20 weeks' = 300 gallons."
+    },
+    {
+      "key": "Each adopter gets a 15-gallon slow-release watering bag at no cost",
+      "label": "mismatch",
+      "tag": "changed_number",
+      "why": "S1: 'a free 20-gallon slow-release watering bag.'"
+    },
+    {
+      "key": "Ward 3 had the highest adoption rate and Ward 2 the lowest, a spread of 38 percentage points",
+      "label": "ok",
+      "tag": "derived_difference",
+      "why": "S1: Ward 3 at 82%, Ward 2 at 44%; 82-44 = 38."
+    },
+    {
+      "key": "Ward 4 ranked second in adoption, ahead of Ward 1",
+      "label": "mismatch",
+      "tag": "ranking_swap",
+      "why": "S1: 'Ward 3 at 82%, then Ward 1 at 71%, Ward 4 at 58%.'"
+    },
+    {
+      "key": "Crew watering cost came to roughly $114 per unadopted tree for the season",
+      "label": "ok",
+      "tag": "derived_division",
+      "why": "S1: '$96,000 for the season' over 840 unadopted trees = $114.29."
+    },
+    {
+      "key": "The Pell River Foundation covers 70% of program costs, with the stormwater utility paying the remaining 30%",
+      "label": "mismatch",
+      "tag": "funding_share_swap",
+      "why": "S1: 'funded 70% by the city's stormwater utility and 30% by a grant from the Pell River Foundation.'"
+    },
+    {
+      "key": "Residents younger than 16 may still adopt a tree if a guardian co-signs",
+      "label": "ok",
+      "tag": "paraphrase_condition",
+      "why": "S1: 'at least 16 years old, or younger with a guardian co-signing.'"
+    },
+    {
+      "key": "Nearly two-thirds of adopters logged a watering in every week of the season",
+      "label": "mismatch",
+      "tag": "condition_changed",
+      "why": "S1: '63% of adopters logged at least 15 of the season's 20 weeks', not every week."
+    },
+    {
+      "key": "During the July heat wave, adopters were asked to double their watering to 30 gallons for the rest of the season",
+      "label": "mismatch",
+      "tag": "time_window_changed",
+      "why": "S2: 'double their weekly watering to 30 gallons for three weeks.'"
+    },
+    {
+      "key": "Roughly 400 adopters received text reminders while the heat wave lasted",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S2: 'About 400 adopters received text reminders during the heat wave.'"
+    },
+    {
+      "key": "The division warns that adopted trees sat on quieter, less paved residential blocks, so watering alone does not explain the survival gap",
+      "label": "ok",
+      "tag": "hedge_preserved",
+      "why": "S1: 'adopted trees were disproportionately on residential blocks with lower foot traffic and less paving.'"
+    },
+    {
+      "key": "Ward 2's low adoption rate is caused by its high share of renters",
+      "label": "mismatch",
+      "tag": "hedge_removed",
+      "why": "S2: a council member 'believes' renting and moving 'depresses adoption'; opinion stated as established cause."
+    },
+    {
+      "key": "The Courier survey shows that 71% of all Corrandale adopters will return in 2027",
+      "label": "mismatch",
+      "tag": "sample_generalized",
+      "why": "S2: 'informal survey of 120 adopters found 71% planned to sign up again'; 'not randomized.'"
+    },
+    {
+      "key": "The nursery warranty has already replaced every tree that died in the first season",
+      "label": "unverified",
+      "tag": "unsupported_claim",
+      "why": "S1 only says replacement 'is covered by the nursery warranty only within the first year'; no replacement outcomes reported."
+    },
+    {
+      "key": "Growing the program to 3,000 trees in 2027 still hinges on council budget approval",
+      "label": "ok",
+      "tag": "paraphrase",
+      "why": "S1: 'plans to expand the program to 3,000 trees in 2027, pending council budget approval.'"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+ "id": "en-crossing-guards",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout10-2026-10-12",
+ "prompt": "Has Fenwick's expanded school crossing guard program made walking to school safer?",
+ "sources": {
+  "S1": "In August 2025 the Fenwick Police Department expanded adult crossing guard coverage from 22 to 38 intersections near elementary and middle schools. Guards are hired and supervised by the police department, while the Fenwick Unified School District reimburses half of their wages under a cost-sharing agreement. Guards work 7:15-8:45 a.m. and 2:30-3:45 p.m. on school days.\n\nDuring the 2025-26 school year there were 3 collisions involving pedestrians under 18 within 150 meters of covered intersections, compared with 9 during the 2024-25 school year at the same 38 locations. None of the 2025-26 collisions occurred while a guard was on duty.\n\nThe department cautions that the number of collisions is small and can vary widely from year to year. It also reported that 5 of the 16 new posts went unstaffed for at least 20 school days because of hiring difficulties.",
+  "S2": "The district's spring 2026 travel tally at 14 elementary schools found that 31 percent of students walked or biked to school, up from 27 percent in spring 2025. Parent surveys at the same schools cited safer crossings as one reason for walking more often, but the most frequently cited reason was a change in bus routes that ended service to some neighborhoods within 1.5 miles of school.\n\nThe district plans to add a question on crossing guards to next year's survey."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Has Fenwick's expanded school crossing guard program made walking to school safer?\n\n## Answer\nCollisions involving young pedestrians near the 38 covered locations dropped by two-thirds, from 9 to 3 [S1]. None of the 2025-26 collisions took place while a guard was on duty [S1]. The decline confirms that the added guards prevented these collisions [S1].\n\n## Evidence\n- Coverage grew by 16 intersections, from 22 to 38 [S1].\n- The school district hires and supervises the guards [S1].\n- The district pays half of the guards' wages under a cost-sharing agreement [S1].\n- Guards cover the morning arrival and afternoon dismissal windows, a combined 2 hours 45 minutes per school day [S1].\n- All 16 new posts were staffed throughout the school year [S1].\n\n## Counter-evidence and limits\n- The police department warns that collision counts are small and fluctuate considerably between years [S1].\n- Walking and biking to school rose 4 percentage points to 31 percent across the district [S2].\n- Parents most often cited safer crossings as their reason for walking more [S2].\n- The district has already added a crossing guard question to its travel survey [S2].\n- Guard wages were raised to $22 an hour as part of the expansion.\n\n## Next steps\n- Track collisions for at least three school years before judging the expansion (judgment).\n- Separate the effect of the bus route change from the guard expansion in next year's survey (judgment).\n\n## Sources\n- [S1] Fenwick Police Department Traffic Unit, \"School Crossing Guard Expansion: 2025-26 Results\" (July 2026)\n- [S2] Fenwick Unified School District, \"Spring 2026 Student Travel Tally\" (June 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Collisions involving young pedestrians near the 38 covered locations dropped by two-thirds, from 9 to 3",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "9 to 3 is a 67% drop."
+  },
+  {
+   "key": "None of the 2025-26 collisions took place while a guard was on duty",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches S1."
+  },
+  {
+   "key": "The decline confirms that the added guards prevented these collisions",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "The department cautions that counts are small and vary widely year to year."
+  },
+  {
+   "key": "Coverage grew by 16 intersections, from 22 to 38",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "38 - 22 = 16."
+  },
+  {
+   "key": "The school district hires and supervises the guards",
+   "label": "mismatch",
+   "tag": "subject",
+   "why": "The police department hires and supervises guards; the district reimburses wages."
+  },
+  {
+   "key": "The district pays half of the guards' wages under a cost-sharing agreement",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Reimburses half = pays half."
+  },
+  {
+   "key": "Guards cover the morning arrival and afternoon dismissal windows, a combined 2 hours 45 minutes per school day",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "1 h 30 min + 1 h 15 min = 2 h 45 min."
+  },
+  {
+   "key": "All 16 new posts were staffed throughout the school year",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "5 of 16 new posts went unstaffed for at least 20 school days."
+  },
+  {
+   "key": "The police department warns that collision counts are small and fluctuate considerably between years",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches the caution in S1."
+  },
+  {
+   "key": "Walking and biking to school rose 4 percentage points to 31 percent across the district",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "The tally covered only 14 elementary schools."
+  },
+  {
+   "key": "Parents most often cited safer crossings as their reason for walking more",
+   "label": "mismatch",
+   "tag": "order",
+   "why": "The most frequently cited reason was the bus route change."
+  },
+  {
+   "key": "The district has already added a crossing guard question to its travel survey",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "The district plans to add it next year."
+  },
+  {
+   "key": "Guard wages were raised to $22 an hour as part of the expansion",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives wage rates."
+  }
+ ]
+}

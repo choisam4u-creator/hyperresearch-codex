@@ -1,0 +1,104 @@
+{
+ "id": "en-sunday-pool-hours-13",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout13-2026-10-14",
+ "prompt": "Did extending Sunday hours at Ashby's Fenwick Aquatic Center increase use, and can it continue?",
+ "sources": {
+  "S1": "Ashby Parks and Recreation extended Sunday hours at the Fenwick Aquatic Center, moving closing time from 4 p.m. to 8 p.m., during the summer of 2025, from 1 June to 31 August. The extension added four hours each Sunday for 13 Sundays. Staffing the extra hours cost $31,200, paid by a one-time grant from the Ashby Community Foundation rather than the parks budget. Sunday attendance totalled 11,700 over the summer, compared with 8,100 on Sundays in summer 2024. Admission stayed at $3 for youth and $6 for adults. The department reported that evening visits after 4 p.m. accounted for 2,900 of the Sunday entries. Two lifeguard positions went unfilled, so the lazy river stayed closed during the extended hours.",
+  "S2": "The Parks Board staff report (October 2025) recommended continuing the extended Sunday hours in 2026 but noted that the foundation grant will not be renewed, so the cost would fall on the parks budget. The board deferred a decision to its January 2026 budget session. Staff estimated that the 2026 cost would be about $34,000 because of a lifeguard wage increase. Staff also noted that 2024 attendance had been depressed by a two-week closure for pump repairs."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Did extending Sunday hours at Ashby's Fenwick Aquatic Center increase use, and can it continue?\n\n## Answer\nSunday attendance at Fenwick rose by 3,600 visits, about 44%, in summer 2025 compared with the prior summer [S1]. The extra hours were funded from the parks department budget [S1].\n\n## Evidence\n- Closing time on Sundays moved from 4 p.m. to 8 p.m. between June 1 and August 31, 2025 [S1].\n- Across 13 Sundays, the extension added 52 hours of pool time [S1].\n- The staffing cost works out to about $750 per extra hour [S1].\n- Visits after 4 p.m. made up roughly a quarter of Sunday entries [S1].\n- Admission prices rose for the extended evening hours [S1].\n- Sunday attendance averaged 900 visits per Sunday over the summer [S1].\n- All facilities, including the lazy river, were open during the added hours [S1].\n- The pool also extended its Saturday hours to 8 p.m. [S1].\n\n## Counter-evidence and limits\n- Because the foundation grant will not be renewed, continuing the hours in 2026 would shift the cost to the parks budget [S2].\n- The Parks Board voted in October 2025 to continue extended Sunday hours in 2026 [S2].\n- The year-over-year gain may be overstated, since a two-week pump-repair closure had held down 2024 attendance [S2].\n- Ashby's other two outdoor pools kept their regular Sunday hours.\n\n## Next actions\n- Confirm the outcome of the January 2026 budget session and the roughly $34,000 cost estimate before planning 2026 staffing (judgment).\n\n## Sources\n- [S1] Ashby Parks and Recreation, \"Fenwick Aquatic Center Extended Sunday Hours: Summer 2025 Results\" (September 2025)\n- [S2] Ashby Parks Board, \"Staff Report on Extended Sunday Pool Hours\" (October 2025)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Sunday attendance at Fenwick rose by 3,600 visits, about 44%, in summer 2025 compared with the prior summer",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 11,700 vs 8,100; diff 3,600; 3600/8100=44.4%."
+  },
+  {
+   "key": "The extra hours were funded from the parks department budget",
+   "label": "mismatch",
+   "tag": "funder",
+   "why": "S1: paid by one-time Ashby Community Foundation grant 'rather than the parks budget'."
+  },
+  {
+   "key": "Closing time on Sundays moved from 4 p.m. to 8 p.m. between June 1 and August 31, 2025",
+   "label": "ok",
+   "tag": "reorder",
+   "why": "S1: closing moved 4 p.m. to 8 p.m., 1 June-31 August 2025."
+  },
+  {
+   "key": "Across 13 Sundays, the extension added 52 hours of pool time",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 4 hours x 13 Sundays = 52."
+  },
+  {
+   "key": "The staffing cost works out to about $750 per extra hour",
+   "label": "mismatch",
+   "tag": "arithmetic",
+   "why": "S1: $31,200 / 52 hours = $600, not $750."
+  },
+  {
+   "key": "Visits after 4 p.m. made up roughly a quarter of Sunday entries",
+   "label": "ok",
+   "tag": "fraction",
+   "why": "S1: 2,900 of 11,700 = 24.8%."
+  },
+  {
+   "key": "Admission prices rose for the extended evening hours",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: admission 'stayed at' $3 youth / $6 adults."
+  },
+  {
+   "key": "Sunday attendance averaged 900 visits per Sunday over the summer",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "S1: 11,700 / 13 Sundays = 900."
+  },
+  {
+   "key": "All facilities, including the lazy river, were open during the added hours",
+   "label": "mismatch",
+   "tag": "exclusion as inclusion",
+   "why": "S1: lazy river stayed closed during extended hours due to unfilled lifeguard posts."
+  },
+  {
+   "key": "The pool also extended its Saturday hours to 8 p.m.",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "S1: only Sunday hours were extended; Saturdays not mentioned."
+  },
+  {
+   "key": "Because the foundation grant will not be renewed, continuing the hours in 2026 would shift the cost to the parks budget",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "S2: grant will not be renewed, so cost would fall on parks budget."
+  },
+  {
+   "key": "The Parks Board voted in October 2025 to continue extended Sunday hours in 2026",
+   "label": "mismatch",
+   "tag": "plan-as-done",
+   "why": "S2: staff recommended; board deferred decision to January 2026 budget session."
+  },
+  {
+   "key": "The year-over-year gain may be overstated, since a two-week pump-repair closure had held down 2024 attendance",
+   "label": "ok",
+   "tag": "hedged inference",
+   "why": "S2: 2024 attendance depressed by two-week closure for pump repairs."
+  },
+  {
+   "key": "Ashby's other two outdoor pools kept their regular Sunday hours",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source mentions other pools."
+  }
+ ]
+}

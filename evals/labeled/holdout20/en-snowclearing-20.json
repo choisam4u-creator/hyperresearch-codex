@@ -1,0 +1,164 @@
+{
+ "id": "en-snowclearing-20",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout20-2026-10-17",
+ "prompt": "Is Millbrook's Clear Path sidewalk snow-clearing program for seniors and disabled residents working?",
+ "sources": {
+  "S1": "Millbrook launched the Clear Path program in December 2024 to clear public sidewalks in front of homes occupied by residents who cannot shovel themselves. Eligible households are those where every adult occupant is 65 or older or has a documented disability, and household income is at or below 60% of the area median income. Enrollment opens each October 1 and closes November 15; late applications are placed on a waitlist. Clearing is performed by three contracted landscaping firms, which are paid by the city per completed visit. The city's 2025-26 budget for the program was $1.26 million, of which 70% came from the city's general fund and 30% from a state aging-services grant. Contractors are required to clear enrolled sidewalks within 24 hours after snowfall ends for storms of 2 inches or more; storms below 2 inches are not covered. In the 2025-26 season, 1,840 households were enrolled, up from 1,150 the previous season. Contractors completed 21,600 visits across 14 qualifying storms. The share of visits completed within the 24-hour window was 88%, compared with 79% in 2024-25. The average cost per visit was $52, up from $47. The department notes that the improvement in on-time completion may partly reflect a milder season with fewer back-to-back storms, and it cannot yet attribute the gain to the new GPS dispatch system. Code-enforcement complaints about uncleared sidewalks fell from 640 to 410 citywide. A participant survey in April 2026 (n=512) found that 91% were satisfied and 37% said they had left home more often in winter. Households may be removed after two missed confirmations of continued eligibility. The city plans to add driveway-apron clearing as a pilot in the 2026-27 season in two wards. The department also set a target of 95% on-time completion by 2027-28. The waitlist stood at 230 households at the end of the enrollment period. Residents who are enrolled do not receive fines for uncleared sidewalks during covered storms.",
+  "S2": "Clear Path has grown quickly, but some seniors who missed the November deadline spent the whole winter shoveling or paying neighbors. One Elm Street resident said a contractor skipped her block twice in January. Councilmember Ruiz has proposed opening enrollment year-round, though the proposal has not been voted on. Contractors told the Ledger that the per-visit rate barely covers fuel and labor."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Millbrook's Clear Path sidewalk snow-clearing program for seniors and disabled residents working?\n\n## Answer\nClear Path enrolled 1,840 households in 2025-26, about 60% more than the 1,150 enrolled the season before [S1]. On-time completion rose by 9 percent, driven by the new GPS dispatch system [S1]. Friction remains: a waitlist of 230 households was left at the end of the enrollment period [S1].\n\n## Evidence\n- Households qualify if at least one adult occupant is 65 or older or has a documented disability [S1].\n- Applicants must also have household income no higher than 60% of the area median [S1].\n- Enrollment runs from October 1 through December 15 [S1].\n- The city pays three contracted landscaping firms for each visit they complete [S1].\n- Of the $1.26 million budget, the state aging-services grant covered $378,000 [S1].\n- The general fund share was more than double the state share, at roughly $820,000 [S1].\n- Contractors must clear enrolled sidewalks within 24 hours after any snowfall [S1].\n- Across 14 qualifying storms, contractors averaged roughly 1,540 visits per storm [S1].\n- Each enrolled household received about 14 visits over the season [S1].\n- The average cost per visit rose by $5, or a little over 10% [S1].\n- Clear Path's per-visit cost is lower than what private snow services in Millbrook typically charge.\n- Complaints about uncleared sidewalks in front of enrolled homes fell from 640 to 410 [S1].\n- Most participants, 91%, said they left home more often in winter [S1].\n- About 190 of the 512 survey respondents said they went out more often in winter [S1].\n- Driveway-apron clearing was added citywide for the 2026-27 season [S1].\n- The department has already reached its 95% on-time target [S1].\n\n## Caveats and counterpoints\n- Some seniors who missed the November deadline spent the winter shoveling themselves or paying neighbors [S2].\n- Residents reported that contractors routinely skipped blocks in January [S2].\n- The council approved Councilmember Ruiz's plan to open enrollment year-round [S2].\n- Contractors say the per-visit rate barely covers fuel and labor [S2].\n- The department itself says a milder season with fewer back-to-back storms may explain part of the on-time gain [S1].\n\n## Next actions\n- Ask the department for on-time rates broken out by storm size before crediting GPS dispatch (judgment).\n\n## Sources\n- [S1] City of Millbrook Department of Public Works, \"Clear Path Sidewalk Snow Assistance: 2025-26 Season Report\" (2026-09-02)\n- [S2] Millbrook Ledger, \"Snow help program grows, but waitlist frustrates seniors\" (2026-09-20)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Clear Path enrolled 1,840 households in 2025-26, about 60% more than the 1,150 enrolled the season before",
+   "label": "ok",
+   "tag": "derived_growth",
+   "why": "S1: '1,840 households were enrolled, up from 1,150 the previous season'. 1,840/1,150 = 1.60 -> +60%. Correct."
+  },
+  {
+   "key": "On-time completion rose by 9 percent, driven by the new GPS dispatch system",
+   "label": "mismatch",
+   "tag": "hedge_to_fact",
+   "why": "S1: on-time share '88%, compared with 79%' (a 9-percentage-point rise, 11.4% relative), and the department 'cannot yet attribute the gain to the new GPS dispatch system'. Causation asserted that the source withholds; unit also wrong."
+  },
+  {
+   "key": "Friction remains: a waitlist of 230 households was left at the end of the enrollment period",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'The waitlist stood at 230 households at the end of the enrollment period.' Matches."
+  },
+  {
+   "key": "Households qualify if at least one adult occupant is 65 or older or has a documented disability",
+   "label": "mismatch",
+   "tag": "eligibility_changed",
+   "why": "S1: 'every adult occupant is 65 or older or has a documented disability, and household income is at or below 60% of the area median income'. 'At least one' loosens 'every'."
+  },
+  {
+   "key": "Applicants must also have household income no higher than 60% of the area median",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'household income is at or below 60% of the area median income'. Matches."
+  },
+  {
+   "key": "Enrollment runs from October 1 through December 15",
+   "label": "mismatch",
+   "tag": "date_changed",
+   "why": "S1: 'Enrollment opens each October 1 and closes November 15'. Closing date wrong."
+  },
+  {
+   "key": "The city pays three contracted landscaping firms for each visit they complete",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'three contracted landscaping firms, which are paid by the city per completed visit'. Matches."
+  },
+  {
+   "key": "Of the $1.26 million budget, the state aging-services grant covered $378,000",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: '$1.26 million, of which ... 30% from a state aging-services grant'. 0.30 x 1,260,000 = 378,000. Correct."
+  },
+  {
+   "key": "The general fund share was more than double the state share, at roughly $820,000",
+   "label": "mismatch",
+   "tag": "share_arithmetic",
+   "why": "S1: 70% from the general fund. 0.70 x 1,260,000 = $882,000, not ~$820,000 (the 'more than double' part, 70 vs 30, is right)."
+  },
+  {
+   "key": "Contractors must clear enrolled sidewalks within 24 hours after any snowfall",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'for storms of 2 inches or more; storms below 2 inches are not covered'. The 2-inch threshold is dropped."
+  },
+  {
+   "key": "Across 14 qualifying storms, contractors averaged roughly 1,540 visits per storm",
+   "label": "ok",
+   "tag": "derived_average",
+   "why": "S1: '21,600 visits across 14 qualifying storms'. 21,600/14 = 1,542.9 -> roughly 1,540. Correct."
+  },
+  {
+   "key": "Each enrolled household received about 14 visits over the season",
+   "label": "mismatch",
+   "tag": "per_unit_arithmetic",
+   "why": "S1: 21,600 visits, 1,840 households -> 21,600/1,840 = 11.7 visits per household. 14 is the number of storms."
+  },
+  {
+   "key": "The average cost per visit rose by $5, or a little over 10%",
+   "label": "ok",
+   "tag": "derived_growth",
+   "why": "S1: '$52, up from $47'. 52-47 = 5; 5/47 = 10.6%. Correct."
+  },
+  {
+   "key": "Clear Path's per-visit cost is lower than what private snow services in Millbrook typically charge",
+   "label": "unverified",
+   "tag": "unsupported_comparison",
+   "why": "No citation, and neither S1 nor S2 gives private-market prices."
+  },
+  {
+   "key": "Complaints about uncleared sidewalks in front of enrolled homes fell from 640 to 410",
+   "label": "mismatch",
+   "tag": "scope_changed",
+   "why": "S1: 'Code-enforcement complaints about uncleared sidewalks fell from 640 to 410 citywide'. The figures are citywide, not limited to enrolled homes."
+  },
+  {
+   "key": "Most participants, 91%, said they left home more often in winter",
+   "label": "mismatch",
+   "tag": "values_swapped",
+   "why": "S1: '91% were satisfied and 37% said they had left home more often in winter'. The two survey figures are swapped."
+  },
+  {
+   "key": "About 190 of the 512 survey respondents said they went out more often in winter",
+   "label": "ok",
+   "tag": "derived_count",
+   "why": "S1: 'n=512 ... 37% said they had left home more often'. 0.37 x 512 = 189.4 -> about 190. Correct."
+  },
+  {
+   "key": "Driveway-apron clearing was added citywide for the 2026-27 season",
+   "label": "mismatch",
+   "tag": "plan_as_achieved",
+   "why": "S1: 'The city plans to add driveway-apron clearing as a pilot in the 2026-27 season in two wards.' A planned two-ward pilot is reported as a done citywide expansion."
+  },
+  {
+   "key": "The department has already reached its 95% on-time target",
+   "label": "mismatch",
+   "tag": "target_as_achieved",
+   "why": "S1: on-time share was 88%; 'a target of 95% on-time completion by 2027-28'. Not reached."
+  },
+  {
+   "key": "Some seniors who missed the November deadline spent the winter shoveling themselves or paying neighbors",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'some seniors who missed the November deadline spent the whole winter shoveling or paying neighbors'. Matches."
+  },
+  {
+   "key": "Residents reported that contractors routinely skipped blocks in January",
+   "label": "mismatch",
+   "tag": "anecdote_generalized",
+   "why": "S2: 'One Elm Street resident said a contractor skipped her block twice in January.' One resident, two skips, is generalized to routine skipping."
+  },
+  {
+   "key": "The council approved Councilmember Ruiz's plan to open enrollment year-round",
+   "label": "mismatch",
+   "tag": "status_changed",
+   "why": "S2: Ruiz 'has proposed opening enrollment year-round, though the proposal has not been voted on'."
+  },
+  {
+   "key": "Contractors say the per-visit rate barely covers fuel and labor",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'Contractors told the Ledger that the per-visit rate barely covers fuel and labor.' Matches."
+  },
+  {
+   "key": "The department itself says a milder season with fewer back-to-back storms may explain part of the on-time gain",
+   "label": "ok",
+   "tag": "hedge_preserved",
+   "why": "S1: 'the improvement in on-time completion may partly reflect a milder season with fewer back-to-back storms'. Matches."
+  }
+ ]
+}

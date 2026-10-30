@@ -1,0 +1,98 @@
+{
+  "id": "en-business-energy-audits",
+  "lang": "en",
+  "baseline_time": "2026-10-01",
+  "set": "holdout9-2026-10-12",
+  "prompt": "Did Fenmore's free energy audit pilot help small businesses cut utility costs?",
+  "sources": {
+    "S1": "Fenmore offered free on-site energy audits to independent businesses with fewer than 25 employees and annual electricity use below 150,000 kilowatt-hours. Between April and December 2025, contractors audited 140 businesses, mostly restaurants, salons and small retailers.\n\nEach audit produced a list of recommended upgrades. Businesses that installed at least one recommended upgrade within six months could receive a rebate of up to 50 percent of the cost, capped at $4,000. Of the 140 audited businesses, 63 installed at least one upgrade.\n\nFor the 63 businesses with upgrades, average monthly electricity use fell from 9,800 kilowatt-hours to 8,300 kilowatt-hours, comparing January-February 2026 with the same months in 2025. The office did not adjust for weather.",
+    "S2": "In a survey of 88 audited businesses, 71 percent rated the audit as useful. The most common reason given for not installing upgrades was the upfront cost, even with the rebate.\n\nThe chamber said rebates were often paid three to four months after installation and urged the city to pay contractors directly. The city has not responded to that proposal."
+  },
+  "responses": {
+    "writer": [
+      {
+        "markdown": "# Question: Did Fenmore's free energy audit pilot help small businesses cut utility costs?\n\n## Answer\nOf the 140 businesses audited, 63 installed at least one upgrade, or 45 percent [S1]. Among those businesses, average monthly electricity use fell by about 15 percent [S1]. The decline was largely the result of a milder winter rather than the upgrades [S1].\n\n## Evidence\n- The audits were open to independent businesses with fewer than 50 employees [S1].\n- Rebates covered up to half of upgrade costs, to a maximum of $4,000 [S1].\n- Average monthly use for upgraded businesses dropped by 1,500 kWh, from 9,800 to 8,300 [S1].\n- The electricity comparison was adjusted for weather [S1].\n- Contractors audited 140 businesses between April and December 2024 [S1].\n- Participating businesses saved an average of $210 per month on their bills.\n\n## Counter-evidence and limits\n- Of 88 surveyed businesses, 71 percent found the audit useful [S2].\n- Businesses most often cited the upfront cost, even after the rebate, as the reason they did not install upgrades [S2].\n- The city has agreed to pay contractors directly [S2].\n- Rebates typically arrived within three to four weeks of installation [S2].\n\n## Next steps\n- Re-run the electricity comparison with weather normalization before claiming savings (judgment).\n\n## Sources\n- [S1] Fenmore Office of Sustainability, Small Business Energy Audit Pilot Results (March 2026)\n- [S2] Fenmore Chamber of Commerce, Member Survey on Energy Audit Pilot (April 2026)\n"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "key": "Of the 140 businesses audited, 63 installed at least one upgrade, or 45 percent",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "63 / 140 = 45 percent."
+    },
+    {
+      "key": "Among those businesses, average monthly electricity use fell by about 15 percent",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "(9,800 - 8,300) / 9,800 = 15.3 percent."
+    },
+    {
+      "key": "The decline was largely the result of a milder winter rather than the upgrades",
+      "label": "mismatch",
+      "tag": "causal",
+      "why": "S1 makes no causal attribution; it only notes no weather adjustment was made."
+    },
+    {
+      "key": "The audits were open to independent businesses with fewer than 50 employees",
+      "label": "mismatch",
+      "tag": "condition",
+      "why": "S1 sets the limit at fewer than 25 employees."
+    },
+    {
+      "key": "Rebates covered up to half of upgrade costs, to a maximum of $4,000",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Up to 50 percent, capped at $4,000."
+    },
+    {
+      "key": "Average monthly use for upgraded businesses dropped by 1,500 kWh, from 9,800 to 8,300",
+      "label": "ok",
+      "tag": "arithmetic",
+      "why": "9,800 - 8,300 = 1,500 kWh."
+    },
+    {
+      "key": "The electricity comparison was adjusted for weather",
+      "label": "mismatch",
+      "tag": "negation",
+      "why": "S1: the office did not adjust for weather."
+    },
+    {
+      "key": "Contractors audited 140 businesses between April and December 2024",
+      "label": "mismatch",
+      "tag": "year",
+      "why": "S1 says April to December 2025."
+    },
+    {
+      "key": "Participating businesses saved an average of $210 per month on their bills",
+      "label": "unverified",
+      "tag": "uncited",
+      "why": "No source gives dollar savings."
+    },
+    {
+      "key": "Of 88 surveyed businesses, 71 percent found the audit useful",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2."
+    },
+    {
+      "key": "Businesses most often cited the upfront cost, even after the rebate, as the reason they did not install upgrades",
+      "label": "ok",
+      "tag": "synonym",
+      "why": "Matches S2."
+    },
+    {
+      "key": "The city has agreed to pay contractors directly",
+      "label": "mismatch",
+      "tag": "plan",
+      "why": "S2: the chamber urged it and the city has not responded."
+    },
+    {
+      "key": "Rebates typically arrived within three to four weeks of installation",
+      "label": "mismatch",
+      "tag": "period",
+      "why": "S2 says three to four months."
+    }
+  ]
+}

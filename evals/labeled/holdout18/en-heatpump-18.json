@@ -1,0 +1,140 @@
+{
+ "id": "en-heatpump-18",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout18-2026-10-16",
+ "prompt": "What did Northmere's heat pump rebate pilot achieve, and what do the energy savings figures really show?",
+ "sources": {
+  "S1": "Northmere's Office of Sustainability ran a heat pump rebate pilot from 2025-10-01 to 2026-06-30. Owners of single-family homes and duplexes heated by oil or propane could receive $4,000 for an air-source heat pump, plus $1,500 if the household income was below 120% of area median income. Homes heated by natural gas were not eligible. Installations had to be done by one of 22 contractors on the city's approved list. The pilot funded 530 installations: 412 at the base rebate only and 118 that also received the income bonus. Total rebates paid were $2,297,000. Funding came from a state climate grant ($1.8 million) and the city's utility franchise fee revenue (the remainder). Participating homes used on average 31% less total heating energy in January 2026 than in January 2025, measured from utility and fuel-delivery records for 284 homes that provided both years' data. The office cautions that January 2026 was 9% milder in heating degree days than January 2025, and that homes self-selected into the program. Oil-heated homes made up 74% of installations and propane-heated homes 26%. The average installed cost was $17,800, so the base rebate covered about 22% of a typical project. Median time from application to rebate payment was 47 days. The office plans to extend the program through 2027 and to add a $1,000 bonus for replacing electric resistance heat, pending council budget approval in November 2026.",
+  "S2": "The Northmere Herald reported that two approved contractors were removed from the list in May after complaints of undersized systems. Homeowner Priya Nair said her electricity bill doubled in January but her oil bill disappeared, leaving her 'about even.' The regional utility warned that winter peak demand on two neighborhood feeders rose by 12%. Oil dealers' association director Tom Briggs called the program 'a subsidy for people who would have switched anyway.' The office said 160 applications were still waiting when the pilot closed."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What did Northmere's heat pump rebate pilot achieve, and what do the energy savings figures really show?\n\n## Answer\nNorthmere's pilot paid for 530 heat pump installations at a total rebate cost of $2,297,000 [S1]. The heat pumps cut participants' heating energy use by 31% [S1].\n\n## Evidence\n- Only oil- and propane-heated single-family homes and duplexes could apply; gas-heated homes were excluded [S1].\n- The $1,500 bonus went to households earning below 80% of area median income [S1].\n- Households that received the income bonus got $5,500 in total [S1].\n- Roughly 22% of installations received the income bonus [S1].\n- The state climate grant covered the full cost of the rebates [S1].\n- Franchise fee revenue supplied about $497,000 [S1].\n- The 31% drop in January heating energy was measured across all 530 participating homes [S1].\n- January 2026 had 9% fewer heating degree days than January 2025 [S1].\n- Oil-heated homes outnumbered propane-heated homes about two to one [S1].\n- The base rebate covered about 40% of the average installed cost [S1].\n- The median wait from application to rebate payment was under seven weeks [S1].\n- Installers could be any licensed contractor [S1].\n\n## Counterevidence and limits\n- Participants chose to join, so the office warns they may differ from typical homeowners [S1].\n- The regional utility reported winter peak demand on two neighborhood feeders rose 21% [S2].\n- Two contractors were dropped from the approved list in May after complaints about undersized systems [S2].\n- The program has been extended through 2027 with a new $1,000 bonus for replacing electric resistance heat [S1].\n- About a third of participants also added rooftop solar.\n- 160 applications were still pending when the pilot ended [S2].\n\n## Next actions\n- Ask the office for weather-normalized savings and a comparison with non-participating oil-heated homes before the November 2026 budget vote (judgment).\n\n## Sources\n- [S1] Northmere Office of Sustainability, \"Heat Pump Rebate Pilot: Final Report\" (2026-08-05)\n- [S2] The Northmere Herald, \"Heat pumps warm homes, strain wires\" (2026-09-12)"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Northmere's pilot paid for 530 heat pump installations at a total rebate cost of $2,297,000",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'The pilot funded 530 installations ... Total rebates paid were $2,297,000.'"
+  },
+  {
+   "key": "The heat pumps cut participants' heating energy use by 31%",
+   "label": "mismatch",
+   "tag": "causal_overclaim",
+   "why": "S1: January 2026 'was 9% milder' and 'homes self-selected into the program'; the 31% is an unadjusted January comparison for 284 homes."
+  },
+  {
+   "key": "Only oil- and propane-heated single-family homes and duplexes could apply; gas-heated homes were excluded",
+   "label": "ok",
+   "tag": "eligibility_paraphrase",
+   "why": "S1: 'Owners of single-family homes and duplexes heated by oil or propane ... Homes heated by natural gas were not eligible.'"
+  },
+  {
+   "key": "The $1,500 bonus went to households earning below 80% of area median income",
+   "label": "mismatch",
+   "tag": "eligibility_changed",
+   "why": "S1: '$1,500 if the household income was below 120% of area median income.'"
+  },
+  {
+   "key": "Households that received the income bonus got $5,500 in total",
+   "label": "ok",
+   "tag": "derived_sum",
+   "why": "S1: $4,000 base + $1,500 bonus = $5,500."
+  },
+  {
+   "key": "Roughly 22% of installations received the income bonus",
+   "label": "ok",
+   "tag": "derived_share",
+   "why": "S1: 118 of 530 installations; 118/530 = 22.3%."
+  },
+  {
+   "key": "The state climate grant covered the full cost of the rebates",
+   "label": "mismatch",
+   "tag": "wrong_payer",
+   "why": "S1: 'Funding came from a state climate grant ($1.8 million) and the city's utility franchise fee revenue (the remainder)'; rebates totaled $2,297,000."
+  },
+  {
+   "key": "Franchise fee revenue supplied about $497,000",
+   "label": "ok",
+   "tag": "derived_difference",
+   "why": "S1: $2,297,000 - $1,800,000 = $497,000."
+  },
+  {
+   "key": "The 31% drop in January heating energy was measured across all 530 participating homes",
+   "label": "mismatch",
+   "tag": "sample_generalized",
+   "why": "S1: 'measured ... for 284 homes that provided both years' data.'"
+  },
+  {
+   "key": "January 2026 had 9% fewer heating degree days than January 2025",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S1: 'January 2026 was 9% milder in heating degree days than January 2025.'"
+  },
+  {
+   "key": "Oil-heated homes outnumbered propane-heated homes about two to one",
+   "label": "mismatch",
+   "tag": "ratio_wrong",
+   "why": "S1: 74% oil vs 26% propane; 74/26 = 2.85, nearly three to one."
+  },
+  {
+   "key": "The base rebate covered about 40% of the average installed cost",
+   "label": "mismatch",
+   "tag": "value_changed",
+   "why": "S1: 'the base rebate covered about 22% of a typical project' ($4,000/$17,800)."
+  },
+  {
+   "key": "The median wait from application to rebate payment was under seven weeks",
+   "label": "ok",
+   "tag": "unit_conversion",
+   "why": "S1: 'Median time from application to rebate payment was 47 days'; seven weeks = 49 days."
+  },
+  {
+   "key": "Installers could be any licensed contractor",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'Installations had to be done by one of 22 contractors on the city's approved list.'"
+  },
+  {
+   "key": "Participants chose to join, so the office warns they may differ from typical homeowners",
+   "label": "ok",
+   "tag": "caveat_paraphrase",
+   "why": "S1: 'the office cautions ... that homes self-selected into the program.'"
+  },
+  {
+   "key": "The regional utility reported winter peak demand on two neighborhood feeders rose 21%",
+   "label": "mismatch",
+   "tag": "number_changed",
+   "why": "S2: 'winter peak demand on two neighborhood feeders rose by 12%.'"
+  },
+  {
+   "key": "Two contractors were dropped from the approved list in May after complaints about undersized systems",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'two approved contractors were removed from the list in May after complaints of undersized systems.'"
+  },
+  {
+   "key": "The program has been extended through 2027 with a new $1,000 bonus for replacing electric resistance heat",
+   "label": "mismatch",
+   "tag": "plan_as_done",
+   "why": "S1: 'The office plans to extend the program through 2027 ... pending council budget approval in November 2026.'"
+  },
+  {
+   "key": "About a third of participants also added rooftop solar",
+   "label": "unverified",
+   "tag": "no_source",
+   "why": "Neither source mentions rooftop solar."
+  },
+  {
+   "key": "160 applications were still pending when the pilot ended",
+   "label": "ok",
+   "tag": "paraphrase",
+   "why": "S2: 'The office said 160 applications were still waiting when the pilot closed.'"
+  }
+ ]
+}

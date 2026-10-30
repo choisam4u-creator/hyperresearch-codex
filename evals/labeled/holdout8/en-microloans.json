@@ -1,0 +1,86 @@
+{
+ "id": "en-microloans",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout8-2026-10-11",
+ "prompt": "What were the early results of Brennick's small-business microloan pilot?",
+ "sources": {
+  "S1": "The pilot issued 96 loans of between $2,000 and $15,000 to businesses with fewer than ten employees, at a fixed 3% interest rate over three years. The total amount lent was $812,000.\n\nAs of December 2025, 7 borrowers were more than 90 days behind on repayments and 2 loans had been written off. The office said default rates were in line with its projections, but noted that most loans were less than 18 months old, which is too early to judge long-term performance.",
+  "S2": "Of 61 borrowers who responded, 34 said they had hired at least one additional worker since receiving the loan, and 12 said the loan allowed them to avoid a high-interest online lender. The chamber noted that the survey did not ask whether hiring was planned before the loan."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: What were the early results of Brennick's small-business microloan pilot?\n\n## Answer\nBrennick's microloan pilot lent $812,000 across 96 small businesses, an average of about $8,500 per loan [S1]. The loans helped most borrowers hire new staff [S2].\n\n## Evidence\n- Loans were available to businesses with up to 25 employees [S1].\n- Borrowers paid a fixed 3% interest rate over a three-year term [S1].\n- Among survey respondents, slightly more than half reported adding at least one worker after getting the loan [S2].\n- About one in five respondents said the loan let them avoid a high-interest online lender [S2].\n- Nine of the 96 loans, or under a tenth, were either seriously delinquent or written off by the end of 2025 [S1].\n\n## Counter-evidence and limits\n- The office reported that default rates exceeded its projections [S1].\n- Because most loans had been outstanding for over 18 months, the office considers the repayment data conclusive [S1].\n- The survey drew responses from all 96 borrowers [S2].\n- The pilot was funded through a federal community development block grant.\n\n## Next actions\n- Revisit repayment performance once most loans pass the 24-month mark and add a pre-loan hiring-plan question to the next survey (judgment).\n\n## Sources\n- [S1] Brennick Community Development Office, Microloan Pilot Annual Report 2025\n- [S2] Brennick Chamber of Commerce survey of pilot borrowers, January 2026\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Brennick's microloan pilot lent $812,000 across 96 small businesses, an average of about $8,500 per loan",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "812,000/96 = 8,458"
+  },
+  {
+   "key": "The loans helped most borrowers hire new staff",
+   "label": "mismatch",
+   "tag": "causal_invented",
+   "why": "34 of 61 respondents hired since the loan; survey did not establish the loan caused it, and not most of all borrowers"
+  },
+  {
+   "key": "Loans were available to businesses with up to 25 employees",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "S1: fewer than ten employees"
+  },
+  {
+   "key": "Borrowers paid a fixed 3% interest rate over a three-year term",
+   "label": "ok",
+   "tag": "verbatim",
+   "why": "matches S1"
+  },
+  {
+   "key": "Among survey respondents, slightly more than half reported adding at least one worker after getting the loan",
+   "label": "ok",
+   "tag": "share",
+   "why": "34/61 = 56%"
+  },
+  {
+   "key": "About one in five respondents said the loan let them avoid a high-interest online lender",
+   "label": "ok",
+   "tag": "rounding",
+   "why": "12/61 = 19.7%"
+  },
+  {
+   "key": "Nine of the 96 loans, or under a tenth, were either seriously delinquent or written off by the end of 2025",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "7 + 2 = 9; 9/96 = 9.4%"
+  },
+  {
+   "key": "The office reported that default rates exceeded its projections",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "S1: in line with projections"
+  },
+  {
+   "key": "Because most loans had been outstanding for over 18 months, the office considers the repayment data conclusive",
+   "label": "mismatch",
+   "tag": "hedge",
+   "why": "most loans were under 18 months old; too early to judge"
+  },
+  {
+   "key": "The survey drew responses from all 96 borrowers",
+   "label": "mismatch",
+   "tag": "scope",
+   "why": "only 61 borrowers responded"
+  },
+  {
+   "key": "The pilot was funded through a federal community development block grant",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "no source names the funding"
+  }
+ ]
+}

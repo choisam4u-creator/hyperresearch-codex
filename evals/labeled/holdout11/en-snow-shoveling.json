@@ -1,0 +1,104 @@
+{
+ "id": "en-snow-shoveling",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout11-2026-10-13",
+ "prompt": "Is Brightwater's Snow Buddies volunteer program keeping older residents' sidewalks clear?",
+ "sources": {
+  "S1": "The Snow Buddies program matches volunteers with residents aged 70 or older, or residents of any age with a documented mobility disability, to clear sidewalks and front steps after snowfalls of 2 inches or more. In winter 2025-26 the program enrolled 430 residents and 290 volunteers. Volunteers completed 3,860 of 4,300 requested clearings, and the Office on Aging cleared most of the remainder using a paid contractor. The city reimburses volunteers' mileage but does not pay them wages. Enrolled residents who own their homes remain legally responsible for clearing their sidewalks within 24 hours, and enrollment does not exempt them from fines. The office received 12 complaints about missed clearings, all from the city's northern district, where volunteer recruitment lagged.",
+  "S2": "Brightwater Public Works issued 1,050 sidewalk snow citations in winter 2025-26, down from 1,380 in 2024-25. The department notes that the 2025-26 winter had 9 snowfalls of 2 inches or more, compared with 14 the previous winter, and that fewer snow events likely account for much of the decline. Citations to Snow Buddies enrollees were not tracked separately. The department plans to begin flagging enrollee addresses in its enforcement database next winter."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: Is Brightwater's Snow Buddies volunteer program keeping older residents' sidewalks clear?\n\n## Answer\nVolunteers completed about 90 percent of the clearings residents requested in winter 2025-26 [S1]. Snow Buddies is the main reason sidewalk snow citations fell by roughly a quarter [S2]. Enrolled residents are exempt from fines for uncleared sidewalks [S1].\n\n## Evidence\n- Residents qualify if they are 70 or older or have a documented mobility disability [S1].\n- Volunteers are dispatched after any measurable snowfall [S1].\n- The program enrolled roughly three residents for every two volunteers [S1].\n- Volunteers receive an hourly wage on top of mileage reimbursement [S1].\n- A paid contractor handled most of the clearings that volunteers did not get to [S1].\n- Volunteers left 440 requested clearings undone over the winter [S1].\n\n## Counter-evidence and limits\n- All 12 complaints about missed clearings came from the northern district, where volunteer sign-ups fell short [S1].\n- The 2025-26 winter had five fewer qualifying snowfalls than the winter before [S2].\n- Public Works tracked citations to enrollees separately and found very few [S2].\n- The department started flagging enrollee addresses in its enforcement database this past winter [S2].\n- Brightwater's sidewalk ordinance sets a $75 fine for a first violation.\n\n## Next steps\n- Recruit volunteers in the northern district before next winter (judgment).\n- Compare enrollee citation rates once Public Works begins flagging addresses (judgment).\n\n## Sources\n- [S1] Brightwater Office on Aging, \"Snow Buddies Volunteer Program: Winter 2025-26 Report\" (April 2026)\n- [S2] Brightwater Department of Public Works, \"Sidewalk Snow Enforcement Summary 2025-26\" (May 2026)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Volunteers completed about 90 percent of the clearings residents requested in winter 2025-26",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "3,860 / 4,300 = 89.8%."
+  },
+  {
+   "key": "Snow Buddies is the main reason sidewalk snow citations fell by roughly a quarter",
+   "label": "mismatch",
+   "tag": "causal",
+   "why": "Public Works attributes much of the decline to fewer snow events."
+  },
+  {
+   "key": "Enrolled residents are exempt from fines for uncleared sidewalks",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Enrollment does not exempt residents from fines."
+  },
+  {
+   "key": "Residents qualify if they are 70 or older or have a documented mobility disability",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Matches eligibility."
+  },
+  {
+   "key": "Volunteers are dispatched after any measurable snowfall",
+   "label": "mismatch",
+   "tag": "condition",
+   "why": "Only after snowfalls of 2 inches or more."
+  },
+  {
+   "key": "The program enrolled roughly three residents for every two volunteers",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "430 / 290 = 1.48."
+  },
+  {
+   "key": "Volunteers receive an hourly wage on top of mileage reimbursement",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "The city does not pay volunteers wages."
+  },
+  {
+   "key": "A paid contractor handled most of the clearings that volunteers did not get to",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Office on Aging used a contractor for most of the remainder."
+  },
+  {
+   "key": "Volunteers left 440 requested clearings undone over the winter",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "4,300 - 3,860 = 440."
+  },
+  {
+   "key": "All 12 complaints about missed clearings came from the northern district, where volunteer sign-ups fell short",
+   "label": "ok",
+   "tag": "synonym",
+   "why": "Recruitment lagged in the northern district."
+  },
+  {
+   "key": "The 2025-26 winter had five fewer qualifying snowfalls than the winter before",
+   "label": "ok",
+   "tag": "arithmetic",
+   "why": "14 - 9 = 5."
+  },
+  {
+   "key": "Public Works tracked citations to enrollees separately and found very few",
+   "label": "mismatch",
+   "tag": "negation",
+   "why": "Enrollee citations were not tracked separately."
+  },
+  {
+   "key": "The department started flagging enrollee addresses in its enforcement database this past winter",
+   "label": "mismatch",
+   "tag": "plan",
+   "why": "It plans to begin next winter."
+  },
+  {
+   "key": "Brightwater's sidewalk ordinance sets a $75 fine for a first violation",
+   "label": "unverified",
+   "tag": "uncited",
+   "why": "No source gives the fine amount."
+  }
+ ]
+}

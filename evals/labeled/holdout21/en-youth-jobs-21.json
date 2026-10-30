@@ -1,0 +1,152 @@
+{
+ "id": "en-youth-jobs-21",
+ "lang": "en",
+ "baseline_time": "2026-10-01",
+ "set": "holdout21-2026-10-18",
+ "prompt": "How well did Port Haddon's 2026 summer youth employment program work?",
+ "sources": {
+  "S1": "Port Haddon's Summer Youth Employment Program (SYEP) placed 2,340 young people aged 14 to 21 in six-week jobs between 29 June and 7 August 2026. Applications totaled 5,900, up from 4,700 in 2025. Placements were assigned by lottery, with 30% of slots reserved for youth in foster care, involved with the juvenile justice system or living in public housing. Participants worked up to 25 hours per week at the state minimum wage of $15.50 an hour; youth aged 14 and 15 were limited to 20 hours per week. Wages were paid by the city for public and nonprofit worksites, while private employers paid wages for the 410 youth they hosted. The total program budget was $9.8 million, of which $6.2 million came from the city general fund, $2.1 million from a state grant and the remainder from private and philanthropic contributions. Completion, defined as working at least 80% of scheduled hours, was 86%, compared with 81% in 2025. A worksite supervisor survey rated 74% of participants as 'meets or exceeds expectations.' An evaluation by the Haddon Policy Lab, using the 2024 lottery, found that youth offered a slot were 2.3 percentage points more likely to be enrolled in school the following spring. The authors cautioned that the estimate was imprecise and not statistically significant at conventional levels. The same evaluation found no measurable effect on employment one year later. Participants attended a weekly financial-literacy session, and 1,050 opened a bank account through a partner credit union. The office plans to add a year-round component for 300 youth in 2027, pending council approval of $1.4 million.",
+  "S2": "Youth advocates note that the program could serve only about four in ten applicants this year. Councilor Jun Okafor has proposed extending the program to eight weeks. According to an internal memo seen by the Harbor Times, employers at 35 worksites complained that paperwork delayed start dates by up to two weeks. A participant at a parks worksite told the Times the job 'kept me off the street,' a line the program has since featured in its marketing."
+ },
+ "responses": {
+  "writer": [
+   {
+    "markdown": "# Question: How well did Port Haddon's 2026 summer youth employment program work?\n\n## Answer\nPort Haddon placed 2,340 youths aged 14-21 in six-week summer jobs in 2026, roughly four out of every ten applicants [S1]. A lottery-based evaluation shows the program raises school enrollment the following spring by 2.3 percentage points [S1]. Completion improved to 86% from 81% the year before [S1].\n\n## Evidence\n- Applications rose by about a quarter, from 4,700 in 2025 to 5,900 in 2026 [S1].\n- Slots were handed out first-come, first-served, with 30% set aside for youth in foster care, the justice system or public housing [S1].\n- All participants could work up to 25 hours a week at $15.50 an hour [S1].\n- A participant working the full 25 hours each week could earn about $2,325 over the six weeks [S1].\n- The city paid wages for all participants, including the 410 placed with private employers [S1].\n- Private and philanthropic sources supplied about $1.5 million of the $9.8 million budget [S1].\n- The state grant covered nearly two-thirds of the program's budget [S1].\n- The budget works out to roughly $4,200 per placed participant [S1].\n- Completion was defined as working all scheduled hours [S1].\n- Port Haddon's youth unemployment rate fell to 9% this summer.\n- Supervisors rated 74% of participants as exceeding expectations [S1].\n- The evaluation also found a lasting boost in employment one year later [S1].\n- Through a partner credit union, 1,050 participants opened bank accounts [S1].\n- A year-round component now serves 300 youth [S1].\n\n## Limits of the evidence\n- The school-enrollment estimate is imprecise and falls short of conventional statistical significance [S1].\n- An internal memo reported paperwork delays of up to two weeks at 53 worksites [S2].\n- Participants report that the job keeps them off the street [S2].\n- Councilor Jun Okafor has proposed lengthening the program to eight weeks [S2].\n- The Haddon Policy Lab evaluation drew on the 2025 lottery [S1].\n\n## Next steps\n- Treat the enrollment effect as unproven and ask the Policy Lab for a pooled multi-year estimate (judgment).\n\n## Sources\n- [S1] Port Haddon Office of Workforce Development, \"2026 Summer Youth Employment Program Outcomes\" (2026-09-18)\n- [S2] Harbor Times, \"Summer jobs program grows, but most applicants miss out\" (2026-09-23)\n"
+   }
+  ]
+ },
+ "labels": [
+  {
+   "key": "Port Haddon placed 2,340 youths aged 14-21 in six-week summer jobs in 2026, roughly four out of every ten applicants",
+   "label": "ok",
+   "tag": "ok_derived_share",
+   "why": "S1: 2,340 placed of 5,900 applicants = 40%"
+  },
+  {
+   "key": "A lottery-based evaluation shows the program raises school enrollment the following spring by 2.3 percentage points",
+   "label": "mismatch",
+   "tag": "hedge_dropped",
+   "why": "S1: estimate 'imprecise and not statistically significant at conventional levels'"
+  },
+  {
+   "key": "Completion improved to 86% from 81% the year before",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: 'was 86%, compared with 81% in 2025'"
+  },
+  {
+   "key": "Applications rose by about a quarter, from 4,700 in 2025 to 5,900 in 2026",
+   "label": "ok",
+   "tag": "ok_derived_growth",
+   "why": "S1: 4,700 -> 5,900 = +25.5%"
+  },
+  {
+   "key": "Slots were handed out first-come, first-served, with 30% set aside for youth in foster care, the justice system or public housing",
+   "label": "mismatch",
+   "tag": "process_changed",
+   "why": "S1: 'Placements were assigned by lottery'"
+  },
+  {
+   "key": "All participants could work up to 25 hours a week at $15.50 an hour",
+   "label": "mismatch",
+   "tag": "condition_dropped",
+   "why": "S1: 'youth aged 14 and 15 were limited to 20 hours per week'"
+  },
+  {
+   "key": "A participant working the full 25 hours each week could earn about $2,325 over the six weeks",
+   "label": "ok",
+   "tag": "ok_derived_product",
+   "why": "S1: 25 h x $15.50 x 6 weeks = $2,325"
+  },
+  {
+   "key": "The city paid wages for all participants, including the 410 placed with private employers",
+   "label": "mismatch",
+   "tag": "payer_swapped",
+   "why": "S1: 'private employers paid wages for the 410 youth they hosted'"
+  },
+  {
+   "key": "Private and philanthropic sources supplied about $1.5 million of the $9.8 million budget",
+   "label": "ok",
+   "tag": "ok_derived_difference",
+   "why": "S1: 9.8 - 6.2 - 2.1 = $1.5 million"
+  },
+  {
+   "key": "The state grant covered nearly two-thirds of the program's budget",
+   "label": "mismatch",
+   "tag": "share_misattributed",
+   "why": "S1: state grant $2.1M (21%); the city general fund's $6.2M is the ~63% share"
+  },
+  {
+   "key": "The budget works out to roughly $4,200 per placed participant",
+   "label": "ok",
+   "tag": "ok_derived_per_unit",
+   "why": "S1: $9.8M / 2,340 = $4,188"
+  },
+  {
+   "key": "Completion was defined as working all scheduled hours",
+   "label": "mismatch",
+   "tag": "definition_changed",
+   "why": "S1: 'defined as working at least 80% of scheduled hours'"
+  },
+  {
+   "key": "Port Haddon's youth unemployment rate fell to 9% this summer",
+   "label": "unverified",
+   "tag": "uncited_claim",
+   "why": "No source reports a youth unemployment rate"
+  },
+  {
+   "key": "Supervisors rated 74% of participants as exceeding expectations",
+   "label": "mismatch",
+   "tag": "category_narrowed",
+   "why": "S1: 74% rated 'meets or exceeds expectations'"
+  },
+  {
+   "key": "The evaluation also found a lasting boost in employment one year later",
+   "label": "mismatch",
+   "tag": "negation_flipped",
+   "why": "S1: 'found no measurable effect on employment one year later'"
+  },
+  {
+   "key": "Through a partner credit union, 1,050 participants opened bank accounts",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S1: '1,050 opened a bank account through a partner credit union'"
+  },
+  {
+   "key": "A year-round component now serves 300 youth",
+   "label": "mismatch",
+   "tag": "plan_stated_as_done",
+   "why": "S1: 'plans to add a year-round component for 300 youth in 2027, pending council approval'"
+  },
+  {
+   "key": "The school-enrollment estimate is imprecise and falls short of conventional statistical significance",
+   "label": "ok",
+   "tag": "ok_hedge_kept",
+   "why": "S1: 'imprecise and not statistically significant at conventional levels'"
+  },
+  {
+   "key": "An internal memo reported paperwork delays of up to two weeks at 53 worksites",
+   "label": "mismatch",
+   "tag": "digits_transposed",
+   "why": "S2: 'employers at 35 worksites complained'"
+  },
+  {
+   "key": "Participants report that the job keeps them off the street",
+   "label": "mismatch",
+   "tag": "anecdote_generalized",
+   "why": "S2: a single participant at a parks worksite said it"
+  },
+  {
+   "key": "Councilor Jun Okafor has proposed lengthening the program to eight weeks",
+   "label": "ok",
+   "tag": "ok_paraphrase",
+   "why": "S2: 'proposed extending the program to eight weeks'"
+  },
+  {
+   "key": "The Haddon Policy Lab evaluation drew on the 2025 lottery",
+   "label": "mismatch",
+   "tag": "wrong_year",
+   "why": "S1: 'using the 2024 lottery'"
+  }
+ ]
+}
