@@ -813,5 +813,22 @@ class DoctorTests(unittest.TestCase):
         self.assertEqual(2, len(calls))
 
 
+
+
+
+class GoogleQueryPreservationTests(unittest.TestCase):
+    def test_google_suffix_lookalikes_keep_language_query(self):
+        for host in ("notgoogle.com", "developers.notgoogle.com", "google.com.example.org"):
+            with self.subTest(host=host):
+                url = f"https://{host}/x?hl=ko&a=1#section"
+                self.assertEqual(url, search.normalize_url(url))
+
+    def test_google_domain_and_subdomain_remove_language_only(self):
+        for host in ("google.com", "developers.google.com"):
+            with self.subTest(host=host):
+                self.assertEqual(f"https://{host}/x?a=1#section",
+                                 search.normalize_url(f"https://{host}/x?hl=ko&a=1#section"))
+
+
 if __name__ == "__main__":
     unittest.main()
