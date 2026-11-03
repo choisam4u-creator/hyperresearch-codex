@@ -141,8 +141,9 @@ def normalize_url(url: str) -> str:
     if host in ("developers.google.cn", "developer.android.google.cn"):
         host = host.replace("google.cn", "google.com")
     if (host == "google.com" or host.endswith(".google.com")) and parts.query:
-        q = [(k, v) for k, v in urllib.parse.parse_qsl(parts.query, keep_blank_values=True) if k != "hl"]
-        parts = parts._replace(query=urllib.parse.urlencode(q))
+        q = [field for field in parts.query.split("&")
+             if urllib.parse.unquote_plus(field.split("=", 1)[0]) != "hl"]
+        parts = parts._replace(query="&".join(q))
     if host != parts.netloc.lower():
         parts = parts._replace(netloc=host)
     return urllib.parse.urlunsplit(parts)

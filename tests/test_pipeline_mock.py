@@ -823,6 +823,19 @@ class GoogleQueryPreservationTests(unittest.TestCase):
                 url = f"https://{host}/x?hl=ko&a=1#section"
                 self.assertEqual(url, search.normalize_url(url))
 
+    def test_google_query_without_language_keeps_original_encoding(self):
+        url = "https://developers.google.com/x?q=a%20b&path=%2f&flag&tag=1&tag=2#section"
+        self.assertEqual(url, search.normalize_url(url))
+
+    def test_google_language_removal_preserves_other_query_bytes(self):
+        query = "q=a%20b&path=%2f&flag&tag=1&tag=2"
+        for language in ("hl=ko", "%68l=ko", "hl="):
+            with self.subTest(language=language):
+                self.assertEqual(
+                    f"https://developers.google.com/x?{query}#section",
+                    search.normalize_url(f"https://developers.google.com/x?{language}&{query}#section"),
+                )
+
     def test_google_domain_and_subdomain_remove_language_only(self):
         for host in ("google.com", "developers.google.com"):
             with self.subTest(host=host):
