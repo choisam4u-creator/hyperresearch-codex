@@ -1,5 +1,10 @@
 베타: 자동 품질 검사가 review_required(종료 코드 3) 경고를 낼 수 있습니다. 결과를 사람이 검토하세요.
 
+![출처 수집과 검토를 거쳐 보고서로](docs/media/hyperresearch-hero.png)
+
+**출처 수집 · 검토 · 보고서**
+
+
 # hyperresearch-codex
 
 [![tests](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/tests.yml) [![CodeQL](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml/badge.svg)](https://github.com/choisam4u-creator/hyperresearch-codex/actions/workflows/codeql.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![status: beta](https://img.shields.io/badge/status-beta%200.5.0b1-orange)
