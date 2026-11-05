@@ -20,6 +20,32 @@ class CostGuidanceTests(unittest.TestCase):
         self.assertEqual(120,data['by_step']['writer']['total_tokens'])
         self.assertEqual(80,data['remaining']['total'])
         self.assertIn('writer',render_cost_guidance(data))
+    def test_mixed_usage_keeps_known_costs_but_leaves_token_balance_unknown(self):
+        cfg={'budget':{'max_input_tokens':100,'max_total_tokens':200,'max_model_calls':4,'output_reservation':30}}
+        rows=[{'step':'writer','status':'ok','usage_known':True,
+               'usage':{'input_tokens':40,'cached_input_tokens':20,'output_tokens':10}},
+              {'step':'critic','status':'error','attempt':2,'usage_known':False}]
+        data=cost_guidance(cfg,rows,{'next':25})
+        self.assertEqual(50,data['usage']['total_tokens'])
+        self.assertEqual(1,data['usage']['unknown_calls'])
+        self.assertEqual(1,data['usage']['failed_calls'])
+        self.assertEqual(1,data['usage']['retry_calls'])
+        self.assertEqual({'input':None,'total':None,'calls':2},data['remaining'])
+        self.assertEqual((25,30),(data['reserved_input'],data['reserved_output']))
+        self.assertTrue(data['by_step']['writer']['complete'])
+        self.assertFalse(data['by_step']['critic']['complete'])
+        for lang,unknown,qualifier in [('ko','미확정','측정분'),('en','unknown','known only')]:
+            with self.subTest(lang=lang):
+                rendered=render_cost_guidance(data,lang)
+                self.assertIn('Input + output: 50 ('+qualifier+')',rendered)
+                self.assertIn('Remaining input: '+unknown+' · total: '+unknown+' · calls: 2',rendered)
+
+    def test_exhausted_limits_do_not_render_negative_balances(self):
+        cfg={'budget':{'max_input_tokens':10,'max_total_tokens':20,'max_model_calls':0}}
+        data=cost_guidance(cfg,[{'usage_known':True,'usage':{'input_tokens':30,'output_tokens':5}}])
+        self.assertEqual({'input':0,'total':0,'calls':0},data['remaining'])
+        self.assertIn('Remaining input: 0 · total: 0 · calls: 0',render_cost_guidance(data,'en'))
+
     def test_budget_stop_has_persistent_explanation(self):
         with tempfile.TemporaryDirectory() as tmp:
             run=pipeline.Run(Path(tmp),'q','light','stop',quiet=True,total_budget=10)
