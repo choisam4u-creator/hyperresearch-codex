@@ -100,6 +100,28 @@ class UsageRecoveryTests(unittest.TestCase):
                          (summary["total"]["known_calls"], summary["total"]["unknown_calls"],
                           summary["total"]["in"], summary["total"]["cached"], summary["total"]["out"]))
 
+    def test_ledger_ignores_nonobject_json_without_rewriting_history(self):
+        now = time.time()
+        ledger.append(self.root, {"ts": now, "run_id": "known", "step": "writer",
+                                  "in": 9, "cached": 1, "out": 2, "backend": "codex"})
+        ledger.append(self.root, {"ts": now, "run_id": "unknown", "step": "writer",
+                                  "usage_known": False, "backend": "codex"})
+        expected = ledger.rows(self.root)
+        path = ledger.path(self.root)
+        valid_lines = path.read_text(encoding="utf-8").splitlines()
+        for value in (None, [], "text", 7, True):
+            with self.subTest(value=value):
+                content = valid_lines[0] + "\n" + json.dumps(value) + "\n{broken\n" + valid_lines[1] + "\n"
+                path.write_text(content, encoding="utf-8")
+                original = path.read_bytes()
+                self.assertEqual(expected, ledger.rows(self.root))
+                total = ledger.summarize(self.root)["total"]
+                self.assertEqual((2, 1, 1, 9, 1, 2),
+                                 (total["calls"], total["known_calls"], total["unknown_calls"],
+                                  total["in"], total["cached"], total["out"]))
+                self.assertEqual(0, ledger.backfill(self.root))
+                self.assertEqual(original, path.read_bytes())
+
     def test_backfill_recognizes_a_legacy_row_without_record_id(self):
         at = time.time()
         path = ledger.path(self.root)

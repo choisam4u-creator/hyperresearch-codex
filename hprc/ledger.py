@@ -55,7 +55,9 @@ def rows(root: Path) -> list[dict]:
     out = []
     for line in p.read_text(encoding="utf-8").splitlines():
         try:
-            out.append(json.loads(line))
+            row = json.loads(line)
+            if isinstance(row, dict):
+                out.append(row)
         except ValueError:
             continue
     return out
