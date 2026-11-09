@@ -10,7 +10,7 @@ import re
 _WORD = re.compile(r"[A-Za-z0-9]{2,}|[가-힣]{2,}")
 _STOP = {"그리고", "그러나", "하지만", "있다", "없다", "한다", "된다", "이다",
          "the", "and", "for", "with", "that", "this", "from", "are", "is", "to", "of", "in", "on"}
-_TABLE_SEPARATOR = re.compile(r"^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*$")
+_TABLE_SEPARATOR = re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$")
 _CONTEXT_CUE = re.compile(
     r"(?:예외|제외|조건|단위|한정|경우에만|일\s*때만|않(?:는|다)|없(?:는|다)|"
     r"exception|except|unless|only\s+(?:when|if|for)|condition|unit|not\s+applicable)", re.IGNORECASE)

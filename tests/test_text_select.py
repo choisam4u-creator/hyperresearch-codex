@@ -58,6 +58,25 @@ class TextSelectTests(unittest.TestCase):
         self.assertGreater(len(chunks), 1)
         self.assertTrue(all("| item | unit |" in chunk and "| --- | --- |" in chunk for chunk in chunks))
 
+    def test_optional_trailing_table_pipe_preserves_header_and_relevant_row(self):
+        for ending, separator in (("|", "| --- | --- |"),
+                                  ("", "| --- | ---"),
+                                  ("", "| :--- | ---:")):
+            with self.subTest(ending=ending, separator=separator):
+                header = f"| item | latency {ending}".rstrip()
+                rows = [f"| row-{i} | {i} ms {ending}".rstrip() for i in range(50)]
+                rows[31] = f"| critical-latency | 240 ms {ending}".rstrip()
+                body = "\n".join([header, separator] + rows)
+                chunks = paragraphs(body, 220)
+                self.assertGreater(len(chunks), 1)
+                self.assertTrue(all(len(chunk) <= 220 for chunk in chunks))
+                self.assertTrue(all(header in chunk and separator in chunk for chunk in chunks))
+                selected, truncated = select(body, "critical-latency 240 ms", 650)
+                self.assertTrue(truncated)
+                self.assertLessEqual(len(selected), 650)
+                self.assertIn(header, selected)
+                self.assertIn("critical-latency | 240 ms", selected)
+
     def test_single_oversized_table_row_never_creates_headerless_fragments(self):
         long_row = "| payload | " + ("ordinary-data " * 45) + "critical-tail-value |"
         body = "Condition: values use milliseconds.\n| item | unit |\n| --- | --- |\n" + long_row
